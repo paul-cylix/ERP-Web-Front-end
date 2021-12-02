@@ -135,28 +135,20 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1</td>
+            <tr v-for="(file, index) in filePreview" :key="file.link">
+              <td>{{index+1}}</td>
               <td>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Deserunt optio recusandae eum?
+                  {{ file.link }}
               </td>
-              <td class="d-flex  justify-content-between px-3">
-                <button class="btn btn-danger btn-sm mx-1 ">Remove</button>
-                <!-- <button class="btn btn-danger btn-sm m-0 ">Remove</button> -->
+              <td class="pl-3 pr-2">
+                  <button class="btn btn-danger btn-sm ml-1" @click="getFileList()">alert</button>
+                  <a :href="file.link" class='btn btn-secondary btn-sm m-0 ml-1' target='_blank' >Preview</a>
+              </td>
+            </tr>
 
-                <a class='btn btn-secondary btn-sm mx-1 '>Preview</a>
-              </td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td></td>
-            </tr>
-     
+            <button class="btn btn-danger btn-sm ml-1" @click="getFileList()">alert</button>
+          
+
           </tbody>
         </table>
       </div>
@@ -168,6 +160,14 @@
 
 <script>
 export default {
+  data(){
+    return{
+      fileList : '',
+      filePreview : '',
+
+    }
+  },
+
   computed: {
     referenceNumber() {
       return this.$store.getters["createRfp/rfp"].referenceNumber;
@@ -202,6 +202,19 @@ export default {
     amount() {
       return this.$store.getters["createRfp/rfp"].amount;
     },
+
   },
+
+  
+  methods:{
+    getFileList(){
+       this.fileList = this.$store.getters["createRfp/rfp"].fileList 
+       this.filePreview = this.$store.getters["createRfp/rfp"].filePreview 
+
+      // console.log(this.filePreview[0].link)
+    },
+  }
+
+
 };
 </script>

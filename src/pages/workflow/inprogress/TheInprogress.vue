@@ -1,17 +1,21 @@
 <template>
+<aside class="col-md-12">
+  <router-view></router-view>
   <div class="col-md-12 mt-3">
     <div class="card card-secondary">
       <div class="card-header">
-        <h3 class="card-title">Withdrawn Requests</h3>
+        <h3 class="card-title">In Progress Requests</h3>
       </div>
-      <div class="card-body pt-0 pb-3" >
-        <data-table v-bind="parametersTable1"/>
+      <div class="card-body pt-0 pb-3">
+        <data-table v-bind="parametersTable1" />
       </div>
     </div>
   </div>
+</aside>
+
 </template>
 <script>
-import ActionButtons from "./ActionButtons.vue";
+import ActionButtons from "../ActionButtons.vue";
 // import axios from 'axios';
 export default {
   name: "App",
@@ -22,11 +26,18 @@ export default {
     };
   },
 
+  // provide(){
+  //   return {
+  //     handleAction: this.activateAction,
+  //   };
+  // },
+
   computed: {
     parametersTable1() {
       return {
         data: this.requestArray,
-        tableClass: 'table table-sm table-striped table-bordered small table-hover',
+        tableClass:
+          "table table-sm table-striped table-bordered small table-hover",
         columns: [
           {
             key: "reference",
@@ -68,22 +79,16 @@ export default {
         ],
       };
     },
-
-
-
   },
-  methods:{
-        async getWithdrawn() {
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/getWithdrawn`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-          },
-        }
-      );
+  methods: {
+    async getInProgress() {
+      const response = await fetch(`http://127.0.0.1:8000/api/getInProgress`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
 
       const responseData = await response.json();
       if (!response.ok) {
@@ -93,16 +98,16 @@ export default {
         throw error;
       }
 
-      this.requestArray = responseData.data
-  
-
+      this.requestArray = responseData.data;
     },
+
+    // activateAction(button){
+    //   alert(button)
+    // }
   },
 
-  mounted(){
-    this.getWithdrawn();
+  mounted() {
+    this.getInProgress();
   },
-
-
 };
 </script>

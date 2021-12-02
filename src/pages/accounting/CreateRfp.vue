@@ -24,36 +24,19 @@
 
         <div class="d-flex text-center">
           <div class="textbar" :class="classA">
-            <small
-              ><span :class="classA" class="font-weight-bold"
-                >Request details</span
-              ></small
-            >
+            <small><span :class="classA" class="font-weight-bold">Request details</span></small>
           </div>
           <div class="textbar" :class="classB">
-            <small
-              ><span :class="classB" class="font-weight-bold"
-                >Payment details</span
-              ></small
-            >
+            <small><span :class="classB" class="font-weight-bold">Payment details</span></small>
           </div>
           <div class="textbar" :class="classC">
-            <small
-              ><span :class="classC" class="font-weight-bold"
-                >Attachments</span
-              ></small
-            >
+            <small><span :class="classC" class="font-weight-bold">Attachments</span></small>
           </div>
           <div class="textbar" :class="classD">
-            <small
-              ><span :class="classD" class="font-weight-bold"
-                >Review</span
-              ></small
-            >
+            <small><span :class="classD" class="font-weight-bold">Review</span></small>
           </div>
         </div>
         <!-- / Step Numbers -->
-
         <keep-alive>
           <component v-bind:is="selectedComponent"></component>
         </keep-alive>
@@ -159,14 +142,8 @@ export default {
     },
     submitRfp() {
       const data = this.$store.getters["createRfp/rfp"];
-      // const user = this.$store.getters.userLoggedIn;
-
       this.$store.dispatch("createRfp/submitRfp", data);
-      // console.log(data)
-      // console.log(user)
-
     },
-
   },
 };
 </script>

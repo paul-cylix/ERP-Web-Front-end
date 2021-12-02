@@ -26,7 +26,8 @@ export default {
         currencyId: "",
         currencyName: "",
         amount: "",
-        files:{},
+        fileList:[],
+        filePreview:[],
       },
     };
   },
@@ -69,6 +70,13 @@ export default {
     updateMainId(state, payload) {
       state.rfp.mainId = payload;
     },
+    updateFileList(state,payload) {
+      state.rfp.fileList = payload;
+    },
+    updateFilePreview(state,payload) {
+      state.rfp.filePreview = payload;
+
+    },
   },
 
   actions: {
@@ -105,8 +113,13 @@ export default {
     updateMainId(context, payload) {
       context.commit("updateMainId", payload);
     },
-
-    // updateFileList(){},
+    updateFileList(context,payload){
+      context.commit("updateFileList", payload);
+    },
+    updateFilePreview(context,payload){
+      context.commit("updateFilePreview", payload);
+      // console.log(payload)
+    },
 
 
     async submitRfp(_, payload) {
@@ -138,6 +151,7 @@ export default {
             currencyId: payload.currencyId,
             currencyName: payload.currencyName,
             amount: payload.amount,
+            file:payload.fileList,
           }),
         }
       );
@@ -146,7 +160,7 @@ export default {
 
       if (!response.ok) {
         // error ...
-        console.log('error')
+        console.log('responseData')
       }
     },
   },
@@ -167,8 +181,15 @@ export default {
     purpose(state) {
       return state.rfp.purpose;
     },
+    fileList(state) {
+      return state.fileList;
+    },
+    filePreview(state){
+      return state.filePreview;
+    },
     rfp(state) {
       return state.rfp;
     },
+
   },
 };
