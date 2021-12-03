@@ -4,7 +4,7 @@
   <div class="col-md-12 mt-3">
     <div class="card card-secondary">
       <div class="card-header">
-        <h3 class="card-title">In Progress Requests</h3>
+        <h3 class="card-title">For Approval Requests</h3>
       </div>
       <div class="card-body pt-0 pb-3">
         <data-table v-bind="parametersTable1" />
@@ -74,12 +74,12 @@ export default {
     },
   },
   methods: {
-    async getInProgress() {
-      const response = await fetch(`http://127.0.0.1:8000/api/getInProgress`, {
+    async getApprovals() {
+      const response = await fetch(`http://127.0.0.1:8000/api/getApprovals`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
+          "Accept": "application/json",
         },
       });
 
@@ -100,7 +100,7 @@ export default {
   },
 
   mounted() {
-    this.getInProgress();
+    this.getApprovals();
   },
 };
 </script>

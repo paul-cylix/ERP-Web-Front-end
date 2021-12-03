@@ -19,28 +19,15 @@ export default {
     // inject: ["handleAction"],
     methods: {
         handleAction(actionName) {
-            // this.$store.commit(actionName, this.data)
-            // alert(actionName)
-            console.log(this.data.workflow) // inprogress
-            console.log(this.data.frmClass) // requestforpayment
-            console.log(this.data.id) // 123*
 
-            // const workflow = this.data.workflow;
-            // const frmClass = this.data.frmClass;
-            const id = this.data.id;
+            const id = this.data.id; // 123
+            const name = this.data.workflow+'byId'; // inprogressbyId
+            const workflow = (this.data.workflow) // inprogress
+            const frmclass = (this.data.frmClass) // requestforpayment
 
 
             if(actionName === 'open'){
-                // const name = `open-${workflow}-${frmClass}`
-                // this.$router.replace
-                // this.$router.push('/dashboard')
-
-                const name = 'inprogressbyId';
-                // this.$router.push({name: name, params: { id: id, workflow:'inprogress',frmClass:'requestforpayment' }})
-
-
-                // setTimeout(() => {this.$router.push({name: name, params: { id: id, workflow:'inprogress',frmClass:'requestforpayment' }})}, 500);
-                this.$router.push({name: name, params: { id: id, workflow:'inprogress',frmClass:'requestforpayment' }})
+                this.$router.push({name: name, params: { id: id, workflow:workflow,frmClass:frmclass }})
             }
 
             if(actionName === 'message'){

@@ -75,7 +75,6 @@
               <div class="form-group">
                 <small><label for="requestDate">Request Date</label></small>
                 <date-picker
-                  
                   disabled
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px"
@@ -312,7 +311,7 @@
                 <tbody>
                   <tr>
                     <td>Reference Number</td>
-                    <td style="width: 80%">{{this.referenceNumber}}</td>
+                    <td style="width: 80%">{{ this.referenceNumber }}</td>
                   </tr>
                   <tr>
                     <td>Requested Date</td>
@@ -416,13 +415,15 @@
                 </thead>
                 <tbody>
                   <tr
-                  v-for="(file, index) in selectedFile" :key="file.filename"
+                    v-for="(file, index) in selectedFile"
+                    :key="file.filename"
                   >
                     <td>{{ index + 1 }}</td>
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
-                      <button class="btn btn-secondary btn-sm ml-1"
-                      @click="preview(file.mimeType, file.imageBytes)"
+                      <button
+                        class="btn btn-secondary btn-sm ml-1"
+                        @click="preview(file.mimeType, file.imageBytes)"
                       >
                         Preview
                       </button>
@@ -442,102 +443,133 @@
         <!-- Button -->
         <div class="row d-flex justify-content-between mt-3">
           <aside class="col-lg-6 d-flex justify-content-start">
-          <div class="col-lg-2" v-show="counter">
-            <button
-              type="button"
-              @click="counter--"
-              class="btn btn-block btn-secondary btn-sm"
-            >
-              Previous
-            </button>
-          </div>
-          <div class="col-lg-2" v-if="this.counter <= 2">
-            <button
-              type="button"
-              @click="counter++"
-              class="btn btn-block btn-primary btn-sm"
-            >
-              Next
-            </button>
-          </div>
-
+            <div class="col-lg-2" v-show="counter">
+              <button
+                type="button"
+                @click="counter--"
+                class="btn btn-block btn-secondary btn-sm"
+              >
+                Previous
+              </button>
+            </div>
+            <div class="col-lg-2" v-if="this.counter <= 2">
+              <button
+                type="button"
+                @click="counter++"
+                class="btn btn-block btn-primary btn-sm"
+              >
+                Next
+              </button>
+            </div>
           </aside>
 
-<aside class="col-lg-6 d-flex justify-content-end">
-          <div class="col-lg-2">
-            <button
-              type="button"
-              class="btn btn-block btn-warning btn-sm"
-               data-toggle="modal" 
-               data-target="#modal-default"
-            >
-              Withdrawn
-            </button>
-          </div>
+          <aside class="col-lg-6 d-flex justify-content-end">
+            <div class="col-lg-2">
+              <button
+                type="button"
+                class="btn btn-block btn-success btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+                @click="setTitle('Approve')"
+              >
+                Approve
+              </button>
+            </div>
 
-          <div class="col-lg-2" >
-            <button
-              type="button"
-              class="btn btn-block btn-danger btn-sm"
-              @click="close()"
-            >
-              Close
-            </button>
-          </div>
+            <div class="col-lg-2">
+              <button
+                type="button"
+                class="btn btn-block btn-danger btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+                @click="setTitle('Reject')"
 
-</aside>
+              >
+                Reject
+              </button>
+            </div>
+
+            <div class="col-lg-2">
+              <button
+                type="button"
+                class="btn btn-block btn-warning btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+                @click="setTitle('Clarify')"
+
+              >
+                Clarify
+              </button>
+            </div>
+
+            <div class="col-lg-2">
+              <button
+                type="button"
+                class="btn btn-block btn-danger btn-sm"
+                @click="close()"
+              >
+                Close
+              </button>
+            </div>
+          </aside>
         </div>
         <!-- / Button -->
       </div>
     </div>
     <!-- /.card -->
 
+    <!-- Modal -->
+    <div class="modal fade" id="modal-default">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Overlay Loading Spinner -->
+          <div class="overlay" v-show="isLoading">
+            <i class="fas fa-2x fa-sync fa-spin"></i>
+          </div>
 
-
-      <!-- Modal -->
-      <div class="modal fade" id="modal-default">
-        <div class="modal-dialog">
-          <div class="modal-content">
-
-            <!-- Overlay Loading Spinner -->
-            <div class="overlay" v-show="isLoading">
-                <i class="fas fa-2x fa-sync fa-spin"></i>
-            </div>
-
-            <div class="modal-header">
-              <h6 class="modal-title"><b>Withdraw Request</b></h6>
-              <button type="button" id="modalCloseButton" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <small><label for="withdrawRemarks">Remarks</label></small>
-                <textarea
-                  class="form-control"
-                  id="withdrawRemarks"
-                  rows="5"
-                  v-model="withdrawRemarks"
-                ></textarea>
+          <div class="modal-header">
+            <h6 class="modal-title"><b>{{ this.title }} Request</b></h6>
+            <button
+              type="button"
+              id="modalCloseButton"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <textarea
+                    class="form-control"
+                    id="remarks"
+                    rows="5"
+                    v-model="remarks"
+                    placeholder="Please input request remarks here!"
+                  ></textarea>
+                </div>
               </div>
             </div>
           </div>
-            </div>
-            <div class="modal-footer justify-content-end">
-              <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-              <button type="button" class="btn btn-primary btn-sm" @click="withdrawn()">Withdrawn</button>
-            </div>
+          <div class="modal-footer justify-content-end">
+            <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              @click="submit()"
+            >
+              Submit
+            </button>
           </div>
-          <!-- /.modal-content -->
         </div>
-        <!-- /.modal-dialog -->
+        <!-- /.modal-content -->
       </div>
-      <!-- /.modal -->
-
-
-
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
   </div>
 </template>
 
@@ -551,20 +583,20 @@ export default {
       this.getClient(newValue.code);
     },
 
-    counter(){
+    counter() {
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
     },
 
     //Navigate
-    $route(newRoute){
+    $route(newRoute) {
       this.showRfpMain(this.$route.params.id);
       this.showRfpDetail(this.$route.params.id);
       this.showRfpAttachments(this.$route.params.id, "Request for Payment");
       this.counter = 0;
-      this.withdrawRemarks = '';
-      console.log(newRoute)
-    }
+      this.withdrawRemarks = "";
+      console.log(newRoute);
+    },
   },
   computed: {
     classA() {
@@ -598,6 +630,8 @@ export default {
   },
   data() {
     return {
+      
+      
       counter: 0,
       // Request Details
       referenceNumber: "",
@@ -618,11 +652,11 @@ export default {
       selectedFile: [],
       // filespreview: "",
 
+      // Modal
+      remarks: "",
+      title:"",
 
-      // Withdrawn Modal
-      withdrawRemarks:"",
-
-      isLoading:false,
+      isLoading: false,
     };
   },
 
@@ -633,11 +667,14 @@ export default {
     this.showRfpAttachments(this.$route.params.id, "Request for Payment");
   },
 
-
   methods: {
+    setTitle(title){
+      this.title = title;
+    },
+
 
     openToast(position, variant, message) {
-      const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1)
+      const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
       VsToast.show({
         title: `${toastTitle}`,
         message: `${message}`,
@@ -646,65 +683,53 @@ export default {
       });
     },
 
-
-
-
-    async withdrawn(){
+    async submit() {
       this.isLoading = true;
-      console.log(this.withdrawRemarks);
+      
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/reject-request",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            remarks: "test appid remarks",
+            reqId: "2205",
+          }),
+        }
+      );
 
-      const response = await fetch('http://127.0.0.1:8000/api/withdraw-request',{
-        method:'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          withdrawRemarks: 'test remarks',
-          reqId: '2206',
-        })
-      });
-
-    const responseData = await response.json();
-    console.log(responseData.message)
+      const responseData = await response.json();
+      console.log(responseData.message);
 
       this.isLoading = false;
       document.getElementById("modalCloseButton").click();
 
-      this.openToast('top-right', 'success', responseData.message)
-      this.$router.replace('/inprogress')
+      this.openToast("top-right", "success", responseData.message);
+      this.$router.replace("/approvals");
 
+      if (!response.ok) {
+        const error = new Error(
+          responseData.message ||
+            "Failed to authenticate. Check your login data."
+        );
 
+        // Manual Handle Auth
+        //   if (api_call.status == 200) {
+        //     // You can do your error handling here
+        // } else {
+        //     // Call the .json() method on your response to get your JSON data
+        //     const data = await api_call.json();
+        // }
 
-
-    if (!response.ok) {
-      const error = new Error(
-        responseData.message || 'Failed to authenticate. Check your login data.'
-      );
-
-
-    // Manual Handle Auth
-    //   if (api_call.status == 200) {
-    //     // You can do your error handling here
-    // } else {
-    //     // Call the .json() method on your response to get your JSON data
-    //     const data = await api_call.json();
-    // }
-
-
-      console.log(error.message)
-      // throw error;
-    }
-
-
-
-
-
-
-
+        console.log(error.message);
+        // throw error;
+      }
     },
-    close(){
-      this.$router.replace('/inprogress')
+    close() {
+      this.$router.replace("/approvals");
     },
     preview(mimeType, imageBytes) {
       var newTab = window.open();

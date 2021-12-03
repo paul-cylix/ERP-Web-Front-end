@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@andresouzaabreu/vue-data-table": "^3.2.2",
+    "@vuesimple/vs-toast": "^1.4.0",
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "vue": "^2.6.11",

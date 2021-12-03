@@ -6,7 +6,7 @@ import MainDashboard from "./pages/dashboard/MainDashboard.vue";
 import DashboardContent from "./pages/dashboard/DashboardContent.vue";
 import TheParticipant from "./pages/workflow/TheParticipant.vue";
 import TheInput from "./pages/workflow/TheInput.vue";
-import TheApproval from "./pages/workflow/TheApproval.vue";
+import TheApproval from "./pages/workflow/approval/TheApproval.vue";
 import TheInprogress from "./pages/workflow/inprogress/TheInprogress.vue";
 import TheClarification from "./pages/workflow/TheClarification.vue";
 import TheApproved from "./pages/workflow/TheApproved.vue";
@@ -16,6 +16,7 @@ import CreateRfp from "./pages/accounting/CreateRfp.vue";
 import MyPractice from "./pages/accounting/MyPractice.vue";
 import TheRfp from "./pages/accounting/TheRfp.vue";
 import InpId from "./pages/workflow/inprogress/InpId.vue";
+import AppId from "./pages/workflow/approval/AppId.vue";
 
 Vue.use(VueRouter);
 
@@ -29,11 +30,24 @@ const routes = [
       { path: "/dashboard", component: DashboardContent },
       { path: "/participants", component: TheParticipant },
       { path: "/inputs", component: TheInput },
-      { path: "/approvals", component: TheApproval },
+      {
+        path: "/approvals",
+        component: TheApproval,
+        children: [
+          { path: ":id", name: "approvalbyId", component: AppId, props: true },
+        ],
+      },
       {
         path: "/inprogress",
         component: TheInprogress,
-        children: [{ path: ":id",name:'inprogressbyId' , component: InpId, props:true }],
+        children: [
+          {
+            path: ":id",
+            name: "inprogressbyId",
+            component: InpId,
+            props: true,
+          },
+        ],
       },
       { path: "/clarifications", component: TheClarification },
       { path: "/approved", component: TheApproved },
@@ -51,8 +65,6 @@ const routes = [
 
       //Accounting
     ],
-
-
   },
 ];
 
@@ -60,14 +72,13 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
-  scrollBehavior () {
+  scrollBehavior() {
     // console.log(to)
     // console.log(from)
     // console.log(savedPosition)
-    return {x:0 ,y:0};
-  }
+    return { x: 0, y: 0 };
+  },
 });
-
 
 // router.beforeEach(function(to,from,next) {
 
