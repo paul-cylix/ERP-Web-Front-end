@@ -464,7 +464,7 @@
           </aside>
 
           <aside class="col-lg-6 d-flex justify-content-end">
-            <div class="col-lg-2">
+            <!-- <div class="col-lg-2">
               <button
                 type="button"
                 class="btn btn-block btn-success btn-sm"
@@ -500,7 +500,7 @@
               >
                 Clarify
               </button>
-            </div>
+            </div> -->
 
             <div class="col-lg-2">
               <button
@@ -729,7 +729,7 @@ export default {
       }
     },
     close() {
-      this.$router.replace("/approvals");
+      this.$router.replace("/rejected");
     },
     preview(mimeType, imageBytes) {
       var newTab = window.open();
@@ -783,7 +783,7 @@ export default {
           // handle success
           this.selectedFile = response.data.data;
 
-          console.log(this.selectedFile.length);
+          // console.log(this.selectedFile.length);
         })
         .catch((error) => {
           // handle error

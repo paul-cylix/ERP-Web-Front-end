@@ -2,9 +2,6 @@
   <div class="col-md-12 mt-3">
     <!-- Form Element sizes -->
     <div class="card card-secondary">
-      <!-- <div class="overlay" style="background-color: white !important;">
-        <loading-spinner></loading-spinner>
-      </div> -->
       <div class="card-header">
         <h3 class="card-title">Request for Payment</h3>
       </div>
@@ -22,9 +19,6 @@
           </div>
           <div class="progressbar" :class="classD">
             <span :class="classD">4</span>
-          </div>
-          <div class="progressbar" :class="classE">
-            <span :class="classE">5</span>
           </div>
         </div>
 
@@ -46,20 +40,13 @@
           <div class="textbar" :class="classC">
             <small
               ><span :class="classC" class="font-weight-bold"
-                >Liquidation</span
+                >Attachments</span
               ></small
             >
           </div>
           <div class="textbar" :class="classD">
             <small
               ><span :class="classD" class="font-weight-bold"
-                >Attachments</span
-              ></small
-            >
-          </div>
-          <div class="textbar" :class="classE">
-            <small
-              ><span :class="classE" class="font-weight-bold"
                 >Review</span
               ></small
             >
@@ -228,82 +215,9 @@
         </div>
         <!-- / Payment Details -->
 
-        <!-- Liquidation -->
-        <div class="row mt-4" v-else-if="this.counter === 2">
-          <table class="table table-sm table-bordered table-striped mx-2">
-            <thead>
-              <tr>
-                <th colspan="7" scope="col">
-                  <aside class="d-flex align-items-center">
-                    <span class="mb-1 ml-1"> Liquidation Table</span>
-                  </aside>
-                </th>
-                <th>
-                  <aside class="text-center">
-                    <button
-                      class="btn btn-sm btn-success m-0"
-                      data-toggle="modal"
-                      data-target="#modal-liquidation"
-                      @click="setButton()"
-                    >
-                      <i class="fas fa-plus"></i>
-                    </button>
-                  </aside>
-                </th>
-              </tr>
-
-              <tr>
-                <th scope="col" class="text-center">#</th>
-                <th scope="col">Date</th>
-                <th scope="col">Client Name</th>
-                <th scope="col">Expense Type</th>
-                <th scope="col">Description</th>
-                <th scope="col">Currency</th>
-                <th scope="col">Amount</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody style="font-size: 14px">
-              <tr v-for="(item, index) in liquidation" :key="item.id">
-                <td class="text-center">{{ index + 1 }}.</td>
-                <td>{{ item.date }}</td>
-                <td>{{ item.clientName }}</td>
-                <td>{{ item.expenseType }}</td>
-                <td>{{ item.description }}</td>
-                <td>{{ item.currency }}</td>
-                <td>{{ item.amount }}</td>
-                <td class="pl-0 m-0">
-                  <aside class="d-flex justify-content-center">
-                    <button
-                      class="btn btn-sm btn-info m-0"
-                      @click="edit(liquidation.indexOf(item))"
-                      data-toggle="modal"
-                      data-target="#modal-liquidation"
-                    >
-                      <i class="fas fa-edit"></i>
-                    </button>
-                    <button
-                      class="btn btn-sm btn-danger m-0 ml-1"
-                      @click="trash(liquidation.indexOf(item))"
-                    >
-                      <i class="fas fa-trash"></i>
-                    </button>
-                  </aside>
-                </td>
-              </tr>
-
-              <tr>
-                <td colspan="6"></td>
-                <td colspan="2"><b>Total Amount: {{this.totalAmt}}</b></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <!-- / Liquidation -->
-
         <!-- The Attachments -->
         <div
-          v-else-if="this.counter === 3"
+          v-else-if="this.counter === 2"
           class="
             d-flex
             align-items-center
@@ -368,7 +282,7 @@
         <!-- / The Attachments -->
 
         <!--  Form Review -->
-        <aside v-else-if="this.counter === 4">
+        <aside v-else-if="this.counter === 3">
           <div class="card card-secondary mt-4">
             <div class="card-header">
               <h3 class="card-title">Request Details</h3>
@@ -388,6 +302,12 @@
               <table
                 class="table table-sm table-bordered table-hover table-striped"
               >
+                <!-- <thead>
+          <tr>
+            <th>Form</th>
+            <th style="width: 80%"></th>
+          </tr>
+        </thead> -->
                 <tbody>
                   <tr>
                     <td>Reference Number</td>
@@ -446,7 +366,7 @@
                 <tbody>
                   <tr>
                     <td>Payee Name</td>
-                    <td style="width: 80%">{{ this.payeeName }}Accounting</td>
+                    <td style="width: 80%">{{ this.payeeName }}</td>
                   </tr>
                   <tr>
                     <td>Mode of Payment</td>
@@ -459,61 +379,6 @@
                   <tr>
                     <td>Amount</td>
                     <td>{{ this.amount }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <!-- /.card-body -->
-          </div>
-
-          <div class="card card-secondary">
-            <div class="card-header">
-              <h3 class="card-title">Liquidation</h3>
-
-              <div class="card-tools">
-                <button
-                  type="button"
-                  class="btn btn-tool"
-                  data-card-widget="collapse"
-                >
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body p-0">
-              <table
-                class="table table-sm table-bordered table-hover table-striped"
-              >
-                <thead>
-                  <tr>
-                    <th style="width: 5%">#</th>
-                    <th style="width: 10%">Date</th>
-                    <th style="width: 15%">Client Name</th>
-                    <th style="width: 15%">Expense Type</th>
-                    <th style="width: 30%">Description</th>
-                    <th style="width: 10%">Currency</th>
-                    <th style="width: 15%">Amount</th>
-                    <!-- <th style="width: 10%">Action</th> -->
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>2021-23-12</td>
-                    <td>SAccounting</td>
-                    <td>Rent</td>
-                    <td>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit. A
-                      animi dolorem enim?
-                    </td>
-                    <td>PHP</td>
-                    <td>123456</td>
-                  </tr>
-
-                  <tr>
-                    <td colspan="6"></td>
-                    <td colspan="1">Total:</td>
                   </tr>
                 </tbody>
               </table>
@@ -549,7 +414,10 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(file, index) in selectedFile" :key="index">
+                  <tr
+                    v-for="(file, index) in selectedFile"
+                    :key="file.filename"
+                  >
                     <td>{{ index + 1 }}</td>
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
@@ -584,7 +452,7 @@
                 Previous
               </button>
             </div>
-            <div class="col-lg-2" v-if="this.counter <= 3">
+            <div class="col-lg-2" v-if="this.counter <= 2">
               <button
                 type="button"
                 @click="counter++"
@@ -595,7 +463,7 @@
             </div>
           </aside>
 
-          <!-- <aside class="col-lg-6 d-flex justify-content-end">
+          <aside class="col-lg-6 d-flex justify-content-end">
             <div class="col-lg-2">
               <button
                 type="button"
@@ -615,6 +483,7 @@
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Reject')"
+
               >
                 Reject
               </button>
@@ -627,6 +496,7 @@
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Clarify')"
+
               >
                 Clarify
               </button>
@@ -641,7 +511,7 @@
                 Close
               </button>
             </div>
-          </aside> -->
+          </aside>
         </div>
         <!-- / Button -->
       </div>
@@ -649,7 +519,7 @@
     <!-- /.card -->
 
     <!-- Modal -->
-    <div class="modal fade" id="modal-liquidation">
+    <div class="modal fade" id="modal-default">
       <div class="modal-dialog">
         <div class="modal-content">
           <!-- Overlay Loading Spinner -->
@@ -658,9 +528,7 @@
           </div>
 
           <div class="modal-header">
-            <h6 class="modal-title">
-              <b>Liquidation</b>
-            </h6>
+            <h6 class="modal-title"><b>{{ this.title }} Request</b></h6>
             <button
               type="button"
               id="modalCloseButton"
@@ -673,86 +541,13 @@
           </div>
           <div class="modal-body">
             <div class="row">
-              <div class="col-md-4">
-                <div class="form-group">
-                  <small><label for="reference">Date</label></small>
-
-                  <date-picker
-                    valueType="format"
-                    style="display: block; width: 100%; line-height: 20px"
-                    v-model="modalDate"
-                  ></date-picker>
-                </div>
-              </div>
-              <div class="col-md-8">
-                <div class="form-group">
-                  <small><label for="projectName">Project Name</label></small>
-                  <!-- <input type="text" class="form-control py-3 form-control-sm" id="projectName"> -->
-                  <model-list-select
-                    :list="client"
-                    v-model="itemclientName"
-                    option-value="code"
-                    option-text="name"
-                    placeholder="select item"
-                    style="padding: 9px"
-                  >
-                  </model-list-select>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-4">
-                <div class="form-group">
-                  <small><label for="projectName">Expense Type</label></small>
-
-                  <model-list-select
-                    :list="modalExpenseType"
-                    v-model="itemmodalExpenseType"
-                    option-value="code"
-                    option-text="name"
-                    placeholder="select item"
-                    style="padding: 9px"
-                  >
-                  </model-list-select>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-group">
-                  <small><label for="projectName">Currency Type</label></small>
-
-                  <model-list-select
-                    :list="modalCurrency"
-                    v-model="itemmodalCurrency"
-                    option-value="code"
-                    option-text="name"
-                    placeholder="select item"
-                    style="padding: 9px"
-                  >
-                  </model-list-select>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-group">
-                  <small><label for="modalamount">Amount</label></small>
-                  <input
-                    type="text"
-                    class="form-control form-control-sm py-3"
-                    id="modalamount"
-                    v-model="modalamount"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
               <div class="col-md-12">
                 <div class="form-group">
                   <textarea
                     class="form-control"
                     id="remarks"
                     rows="5"
-                    v-model="modalremarks"
+                    v-model="remarks"
                     placeholder="Please input request remarks here!"
                   ></textarea>
                 </div>
@@ -762,21 +557,11 @@
           <div class="modal-footer justify-content-end">
             <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
             <button
-              v-if="isButton"
               type="button"
-              class="btn btn-success btn-sm"
-              @click="insert()"
+              class="btn btn-primary btn-sm"
+              @click="submit(title)"
             >
-              Insert
-            </button>
-
-            <button
-              v-else
-              type="button"
-              class="btn btn-success btn-sm"
-              @click="update()"
-            >
-              Update
+              Submit
             </button>
           </div>
         </div>
@@ -789,21 +574,10 @@
 </template>
 
 <script>
-import { ModelListSelect } from "vue-search-select";
 import axios from "axios";
 import VsToast from "@vuesimple/vs-toast";
 export default {
-  components: {
-    ModelListSelect,
-  },
   watch: {
-    liquidation(newValue) {
-      let x = 0
-      for (const key in newValue) {
-          x += parseInt(newValue[key].amount)
-      }
-    this.totalAmt = x
-    },
     // Request Details
     projectItem(newValue) {
       this.getClient(newValue.code);
@@ -837,9 +611,6 @@ export default {
     classD() {
       return { active: this.counter >= 3 };
     },
-    classE() {
-      return { active: this.counter >= 4 };
-    },
 
     // Calendaer
     todaysYear() {
@@ -859,7 +630,9 @@ export default {
   },
   data() {
     return {
-      counter: 2,
+      
+      
+      counter: 0,
       // Request Details
       referenceNumber: "",
       requestDate: "",
@@ -879,35 +652,9 @@ export default {
       selectedFile: [],
       // filespreview: "",
 
-      // Liquidation
-      totalAmt: 0,
-
-      liquidation: [],
-
-      editliquidation: [],
-
-      isButton: true,
-
-      modalDate: "",
-      client: [],
-      itemclientName: {},
-
-      modalCurrency: [],
-      itemmodalCurrency: {},
-
-      modalExpenseType: [],
-      itemmodalExpenseType: {},
-
-      modalamount: "",
-      liquidationTotalAmount: "",
-
-      modalremarks: "",
-
-      i: 0,
-
       // Modal
       remarks: "",
-      title: "",
+      title:"",
 
       isLoading: false,
     };
@@ -918,84 +665,10 @@ export default {
     this.showRfpMain(this.$route.params.id);
     this.showRfpDetail(this.$route.params.id);
     this.showRfpAttachments(this.$route.params.id, "Request for Payment");
-    this.getBusinesses();
-    this.getcurrencyName();
-    this.getexpenseType();
   },
 
   methods: {
-    update() {
-      const addData = {
-        id: this.editliquidation.id,
-        date: this.modalDate,
-        clientId: this.itemclientName.code,
-        clientName: this.itemclientName.name,
-        expenseType: this.itemmodalExpenseType.name,
-        currency: this.itemmodalCurrency.name,
-        amount: this.modalamount,
-        description: this.modalremarks,
-      };
-      this.liquidation.push(addData);
-
-      this.editliquidation = "";
-      // this.liquidation.push(this.editliquidation)
-      this.liquidation.sort(function (a, b) {
-        return a.id - b.id;
-      });
-
-      console.log(addData.id);
-    },
-
-    edit(index) {
-      this.isButton = false;
-      const selectedLiquidation = this.liquidation[index];
-      this.editliquidation = selectedLiquidation;
-      this.liquidation.splice(index, 1);
-
-      console.log(selectedLiquidation);
-
-      this.modalDate = selectedLiquidation.date;
-      this.itemclientName = {
-        code: selectedLiquidation.clientId,
-        name: selectedLiquidation.clientName,
-      };
-      this.itemmodalCurrency = {
-        code: selectedLiquidation.currency,
-        name: selectedLiquidation.currency,
-      };
-      this.itemmodalExpenseType = {
-        code: selectedLiquidation.expenseType,
-        name: selectedLiquidation.expenseType,
-      };
-      this.modalamount = selectedLiquidation.amount;
-      this.modalremarks = selectedLiquidation.description;
-    },
-
-    setButton() {
-      this.isButton = true;
-    },
-
-    trash(index) {
-      this.liquidation.splice(index, 1);
-    },
-
-    insert() {
-      // console.log(this.modalamount);
-
-      const addData = {
-        id: this.i++,
-        date: this.modalDate,
-        clientId: this.itemclientName.code,
-        clientName: this.itemclientName.name,
-        expenseType: this.itemmodalExpenseType.name,
-        currency: this.itemmodalCurrency.name,
-        amount: this.modalamount,
-        description: this.modalremarks,
-      };
-      this.liquidation.push(addData);
-    },
-
-    setTitle(title) {
+    setTitle(title){
       this.title = title;
     },
 
@@ -1009,150 +682,64 @@ export default {
       });
     },
 
-    async getBusinesses() {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/general-businesses/1",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-
-      const responseData = await response.json();
-      // console.log(responseData)
-      if (!response.ok) {
-        const error = new Error(
-          responseData.message || "Failed to fetch Businesses."
-        );
-        throw error;
-      }
-      const client = [];
-      for (const key in responseData) {
-        // console.log(key)
-        const request = {
-          code: responseData[key].businessNumber,
-          name: responseData[key].businessName,
-        };
-        client.push(request);
-      }
-      this.client = client;
-      // console.log(responseData[0].businessNumber)
-      // console.log(this.client)
-    },
-
-    async getcurrencyName() {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/get-currencyType",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-
-      const responseData = await response.json();
-      // console.log(responseData[0])
-      if (!response.ok) {
-        const error = new Error(
-          responseData.message || "Failed to fetch Currency Type."
-        );
-        throw error;
-      }
-
-      const modalCurrency = [];
-      for (const key in responseData[0]) {
-        const request = {
-          code: responseData[0][key].currencyName,
-          name: responseData[0][key].currencyName,
-        };
-        modalCurrency.push(request);
-      }
-      this.modalCurrency = modalCurrency;
-      // console.log(responseData[0].businessNumber)
-      // console.log(modalCurrency)
-    },
-
-    async getexpenseType() {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/get-expenseType",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-
-      const responseData = await response.json();
-
-      console.log(responseData);
-      if (!response.ok) {
-        const error = new Error(
-          responseData.message || "Failed to fetch modal ExpenseType Type."
-        );
-        throw error;
-      }
-      const modalExpenseType = [];
-      for (const key in responseData[0]) {
-        // console.log(key)
-        const request = {
-          code: responseData[0][key].type,
-          name: responseData[0][key].type,
-        };
-        modalExpenseType.push(request);
-      }
-      this.modalExpenseType = modalExpenseType;
-      // console.log(responseData[0].businessNumber)
-    },
-
     async submit(type) {
       this.isLoading = true;
-      if (type === "Approve") {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/approve-request",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify({
-              remarks: this.remarks,
-              reqId: "2207",
-            }),
-          }
+
+      if(type === 'Approve'){
+        
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/approve-request",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            remarks: this.remarks,
+            reqId: "2207",
+          }),
+        }
+      );
+
+      const responseData = await response.json();
+      console.log(responseData.message);
+
+      this.isLoading = false;
+      document.getElementById("modalCloseButton").click();
+
+      this.openToast("top-right", "success", responseData.message);
+      this.$router.replace("/inputs");
+
+      if (!response.ok) {
+        const error = new Error(
+          responseData.message ||
+            "Failed to authenticate. Check your login data."
         );
 
-        const responseData = await response.json();
-        console.log(responseData.message);
 
-        this.isLoading = false;
-        document.getElementById("modalCloseButton").click();
 
-        this.openToast("top-right", "success", responseData.message);
-        this.$router.replace("/approvals");
-
-        if (!response.ok) {
-          const error = new Error(
-            responseData.message ||
-              "Failed to authenticate. Check your login data."
-          );
-          console.log(error.message);
-        }
+        console.log(error.message);
+        // throw error;
       }
 
-      if (type === "Reject") {
-        console.log("Reject");
+
+
+
+
+
+
+
+
+
       }
 
-      if (type === "Clarify") {
-        console.log("Clarify");
+      if(type === 'Reject'){
+        console.log('Reject')
+      }
+
+      if(type === 'Clarify'){
+        console.log('Clarify')
       }
     },
     close() {

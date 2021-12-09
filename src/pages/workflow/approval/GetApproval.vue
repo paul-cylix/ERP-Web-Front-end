@@ -2,9 +2,13 @@
   <div class="col-md-12 mt-3">
     <!-- Form Element sizes -->
     <div class="card card-secondary">
-      <!-- <div class="overlay" style="background-color: white !important;">
+      <div
+        class="overlay"
+        style="background-color: white !important"
+        v-show="isLoading"
+      >
         <loading-spinner></loading-spinner>
-      </div> -->
+      </div>
       <div class="card-header">
         <h3 class="card-title">Request for Payment</h3>
       </div>
@@ -23,7 +27,7 @@
           <div class="progressbar" :class="classD">
             <span :class="classD">4</span>
           </div>
-          <div class="progressbar" :class="classE">
+          <div class="progressbar" :class="classE" v-if="isLiquidation">
             <span :class="classE">5</span>
           </div>
         </div>
@@ -43,29 +47,45 @@
               ></small
             >
           </div>
-          <div class="textbar" :class="classC">
+
+          <div class="textbar" :class="classC" v-if="!isLiquidation">
+            <small
+              ><span :class="classC" class="font-weight-bold"
+                >Attachments</span
+              ></small
+            >
+          </div>
+          <div class="textbar" :class="classD" v-if="!isLiquidation">
+            <small
+              ><span :class="classD" class="font-weight-bold"
+                >Review</span
+              ></small
+            >
+          </div>
+
+          <div class="textbar" :class="classC" v-if="isLiquidation">
             <small
               ><span :class="classC" class="font-weight-bold"
                 >Liquidation</span
               ></small
             >
           </div>
-          <div class="textbar" :class="classD">
+          <div class="textbar" :class="classD" v-if="isLiquidation">
             <small
               ><span :class="classD" class="font-weight-bold"
                 >Attachments</span
               ></small
             >
           </div>
-          <div class="textbar" :class="classE">
+          <div class="textbar" :class="classD" v-if="isLiquidation">
             <small
-              ><span :class="classE" class="font-weight-bold"
+              ><span :class="classD" class="font-weight-bold"
                 >Review</span
               ></small
             >
           </div>
         </div>
-        <!-- / Step Numbers -->
+        <!-- /. Step Numbers -->
 
         <!-- Main Form -->
 
@@ -173,7 +193,7 @@
         <!-- / Request Details -->
 
         <!-- Payment Details -->
-        <div class="row mt-4" v-else-if="this.counter === 1">
+        <div class="row mt-4" v-if="this.counter === 1">
           <div class="col-md-3"></div>
           <div class="col-md-6">
             <div class="form-group">
@@ -229,7 +249,7 @@
         <!-- / Payment Details -->
 
         <!-- Liquidation -->
-        <div class="row mt-4" v-else-if="this.counter === 2">
+        <div class="row mt-4" v-if="this.counter === setLiq">
           <table class="table table-sm table-bordered table-striped mx-2">
             <thead>
               <tr>
@@ -251,7 +271,6 @@
                   </aside>
                 </th>
               </tr>
-
               <tr>
                 <th scope="col" class="text-center">#</th>
                 <th scope="col">Date</th>
@@ -294,7 +313,9 @@
 
               <tr>
                 <td colspan="6"></td>
-                <td colspan="2"><b>Total Amount: {{this.totalAmt}}</b></td>
+                <td colspan="2">
+                  <b>Total Amount: {{ this.totalAmt }}</b>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -303,7 +324,6 @@
 
         <!-- The Attachments -->
         <div
-          v-else-if="this.counter === 3"
           class="
             d-flex
             align-items-center
@@ -313,11 +333,25 @@
             mt-4
           "
           id="app"
+          v-if="this.counter === setAttach"
         >
+          <input
+            type="file"
+            multiple
+            name="fields[assetsFieldHandle][]"
+            id="assetsFieldHandle"
+            class="w-25 h-25 overflow-hidden"
+            @change="onFileSelected"
+            ref="file"
+            accept=".pdf,.jpg,.jpeg,.png"
+          />
+
           <div class="p-5 col-md-12 rounded" id="uploadContainer">
             <label for="assetsFieldHandle" class="block cursor-pointer">
-              <span class="text-secondary">List of Attached File</span>
+              <span class="text-secondary">Click here to attach file(s)</span>
             </label>
+
+            <!-- paul -->
             <!-- <aside class="d-flex align-items-center justify-content-center"> -->
             <ul class="mt-4 text-decoration-none ulUpload">
               <li
@@ -334,25 +368,61 @@
                       <span>{{ file.filename }}</span>
                     </div>
                     <div>
-                      <button class="btn btn-info btn-sm" type="button">
-                        <a
-                          :download="file.filename"
-                          style="color: white"
-                          :href="
-                            'data:' +
-                            file.mimeType +
-                            ';base64,' +
-                            file.imageBytes
-                          "
-                          target="_blank"
-                          >Download</a
-                        >
+                      <button
+                        class="btn btn-danger btn-sm"
+                        type="button"
+                        @click="removeAttachedFile(index,file.id)"
+                        title="Remove file"
+                      >
+                        Remove
+                      </button>
+                    </div>
+
+                    <div class="col-2">
+                      <button
+                        class="btn btn-secondary btn-sm"
+                        @click="preview(file.mimeType, file.imageBytes)"
+                      >
+                        Preview
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+      
+              <!-- Newly added file -->
+              <li
+                class="text-sm mt-2"
+                v-for="(file, index) in selectedFileLiquidation"
+                :key="file.index"
+              >
+                <div class="row d-flex justify-content-center">
+                  <div class="col-md-4 d-flex">
+                    <div class="col-1">
+                      <b>{{ index + 1 }}.</b>
+                    </div>
+                    <div class="col text-left">
+                      <span>{{ file.name }}</span>
+                    </div>
+                    <div>
+                      <button
+                        class="btn btn-danger btn-sm"
+                        type="button"
+                        @click="removeFileLiquidation(selectedFileLiquidation.indexOf(file))"
+                        title="Remove file"
+                      >
+                        Remove
                       </button>
                     </div>
                     <div class="col-2">
                       <button
                         class="btn btn-secondary btn-sm"
-                        @click="preview(file.mimeType, file.imageBytes)"
+                        @click="
+                          filePreviewLiquidation(
+                            selectedFileLiquidation.indexOf(file)
+                          )
+                        "
                       >
                         Preview
                       </button>
@@ -368,7 +438,7 @@
         <!-- / The Attachments -->
 
         <!--  Form Review -->
-        <aside v-else-if="this.counter === 4">
+        <aside v-if="this.counter >= setReview">
           <div class="card card-secondary mt-4">
             <div class="card-header">
               <h3 class="card-title">Request Details</h3>
@@ -446,7 +516,7 @@
                 <tbody>
                   <tr>
                     <td>Payee Name</td>
-                    <td style="width: 80%">{{ this.payeeName }}Accounting</td>
+                    <td style="width: 80%">{{ this.payeeName }}</td>
                   </tr>
                   <tr>
                     <td>Mode of Payment</td>
@@ -465,6 +535,7 @@
             </div>
             <!-- /.card-body -->
           </div>
+          <!-- /.card -->
 
           <div class="card card-secondary">
             <div class="card-header">
@@ -498,22 +569,19 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>2021-23-12</td>
-                    <td>SAccounting</td>
-                    <td>Rent</td>
-                    <td>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit. A
-                      animi dolorem enim?
-                    </td>
-                    <td>PHP</td>
-                    <td>123456</td>
+                  <tr v-for="(item, index) in liquidation" :key="item.id">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.date }}</td>
+                    <td>{{ item.clientName }}</td>
+                    <td>{{ item.expenseType }}</td>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.currency }}</td>
+                    <td>{{ item.amount }}</td>
                   </tr>
 
                   <tr>
                     <td colspan="6"></td>
-                    <td colspan="1">Total:</td>
+                    <td colspan="1">Total: {{ this.totalAmt }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -549,18 +617,62 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(file, index) in selectedFile" :key="index">
+
+
+                  <tr
+                    v-for="(file, index) in selectedFile"
+                    :key="file.filename"
+                  >
                     <td>{{ index + 1 }}</td>
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
+                         @click="removeAttachedFile(index,file.id)"
+                        class="btn btn-danger btn-sm"
+                      >
+                        Remove
+                      </button>
+                      
+                      <button
                         class="btn btn-secondary btn-sm ml-1"
                         @click="preview(file.mimeType, file.imageBytes)"
+                     
                       >
                         Preview
                       </button>
                     </td>
                   </tr>
+
+
+                <tr
+                    v-for="(file, index) in selectedFileLiquidation"
+                    :key="file.index"
+                  >
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ file.name }}</td>
+                    <td class="pl-2 pr-2 text-center">
+                      <button
+                        @click="removeFileLiquidation(selectedFileLiquidation.indexOf(file))"
+
+                        class="btn btn-danger btn-sm"
+                      >
+                        Remove
+                      </button>
+                      
+                      <button
+                        class="btn btn-secondary btn-sm ml-1"
+                         @click="
+                          filePreviewLiquidation(
+                            selectedFileLiquidation.indexOf(file)
+                          )
+                        "
+                      >
+                        Preview
+                      </button>
+                    </td>
+                  </tr>
+
+
                 </tbody>
               </table>
             </div>
@@ -584,18 +696,37 @@
                 Previous
               </button>
             </div>
-            <div class="col-lg-2" v-if="this.counter <= 3">
+
+            <div
+              class="col-lg-2"
+              v-show="!isLiquidation"
+              v-if="this.counter <= 2"
+            >
               <button
                 type="button"
                 @click="counter++"
                 class="btn btn-block btn-primary btn-sm"
               >
-                Next
+                Next2
+              </button>
+            </div>
+
+            <div
+              class="col-lg-2"
+              v-show="isLiquidation"
+              v-if="this.counter <= 3"
+            >
+              <button
+                type="button"
+                @click="counter++"
+                class="btn btn-block btn-primary btn-sm"
+              >
+                Next3
               </button>
             </div>
           </aside>
 
-          <!-- <aside class="col-lg-6 d-flex justify-content-end">
+          <aside class="col-lg-6 d-flex justify-content-end">
             <div class="col-lg-2">
               <button
                 type="button"
@@ -608,7 +739,7 @@
               </button>
             </div>
 
-            <div class="col-lg-2">
+            <div class="col-lg-2" v-if="!isInitiator">
               <button
                 type="button"
                 class="btn btn-block btn-danger btn-sm"
@@ -620,7 +751,7 @@
               </button>
             </div>
 
-            <div class="col-lg-2">
+            <div class="col-lg-2" v-if="!isInitiator">
               <button
                 type="button"
                 class="btn btn-block btn-warning btn-sm"
@@ -641,7 +772,7 @@
                 Close
               </button>
             </div>
-          </aside> -->
+          </aside>
         </div>
         <!-- / Button -->
       </div>
@@ -649,7 +780,7 @@
     <!-- /.card -->
 
     <!-- Modal -->
-    <div class="modal fade" id="modal-liquidation">
+    <div class="modal fade" id="modal-default">
       <div class="modal-dialog">
         <div class="modal-content">
           <!-- Overlay Loading Spinner -->
@@ -657,6 +788,56 @@
             <i class="fas fa-2x fa-sync fa-spin"></i>
           </div>
 
+          <div class="modal-header">
+            <h6 class="modal-title">
+              <b>{{ this.title }} Request</b>
+            </h6>
+            <button
+              type="button"
+              id="modalCloseButton"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <textarea
+                    class="form-control"
+                    id="remarks"
+                    rows="5"
+                    v-model="remarks"
+                    placeholder="Please input request remarks here!"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer justify-content-end">
+            <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              @click="submit(title)"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <!-- Modal Liquidation-->
+    <div class="modal fade" id="modal-liquidation">
+      <div class="modal-dialog">
+        <div class="modal-content">
           <div class="modal-header">
             <h6 class="modal-title">
               <b>Liquidation</b>
@@ -689,7 +870,7 @@
                   <small><label for="projectName">Project Name</label></small>
                   <!-- <input type="text" class="form-control py-3 form-control-sm" id="projectName"> -->
                   <model-list-select
-                    :list="client"
+                    :list="modalclient"
                     v-model="itemclientName"
                     option-value="code"
                     option-text="name"
@@ -789,21 +970,25 @@
 </template>
 
 <script>
-import { ModelListSelect } from "vue-search-select";
 import axios from "axios";
 import VsToast from "@vuesimple/vs-toast";
+import { ModelListSelect } from "vue-search-select";
+
 export default {
   components: {
     ModelListSelect,
   },
+
   watch: {
+    // Liquidation total amount
     liquidation(newValue) {
-      let x = 0
+      let x = 0;
       for (const key in newValue) {
-          x += parseInt(newValue[key].amount)
+        x += parseInt(newValue[key].amount);
       }
-    this.totalAmt = x
+      this.totalAmt = x;
     },
+
     // Request Details
     projectItem(newValue) {
       this.getClient(newValue.code);
@@ -841,6 +1026,30 @@ export default {
       return { active: this.counter >= 4 };
     },
 
+    setLiq() {
+      if (this.isLiquidation === true) {
+        return 2;
+      } else {
+        return false;
+      }
+    },
+
+    setAttach() {
+      if (this.isLiquidation === true) {
+        return 3;
+      } else {
+        return 2;
+      }
+    },
+
+    setReview() {
+      if (this.isLiquidation === true) {
+        return 4;
+      } else {
+        return 3;
+      }
+    },
+
     // Calendaer
     todaysYear() {
       const today = new Date();
@@ -859,7 +1068,7 @@ export default {
   },
   data() {
     return {
-      counter: 2,
+      counter: 0,
       // Request Details
       referenceNumber: "",
       requestDate: "",
@@ -877,19 +1086,32 @@ export default {
 
       // The Attachments
       selectedFile: [],
-      // filespreview: "",
+      filespreview: "",
 
-      // Liquidation
-      totalAmt: 0,
+      // Modal
+      remarks: "",
+      title: "",
+
+      isLoading: false,
+
+      // checking if you are the initiator //  all codes regarding liquidation
+      loggedUserId: 136,
+      isInitiator: false,
+      isLiquidation: false,
+
+      selectedFileLiquidation: [],
+      filespreviewLiquidation: "",
+
+      removedAttachedFilesId:[],
+
+      // use for client
+      i: 0,
 
       liquidation: [],
-
       editliquidation: [],
 
-      isButton: true,
-
       modalDate: "",
-      client: [],
+      modalclient: [],
       itemclientName: {},
 
       modalCurrency: [],
@@ -899,102 +1121,32 @@ export default {
       itemmodalExpenseType: {},
 
       modalamount: "",
-      liquidationTotalAmount: "",
 
       modalremarks: "",
 
-      i: 0,
+      isButton: true,
 
-      // Modal
-      remarks: "",
-      title: "",
-
-      isLoading: false,
+      // Liquidation total amount
+      totalAmt: 0,
     };
   },
 
   created() {
     // console.log(this.$route.params.id);
-    this.showRfpMain(this.$route.params.id);
-    this.showRfpDetail(this.$route.params.id);
-    this.showRfpAttachments(this.$route.params.id, "Request for Payment");
+    // this.showRfpMain(this.$route.params.id);
+    // this.showRfpDetail(this.$route.params.id);
+    // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
+    // this.showActualSign(this.$route.params.id, "Request for Payment");
+
+    this.getRfpApproval(this.$route.params.id, "Request for Payment");
+
+    // use for liquidation
     this.getBusinesses();
     this.getcurrencyName();
     this.getexpenseType();
   },
 
   methods: {
-    update() {
-      const addData = {
-        id: this.editliquidation.id,
-        date: this.modalDate,
-        clientId: this.itemclientName.code,
-        clientName: this.itemclientName.name,
-        expenseType: this.itemmodalExpenseType.name,
-        currency: this.itemmodalCurrency.name,
-        amount: this.modalamount,
-        description: this.modalremarks,
-      };
-      this.liquidation.push(addData);
-
-      this.editliquidation = "";
-      // this.liquidation.push(this.editliquidation)
-      this.liquidation.sort(function (a, b) {
-        return a.id - b.id;
-      });
-
-      console.log(addData.id);
-    },
-
-    edit(index) {
-      this.isButton = false;
-      const selectedLiquidation = this.liquidation[index];
-      this.editliquidation = selectedLiquidation;
-      this.liquidation.splice(index, 1);
-
-      console.log(selectedLiquidation);
-
-      this.modalDate = selectedLiquidation.date;
-      this.itemclientName = {
-        code: selectedLiquidation.clientId,
-        name: selectedLiquidation.clientName,
-      };
-      this.itemmodalCurrency = {
-        code: selectedLiquidation.currency,
-        name: selectedLiquidation.currency,
-      };
-      this.itemmodalExpenseType = {
-        code: selectedLiquidation.expenseType,
-        name: selectedLiquidation.expenseType,
-      };
-      this.modalamount = selectedLiquidation.amount;
-      this.modalremarks = selectedLiquidation.description;
-    },
-
-    setButton() {
-      this.isButton = true;
-    },
-
-    trash(index) {
-      this.liquidation.splice(index, 1);
-    },
-
-    insert() {
-      // console.log(this.modalamount);
-
-      const addData = {
-        id: this.i++,
-        date: this.modalDate,
-        clientId: this.itemclientName.code,
-        clientName: this.itemclientName.name,
-        expenseType: this.itemmodalExpenseType.name,
-        currency: this.itemmodalCurrency.name,
-        amount: this.modalamount,
-        description: this.modalremarks,
-      };
-      this.liquidation.push(addData);
-    },
-
     setTitle(title) {
       this.title = title;
     },
@@ -1008,6 +1160,226 @@ export default {
         position,
       });
     },
+
+    async submit(type) {
+      this.isLoading = true;
+      if (type === "Approve") {
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/approve-request",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({
+              remarks: this.remarks,
+              reqId: "2207",
+            }),
+          }
+        );
+
+        const responseData = await response.json();
+        console.log(responseData.message);
+
+        this.isLoading = false;
+        document.getElementById("modalCloseButton").click();
+
+        this.openToast("top-right", "success", responseData.message);
+        this.$router.replace("/approvals");
+
+        if (!response.ok) {
+          const error = new Error(
+            responseData.message ||
+              "Failed to authenticate. Check your login data."
+          );
+          console.log(error.message);
+        }
+      }
+
+      if (type === "Reject") {
+        console.log("Reject");
+      }
+
+      if (type === "Clarify") {
+        console.log("Clarify");
+      }
+    },
+    close() {
+      this.$router.replace("/approvals");
+    },
+    preview(mimeType, imageBytes) {
+      var newTab = window.open();
+      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+    },
+
+    getRfpApproval(id, form) {
+      this.isLoading = true;
+      let showRfpMain = `http://127.0.0.1:8000/api/rfp-main/${id}`;
+      let showRfpDetail = `http://127.0.0.1:8000/api/rfp-main-detail/${id}`;
+      let showRfpAttachments = `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`;
+      let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/1`;
+
+      const requestOne = axios.get(showRfpMain);
+      const requestTwo = axios.get(showRfpDetail);
+      const requestThree = axios.get(showRfpAttachments);
+      const requestFour = axios.get(showActualSign);
+
+      axios
+        .all([requestOne, requestTwo, requestThree, requestFour])
+        .then(
+          axios.spread((...responses) => {
+            const responseOne = responses[0];
+            const responseTwo = responses[1];
+            const responesThree = responses[2];
+            const responesFour = responses[3];
+
+            // showRfpMain - responseOne
+            this.referenceNumber = responseOne.data.data.REQREF;
+            this.requestDate = responseOne.data.data.DATE;
+            this.dateNeeded = responseOne.data.data.Deadline;
+            this.reportingManager = responseOne.data.data.REPORTING_MANAGER;
+            this.amount = responseOne.data.data.AMOUNT;
+            this.uid = responseOne.data.data.UID;
+
+            if (responseOne.data.data.UID === this.loggedUserId) {
+              this.isInitiator = true;
+              this.counter = 2;
+            } else {
+              this.isInitiator = false;
+            }
+
+            // showRfpDetail - responseTwo
+            this.projectName = responseTwo.data.data.PROJECT;
+            this.clientName = responseTwo.data.data.CLIENTNAME;
+            this.purpose = responseTwo.data.data.PURPOSED;
+            this.payeeName = responseTwo.data.data.PAYEE;
+            this.currency = responseTwo.data.data.CURRENCY;
+            this.modeOfPayment = responseTwo.data.data.MOP;
+
+            // showRfpAttachments - responesThree
+            this.selectedFile = responesThree.data.data;
+            console.log(this.selectedFile);
+
+            //showActualSign - responesFour
+            if (
+              responesFour.data[3].STATUS === "In Progress" ||
+              responesFour.data[4].STATUS === "In Progress"
+            ) {
+              console.log("liquidation is true");
+              this.isLiquidation = true;
+            } else {
+              // alert('false')
+              console.log("liquidation is false");
+              this.isLiquidation = false;
+            }
+          })
+        )
+        .catch((errors) => {
+          // react on errors.
+          console.log(errors);
+        })
+        .then(() => {
+          this.isLoading = false;
+        });
+    },
+
+    // showRfpMain(id) {
+    //   axios
+    //     .get(`http://127.0.0.1:8000/api/rfp-main/${id}`)
+    //     .then((response) => {
+    //       // handle success
+    //       this.referenceNumber = response.data.data.REQREF;
+    //       this.requestDate = response.data.data.DATE;
+    //       this.dateNeeded = response.data.data.Deadline;
+    //       this.reportingManager = response.data.data.REPORTING_MANAGER;
+    //       this.amount = response.data.data.AMOUNT;
+    //       this.uid = response.data.data.UID;
+
+    //       if (response.data.data.UID === this.loggedUserId) {
+    //         this.isInitiator = true;
+    //         this.counter = 2;
+    //       } else {
+    //         this.isInitiator = false;
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       // handle error
+    //       console.log(error);
+    //     })
+    //     .then(() => {
+    //       // always executed
+    //       // console.log(response)
+    //     });
+    // },
+    // showRfpDetail(id) {
+    //   axios
+    //     .get(`http://127.0.0.1:8000/api/rfp-main-detail/${id}`)
+    //     .then((response) => {
+    //       // handle success
+    //       this.projectName = response.data.data.PROJECT;
+    //       this.clientName = response.data.data.CLIENTNAME;
+    //       this.purpose = response.data.data.PURPOSED;
+    //       this.payeeName = response.data.data.PAYEE;
+    //       this.currency = response.data.data.CURRENCY;
+    //       this.modeOfPayment = response.data.data.MOP;
+    //     })
+    //     .catch((error) => {
+    //       // handle error
+    //       console.log(error);
+    //     })
+    //     .then(() => {
+    //       // always executed
+    //     });
+    // },
+
+    // showRfpAttachments(id, form) {
+    //   axios
+    //     .get(`http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`)
+    //     .then((response) => {
+    //       // handle success
+    //       this.selectedFile = response.data.data;
+
+    //       console.log(this.selectedFile.length);
+    //     })
+    //     .catch((error) => {
+    //       // handle error
+    //       console.log(error);
+    //     })
+    //     .then(() => {
+    //       // always executed
+    //     });
+    // },
+
+    // showActualSign(id, form) {
+    //   axios
+    //     .get(`http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/1`)
+    //     .then((response) => {
+    //       // handle success
+
+    //       if (
+    //         response.data[3].STATUS === "In Progress" ||
+    //         response.data[4].STATUS === "In Progress"
+    //       ) {
+    //         console.log("liquidation is true");
+    //         this.isLiquidation = true;
+    //       } else {
+    //         // alert('false')
+    //         console.log("liquidation is false");
+
+    //         this.isLiquidation = false;
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       // handle error
+    //       console.log(error);
+    //     })
+    //     .then(() => {
+    //       // always executed
+    //     });
+    // },
+
+    // for liquidation dropdown /////////////////////////////
 
     async getBusinesses() {
       const response = await fetch(
@@ -1038,9 +1410,7 @@ export default {
         };
         client.push(request);
       }
-      this.client = client;
-      // console.log(responseData[0].businessNumber)
-      // console.log(this.client)
+      this.modalclient = client;
     },
 
     async getcurrencyName() {
@@ -1111,115 +1481,120 @@ export default {
       // console.log(responseData[0].businessNumber)
     },
 
-    async submit(type) {
-      this.isLoading = true;
-      if (type === "Approve") {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/approve-request",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify({
-              remarks: this.remarks,
-              reqId: "2207",
-            }),
-          }
-        );
+    update() {
+      const addData = {
+        id: this.editliquidation.id,
+        date: this.modalDate,
+        clientId: this.itemclientName.code,
+        clientName: this.itemclientName.name,
+        expenseType: this.itemmodalExpenseType.name,
+        currency: this.itemmodalCurrency.name,
+        amount: this.modalamount,
+        description: this.modalremarks,
+      };
+      this.liquidation.push(addData);
 
-        const responseData = await response.json();
-        console.log(responseData.message);
+      this.editliquidation = "";
+      // this.liquidation.push(this.editliquidation)
+      this.liquidation.sort(function (a, b) {
+        return a.id - b.id;
+      });
 
-        this.isLoading = false;
-        document.getElementById("modalCloseButton").click();
+      console.log(addData.id);
+    },
 
-        this.openToast("top-right", "success", responseData.message);
-        this.$router.replace("/approvals");
+    edit(index) {
+      this.isButton = false;
+      const selectedLiquidation = this.liquidation[index];
+      this.editliquidation = selectedLiquidation;
+      this.liquidation.splice(index, 1);
 
-        if (!response.ok) {
-          const error = new Error(
-            responseData.message ||
-              "Failed to authenticate. Check your login data."
-          );
-          console.log(error.message);
-        }
+      console.log(selectedLiquidation);
+
+      this.modalDate = selectedLiquidation.date;
+      this.itemclientName = {
+        code: selectedLiquidation.clientId,
+        name: selectedLiquidation.clientName,
+      };
+      this.itemmodalCurrency = {
+        code: selectedLiquidation.currency,
+        name: selectedLiquidation.currency,
+      };
+      this.itemmodalExpenseType = {
+        code: selectedLiquidation.expenseType,
+        name: selectedLiquidation.expenseType,
+      };
+      this.modalamount = selectedLiquidation.amount;
+      this.modalremarks = selectedLiquidation.description;
+    },
+
+    setButton() {
+      this.isButton = true;
+    },
+
+    trash(index) {
+      this.liquidation.splice(index, 1);
+    },
+
+    insert() {
+      console.log(this.modalamount);
+
+      const addData = {
+        id: this.i++,
+        date: this.modalDate,
+        clientId: this.itemclientName.code,
+        clientName: this.itemclientName.name,
+        expenseType: this.itemmodalExpenseType.name,
+        currency: this.itemmodalCurrency.name,
+        amount: this.modalamount,
+        description: this.modalremarks,
+      };
+      this.liquidation.push(addData);
+    },
+
+    // The Attachments
+    onFileSelected(event) {
+      let selectedFiles = event.target.files;
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.selectedFileLiquidation.push(selectedFiles[i]);
       }
+      this.setFilePreviewLiquidation();
+    },
 
-      if (type === "Reject") {
-        console.log("Reject");
+    filePreviewLiquidation(i) {
+      // console.log(i)
+      const url = this.filespreviewLiquidation[i].link;
+      window.open(url, "_blank", "resizable=yes");
+    },
+
+    setFilePreviewLiquidation() {
+      let files = this.selectedFileLiquidation;
+      const fileContainer = [];
+      for (let i = 0; i < files.length; i++) {
+        let tmppath = URL.createObjectURL(files[i]);
+        const thisFiles = {
+          link: tmppath,
+        };
+        fileContainer.push(thisFiles);
       }
-
-      if (type === "Clarify") {
-        console.log("Clarify");
-      }
-    },
-    close() {
-      this.$router.replace("/approvals");
-    },
-    preview(mimeType, imageBytes) {
-      var newTab = window.open();
-      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      this.filespreviewLiquidation = fileContainer;
     },
 
-    showRfpMain(id) {
-      axios
-        .get(`http://127.0.0.1:8000/api/rfp-main/${id}`)
-        .then((response) => {
-          // handle success
-          this.referenceNumber = response.data.data.REQREF;
-          this.requestDate = response.data.data.DATE;
-          this.dateNeeded = response.data.data.Deadline;
-          this.reportingManager = response.data.data.REPORTING_MANAGER;
-          this.amount = response.data.data.AMOUNT;
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error);
-        })
-        .then(() => {
-          // always executed
-        });
-    },
-    showRfpDetail(id) {
-      axios
-        .get(`http://127.0.0.1:8000/api/rfp-main-detail/${id}`)
-        .then((response) => {
-          // handle success
-          this.projectName = response.data.data.PROJECT;
-          this.clientName = response.data.data.CLIENTNAME;
-          this.purpose = response.data.data.PURPOSED;
-          this.payeeName = response.data.data.PAYEE;
-          this.currency = response.data.data.CURRENCY;
-          this.modeOfPayment = response.data.data.MOP;
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error);
-        })
-        .then(() => {
-          // always executed
-        });
+    removeFileLiquidation(i){
+      this.selectedFileLiquidation.splice(i, 1);
+      this.setFilePreviewLiquidation();
     },
 
-    showRfpAttachments(id, form) {
-      axios
-        .get(`http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`)
-        .then((response) => {
-          // handle success
-          this.selectedFile = response.data.data;
+    removeAttachedFile(index,id){
+      this.removedAttachedFilesId.push(id);
+      this.selectedFile.splice(index, 1);
+      this.setFilePreviewLiquidation();
 
-          console.log(this.selectedFile.length);
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error);
-        })
-        .then(() => {
-          // always executed
-        });
-    },
+
+      console.log(this.removedAttachedFilesId)
+      console.log(this.selectedFile)
+      console.log(this.filespreviewLiquidation)
+    }
   },
 };
 </script>

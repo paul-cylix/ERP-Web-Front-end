@@ -5,18 +5,20 @@ import UserLogin from "./pages/auth/UserLogin.vue";
 import MainDashboard from "./pages/dashboard/MainDashboard.vue";
 import DashboardContent from "./pages/dashboard/DashboardContent.vue";
 import TheParticipant from "./pages/workflow/TheParticipant.vue";
-import TheInput from "./pages/workflow/TheInput.vue";
+import TheInput from "./pages/workflow/input/TheInput.vue";
 import TheApproval from "./pages/workflow/approval/TheApproval.vue";
 import TheInprogress from "./pages/workflow/inprogress/TheInprogress.vue";
 import TheClarification from "./pages/workflow/TheClarification.vue";
 import TheApproved from "./pages/workflow/TheApproved.vue";
 import TheWithdrawn from "./pages/workflow/TheWithdrawn.vue";
-import TheRejected from "./pages/workflow/TheRejected.vue";
+import TheRejected from "./pages/workflow/rejected/TheRejected.vue";
 import CreateRfp from "./pages/accounting/CreateRfp.vue";
 import MyPractice from "./pages/accounting/MyPractice.vue";
 import TheRfp from "./pages/accounting/TheRfp.vue";
-import InpId from "./pages/workflow/inprogress/InpId.vue";
-import AppId from "./pages/workflow/approval/AppId.vue";
+import GetInprogress from "./pages/workflow/inprogress/GetInprogress.vue";
+import GetApproval from "./pages/workflow/approval/GetApproval.vue";
+import GetRejected from "./pages/workflow/rejected/GetRejected.vue";
+import GetInput from "./pages/workflow/input/GetInput.vue";
 
 Vue.use(VueRouter);
 
@@ -29,12 +31,19 @@ const routes = [
     children: [
       { path: "/dashboard", component: DashboardContent },
       { path: "/participants", component: TheParticipant },
-      { path: "/inputs", component: TheInput },
+      { path: "/inputs", component: TheInput, children: [
+        {
+          path: ":id",
+          name: "inputbyId",
+          component: GetInput,
+          props: true,
+        },
+      ] },
       {
         path: "/approvals",
         component: TheApproval,
         children: [
-          { path: ":id", name: "approvalbyId", component: AppId, props: true },
+          { path: ":id", name: "approvalbyId", component: GetApproval, props: true },
         ],
       },
       {
@@ -44,7 +53,7 @@ const routes = [
           {
             path: ":id",
             name: "inprogressbyId",
-            component: InpId,
+            component: GetInprogress,
             props: true,
           },
         ],
@@ -52,14 +61,25 @@ const routes = [
       { path: "/clarifications", component: TheClarification },
       { path: "/approved", component: TheApproved },
       { path: "/withdrawn", component: TheWithdrawn },
-      { path: "/rejected", component: TheRejected },
+      {
+        path: "/rejected",
+        component: TheRejected,
+        children: [
+          {
+            path: ":id",
+            name: "rejectedbyId",
+            component: GetRejected,
+            props: true,
+          },
+        ],
+      },
       { path: "/create-rfp", component: CreateRfp },
       { path: "/upload", component: MyPractice },
       { path: "/the-rfp", component: TheRfp },
       {
         path: "/:workflow-:frmClass-:id",
         name: "open-inprogress-requestforpayment",
-        component: InpId,
+        component: GetInprogress,
         props: true,
       },
 
