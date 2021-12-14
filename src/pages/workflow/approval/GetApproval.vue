@@ -250,7 +250,11 @@
 
         <!-- Liquidation -->
         <div class="row mt-4" v-if="this.counter === setLiq">
-          <table class="table table-sm table-bordered table-striped mx-2">
+          <!-- CRUD Liquidation -->
+          <table
+            class="table table-sm table-bordered table-striped mx-2"
+            v-if="isInitiator"
+          >
             <thead>
               <tr>
                 <th colspan="7" scope="col">
@@ -314,7 +318,50 @@
               <tr>
                 <td colspan="6"></td>
                 <td colspan="2">
-                  <b>Total Amount: {{ this.totalAmt }}</b>
+                  <b>Total Amount: {{ this.isInitiator }}</b>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Read only Liquidation -->
+          <table
+            class="table table-sm table-bordered table-striped mx-2"
+            v-else
+          >
+            <thead>
+              <tr>
+                <th colspan="7" scope="col">
+                  <aside class="d-flex align-items-center">
+                    <span class="mb-1 ml-1"> Liquidation Table</span>
+                  </aside>
+                </th>
+              </tr>
+
+              <tr>
+                <th scope="col" class="text-center">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Client Name</th>
+                <th scope="col">Expense Type</th>
+                <th scope="col">Description</th>
+                <th scope="col">Currency</th>
+                <th scope="col">Amount</th>
+              </tr>
+            </thead>
+            <tbody style="font-size: 14px">
+              <tr>
+                <td class="text-center">1.</td>
+                <td>2021-23-1</td>
+                <td>Cylix Technologies Inc</td>
+                <td>Rent</td>
+                <td>Lorem ipsum dolor sit amet.</td>
+                <td>PHP</td>
+                <td>123123</td>
+              </tr>
+              <tr>
+                <td colspan="6"></td>
+                <td colspan="2">
+                  <b>Total Amount: 0</b>
                 </td>
               </tr>
             </tbody>
@@ -344,11 +391,17 @@
             @change="onFileSelected"
             ref="file"
             accept=".pdf,.jpg,.jpeg,.png"
+            v-if="isInitiator"
           />
 
           <div class="p-5 col-md-12 rounded" id="uploadContainer">
             <label for="assetsFieldHandle" class="block cursor-pointer">
-              <span class="text-secondary">Click here to attach file(s)</span>
+              <span class="text-secondary" v-if="isInitiator"
+                >Click here to attach file(s)</span
+              >
+              <span class="text-secondary" v-else
+                >List of attached file(s)</span
+              >
             </label>
 
             <!-- paul -->
@@ -367,11 +420,18 @@
                     <div class="col text-left">
                       <span>{{ file.filename }}</span>
                     </div>
-                    <div>
+                    <div v-if="isInitiator">
                       <button
                         class="btn btn-danger btn-sm"
                         type="button"
-                        @click="removeAttachedFile(index,file.id)"
+                        @click="
+                          removeAttachedFile(
+                            index,
+                            file.id,
+                            file.filename,
+                            file.filepath
+                          )
+                        "
                         title="Remove file"
                       >
                         Remove
@@ -390,7 +450,6 @@
                 </div>
               </li>
 
-      
               <!-- Newly added file -->
               <li
                 class="text-sm mt-2"
@@ -405,11 +464,15 @@
                     <div class="col text-left">
                       <span>{{ file.name }}</span>
                     </div>
-                    <div>
+                    <div v-if="isInitiator">
                       <button
                         class="btn btn-danger btn-sm"
                         type="button"
-                        @click="removeFileLiquidation(selectedFileLiquidation.indexOf(file))"
+                        @click="
+                          removeFileLiquidation(
+                            selectedFileLiquidation.indexOf(file)
+                          )
+                        "
                         title="Remove file"
                       >
                         Remove
@@ -537,7 +600,7 @@
           </div>
           <!-- /.card -->
 
-          <div class="card card-secondary">
+          <div class="card card-secondary" v-if="isLiquidation">
             <div class="card-header">
               <h3 class="card-title">Liquidation</h3>
 
@@ -617,8 +680,6 @@
                   </tr>
                 </thead>
                 <tbody>
-
-
                   <tr
                     v-for="(file, index) in selectedFile"
                     :key="file.filename"
@@ -627,24 +688,30 @@
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
-                         @click="removeAttachedFile(index,file.id)"
+                        @click="
+                          removeAttachedFile(
+                            index,
+                            file.id,
+                            file.filename,
+                            file.filepath
+                          )
+                        "
                         class="btn btn-danger btn-sm"
+                        v-if="isInitiator"
                       >
                         Remove
                       </button>
-                      
+
                       <button
                         class="btn btn-secondary btn-sm ml-1"
                         @click="preview(file.mimeType, file.imageBytes)"
-                     
                       >
                         Preview
                       </button>
                     </td>
                   </tr>
 
-
-                <tr
+                  <tr
                     v-for="(file, index) in selectedFileLiquidation"
                     :key="file.index"
                   >
@@ -652,16 +719,19 @@
                     <td>{{ file.name }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
-                        @click="removeFileLiquidation(selectedFileLiquidation.indexOf(file))"
-
+                        @click="
+                          removeFileLiquidation(
+                            selectedFileLiquidation.indexOf(file)
+                          )
+                        "
                         class="btn btn-danger btn-sm"
                       >
                         Remove
                       </button>
-                      
+
                       <button
                         class="btn btn-secondary btn-sm ml-1"
-                         @click="
+                        @click="
                           filePreviewLiquidation(
                             selectedFileLiquidation.indexOf(file)
                           )
@@ -671,8 +741,6 @@
                       </button>
                     </td>
                   </tr>
-
-
                 </tbody>
               </table>
             </div>
@@ -803,6 +871,22 @@
             </button>
           </div>
           <div class="modal-body">
+            <div class="row" v-if="isForClarity">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <model-list-select
+                    :list="recipent"
+                    v-model="itemrecipient"
+                    option-value="code"
+                    option-text="name"
+                    placeholder="Select Recipient"
+                    style="padding: 9px"
+                  >
+                  </model-list-select>
+                </div>
+              </div>
+            </div>
+
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group">
@@ -823,8 +907,18 @@
               type="button"
               class="btn btn-primary btn-sm"
               @click="submit(title)"
+              v-show="!isInitiator"
             >
               Submit
+            </button>
+
+            <button
+              type="button"
+              v-show="isInitiator === true && isLiquidation === true"
+              class="btn btn-primary btn-sm"
+              @click="submit('SubmitInitiator')"
+            >
+              Submit Double
             </button>
           </div>
         </div>
@@ -1001,9 +1095,12 @@ export default {
 
     //Navigate
     $route(newRoute) {
-      this.showRfpMain(this.$route.params.id);
-      this.showRfpDetail(this.$route.params.id);
-      this.showRfpAttachments(this.$route.params.id, "Request for Payment");
+      // this.showRfpMain(this.$route.params.id);
+      // this.showRfpDetail(this.$route.params.id);
+      // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
+
+      this.getRfpApproval(this.$route.params.id, "Request for Payment");
+
       this.counter = 0;
       this.withdrawRemarks = "";
       console.log(newRoute);
@@ -1065,6 +1162,15 @@ export default {
       const todaysDate = yyyy + "-" + mm + "-" + dd;
       return todaysDate;
     },
+
+    // show recipient if button clicked is clarify
+    isForClarity() {
+      if (this.title === "Clarify") {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   data() {
     return {
@@ -1095,14 +1201,14 @@ export default {
       isLoading: false,
 
       // checking if you are the initiator //  all codes regarding liquidation
-      loggedUserId: 136,
+      loggedUserId: 12,
       isInitiator: false,
       isLiquidation: false,
 
       selectedFileLiquidation: [],
       filespreviewLiquidation: "",
 
-      removedAttachedFilesId:[],
+      removedAttachedFilesId: [],
 
       // use for client
       i: 0,
@@ -1126,8 +1232,16 @@ export default {
 
       isButton: true,
 
+      // dropdown for recipient
+      recipent: [],
+      itemrecipient: {},
+
       // Liquidation total amount
       totalAmt: 0,
+
+      // Inprogress Id use for clarification
+      inprogressId: '',
+
     };
   },
 
@@ -1138,7 +1252,7 @@ export default {
     // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
     // this.showActualSign(this.$route.params.id, "Request for Payment");
 
-    this.getRfpApproval(this.$route.params.id, "Request for Payment");
+    this.getRfpApproval(this.$route.params.id, "Request for Payment", 1, 11);
 
     // use for liquidation
     this.getBusinesses();
@@ -1162,7 +1276,7 @@ export default {
     },
 
     async submit(type) {
-      this.isLoading = true;
+      // this.isLoading = true;
       if (type === "Approve") {
         const response = await fetch(
           "http://127.0.0.1:8000/api/approve-request",
@@ -1174,7 +1288,11 @@ export default {
             },
             body: JSON.stringify({
               remarks: this.remarks,
-              reqId: "2207",
+              reqId: this.$route.params.id,
+              companyId: "1",
+              form: "Request for Payment",
+              loggedUserId: this.loggedUserId,
+              referenceNumber: this.referenceNumber,
             }),
           }
         );
@@ -1194,6 +1312,9 @@ export default {
               "Failed to authenticate. Check your login data."
           );
           console.log(error.message);
+
+          this.openToast("top-right", "error", error.message);
+          document.getElementById("modalCloseButton").click();
         }
       }
 
@@ -1202,7 +1323,94 @@ export default {
       }
 
       if (type === "Clarify") {
-        console.log("Clarify");
+        const fd = new FormData();
+
+        fd.append("form", 'Request for payment');
+        fd.append("processId", 2211);
+        fd.append("loggedUserId", 11);
+        fd.append("companyId", 1);
+        fd.append("recipientId", this.itemrecipient.code);
+        fd.append("remarks", this.remarks);
+        fd.append("inprogressId", this.inprogressId);
+        fd.append("loggedUserFullname", 'Chua, Konrad A.');
+
+
+
+
+        axios
+          .post("http://127.0.0.1:8000/api/send-clarity", fd)
+          .then((res) => {
+            // handle success
+            document.getElementById("modalCloseButton").click();
+            // console.log(res);
+            this.openToast("top-right", "success", res.data.message);
+            this.$router.replace("/approvals");
+          })
+          .catch((error) => {
+            // handle error
+            console.log(error);
+            document.getElementById("modalCloseButton").click();
+            this.openToast("top-right", "error", error);
+          })
+          .then(() => {
+            // always executed
+            this.isLoading = false;
+
+          });
+        
+
+
+        
+
+
+
+
+
+
+
+      }
+
+      // liqudidation
+      if (type === "SubmitInitiator") {
+        const fd = new FormData();
+
+        for (let i = 0; i < this.selectedFileLiquidation.length; i++) {
+          fd.append("file[]", this.selectedFileLiquidation[i]);
+        }
+
+        fd.append("rfpid", this.$route.params.id);
+        fd.append("companyId", 1);
+        fd.append("loggedUserId", 136);
+        fd.append("remarks", this.remarks);
+        fd.append("reference", this.referenceNumber);
+
+        fd.append("liquidation", JSON.stringify(this.liquidation));
+        fd.append("removedFiles", JSON.stringify(this.removedAttachedFilesId));
+
+        // console.log(this.$route.params.id)
+
+        axios
+          .post("http://127.0.0.1:8000/api/rfpLiquidation", fd)
+          .then((res) => {
+            // handle success
+
+            this.isLoading = false;
+            document.getElementById("modalCloseButton").click();
+
+            console.log(res);
+            this.openToast("top-right", "success", res.data.message);
+            this.$router.replace("/approvals");
+          })
+          .catch((error) => {
+            // handle error
+            console.log(error);
+            this.isLoading = false;
+            document.getElementById("modalCloseButton").click();
+            this.openToast("top-right", "error", error);
+          })
+          .then(function () {
+            // always executed
+          });
       }
     },
     close() {
@@ -1213,26 +1421,46 @@ export default {
       newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
     },
 
-    getRfpApproval(id, form) {
+    getRfpApproval(id, form, companyId, loggedUserId) {
       this.isLoading = true;
       let showRfpMain = `http://127.0.0.1:8000/api/rfp-main/${id}`;
       let showRfpDetail = `http://127.0.0.1:8000/api/rfp-main-detail/${id}`;
       let showRfpAttachments = `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`;
       let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/1`;
+      let showLiquidation = `http://127.0.0.1:8000/api/rfp-main-liquidation/${id}`;
+      let showRecipient = `http://127.0.0.1:8000/api/getRecipient/${id}/${loggedUserId}/${companyId}/${form}`;
+      let showInprogressId = `http://127.0.0.1:8000/api/get-Inprogress/${id}/${companyId}/${form}`
 
       const requestOne = axios.get(showRfpMain);
       const requestTwo = axios.get(showRfpDetail);
       const requestThree = axios.get(showRfpAttachments);
       const requestFour = axios.get(showActualSign);
+      const requestFive = axios.get(showLiquidation);
+      const requestSix = axios.get(showRecipient);
+      const requestSeven = axios.get(showInprogressId);
+
 
       axios
-        .all([requestOne, requestTwo, requestThree, requestFour])
+        .all([
+          requestOne,
+          requestTwo,
+          requestThree.catch(() => null),
+          requestFour,
+          requestFive.catch(() => null),
+          requestSix,
+          requestSeven.catch(() => null),
+        ])
         .then(
           axios.spread((...responses) => {
             const responseOne = responses[0];
             const responseTwo = responses[1];
             const responesThree = responses[2];
             const responesFour = responses[3];
+            const responesFive = responses[4];
+            const responesSix = responses[5];
+            const responesSeven = responses[6];
+
+            
 
             // showRfpMain - responseOne
             this.referenceNumber = responseOne.data.data.REQREF;
@@ -1259,13 +1487,10 @@ export default {
 
             // showRfpAttachments - responesThree
             this.selectedFile = responesThree.data.data;
-            console.log(this.selectedFile);
+            // console.log(this.selectedFile);
 
             //showActualSign - responesFour
-            if (
-              responesFour.data[3].STATUS === "In Progress" ||
-              responesFour.data[4].STATUS === "In Progress"
-            ) {
+            if (responesFour.data[2].STATUS === "Completed") {
               console.log("liquidation is true");
               this.isLiquidation = true;
             } else {
@@ -1273,6 +1498,29 @@ export default {
               console.log("liquidation is false");
               this.isLiquidation = false;
             }
+            // showLiquidation - responesFive
+            console.log(responesFive);
+
+            // showRecipient - responseSix
+
+            const recipient = [];
+            for (const key in responesSix.data) {
+              const request = {
+                code: responesSix.data[key].uid,
+                name: responesSix.data[key].name,
+              };
+
+              recipient.push(request);
+            }
+
+            this.recipent = recipient;
+            console.log(this.recipent)
+
+
+            // showInprogressId - responesSeven
+            this.inprogressId = responesSeven.data[0].inpId
+            // console.log(this.inprogressId)
+
           })
         )
         .catch((errors) => {
@@ -1461,7 +1709,7 @@ export default {
 
       const responseData = await response.json();
 
-      console.log(responseData);
+      // console.log(responseData);
       if (!response.ok) {
         const error = new Error(
           responseData.message || "Failed to fetch modal ExpenseType Type."
@@ -1580,21 +1828,21 @@ export default {
       this.filespreviewLiquidation = fileContainer;
     },
 
-    removeFileLiquidation(i){
+    removeFileLiquidation(i) {
       this.selectedFileLiquidation.splice(i, 1);
       this.setFilePreviewLiquidation();
     },
 
-    removeAttachedFile(index,id){
-      this.removedAttachedFilesId.push(id);
+    removeAttachedFile(index, id, filename, filepath) {
+      const attachmentId = { id: id, filename: filename, filepath: filepath };
+      this.removedAttachedFilesId.push(attachmentId);
       this.selectedFile.splice(index, 1);
       this.setFilePreviewLiquidation();
 
-
-      console.log(this.removedAttachedFilesId)
-      console.log(this.selectedFile)
-      console.log(this.filespreviewLiquidation)
-    }
+      console.log(this.removedAttachedFilesId);
+      console.log(this.selectedFile);
+      console.log(this.filespreviewLiquidation);
+    },
   },
 };
 </script>

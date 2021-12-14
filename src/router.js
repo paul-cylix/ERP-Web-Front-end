@@ -8,7 +8,7 @@ import TheParticipant from "./pages/workflow/TheParticipant.vue";
 import TheInput from "./pages/workflow/input/TheInput.vue";
 import TheApproval from "./pages/workflow/approval/TheApproval.vue";
 import TheInprogress from "./pages/workflow/inprogress/TheInprogress.vue";
-import TheClarification from "./pages/workflow/TheClarification.vue";
+import TheClarification from "./pages/workflow/clarification/TheClarification.vue";
 import TheApproved from "./pages/workflow/TheApproved.vue";
 import TheWithdrawn from "./pages/workflow/TheWithdrawn.vue";
 import TheRejected from "./pages/workflow/rejected/TheRejected.vue";
@@ -19,6 +19,7 @@ import GetInprogress from "./pages/workflow/inprogress/GetInprogress.vue";
 import GetApproval from "./pages/workflow/approval/GetApproval.vue";
 import GetRejected from "./pages/workflow/rejected/GetRejected.vue";
 import GetInput from "./pages/workflow/input/GetInput.vue";
+import GetClarification from "./pages/workflow/clarification/GetClarification.vue";
 
 Vue.use(VueRouter);
 
@@ -58,7 +59,14 @@ const routes = [
           },
         ],
       },
-      { path: "/clarifications", component: TheClarification },
+      { path: "/clarifications", component: TheClarification, children: [
+        {
+          path: ":id",
+          name: "clarificationbyId",
+          component: GetClarification,
+          props: true,
+        },
+      ], },
       { path: "/approved", component: TheApproved },
       { path: "/withdrawn", component: TheWithdrawn },
       {

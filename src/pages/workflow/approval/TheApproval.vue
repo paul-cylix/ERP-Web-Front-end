@@ -75,7 +75,11 @@ export default {
   },
   methods: {
     async getApprovals() {
-      const response = await fetch(`http://127.0.0.1:8000/api/getApprovals`, {
+
+      const loggedUserId = 11;
+      const companyId = 1;
+
+      const response = await fetch(`http://127.0.0.1:8000/api/getApprovals/${loggedUserId}/${companyId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

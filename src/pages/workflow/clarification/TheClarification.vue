@@ -4,7 +4,7 @@
   <div class="col-md-12 mt-3">
     <div class="card card-secondary">
       <div class="card-header">
-        <h3 class="card-title">For Input Requests</h3>
+        <h3 class="card-title">Clarification Requests</h3>
       </div>
       <div class="card-body pt-0 pb-3">
         <data-table v-bind="parametersTable1" />
@@ -74,12 +74,8 @@ export default {
     },
   },
   methods: {
-    async getInputs() {
-
-      const loggedUserId = 12;
-      const companyId = 1;
-
-      const response = await fetch(`http://127.0.0.1:8000/api/getInputs/${loggedUserId}/${companyId}`, {
+    async getClarification() {
+      const response = await fetch(`http://127.0.0.1:8000/api/getClarification`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -90,7 +86,7 @@ export default {
       const responseData = await response.json();
       if (!response.ok) {
         const error = new Error(
-          responseData.message || "Failed to fetch Withdrawn Requests."
+          responseData.message || "Failed to fetch Clarification Requests."
         );
         throw error;
       }
@@ -104,7 +100,7 @@ export default {
   },
 
   mounted() {
-    this.getInputs();
+    this.getClarification();
   },
 };
 </script>
