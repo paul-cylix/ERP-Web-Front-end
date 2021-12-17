@@ -2,6 +2,13 @@
   <div class="col-md-12 mt-3">
     <!-- Form Element sizes -->
     <div class="card card-secondary">
+            <div
+        class="overlay"
+        style="background-color: white !important"
+        v-show="isLoading"
+      >
+        <loading-spinner></loading-spinner>
+      </div>
       <div class="card-header">
         <h3 class="card-title">Request for Payment</h3>
       </div>
@@ -483,7 +490,6 @@
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Reject')"
-
               >
                 Reject
               </button>
@@ -496,7 +502,6 @@
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Clarify')"
-
               >
                 Clarify
               </button>
@@ -523,12 +528,14 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <!-- Overlay Loading Spinner -->
-          <div class="overlay" v-show="isLoading">
+          <div class="overlay" v-show="isLoadingModal">
             <i class="fas fa-2x fa-sync fa-spin"></i>
           </div>
 
           <div class="modal-header">
-            <h6 class="modal-title"><b>{{ this.title }} Request</b></h6>
+            <h6 class="modal-title">
+              <b>{{ this.title }} Request</b>
+            </h6>
             <button
               type="button"
               id="modalCloseButton"
@@ -540,6 +547,22 @@
             </button>
           </div>
           <div class="modal-body">
+            <div class="row" v-if="isForClarity">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <model-list-select
+                    :list="recipent"
+                    v-model="itemrecipient"
+                    option-value="code"
+                    option-text="name"
+                    placeholder="Select Recipient"
+                    style="padding: 9px"
+                  >
+                  </model-list-select>
+                </div>
+              </div>
+            </div>
+
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group">
@@ -576,7 +599,11 @@
 <script>
 import axios from "axios";
 import VsToast from "@vuesimple/vs-toast";
+import { ModelListSelect } from "vue-search-select";
 export default {
+  components: {
+    ModelListSelect,
+  },
   watch: {
     // Request Details
     projectItem(newValue) {
@@ -590,11 +617,15 @@ export default {
 
     //Navigate
     $route(newRoute) {
-      this.showRfpMain(this.$route.params.id);
-      this.showRfpDetail(this.$route.params.id);
-      this.showRfpAttachments(this.$route.params.id, "Request for Payment");
+      // this.showRfpMain(this.$route.params.id);
+      // this.showRfpDetail(this.$route.params.id);
+      // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
+
+      this.getRfpApproval(this.$route.params.id, this.form, this.companyId, this.loggedUserId);
+
+
       this.counter = 0;
-      this.withdrawRemarks = "";
+      this.remarks = "";
       console.log(newRoute);
     },
   },
@@ -627,11 +658,18 @@ export default {
       const todaysDate = yyyy + "-" + mm + "-" + dd;
       return todaysDate;
     },
+
+    // show recipient if button clicked is clarify
+    isForClarity() {
+      if (this.title === "Clarify") {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   data() {
     return {
-      
-      
       counter: 0,
       // Request Details
       referenceNumber: "",
@@ -648,27 +686,164 @@ export default {
       currency: "",
       amount: "",
 
+      // user to be clarified
+      recipent: [],
+      itemrecipient: {},
+
       // The Attachments
       selectedFile: [],
       // filespreview: "",
 
       // Modal
       remarks: "",
-      title:"",
+      title: "",
 
       isLoading: false,
+      isLoadingModal: false,
+
+      form: 'Request for Payment',
+
+      // Check if its for liquidation
+      isInitiator: false,
+      isLiquidation: false,
+
+      liquidation: [],
+      inprogressId: '',
+
+      // approver 2
+      loggedUserId: 12,
+      loggedUserFirstName: 'Carrie',
+      loggedUserLastName: 'Chua Lee',
+      loggedUserFullName: 'Carrie Chua Lee',
+      loggedUserDepartment: 'Accounting and Finance',
+      loggedUserPosition: 'Accounting and Finance Head',
+      companyId: 1,
+      companyName: 'Cylix Technologies Inc.',
     };
   },
 
   created() {
     // console.log(this.$route.params.id);
-    this.showRfpMain(this.$route.params.id);
-    this.showRfpDetail(this.$route.params.id);
-    this.showRfpAttachments(this.$route.params.id, "Request for Payment");
+    // this.showRfpMain(this.$route.params.id);
+    // this.showRfpDetail(this.$route.params.id);
+    // this.showRfpAttachments(this.$route.params.id, this.form);
+
+    this.getRfpApproval(this.$route.params.id, this.form, this.companyId, this.loggedUserId);
+
   },
 
   methods: {
-    setTitle(title){
+    getRfpApproval(id, form, companyId, loggedUserId) {
+      this.isLoading = true;
+      let showRfpMain = `http://127.0.0.1:8000/api/rfp-main/${id}`;
+      let showRfpDetail = `http://127.0.0.1:8000/api/rfp-main-detail/${id}`;
+      let showRfpAttachments = `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`;
+      let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/1`;
+      let showLiquidation = `http://127.0.0.1:8000/api/rfp-main-liquidation/${id}`;
+      let showRecipient = `http://127.0.0.1:8000/api/getRecipient/${id}/${loggedUserId}/${companyId}/${form}`;
+      let showInprogressId = `http://127.0.0.1:8000/api/get-Inprogress/${id}/${companyId}/${form}`
+
+      const requestOne = axios.get(showRfpMain);
+      const requestTwo = axios.get(showRfpDetail);
+      const requestThree = axios.get(showRfpAttachments);
+      const requestFour = axios.get(showActualSign);
+      const requestFive = axios.get(showLiquidation);
+      const requestSix = axios.get(showRecipient);
+      const requestSeven = axios.get(showInprogressId);
+
+
+      axios
+        .all([
+          requestOne,
+          requestTwo,
+          requestThree.catch(() => null),
+          requestFour,
+          requestFive.catch(() => null),
+          requestSix,
+          requestSeven.catch(() => null),
+        ])
+        .then(
+          axios.spread((...responses) => {
+            const responseOne = responses[0];
+            const responseTwo = responses[1];
+            const responesThree = responses[2];
+            const responesFour = responses[3];
+            const responesFive = responses[4];
+            const responesSix = responses[5];
+            const responesSeven = responses[6];
+
+            // showRfpMain - responseOne
+            this.referenceNumber = responseOne.data.data.REQREF;
+            this.requestDate = responseOne.data.data.DATE;
+            this.dateNeeded = responseOne.data.data.Deadline;
+            this.reportingManager = responseOne.data.data.REPORTING_MANAGER;
+            this.amount = responseOne.data.data.AMOUNT;
+            this.uid = responseOne.data.data.UID;
+
+            if (responseOne.data.data.UID === this.loggedUserId) {
+              this.isInitiator = true;
+              this.counter = 2;
+            } else {
+              this.isInitiator = false;
+            }
+
+            // showRfpDetail - responseTwo
+            this.projectName = responseTwo.data.data.PROJECT;
+            this.clientName = responseTwo.data.data.CLIENTNAME;
+            this.purpose = responseTwo.data.data.PURPOSED;
+            this.payeeName = responseTwo.data.data.PAYEE;
+            this.currency = responseTwo.data.data.CURRENCY;
+            this.modeOfPayment = responseTwo.data.data.MOP;
+
+            // showRfpAttachments - responesThree
+            this.selectedFile = responesThree.data.data;
+            // console.log(this.selectedFile);
+
+            //showActualSign - responesFour
+            if (responesFour.data[2].STATUS === "Completed") {
+              console.log("liquidation is true");
+              // console.log(responesFour.data)
+              this.isLiquidation = true;
+            } else {
+              // alert('false')
+              console.log("liquidation is false");
+              this.isLiquidation = false;
+            }
+            // showLiquidation - responesFive
+            console.log(responesFive);
+
+            // showRecipient - responseSix
+            const recipient = [];
+            for (const key in responesSix.data) {
+              const request = {
+                code: responesSix.data[key].uid,
+                name: responesSix.data[key].name,
+              };
+
+              recipient.push(request);
+            }
+
+            this.recipent = recipient;
+            console.log(this.recipent)
+
+
+            // showInprogressId - responesSeven
+            this.inprogressId = responesSeven.data[0].inpId
+            // console.log(this.inprogressId)
+
+          })
+        )
+        .catch((errors) => {
+          // react on errors.
+          console.log(errors);
+        })
+        .then(() => {
+          this.isLoading = false;
+        });
+    },
+  // End of get rfp data
+
+    setTitle(title) {
       this.title = title;
     },
 
@@ -683,133 +858,156 @@ export default {
     },
 
     async submit(type) {
-      this.isLoading = true;
+      this.isLoadingModal = true;
 
-      if(type === 'Approve'){
-        
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/approve-request",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-          },
-          body: JSON.stringify({
-            remarks: this.remarks,
-            reqId: this.$route.params.id,
-            companyId: "1",
-            form: 'Request for Payment',
-            loggedUserId: '12'
-          }),
-        }
-      );
-
-      const responseData = await response.json();
-      console.log(responseData.message);
-
-      this.isLoading = false;
-      document.getElementById("modalCloseButton").click();
-
-      this.openToast("top-right", "success", responseData.message);
-      this.$router.replace("/inputs");
-
-      if (!response.ok) {
-        const error = new Error(
-          responseData.message ||
-            "Failed to authenticate. Check your login data."
+      if (type === "Approve") {
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/approve-request",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({
+              remarks: this.remarks,
+              processId: this.$route.params.id,
+              companyId: this.companyId,
+              form: this.form,
+              loggedUserId: this.loggedUserId,
+            }),
+          }
         );
 
+        const responseData = await response.json();
+        console.log(responseData.message);
 
+        this.isLoadingModal = false;
+        document.getElementById("modalCloseButton").click();
 
-        console.log(error.message);
-        // throw error;
+        this.openToast("top-right", "success", responseData.message);
+        this.$router.replace("/inputs");
+
+        if (!response.ok) {
+          const error = new Error(
+            responseData.message ||
+              "Failed to authenticate. Check your login data."
+          );
+
+          console.log(error.message);
+          // throw error;
+        }
       }
 
-
-
-
-
-
-
-
-
-
+      if (type === "Reject") {
+        console.log("Reject");
       }
 
-      if(type === 'Reject'){
-        console.log('Reject')
-      }
+      if (type === "Clarify") {
+        const fd = new FormData();
 
-      if(type === 'Clarify'){
-        console.log('Clarify')
+        fd.append("form", this.form);
+        fd.append("processId", this.$route.params.id);
+        fd.append("loggedUserId", this.loggedUserId);
+        fd.append("companyId", this.companyId);
+        fd.append("recipientId", this.itemrecipient.code);
+        fd.append("remarks", this.remarks);
+        fd.append("inprogressId", this.inprogressId);
+        fd.append("loggedUserFullname", this.loggedUserFullName);
+        fd.append("reference", this.referenceNumber);
+
+
+        axios
+          .post("http://127.0.0.1:8000/api/inputs-clarity", fd)
+          .then((res) => {
+            // handle success
+            document.getElementById("modalCloseButton").click();
+            // console.log(res);
+            this.openToast("top-right", "success", res.data.message);
+            this.$router.replace("/approvals");
+          })
+          .catch((error) => {
+            // handle error
+            console.log(error);
+            document.getElementById("modalCloseButton").click();
+            this.openToast("top-right", "error", error);
+          })
+          .then(() => {
+            // always executed
+            this.isLoadingModal = false;
+
+          });
+
+
+
+
       }
     },
     close() {
-      this.$router.replace("/approvals");
+      this.$router.replace("/inputs");
     },
     preview(mimeType, imageBytes) {
       var newTab = window.open();
       newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
     },
 
-    showRfpMain(id) {
-      axios
-        .get(`http://127.0.0.1:8000/api/rfp-main/${id}`)
-        .then((response) => {
-          // handle success
-          this.referenceNumber = response.data.data.REQREF;
-          this.requestDate = response.data.data.DATE;
-          this.dateNeeded = response.data.data.Deadline;
-          this.reportingManager = response.data.data.REPORTING_MANAGER;
-          this.amount = response.data.data.AMOUNT;
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error);
-        })
-        .then(() => {
-          // always executed
-        });
-    },
-    showRfpDetail(id) {
-      axios
-        .get(`http://127.0.0.1:8000/api/rfp-main-detail/${id}`)
-        .then((response) => {
-          // handle success
-          this.projectName = response.data.data.PROJECT;
-          this.clientName = response.data.data.CLIENTNAME;
-          this.purpose = response.data.data.PURPOSED;
-          this.payeeName = response.data.data.PAYEE;
-          this.currency = response.data.data.CURRENCY;
-          this.modeOfPayment = response.data.data.MOP;
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error);
-        })
-        .then(() => {
-          // always executed
-        });
-    },
+    // showRfpMain(id) {
+    //   axios
+    //     .get(`http://127.0.0.1:8000/api/rfp-main/${id}`)
+    //     .then((response) => {
+    //       // handle success
+    //       this.referenceNumber = response.data.data.REQREF;
+    //       this.requestDate = response.data.data.DATE;
+    //       this.dateNeeded = response.data.data.Deadline;
+    //       this.reportingManager = response.data.data.REPORTING_MANAGER;
+    //       this.amount = response.data.data.AMOUNT;
+    //     })
+    //     .catch((error) => {
+    //       // handle error
+    //       console.log(error);
+    //     })
+    //     .then(() => {
+    //       // always executed
+    //     });
+    // },
+    // showRfpDetail(id) {
+    //   axios
+    //     .get(`http://127.0.0.1:8000/api/rfp-main-detail/${id}`)
+    //     .then((response) => {
+    //       // handle success
+    //       this.projectName = response.data.data.PROJECT;
+    //       this.clientName = response.data.data.CLIENTNAME;
+    //       this.purpose = response.data.data.PURPOSED;
+    //       this.payeeName = response.data.data.PAYEE;
+    //       this.currency = response.data.data.CURRENCY;
+    //       this.modeOfPayment = response.data.data.MOP;
+    //     })
+    //     .catch((error) => {
+    //       // handle error
+    //       console.log(error);
+    //     })
+    //     .then(() => {
+    //       // always executed
+    //     });
+    // },
 
-    showRfpAttachments(id, form) {
-      axios
-        .get(`http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`)
-        .then((response) => {
-          // handle success
-          this.selectedFile = response.data.data;
+    // showRfpAttachments(id, form) {
+    //   axios
+    //     .get(`http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`)
+    //     .then((response) => {
+    //       // handle success
+    //       this.selectedFile = response.data.data;
 
-          console.log(this.selectedFile.length);
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error);
-        })
-        .then(() => {
-          // always executed
-        });
-    },
+    //       console.log(this.selectedFile.length);
+    //     })
+    //     .catch((error) => {
+    //       // handle error
+    //       console.log(error);
+    //     })
+    //     .then(() => {
+    //       // always executed
+    //     });
+    // },
   },
 };
 </script>

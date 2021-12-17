@@ -75,11 +75,15 @@ export default {
   },
   methods: {
     async getInProgress() {
-      const response = await fetch(`http://127.0.0.1:8000/api/getInProgress`, {
+      const loggedUserId = 136;
+      const companyId = 1;
+
+
+      const response = await fetch(`http://127.0.0.1:8000/api/getInProgress/${loggedUserId}/${companyId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
+          "Accept": "application/json",
         },
       });
 

@@ -2,6 +2,13 @@
   <div class="col-md-12 mt-3">
     <!-- Form Element sizes -->
     <div class="card card-secondary">
+            <div
+        class="overlay"
+        style="background-color: white !important"
+        v-show="isLoading"
+      >
+        <loading-spinner></loading-spinner>
+      </div>
       <div class="card-header">
         <h3 class="card-title">Request For Payment</h3>
       </div>
@@ -456,7 +463,7 @@
                         @click="remove(selectedFile.indexOf(file))"
                         class="btn btn-danger btn-sm"
                       >
-                        Delete
+                        Remove
                       </button>
                       <button
                         @click="preview(selectedFile.indexOf(file))"
@@ -503,13 +510,13 @@
             <button
               type="button"
               class="btn btn-block btn-success btn-sm"
-              @click="test()"
+              @click="sendRequest()"
             >
               Submit
             </button>
           </div>
 
-          <button @click="test()">test</button>
+          <!-- <button @click="sendRequest()">test</button> -->
         </div>
         <!-- / Button -->
       </div>
@@ -521,6 +528,7 @@
 <script>
 import { ModelListSelect } from "vue-search-select";
 import axios from 'axios';
+import VsToast from "@vuesimple/vs-toast";
 export default {
   components: {
     ModelListSelect,
@@ -566,6 +574,7 @@ export default {
   data() {
     return {
       counter: 0,
+      isLoading: false,
       // Request Details
       reportingManager: [],
       reportingManagerItem: {},
@@ -600,12 +609,36 @@ export default {
       // The Attachments
       selectedFile: [],
       filespreview: [],
+
+
+      // Logged User Data
+      loggedUserId: 136,
+      loggedUserFirstName: 'Rosevir',
+      loggedUserLastName: 'Ceballos',
+      loggedUserDepartment: 'Information Technology',
+      loggedUserPosition: 'Senior Developer',
+      companyId: 1,
+      companyName: 'Cylix Technologies Inc.',
+
+
+
+
     };
   },
 
   methods: {
-    test() {
+    openToast(position, variant, message) {
+      const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
+      VsToast.show({
+        title: `${toastTitle}`,
+        message: `${message}`,
+        variant,
+        position,
+      });
+    },
 
+    sendRequest() {
+      this.isLoading = true;
       // alert('test')
 
       // console.log(this.dateNeeded)
@@ -645,11 +678,25 @@ export default {
       fd.append('currency', this.currencyItem.name);
       fd.append('amount', this.amount);
 
-      
+      fd.append('loggedUserId', this.loggedUserId);
+      fd.append('loggedUserFirstName', this.loggedUserFirstName);
+      fd.append('loggedUserLastName', this.loggedUserLastName);
+      fd.append('loggedUserDepartment', this.loggedUserDepartment);
+      fd.append('loggedUserPosition', this.loggedUserPosition);
+      fd.append('companyId', this.companyId);
+      fd.append('companyName', this.companyName);
+
+
+
       axios.post('http://127.0.0.1:8000/api/rfp', fd)
       .then(res => {
         // handle success
         console.log(res)
+        this.isLoading = false;
+        this.openToast("top-right", "success", res.data.Success);
+        this.$router.replace("/inprogress");
+
+
       })
       .catch(function (error) {
         // handle error
@@ -683,7 +730,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json",
+            "Accept": "application/json",
           },
         }
       );
@@ -713,7 +760,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json",
+            "Accept": "application/json",
           },
         }
       );
@@ -746,7 +793,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json",
+            "Accept": "application/json",
           },
         }
       );

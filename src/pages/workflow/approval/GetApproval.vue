@@ -250,7 +250,7 @@
 
         <!-- Liquidation -->
         <div class="row mt-4" v-if="this.counter === setLiq">
-          <!-- CRUD Liquidation -->
+          <!-- Editable / CRUD Liquidation -->
           <table
             class="table table-sm table-bordered table-striped mx-2"
             v-if="isInitiator"
@@ -286,15 +286,16 @@
                 <th scope="col">Action</th>
               </tr>
             </thead>
+
             <tbody style="font-size: 14px">
               <tr v-for="(item, index) in liquidation" :key="item.id">
                 <td class="text-center">{{ index + 1 }}.</td>
-                <td>{{ item.date }}</td>
-                <td>{{ item.clientName }}</td>
-                <td>{{ item.expenseType }}</td>
+                <td>{{ item.trans_date }}</td>
+                <td>{{ item.client_name }}</td>
+                <td>{{ item.expense_type }}</td>
                 <td>{{ item.description }}</td>
                 <td>{{ item.currency }}</td>
-                <td>{{ item.amount }}</td>
+                <td>{{ item.Amount }}</td>
                 <td class="pl-0 m-0">
                   <aside class="d-flex justify-content-center">
                     <button
@@ -318,7 +319,7 @@
               <tr>
                 <td colspan="6"></td>
                 <td colspan="2">
-                  <b>Total Amount: {{ this.isInitiator }}</b>
+                  <b>Total Amousnt: {{ this.totalAmount }}</b>
                 </td>
               </tr>
             </tbody>
@@ -345,23 +346,23 @@
                 <th scope="col">Expense Type</th>
                 <th scope="col">Description</th>
                 <th scope="col">Currency</th>
-                <th scope="col">Amount</th>
+                <th scope="col">Amounst</th>
               </tr>
             </thead>
             <tbody style="font-size: 14px">
-              <tr>
-                <td class="text-center">1.</td>
-                <td>2021-23-1</td>
-                <td>Cylix Technologies Inc</td>
-                <td>Rent</td>
-                <td>Lorem ipsum dolor sit amet.</td>
-                <td>PHP</td>
-                <td>123123</td>
+              <tr v-for="(item, index) in liquidation" :key="item.id">
+                <td class="text-center">{{ index + 1 }}.</td>
+                <td>{{ item.trans_date }}</td>
+                <td>{{ item.client_name }}</td>
+                <td>{{ item.expense_type }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.currency }}</td>
+                <td>{{ item.Amount }}</td>
               </tr>
               <tr>
                 <td colspan="6"></td>
                 <td colspan="2">
-                  <b>Total Amount: 0</b>
+                  <b>Total Amount: {{ this.totalAmount }}</b>
                 </td>
               </tr>
             </tbody>
@@ -600,6 +601,7 @@
           </div>
           <!-- /.card -->
 
+          <!-- Liquidation Review -->
           <div class="card card-secondary" v-if="isLiquidation">
             <div class="card-header">
               <h3 class="card-title">Liquidation</h3>
@@ -631,27 +633,27 @@
                     <!-- <th style="width: 10%">Action</th> -->
                   </tr>
                 </thead>
-                <tbody>
+                  <tbody>
                   <tr v-for="(item, index) in liquidation" :key="item.id">
                     <td>{{ index + 1 }}</td>
-                    <td>{{ item.date }}</td>
-                    <td>{{ item.clientName }}</td>
-                    <td>{{ item.expenseType }}</td>
+                    <td>{{ item.trans_date }}</td>
+                    <td>{{ item.client_name }}</td>
+                    <td>{{ item.expense_type }}</td>
                     <td>{{ item.description }}</td>
                     <td>{{ item.currency }}</td>
-                    <td>{{ item.amount }}</td>
+                    <td>{{ item.Amount }}</td>
                   </tr>
 
                   <tr>
                     <td colspan="6"></td>
-                    <td colspan="1">Total: {{ this.totalAmt }}</td>
+                    <b class="px-1">Total: {{ this.totalAmount }}</b>
                   </tr>
                 </tbody>
               </table>
             </div>
             <!-- /.card-body -->
           </div>
-          <!-- /.card -->
+          <!-- /.Liquidation Review -->
 
           <div class="card card-secondary">
             <div class="card-header">
@@ -852,7 +854,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <!-- Overlay Loading Spinner -->
-          <div class="overlay" v-show="isLoading">
+          <div class="overlay" v-show="isLoadingModal">
             <i class="fas fa-2x fa-sync fa-spin"></i>
           </div>
 
@@ -957,6 +959,7 @@
                     style="display: block; width: 100%; line-height: 20px"
                     v-model="modalDate"
                   ></date-picker>
+
                 </div>
               </div>
               <div class="col-md-8">
@@ -1099,7 +1102,7 @@ export default {
       // this.showRfpDetail(this.$route.params.id);
       // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
 
-      this.getRfpApproval(this.$route.params.id, "Request for Payment");
+      this.getRfpApproval(this.$route.params.id, this.form);
 
       this.counter = 0;
       this.withdrawRemarks = "";
@@ -1171,6 +1174,19 @@ export default {
         return false;
       }
     },
+
+    // Sum of all amount spend in liquidation
+    totalAmount() {
+      if(this.liquidation.length > 0){
+        const total = this.liquidation
+        .map((liquidation) => parseInt(liquidation.Amount))
+        .reduce((acc, liquidation) => liquidation + acc);
+        return total
+      } else {
+        return 0
+      }
+
+    },
   },
   data() {
     return {
@@ -1199,12 +1215,44 @@ export default {
       title: "",
 
       isLoading: false,
+      isLoadingModal: false,
+      form: "Request for Payment",
 
-      // checking if you are the initiator //  all codes regarding liquidation
+      // // Logged User Data // initiator
+      // loggedUserId: 136,
+      // loggedUserFirstName: 'Rosevir',
+      // loggedUserLastName: 'Ceballos',
+      // loggedUserFullName: 'Rosevir Ceballos Jr.',
+      // loggedUserDepartment: 'Information Technology',
+      // loggedUserPosition: 'Senior Developer',
+      // companyId: 1,
+      // companyName: 'Cylix Technologies Inc.',
+
+      // // approver
+      // loggedUserId: 11,
+      // loggedUserFirstName: 'Konrad',
+      // loggedUserLastName: 'Chua',
+      // loggedUserFullName: 'Konrad Chua',
+      // loggedUserDepartment: 'Management',
+      // loggedUserPosition: 'Managing Director',
+      // companyId: 1,
+      // companyName: 'Cylix Technologies Inc.',
+
+      // approver 2
       loggedUserId: 12,
+      loggedUserFirstName: "Carrie",
+      loggedUserLastName: "Chua Lee",
+      loggedUserFullName: "Carrie Chua Lee",
+      loggedUserDepartment: "Accounting and Finance",
+      loggedUserPosition: "Accounting and Finance Head",
+      companyId: 1,
+      companyName: "Cylix Technologies Inc.",
+
+      // Check if its for liquidation
       isInitiator: false,
       isLiquidation: false,
 
+      // newly attached files in liquidation
       selectedFileLiquidation: [],
       filespreviewLiquidation: "",
 
@@ -1240,8 +1288,7 @@ export default {
       totalAmt: 0,
 
       // Inprogress Id use for clarification
-      inprogressId: '',
-
+      inprogressId: "",
     };
   },
 
@@ -1252,7 +1299,12 @@ export default {
     // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
     // this.showActualSign(this.$route.params.id, "Request for Payment");
 
-    this.getRfpApproval(this.$route.params.id, "Request for Payment", 1, 11);
+    this.getRfpApproval(
+      this.$route.params.id,
+      this.form,
+      this.companyId,
+      this.loggedUserId
+    );
 
     // use for liquidation
     this.getBusinesses();
@@ -1276,7 +1328,7 @@ export default {
     },
 
     async submit(type) {
-      // this.isLoading = true;
+      this.isLoadingModal = true;
       if (type === "Approve") {
         const response = await fetch(
           "http://127.0.0.1:8000/api/approve-request",
@@ -1284,13 +1336,13 @@ export default {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Accept: "application/json",
+              "Accept": "application/json",
             },
             body: JSON.stringify({
               remarks: this.remarks,
-              reqId: this.$route.params.id,
-              companyId: "1",
-              form: "Request for Payment",
+              processId: this.$route.params.id,
+              companyId: this.companyId,
+              form: this.form,
               loggedUserId: this.loggedUserId,
               referenceNumber: this.referenceNumber,
             }),
@@ -1300,7 +1352,7 @@ export default {
         const responseData = await response.json();
         console.log(responseData.message);
 
-        this.isLoading = false;
+        this.isLoadingModal = false;
         document.getElementById("modalCloseButton").click();
 
         this.openToast("top-right", "success", responseData.message);
@@ -1325,17 +1377,14 @@ export default {
       if (type === "Clarify") {
         const fd = new FormData();
 
-        fd.append("form", 'Request for payment');
-        fd.append("processId", 2211);
-        fd.append("loggedUserId", 11);
-        fd.append("companyId", 1);
+        fd.append("form", this.form);
+        fd.append("processId", this.$route.params.id);
+        fd.append("loggedUserId", this.loggedUserId);
+        fd.append("companyId", this.companyId);
         fd.append("recipientId", this.itemrecipient.code);
         fd.append("remarks", this.remarks);
         fd.append("inprogressId", this.inprogressId);
-        fd.append("loggedUserFullname", 'Chua, Konrad A.');
-
-
-
+        fd.append("loggedUserFullname", this.loggedUserFullName);
 
         axios
           .post("http://127.0.0.1:8000/api/send-clarity", fd)
@@ -1354,20 +1403,8 @@ export default {
           })
           .then(() => {
             // always executed
-            this.isLoading = false;
-
+            this.isLoadingModal = false;
           });
-        
-
-
-        
-
-
-
-
-
-
-
       }
 
       // liqudidation
@@ -1379,10 +1416,11 @@ export default {
         }
 
         fd.append("rfpid", this.$route.params.id);
-        fd.append("companyId", 1);
-        fd.append("loggedUserId", 136);
+        fd.append("companyId", this.companyId);
+        fd.append("loggedUserId", this.loggedUserId);
         fd.append("remarks", this.remarks);
         fd.append("reference", this.referenceNumber);
+        fd.append("form", this.form);
 
         fd.append("liquidation", JSON.stringify(this.liquidation));
         fd.append("removedFiles", JSON.stringify(this.removedAttachedFilesId));
@@ -1394,7 +1432,7 @@ export default {
           .then((res) => {
             // handle success
 
-            this.isLoading = false;
+            this.isLoadingModal = false;
             document.getElementById("modalCloseButton").click();
 
             console.log(res);
@@ -1404,7 +1442,7 @@ export default {
           .catch((error) => {
             // handle error
             console.log(error);
-            this.isLoading = false;
+            this.isLoadingModal = false;
             document.getElementById("modalCloseButton").click();
             this.openToast("top-right", "error", error);
           })
@@ -1429,7 +1467,7 @@ export default {
       let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/1`;
       let showLiquidation = `http://127.0.0.1:8000/api/rfp-main-liquidation/${id}`;
       let showRecipient = `http://127.0.0.1:8000/api/getRecipient/${id}/${loggedUserId}/${companyId}/${form}`;
-      let showInprogressId = `http://127.0.0.1:8000/api/get-Inprogress/${id}/${companyId}/${form}`
+      let showInprogressId = `http://127.0.0.1:8000/api/get-Inprogress/${id}/${companyId}/${form}`;
 
       const requestOne = axios.get(showRfpMain);
       const requestTwo = axios.get(showRfpDetail);
@@ -1438,7 +1476,6 @@ export default {
       const requestFive = axios.get(showLiquidation);
       const requestSix = axios.get(showRecipient);
       const requestSeven = axios.get(showInprogressId);
-
 
       axios
         .all([
@@ -1459,8 +1496,6 @@ export default {
             const responesFive = responses[4];
             const responesSix = responses[5];
             const responesSeven = responses[6];
-
-            
 
             // showRfpMain - responseOne
             this.referenceNumber = responseOne.data.data.REQREF;
@@ -1492,6 +1527,7 @@ export default {
             //showActualSign - responesFour
             if (responesFour.data[2].STATUS === "Completed") {
               console.log("liquidation is true");
+              // console.log(responesFour.data)
               this.isLiquidation = true;
             } else {
               // alert('false')
@@ -1499,10 +1535,16 @@ export default {
               this.isLiquidation = false;
             }
             // showLiquidation - responesFive
-            console.log(responesFive);
+            // console.log(responesFive.data.length);
+            if(responesFive){
+            this.liquidation = responesFive.data;
+            }
+
+            // console.log(responesFive.data)
+            
+
 
             // showRecipient - responseSix
-
             const recipient = [];
             for (const key in responesSix.data) {
               const request = {
@@ -1514,13 +1556,11 @@ export default {
             }
 
             this.recipent = recipient;
-            console.log(this.recipent)
-
+            console.log(this.recipent);
 
             // showInprogressId - responesSeven
-            this.inprogressId = responesSeven.data[0].inpId
+            this.inprogressId = responesSeven.data[0].inpId;
             // console.log(this.inprogressId)
-
           })
         )
         .catch((errors) => {
@@ -1636,7 +1676,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json",
+            "Accept": "application/json",
           },
         }
       );
@@ -1668,7 +1708,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json",
+            "Accept": "application/json",
           },
         }
       );
@@ -1691,8 +1731,6 @@ export default {
         modalCurrency.push(request);
       }
       this.modalCurrency = modalCurrency;
-      // console.log(responseData[0].businessNumber)
-      // console.log(modalCurrency)
     },
 
     async getexpenseType() {
@@ -1702,7 +1740,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json",
+            "Accept": "application/json",
           },
         }
       );
@@ -1732,12 +1770,12 @@ export default {
     update() {
       const addData = {
         id: this.editliquidation.id,
-        date: this.modalDate,
-        clientId: this.itemclientName.code,
-        clientName: this.itemclientName.name,
-        expenseType: this.itemmodalExpenseType.name,
+        trans_date: this.modalDate,
+        client_id: this.itemclientName.code,
+        client_name: this.itemclientName.name,
+        expense_type: this.itemmodalExpenseType.name,
         currency: this.itemmodalCurrency.name,
-        amount: this.modalamount,
+        Amount: this.modalamount,
         description: this.modalremarks,
       };
       this.liquidation.push(addData);
@@ -1759,20 +1797,20 @@ export default {
 
       console.log(selectedLiquidation);
 
-      this.modalDate = selectedLiquidation.date;
+      this.modalDate = selectedLiquidation.trans_date;
       this.itemclientName = {
-        code: selectedLiquidation.clientId,
-        name: selectedLiquidation.clientName,
+        code: selectedLiquidation.client_id,
+        name: selectedLiquidation.client_name,
       };
       this.itemmodalCurrency = {
         code: selectedLiquidation.currency,
         name: selectedLiquidation.currency,
       };
       this.itemmodalExpenseType = {
-        code: selectedLiquidation.expenseType,
-        name: selectedLiquidation.expenseType,
+        code: selectedLiquidation.expense_type,
+        name: selectedLiquidation.expense_type,
       };
-      this.modalamount = selectedLiquidation.amount;
+      this.modalamount = selectedLiquidation.Amount;
       this.modalremarks = selectedLiquidation.description;
     },
 
@@ -1785,17 +1823,17 @@ export default {
     },
 
     insert() {
-      console.log(this.modalamount);
-
       const addData = {
+
         id: this.i++,
-        date: this.modalDate,
-        clientId: this.itemclientName.code,
-        clientName: this.itemclientName.name,
-        expenseType: this.itemmodalExpenseType.name,
-        currency: this.itemmodalCurrency.name,
-        amount: this.modalamount,
+        trans_date: this.modalDate,
+        client_id: this.itemclientName.code,
+        client_name: this.itemclientName.name,
+        expense_type: this.itemmodalExpenseType.name,
         description: this.modalremarks,
+        currency: this.itemmodalCurrency.name,
+        Amount: this.modalamount,
+
       };
       this.liquidation.push(addData);
     },
