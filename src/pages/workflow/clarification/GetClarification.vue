@@ -121,10 +121,23 @@
                 <small><label for="dateNeeded">Date Needed</label></small>
                 <date-picker
                   v-model="dateNeeded"
-                  :disabled="isLiquidation"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px"
+                  v-if="strictInitAndLiquidation"
+
                 ></date-picker>
+                
+                
+                <input
+                  type="text"
+                  disabled
+                  class="form-control py-3 form-control-sm"
+                  id="dateNeeded"
+                  v-model="dateNeeded"
+                  v-else
+                />
+
+          
               </div>
             </div>
             <div class="col-md-3">
@@ -148,22 +161,18 @@
                   option-text="name"
                   placeholder="select item"
                   style="padding: 9px"
-                  v-if="!isLiquidation"
+                  v-if="strictInitAndLiquidation"
                 >
                 </model-list-select>
 
                 <input
-                v-else
+                  v-else
                   type="text"
                   class="form-control py-3 form-control-sm"
                   disabled
                   v-model="reportingManagerItem.name"
                   id="reportingManager"
                 />
-
-
-
-
               </div>
             </div>
           </div>
@@ -172,7 +181,7 @@
             <div class="col-md-6">
               <div class="form-group">
                 <small><label for="projectName">Project Name</label></small>
-       
+
                 <model-list-select
                   :list="project"
                   v-model="projectItem"
@@ -180,7 +189,7 @@
                   option-text="name"
                   placeholder="select item"
                   style="padding: 9px"
-                  v-if="!isLiquidation"
+                  v-if="strictInitAndLiquidation"
                 >
                 </model-list-select>
 
@@ -220,8 +229,19 @@
                   id="purpose"
                   v-model="purpose"
                   rows="5"
-                  :disabled="isLiquidation"
+                 v-if="strictInitAndLiquidation"
                 ></textarea>
+
+                <textarea
+                  class="form-control"
+                  name="purpose"
+                  id="purpose"
+                  disabled
+                  v-model="purpose"
+                  rows="5"
+                 v-else
+                ></textarea>
+
               </div>
             </div>
           </div>
@@ -239,8 +259,19 @@
                 class="form-control form-control-sm"
                 v-model="payeeName"
                 id="payeeName"
-                :disabled="isLiquidation"
+                v-if="strictInitAndLiquidation"
               />
+
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                v-model="payeeName"
+                disabled
+                id="payeeName"
+                v-else
+              />
+
+
             </div>
             <div class="form-group">
               <small><label for="modeOfPayment">Mode of Payment</label></small>
@@ -251,12 +282,12 @@
                 option-text="name"
                 placeholder="select item"
                 style="padding: 9px"
-                v-if="!isLiquidation"
+                v-if="strictInitAndLiquidation"
               >
               </model-list-select>
 
-           <input
-               v-else
+              <input
+                v-else
                 type="text"
                 v-model="modeOfPaymentItem.name"
                 disabled
@@ -269,7 +300,7 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <small><label for="currency">Currency</label></small>
-  
+
                   <model-list-select
                     :list="currency"
                     v-model="currencyItem"
@@ -277,7 +308,7 @@
                     option-text="name"
                     placeholder="select item"
                     style="padding: 9px"
-                    v-if="!isLiquidation"
+                    v-if="strictInitAndLiquidation"
                   >
                   </model-list-select>
 
@@ -299,7 +330,16 @@
                     class="form-control form-control-sm py-3"
                     id="amount"
                     v-model="amount"
-                    :disabled="isLiquidation"
+                    v-if="strictInitAndLiquidation"
+                  />
+
+                    <input
+                    v-else
+                    type="text"
+                    class="form-control form-control-sm py-3"
+                    id="amount"
+                    v-model="amount"
+                    :disabled="true"
                   />
                 </div>
               </div>
@@ -311,6 +351,7 @@
 
         <!-- Liquidation -->
         <div class="row mt-4" v-if="this.counter === setLiq">
+
           <!-- Read only Liquidation -->
           <table class="table table-sm table-bordered table-striped mx-2">
             <thead>
@@ -320,8 +361,8 @@
                     <span class="mb-1 ml-1"> Liquidation Table</span>
                   </aside>
                 </th>
-                <th  v-if="isLiquidation">
-                  <aside class="text-center" >
+                <th v-if="isInitiatorAndLiquidation">
+                  <aside class="text-center">
                     <button
                       class="btn btn-sm btn-success m-0"
                       data-toggle="modal"
@@ -353,7 +394,7 @@
                 <td>{{ item.description }}</td>
                 <td>{{ item.currency }}</td>
                 <td>{{ item.Amount }}</td>
-                <td class="pl-0 m-0" v-if="isLiquidation">
+                <td class="pl-0 m-0" v-if="isInitiatorAndLiquidation">
                   <aside class="d-flex justify-content-center">
                     <button
                       class="btn btn-sm btn-info m-0"
@@ -396,7 +437,7 @@
           "
           id="app"
         >
-          <input
+          <input v-if="isInitiator"
             type="file"
             multiple
             name="fields[assetsFieldHandle][]"
@@ -409,7 +450,8 @@
 
           <div class="p-5 col-md-12 rounded" id="uploadContainer">
             <label for="assetsFieldHandle" class="block cursor-pointer">
-              <span class="text-secondary">Click here to add new file(s)</span>
+              <span v-if="isInitiator" class="text-secondary">Click here to add new file(s)</span>
+              <span v-else class="text-secondary">List of Attached file(s)</span>
             </label>
             <!-- <aside class="d-flex align-items-center justify-content-center"> -->
             <ul class="mt-4 text-decoration-none ulUpload">
@@ -427,7 +469,7 @@
                       <span>{{ file.filename }}</span>
                     </div>
 
-                    <div>
+                    <div v-if="isInitiator">
                       <button
                         class="btn btn-danger btn-sm"
                         type="button"
@@ -634,7 +676,6 @@
                     <th style="width: 30%">Description</th>
                     <th style="width: 10%">Currency</th>
                     <th style="width: 15%">Amount</th>
-                    <!-- <th style="width: 10%">Action</th> -->
                   </tr>
                 </thead>
                 <tbody>
@@ -658,7 +699,6 @@
             <!-- /.card-body -->
           </div>
           <!-- /.Liquidation Review -->
-
 
           <div class="card card-secondary">
             <div class="card-header">
@@ -689,12 +729,13 @@
                 <tbody>
                   <tr
                     v-for="(file, index) in selectedFile"
-                    :key="file.filename"
+                    :key="file.id"
                   >
                     <td>{{ index + 1 }}</td>
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
+                        v-if="isInitiator"
                         class="btn btn-danger btn-sm"
                         @click="
                           removeAttachedFile(
@@ -726,6 +767,7 @@
                       <button
                         @click="removeFileNew(selectedFileNew.indexOf(file))"
                         class="btn btn-danger btn-sm"
+                        v-if="isInitiator"
                       >
                         Remove
                       </button>
@@ -900,7 +942,6 @@
                     style="display: block; width: 100%; line-height: 20px"
                     v-model="modalDate"
                   ></date-picker>
-
                 </div>
               </div>
               <div class="col-md-8">
@@ -1004,15 +1045,6 @@
       <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
-
-
-
-
-
-
-
-
-
   </div>
 </template>
 
@@ -1113,6 +1145,20 @@ export default {
         return 0;
       }
     },
+
+    isInitiatorAndLiquidation() {
+      return this.isLiquidation && this.isInitiator;
+    },
+
+    strictInitAndLiquidation(){
+        let x;
+        x = this.isLiquidation
+        x = !x
+        let y = this.isInitiator
+        const z = y && x
+        return z
+
+    }
   },
   data() {
     return {
@@ -1183,10 +1229,33 @@ export default {
       companyId: 1,
       companyName: "Cylix Technologies Inc.",
 
+      // approver
+      // loggedUserId: 11,
+      // loggedUserFirstName: "Konrad",
+      // loggedUserLastName: "Chua",
+      // loggedUserFullName: "Konrad Chua",
+      // loggedUserDepartment: "Management",
+      // loggedUserPosition: "Managing Director",
+      // companyId: 1,
+      // companyName: "Cylix Technologies Inc.",
+
+
+      // // approver 2
+      // loggedUserId: 12,
+      // loggedUserFirstName: "Carrie",
+      // loggedUserLastName: "Chua Lee",
+      // loggedUserFullName: "Carrie Chua Lee",
+      // loggedUserDepartment: "Accounting and Finance",
+      // loggedUserPosition: "Accounting and Finance Head",
+      // companyId: 1,
+      // companyName: "Cylix Technologies Inc.",
+
+
+
+
 
       // switch button in liquidation part
       isButton: true,
-
 
       // use in liquidation CRUD
       i: 0,
@@ -1207,7 +1276,6 @@ export default {
       modalamount: "",
 
       modalremarks: "",
-
     };
   },
 
@@ -1219,58 +1287,63 @@ export default {
 
     this.getRfpClarification(
       this.$route.params.id,
-      "Request for Payment",
-      1,
-      136
+      this.$route.params.frmName,
+      this.companyId
+      // this.loggedUserId
     );
 
     // use for liquidation
     this.getBusinesses();
     this.getcurrencyName();
     this.getexpenseType();
+    this.getLiquidation(this.$route.params.id);
+    this.getReportingManager(this.loggedUserId);
+    this.getProjects();
+    this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+
     // this.getRfpClarification(this.$route.params.id, "Request for Payment",136);
   },
 
   methods: {
-    getRfpClarification(id, form, companyId, loggedUserId) {
+    getRfpClarification(id, form, companyId) {
       // getRfpClarification(id, form,loggedUserId) {
       this.isLoading = true;
       let showRfpMain = `http://127.0.0.1:8000/api/rfp-main/${id}`;
       let showRfpDetail = `http://127.0.0.1:8000/api/rfp-main-detail/${id}`;
-      let showRfpAttachments = `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`;
+      // let showRfpAttachments = `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`;
       let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`;
-      let showLiquidation = `http://127.0.0.1:8000/api/rfp-main-liquidation/${id}`;
-      let showReportingManager = `http://127.0.0.1:8000/api/reporting-manager/${loggedUserId}`;
-      let showProjects = `http://127.0.0.1:8000/api/general-projects`;
+      // let showLiquidation = `http://127.0.0.1:8000/api/rfp-main-liquidation/${id}`;
+      // let showReportingManager = `http://127.0.0.1:8000/api/reporting-manager/${loggedUserId}`;
+      // let showProjects = `http://127.0.0.1:8000/api/general-projects`;
 
       const requestOne = axios.get(showRfpMain);
       const requestTwo = axios.get(showRfpDetail);
-      const requestThree = axios.get(showRfpAttachments);
+      // const requestThree = axios.get(showRfpAttachments);
       const requestFour = axios.get(showActualSign);
-      const requestFive = axios.get(showLiquidation);
-      const requestSix = axios.get(showReportingManager);
-      const requestSeven = axios.get(showProjects);
+      // const requestFive = axios.get(showLiquidation);
+      // const requestSix = axios.get(showReportingManager);
+      // const requestSeven = axios.get(showProjects);
 
       axios
         .all([
           requestOne,
           requestTwo,
-          requestThree.catch(() => null),
+          // requestThree.catch(() => null),
           requestFour,
-          requestFive.catch(() => null),
-          requestSix,
-          requestSeven,
+          // requestFive.catch(() => null),
+          // requestSix,
+          // requestSeven,
         ])
 
         .then(
           axios.spread((...responses) => {
             const responseOne = responses[0];
             const responseTwo = responses[1];
-            const responesThree = responses[2];
-            const responesFour = responses[3];
-            const responesFive = responses[4];
-            const responesSix = responses[5];
-            const responesSeven = responses[6];
+            // const responesThree = responses[2];
+            const responesFour = responses[2];
+            // const responesFive = responses[4];
+            // const responesSix = responses[5];
+            // const responesSeven = responses[6];
 
             // showRfpMain - responseOne
             this.referenceNumber = responseOne.data.data.REQREF;
@@ -1286,6 +1359,7 @@ export default {
             } else {
               this.isInitiator = false;
             }
+            // console.log(responseOne)
 
             // showRfpDetail - responseTwo
             this.projectName = responseTwo.data.data.PROJECT;
@@ -1306,7 +1380,7 @@ export default {
             this.modeOfPaymentItem = modeOfPaymentItem;
 
             // showRfpAttachments - responesThree
-            this.selectedFile = responesThree.data.data;
+            // this.selectedFile = responesThree.data.data;
 
             //showActualSign - responesFour
             const reportingManagerItem = {
@@ -1315,11 +1389,16 @@ export default {
             };
             this.reportingManagerItem = reportingManagerItem;
 
+            // console.log(reportingManagerItem)
+
             const projectItem = {
               code: responesFour.data[0].PROJECTID,
               name: responesFour.data[0].PROJECT,
             };
             this.projectItem = projectItem;
+
+            // console.log(projectItem)
+            // console.log('test')
 
             if (responesFour.data[2].STATUS === "Completed") {
               console.log("liquidation is true");
@@ -1330,32 +1409,36 @@ export default {
               this.isLiquidation = false;
             }
             // showLiquidation - responesFive
-            console.log(responesFive);
-            this.liquidation = responesFive.data;
+            // console.log(responesFive);
+            // this.liquidation = responesFive.data;
+
+            // console.log('sad')
 
             // showReportingManager - responesSix
-            const reportingManager = [];
-            for (const key in responesSix.data) {
-              const request = {
-                code: responesSix.data[key].RMID,
-                name: responesSix.data[key].RMName,
-              };
-              reportingManager.push(request);
-            }
-            this.reportingManager = reportingManager;
+            // const reportingManager = [];
+            // for (const key in responesSix.data) {
+            //   const request = {
+            //     code: responesSix.data[key].RMID,
+            //     name: responesSix.data[key].RMName,
+            //   };
+            //   reportingManager.push(request);
+            // }
+            // this.reportingManager = reportingManager;
+
+            // console.log(responesSix.data);
 
             // showProjects - responesSeven
-            console.log(responesSeven);
+            // console.log(responesSeven);
 
-            const projects = [];
-            for (const key in responesSeven.data) {
-              const request = {
-                code: responesSeven.data[key].project_id,
-                name: responesSeven.data[key].project_name,
-              };
-              projects.push(request);
-            }
-            this.project = projects;
+            // const projects = [];
+            // for (const key in responesSeven.data) {
+            //   const request = {
+            //     code: responesSeven.data[key].project_id,
+            //     name: responesSeven.data[key].project_name,
+            //   };
+            //   projects.push(request);
+            // }
+            // this.project = projects;
           })
         )
         .catch((errors) => {
@@ -1374,7 +1457,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
@@ -1455,6 +1538,7 @@ export default {
       fd.append("clientId", this.clientId);
       fd.append("clientName", this.clientName);
       fd.append("mainId", this.mainId);
+      fd.append("class", "RFP");
       fd.append("projectName", this.projectItem.name);
       fd.append("payeeName", this.payeeName);
       fd.append("modeOfPayment", this.modeOfPaymentItem.name);
@@ -1463,6 +1547,7 @@ export default {
       fd.append("reportingManagerId", this.reportingManagerItem.code);
       fd.append("companyName", this.companyName);
       fd.append("removedFiles", JSON.stringify(this.removedAttachedFilesId));
+      fd.append("liquidation", JSON.stringify(this.liquidation));
 
       axios
         .post("http://127.0.0.1:8000/api/reply-request", fd)
@@ -1600,7 +1685,6 @@ export default {
 
     insert() {
       const addData = {
-
         id: this.i++,
         trans_date: this.modalDate,
         client_id: this.itemclientName.code,
@@ -1609,19 +1693,18 @@ export default {
         description: this.modalremarks,
         currency: this.itemmodalCurrency.name,
         Amount: this.modalamount,
-
       };
       this.liquidation.push(addData);
     },
-    
-        async getBusinesses() {
+
+    async getBusinesses() {
       const response = await fetch(
         "http://127.0.0.1:8000/api/general-businesses/1",
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
@@ -1653,7 +1736,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
@@ -1685,7 +1768,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
@@ -1712,9 +1795,76 @@ export default {
       // console.log(responseData[0].businessNumber)
     },
 
+    async getLiquidation(id) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/rfp-main-liquidation/${id}`
+        );
+        // console.log(resp.data);
+        this.liquidation = resp.data;
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+    async getProjects() {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/general-projects`
+        );
+        // console.log(resp.data);
+        const projects = [];
+        for (const key in resp.data) {
+          const request = {
+            code: resp.data[key].project_id,
+            name: resp.data[key].project_name,
+          };
+          projects.push(request);
+        }
+        this.project = projects;
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
 
+    async getReportingManager(loggedUserId) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/reporting-manager/${loggedUserId}`
+        );
+        // console.log(resp.data);
 
+        // showReportingManager - responesSix
+        const reportingManager = [];
+        for (const key in resp.data) {
+          const request = {
+            code: resp.data[key].RMID,
+            name: resp.data[key].RMName,
+          };
+          reportingManager.push(request);
+        }
+        this.reportingManager = reportingManager;
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
 
+    async getAttachments(id, form) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`
+        );
+        // console.log(resp.data);
+
+        // showReportingManager - responesSix
+        this.selectedFile = resp.data.data;
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
   },
 };
 </script>

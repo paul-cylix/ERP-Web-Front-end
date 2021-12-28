@@ -21,13 +21,17 @@ export default {
         handleAction(actionName) {
 
             const id = this.data.id; // 123
-            const name = this.data.workflow+'byId'; // inprogressbyId
-            const workflow = (this.data.workflow) // inprogress
-            const frmclass = (this.data.frmClass) // requestforpayment
+            // const name = this.data.workflow+'byId'; // inprogressbyId
+
+            const workflow = this.data.workflow // inprogress
+            const frmclass = this.data.frmClass // requestforpayment
+            const frmName = this.data.requestType
+            const name = frmName+'-'+this.data.workflow; // inprogressbyId
 
 
             if(actionName === 'open'){
-                this.$router.push({name: name, params: { id: id, workflow:workflow,frmClass:frmclass }})
+                this.$router.push({name: name, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
+                console.log(this.data);
             }
 
             if(actionName === 'message'){

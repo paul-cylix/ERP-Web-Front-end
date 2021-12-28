@@ -346,7 +346,7 @@
                 <th scope="col">Expense Type</th>
                 <th scope="col">Description</th>
                 <th scope="col">Currency</th>
-                <th scope="col">Amounst</th>
+                <th scope="col">Amount</th>
               </tr>
             </thead>
             <tbody style="font-size: 14px">
@@ -411,7 +411,7 @@
               <li
                 class="text-sm mt-2"
                 v-for="(file, index) in selectedFile"
-                :key="file.newFilename"
+                :key="file.id"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
@@ -633,7 +633,7 @@
                     <!-- <th style="width: 10%">Action</th> -->
                   </tr>
                 </thead>
-                  <tbody>
+                <tbody>
                   <tr v-for="(item, index) in liquidation" :key="item.id">
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.trans_date }}</td>
@@ -684,7 +684,7 @@
                 <tbody>
                   <tr
                     v-for="(file, index) in selectedFile"
-                    :key="file.filename"
+                    :key="file.id"
                   >
                     <td>{{ index + 1 }}</td>
                     <td>{{ file.filename }}</td>
@@ -959,7 +959,6 @@
                     style="display: block; width: 100%; line-height: 20px"
                     v-model="modalDate"
                   ></date-picker>
-
                 </div>
               </div>
               <div class="col-md-8">
@@ -1177,15 +1176,14 @@ export default {
 
     // Sum of all amount spend in liquidation
     totalAmount() {
-      if(this.liquidation.length > 0){
+      if (this.liquidation.length > 0) {
         const total = this.liquidation
-        .map((liquidation) => parseInt(liquidation.Amount))
-        .reduce((acc, liquidation) => liquidation + acc);
-        return total
+          .map((liquidation) => parseInt(liquidation.Amount))
+          .reduce((acc, liquidation) => liquidation + acc);
+        return total;
       } else {
-        return 0
+        return 0;
       }
-
     },
   },
   data() {
@@ -1230,13 +1228,13 @@ export default {
 
       // // approver
       // loggedUserId: 11,
-      // loggedUserFirstName: 'Konrad',
-      // loggedUserLastName: 'Chua',
-      // loggedUserFullName: 'Konrad Chua',
-      // loggedUserDepartment: 'Management',
-      // loggedUserPosition: 'Managing Director',
+      // loggedUserFirstName: "Konrad",
+      // loggedUserLastName: "Chua",
+      // loggedUserFullName: "Konrad Chua",
+      // loggedUserDepartment: "Management",
+      // loggedUserPosition: "Managing Director",
       // companyId: 1,
-      // companyName: 'Cylix Technologies Inc.',
+      // companyName: "Cylix Technologies Inc.",
 
       // approver 2
       loggedUserId: 12,
@@ -1280,7 +1278,7 @@ export default {
 
       isButton: true,
 
-      // dropdown for recipient
+      // dropdown for recipient of clarity
       recipent: [],
       itemrecipient: {},
 
@@ -1336,7 +1334,7 @@ export default {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Accept": "application/json",
+              Accept: "application/json",
             },
             body: JSON.stringify({
               remarks: this.remarks,
@@ -1371,7 +1369,44 @@ export default {
       }
 
       if (type === "Reject") {
-        console.log("Reject");
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/reject-request",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+            },
+            body: JSON.stringify({
+              remarks: this.remarks,
+              processId: this.$route.params.id,
+              companyId: this.companyId,
+              form: this.form,
+              loggedUserId: this.loggedUserId,
+              referenceNumber: this.referenceNumber,
+            }),
+          }
+        );
+
+        const responseData = await response.json();
+        console.log(responseData.message);
+
+        this.isLoadingModal = false;
+        document.getElementById("modalCloseButton").click();
+
+        this.openToast("top-right", "success", responseData.message);
+        this.$router.replace("/approvals");
+
+        if (!response.ok) {
+          const error = new Error(
+            responseData.message ||
+              "Failed to authenticate. Check your login data."
+          );
+          console.log(error.message);
+
+          this.openToast("top-right", "error", error.message);
+          document.getElementById("modalCloseButton").click();
+        }
       }
 
       if (type === "Clarify") {
@@ -1487,6 +1522,7 @@ export default {
           requestSix,
           requestSeven.catch(() => null),
         ])
+        
         .then(
           axios.spread((...responses) => {
             const responseOne = responses[0];
@@ -1536,13 +1572,11 @@ export default {
             }
             // showLiquidation - responesFive
             // console.log(responesFive.data.length);
-            if(responesFive){
-            this.liquidation = responesFive.data;
+            if (responesFive) {
+              this.liquidation = responesFive.data;
             }
 
             // console.log(responesFive.data)
-            
-
 
             // showRecipient - responseSix
             const recipient = [];
@@ -1560,7 +1594,7 @@ export default {
 
             // showInprogressId - responesSeven
             this.inprogressId = responesSeven.data[0].inpId;
-            // console.log(this.inprogressId)
+            console.log(this.inprogressId)
           })
         )
         .catch((errors) => {
@@ -1676,7 +1710,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
@@ -1708,7 +1742,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
@@ -1740,7 +1774,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
@@ -1824,7 +1858,6 @@ export default {
 
     insert() {
       const addData = {
-
         id: this.i++,
         trans_date: this.modalDate,
         client_id: this.itemclientName.code,
@@ -1833,7 +1866,6 @@ export default {
         description: this.modalremarks,
         currency: this.itemmodalCurrency.name,
         Amount: this.modalamount,
-
       };
       this.liquidation.push(addData);
     },

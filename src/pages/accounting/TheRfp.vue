@@ -639,24 +639,6 @@ export default {
 
     sendRequest() {
       this.isLoading = true;
-      // alert('test')
-
-      // console.log(this.dateNeeded)
-      // console.log(this.reportingManagerItem.code)
-      // console.log(this.reportingManagerItem.name)
-      // console.log(this.projectItem.code)
-      // console.log(this.projectItem.name)
-      // console.log(this.clientName)
-      // console.log(this.clientId)
-      // console.log(this.mainId)
-      // console.log(this.purpose)
-
-      // console.log(this.payeeName)
-      // console.log(this.modeOfPaymentItem.name)
-      // console.log(this.currencyItem.name)
-      // console.log(this.amount)
-
-
 
       const fd = new FormData();
 
@@ -686,8 +668,6 @@ export default {
       fd.append('companyId', this.companyId);
       fd.append('companyName', this.companyName);
 
-
-
       axios.post('http://127.0.0.1:8000/api/rfp', fd)
       .then(res => {
         // handle success
@@ -695,8 +675,6 @@ export default {
         this.isLoading = false;
         this.openToast("top-right", "success", res.data.Success);
         this.$router.replace("/inprogress");
-
-
       })
       .catch(function (error) {
         // handle error
@@ -705,8 +683,6 @@ export default {
       .then(function () {
         // always executed
       });
-
-
 
     },
 

@@ -98,9 +98,6 @@ export default {
       this.requestArray = responseData.data;
     },
 
-    // activateAction(button){
-    //   alert(button)
-    // }
   },
 
   mounted() {
