@@ -14,18 +14,25 @@ import TheWithdrawn from "./pages/workflow/TheWithdrawn.vue";
 import TheRejected from "./pages/workflow/rejected/TheRejected.vue";
 import CreateRfp from "./pages/accounting/CreateRfp.vue";
 import MyPractice from "./pages/accounting/MyPractice.vue";
+
 import TheRfp from "./pages/accounting/TheRfp.vue";
 import TheRe from "./pages/accounting/TheRe.vue";
+import ThePc from "./pages/accounting/ThePc.vue";
+
 import GetInprogress from "./pages/workflow/inprogress/GetInprogress.vue";
 import GetApproval from "./pages/workflow/approval/GetApproval.vue";
 import GetRejected from "./pages/workflow/rejected/GetRejected.vue";
 import GetInput from "./pages/workflow/input/GetInput.vue";
 import GetClarification from "./pages/workflow/clarification/GetClarification.vue";
+
 import ReInprogress from "./pages/workflow/inprogress/ReInprogress.vue";
 import ReApproval from "./pages/workflow/approval/ReApproval.vue";
 import ReInput from "./pages/workflow/input/ReInput.vue";
 import ReClarification from "./pages/workflow/clarification/ReClarification.vue";
 
+import PcInprogress from "./pages/workflow/inprogress/PcInprogress.vue";
+import PcApproval from "./pages/workflow/approval/PcApproval.vue";
+import PcClarification from "./pages/workflow/clarification/PcClarification.vue";
 
 
 Vue.use(VueRouter);
@@ -73,6 +80,12 @@ const routes = [
             component: ReApproval,
             props: true,
           },
+          {
+            path: ":id",
+            name: "Petty Cash Request-approval",
+            component: PcApproval,
+            props: true,
+          },
         ],
       },
       {
@@ -91,6 +104,12 @@ const routes = [
             component: ReInprogress,
             props: true,
           },
+          {
+            path: ":id",
+            name: "Petty Cash Request-inprogress",
+            component: PcInprogress,
+            props: true,
+          },
         ],
       },
       {
@@ -107,6 +126,12 @@ const routes = [
             path: ":id",
             name: "Reimbursement Request-clarification",
             component: ReClarification,
+            props: true,
+          },
+          {
+            path: ":id",
+            name: "Petty Cash Request-clarification",
+            component: PcClarification,
             props: true,
           },
         ],
@@ -129,6 +154,7 @@ const routes = [
       { path: "/upload", component: MyPractice },
       { path: "/the-rfp", component: TheRfp },
       { path: "/the-re", component: TheRe },
+      { path: "/the-pc", component: ThePc },
 
       {
         path: "/:workflow-:frmClass-:id",

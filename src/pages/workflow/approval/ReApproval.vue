@@ -855,6 +855,27 @@ export default {
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
     },
+
+        //Navigate
+    $route(newRoute) {
+   
+      this.counter = 0;
+      this.remarks = "";
+      console.log(newRoute);
+
+      this.todaysDate();
+      this.getReInprogress(
+      this.$route.params.id,
+      this.form,
+      this.companyId,
+      this.loggedUserId
+    );
+
+    },
+
+
+
+
   },
   computed: {
     classA() {

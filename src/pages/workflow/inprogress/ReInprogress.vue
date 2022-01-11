@@ -986,6 +986,7 @@ export default {
             reqId: this.processId,
             form: this.form,
             companyId: this.companyId,
+            loggedUserId: this.loggedUserId,
           }),
         }
       );

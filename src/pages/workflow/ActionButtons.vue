@@ -31,7 +31,7 @@ export default {
 
             if(actionName === 'open'){
                 this.$router.push({name: name, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
-                console.log(this.data);
+                // console.log(this.data);
             }
 
             if(actionName === 'message'){

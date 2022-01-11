@@ -865,7 +865,8 @@ export default {
       let showRfpMain = `http://127.0.0.1:8000/api/rfp-main/${id}`;
       let showRfpDetail = `http://127.0.0.1:8000/api/rfp-main-detail/${id}`;
       let showRfpAttachments = `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`;
-      let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/1`;
+      let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`;
+      // let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/1`;
       let showLiquidation = `http://127.0.0.1:8000/api/rfp-main-liquidation/${id}`;
       let showRecipient = `http://127.0.0.1:8000/api/getRecipient/${id}/${loggedUserId}/${companyId}/${form}`;
       let showInprogressId = `http://127.0.0.1:8000/api/get-Inprogress/${id}/${companyId}/${form}`;
@@ -992,6 +993,10 @@ export default {
           body: JSON.stringify({
             withdrawRemarks: this.withdrawRemarks,
             reqId: this.processId,
+            form: this.form,
+            companyId: this.companyId,
+            loggedUserId: this.loggedUserId,
+
           }),
         }
       );

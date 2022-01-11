@@ -9,9 +9,8 @@
       >
         <loading-spinner></loading-spinner>
       </div>
-
       <div class="card-header">
-        <h3 class="card-title">Reimbursement Request</h3>
+        <h3 class="card-title">Petty Cash Request</h3>
       </div>
       <div class="card-body">
         <!-- Step Numbers -->
@@ -65,16 +64,16 @@
               ></small
             >
           </div>
-          <div class="textbar" :class="classE">
+          <div class="textbar" :class="classD">
             <small
-              ><span :class="classE" class="font-weight-bold"
+              ><span :class="classD" class="font-weight-bold"
                 >Attachments</span
               ></small
             >
           </div>
-          <div class="textbar" :class="classF">
+          <div class="textbar" :class="classD">
             <small
-              ><span :class="classF" class="font-weight-bold"
+              ><span :class="classD" class="font-weight-bold"
                 >Review</span
               ></small
             >
@@ -95,7 +94,7 @@
                   class="form-control form-control-sm py-3"
                   id="reference"
                   disabled
-                  :value="'RE-' + todaysYear"
+                  v-model="referenceNumber"
                 />
               </div>
             </div>
@@ -103,35 +102,55 @@
             <div class="col-md-3">
               <div class="form-group">
                 <small><label for="requestDate">Request Date</label></small>
-                <!-- <input type="date" class="form-control form-control-sm" id="requestDate"> -->
-                <date-picker
+                <input
+                  type="text"
+                  v-model="requestDate"
+                  class="form-control form-control-sm"
+                  disabled
+                  id="requestDate"
+                />
+                <!-- <date-picker
                   disabled
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px"
                   v-model="requestDate"
-                ></date-picker>
+                ></date-picker> -->
               </div>
             </div>
 
             <div class="col-md-3">
               <div class="form-group">
                 <small><label for="dateNeeded">Date Needed</label></small>
-                <date-picker
+                <!-- <date-picker
                   v-model="dateNeeded"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px"
-                ></date-picker>
+                ></date-picker> -->
+
+                <input
+                  type="text"
+                  v-model="dateNeeded"
+                  class="form-control form-control-sm"
+                  disabled
+                  id="dateNeeded"
+                />
               </div>
             </div>
             <div class="col-md-3">
               <div class="form-group">
                 <small
-                  ><label for="reportingManager selextForm" id="selextForm"
+                  ><label for="reportingManager selextForm"
                     >Reporting Manager</label
                   ></small
                 >
-                <!-- <input type="text" class="form-control py-3 form-control-sm" id="reportingManager"> -->
-                <model-list-select
+                <input
+                  type="text"
+                  id="reportingManager"
+                  disabled
+                  class="form-control py-3 form-control-sm"
+                  v-model="reportingManagerName"
+                />
+                <!-- <model-list-select
                   :list="reportingManager"
                   v-model="reportingManagerItem"
                   option-value="code"
@@ -139,7 +158,7 @@
                   placeholder="select item"
                   style="padding: 9px"
                 >
-                </model-list-select>
+                </model-list-select> -->
               </div>
             </div>
           </div>
@@ -148,8 +167,14 @@
             <div class="col-md-6">
               <div class="form-group">
                 <small><label for="projectName">Project Name</label></small>
-                <!-- <input type="text" class="form-control py-3 form-control-sm" id="projectName"> -->
-                <model-list-select
+                <input
+                  type="text"
+                  v-model="projectName"
+                  disabled
+                  class="form-control py-3 form-control-sm"
+                  id="projectName"
+                />
+                <!-- <model-list-select
                   :list="project"
                   v-model="projectItem"
                   option-value="code"
@@ -157,7 +182,7 @@
                   placeholder="select item"
                   style="padding: 9px"
                 >
-                </model-list-select>
+                </model-list-select> -->
               </div>
             </div>
             <div class="col-md-6">
@@ -178,12 +203,14 @@
             <div class="col-md-12">
               <div class="form-group">
                 <small><label for="purpose">Purpose</label></small>
+                <!-- <textarea class="form-control" name="purpose" id="purpose" :value="message" @input="updateMessage"  rows="5"></textarea> -->
                 <textarea
                   class="form-control"
                   name="purpose"
                   id="purpose"
                   v-model="purpose"
                   rows="5"
+                  disabled
                 ></textarea>
               </div>
             </div>
@@ -192,7 +219,7 @@
         <!-- / Request Details -->
 
         <!-- Payment Details -->
-        <div class="row mt-4" v-else-if="this.counter === 1">
+        <div class="row mt-4" v-if="this.counter === 1">
           <div class="col-md-3"></div>
           <div class="col-md-6">
             <div class="form-group">
@@ -202,28 +229,40 @@
                 class="form-control form-control-sm"
                 v-model="payeeName"
                 id="payeeName"
+                disabled
               />
             </div>
             <div class="form-group">
               <small><label for="modeOfPayment">Mode of Payment</label></small>
-              <!-- <input type="text" class="form-control form-control-sm" id="modeOfPayment"> -->
-              <model-list-select
+              <input
+                type="text"
+                disabled
+                class="form-control form-control-sm"
+                id="modeOfPayment"
+              />
+              <!-- <model-list-select
                 :list="modeOfPayment"
                 v-model="modeOfPaymentItem"
                 option-value="code"
                 option-text="name"
                 placeholder="select item"
                 style="padding: 9px"
+                disabled ='tr'
               >
-              </model-list-select>
+              </model-list-select> -->
             </div>
 
             <div class="row">
               <div class="col-md-4">
                 <div class="form-group">
                   <small><label for="currency">Currency</label></small>
-                  <!-- <input type="text" class="form-control form-control-sm" id="currency"> -->
-                  <model-list-select
+                  <input
+                    type="text"
+                    disabled
+                    class="form-control form-control-sm"
+                    id="currency"
+                  />
+                  <!-- <model-list-select
                     :list="currency"
                     v-model="currencyItem"
                     option-value="code"
@@ -231,19 +270,28 @@
                     placeholder="select item"
                     style="padding: 9px"
                   >
-                  </model-list-select>
+                  </model-list-select> -->
                 </div>
               </div>
               <div class="col-md-8">
                 <div class="form-group">
-                  <!-- <label for="amount">Amount</label> -->
-                  <!-- <input type="text" class="form-control" name="amount" id="currency-field" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency" placeholder="0.00">  -->
                   <small><label for="amount">Amount</label></small>
+                  <!-- <input
+                    type="text"
+                    @keyup="formatCurrency($event)"
+                    @blur="formatCurrency($event, 'blur')"
+                    pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
+                    class="form-control form-control-sm py-3"
+                    id="amount"
+                    v-model="amount"
+                  /> -->
+
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
                     id="amount"
                     v-model="amount"
+                    disabled
                   />
                 </div>
               </div>
@@ -254,7 +302,7 @@
         <!-- / Payment Details -->
 
         <!-- Expense Details -->
-        <div class="row mt-4" v-if="this.counter === 2">
+        <div class="row mt-4" v-if="this.counter === setExpense">
           <table class="table table-sm table-bordered table-striped mx-2">
             <thead>
               <tr>
@@ -263,7 +311,7 @@
                     <span class="mb-1 ml-1"> Expense Detals</span>
                   </aside>
                 </th>
-                <th>
+                <th v-if="isInitiator">
                   <aside class="text-center">
                     <button
                       class="btn btn-sm btn-success m-0"
@@ -283,7 +331,7 @@
                 <th scope="col">Expense Type</th>
                 <th scope="col">Remarks</th>
                 <th scope="col">Amount</th>
-                <th scope="col">Action</th>
+                <th scope="col" v-if="isInitiator">Action</th>
               </tr>
             </thead>
 
@@ -295,7 +343,7 @@
                 <td>{{ item.EXPENSE_TYPE }}</td>
                 <td>{{ item.DESCRIPTION }}</td>
                 <td>{{ item.AMOUNT }}</td>
-                <td class="pl-0 m-0">
+                <td class="pl-0 m-0" v-if="isInitiator">
                   <aside class="d-flex justify-content-center">
                     <button
                       class="btn btn-sm btn-info m-0"
@@ -327,7 +375,7 @@
         <!-- /. Expense Details -->
 
         <!-- Transportation Details -->
-        <div class="row mt-4" v-if="this.counter === 3">
+        <div class="row mt-4" v-if="this.counter === setTranspo">
           <table class="table table-sm table-bordered table-striped mx-2">
             <thead>
               <tr>
@@ -336,7 +384,7 @@
                     <span class="mb-1 ml-1"> Transportation Detals</span>
                   </aside>
                 </th>
-                <th>
+                <th v-if="isInitiator">
                   <aside class="text-center">
                     <button
                       class="btn btn-sm btn-success m-0"
@@ -358,7 +406,7 @@
                 <th scope="col">Mode of Transportation</th>
                 <th scope="col">Remarks</th>
                 <th scope="col">Amount</th>
-                <th scope="col">Action</th>
+                <th scope="col" v-if="isInitiator">Action</th>
               </tr>
             </thead>
 
@@ -372,7 +420,7 @@
                 <td>{{ item.MOT }}</td>
                 <td>{{ item.DESCRIPTION }}</td>
                 <td>{{ item.AMT_SPENT }}</td>
-                <td class="pl-0 m-0">
+                <td class="pl-0 m-0" v-if="isInitiator">
                   <aside class="d-flex justify-content-center">
                     <button
                       class="btn btn-sm btn-info m-0"
@@ -409,7 +457,7 @@
 
         <!-- The Attachments -->
         <div
-          v-else-if="this.counter === 4"
+          v-if="this.counter === setAttachments"
           class="
             d-flex
             align-items-center
@@ -420,14 +468,9 @@
           "
           id="app"
         >
-          <div
-            class="p-5 col-md-12 rounded"
-            @dragover="dragover"
-            @dragleave="dragleave"
-            @drop="drop"
-            id="uploadContainer"
-          >
+          <div class="p-5 col-md-12 rounded" id="uploadContainer">
             <input
+              v-if="isInitiator"
               type="file"
               multiple
               name="fields[assetsFieldHandle][]"
@@ -437,24 +480,62 @@
               ref="file"
               accept=".pdf,.jpg,.jpeg,.png"
             />
-
             <label for="assetsFieldHandle" class="block cursor-pointer">
-              <span class="text-secondary">Drag and Drop files here</span>
-              <br /><span class="text-secondary">or</span><br />
-              <div id="uploadText" class="mt-2 btn btn-sm btn-primary">
-                Select files
-              </div>
+              <span v-if="isInitiator" class="text-secondary"
+                >Click here to add new file(s)</span
+              >
+              <span v-else class="text-secondary"
+                >List of Attached file(s)</span
+              >
             </label>
             <!-- <aside class="d-flex align-items-center justify-content-center"> -->
-            <ul
-              class="mt-4 text-decoration-none ulUpload"
-              v-if="this.selectedFile.length"
-              v-cloak
-            >
+            <ul class="mt-4 text-decoration-none ulUpload" v-cloak>
               <li
                 class="text-sm mt-2"
                 v-for="(file, index) in selectedFile"
-                :key="file.name"
+                :key="file.id"
+              >
+                <div class="row d-flex justify-content-center">
+                  <div class="col-md-4 d-flex">
+                    <div class="col-1">
+                      <b>{{ index + 1 + "." }}</b>
+                    </div>
+                    <div class="col text-left">
+                      <span>{{ file.filename }}</span>
+                    </div>
+                    <div class="co-2" v-if="isInitiator">
+                      <button
+                        class="btn btn-danger btn-sm"
+                        @click="
+                          removeAttachedFile(
+                            index,
+                            file.id,
+                            file.filename,
+                            file.filepath
+                          )
+                        "
+                        title="Remove file"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div class="col-2">
+                      <button
+                        class="btn btn-secondary btn-sm"
+                        @click="preview(file.mimeType, file.imageBytes)"
+                      >
+                        Preview
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <!-- Newly added files -->
+              <li
+                class="text-sm mt-2"
+                v-for="(file, index) in selectedFileNew"
+                :key="file.id"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
@@ -468,7 +549,7 @@
                       <button
                         class="btn btn-danger btn-sm"
                         type="button"
-                        @click="remove(selectedFile.indexOf(file))"
+                        @click="removeNew(selectedFileNew.indexOf(file))"
                         title="Remove file"
                       >
                         Remove
@@ -476,7 +557,7 @@
                     </div>
                     <div class="col-2">
                       <button
-                        @click="preview(selectedFile.indexOf(file))"
+                        @click="previewNew(selectedFileNew.indexOf(file))"
                         class="btn btn-secondary btn-sm"
                       >
                         Preview
@@ -485,6 +566,7 @@
                   </div>
                 </div>
               </li>
+              <!-- /.Newly added files -->
             </ul>
 
             <!-- </aside> -->
@@ -493,7 +575,7 @@
         <!-- / The Attachments -->
 
         <!--  Form Review -->
-        <aside v-else-if="this.counter === 5">
+        <aside v-if="this.counter === setReview">
           <div class="card card-secondary mt-4">
             <div class="card-header">
               <h3 class="card-title">Request Details</h3>
@@ -513,10 +595,16 @@
               <table
                 class="table table-sm table-bordered table-hover table-striped"
               >
+                <!-- <thead>
+          <tr>
+            <th>Form</th>
+            <th style="width: 80%"></th>
+          </tr>
+        </thead> -->
                 <tbody>
                   <tr>
                     <td>Reference Number</td>
-                    <td style="width: 80%">{{ "RE-" + todaysYear }}</td>
+                    <td style="width: 80%">{{ this.referenceNumber }}</td>
                   </tr>
                   <tr>
                     <td>Requested Date</td>
@@ -528,11 +616,11 @@
                   </tr>
                   <tr>
                     <td>Reporting Manager</td>
-                    <td>{{ this.reportingManagerItem.name }}</td>
+                    <td>{{ this.reportingManagerName }}</td>
                   </tr>
                   <tr>
                     <td>Project Name</td>
-                    <td>{{ this.projectItem.name }}</td>
+                    <td>{{ this.projectName }}</td>
                   </tr>
                   <tr>
                     <td>Client Name</td>
@@ -549,7 +637,7 @@
           </div>
           <!-- /.card -->
 
-          <!-- Payment Details -->
+          <!-- Transpo Details Review  -->
           <div class="card card-secondary">
             <div class="card-header">
               <h3 class="card-title">Payment Details</h3>
@@ -576,11 +664,11 @@
                   </tr>
                   <tr>
                     <td>Mode of Payment</td>
-                    <td>{{ this.modeOfPaymentItem.name }}</td>
+                    <td></td>
                   </tr>
                   <tr>
                     <td>Currency</td>
-                    <td>{{ this.currencyItem.name }}</td>
+                    <td></td>
                   </tr>
                   <tr>
                     <td>Amount</td>
@@ -591,8 +679,7 @@
             </div>
             <!-- /.card-body -->
           </div>
-          <!-- /.card -->
-          <!-- /.Payment Details -->
+          <!-- /.Transpo Details Review card -->
 
           <!-- Expense Details Review -->
           <div class="card card-secondary">
@@ -707,7 +794,6 @@
           </div>
           <!-- /.Transportation Details Review -->
 
-          <!-- Attachments Review -->
           <div class="card card-secondary">
             <div class="card-header">
               <h3 class="card-title">Attachments</h3>
@@ -737,16 +823,10 @@
                 <tbody>
                   <tr v-for="(file, index) in selectedFile" :key="file.name">
                     <td>{{ index + 1 }}</td>
-                    <td>{{ file.name }}</td>
+                    <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
-                        @click="remove(selectedFile.indexOf(file))"
-                        class="btn btn-danger btn-sm"
-                      >
-                        Delete
-                      </button>
-                      <button
-                        @click="preview(selectedFile.indexOf(file))"
+                        @click="preview(file.mimeType, file.imageBytes)"
                         class="btn btn-secondary btn-sm ml-1"
                       >
                         Preview
@@ -760,9 +840,83 @@
           </div>
           <!-- /.card -->
         </aside>
-        <!-- ./Attachments Review -->
-
         <!-- / Form Review -->
+
+        <!-- / Main Form -->
+
+        <!-- Buttons -->
+        <div class="row d-flex justify-content-between mt-3">
+          <aside class="col-lg-6 d-flex justify-content-start">
+            <div class="col-lg-2" v-show="counter">
+              <button
+                type="button"
+                @click="counter--"
+                class="btn btn-block btn-secondary btn-sm"
+              >
+                Previous
+              </button>
+            </div>
+
+            <div class="col-lg-2" v-if="this.counter <= setNextButton">
+              <button
+                type="button"
+                @click="counter++"
+                class="btn btn-block btn-primary btn-sm"
+              >
+                Next
+              </button>
+            </div>
+          </aside>
+
+          <aside class="col-lg-6 d-flex justify-content-end">
+            <div class="col-lg-2">
+              <button
+                type="button"
+                class="btn btn-block btn-success btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+                @click="setTitle('Approve')"
+              >
+                Approve
+              </button>
+            </div>
+
+            <div class="col-lg-2">
+              <button
+                type="button"
+                class="btn btn-block btn-danger btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+                @click="setTitle('Reject')"
+              >
+                Reject
+              </button>
+            </div>
+
+            <div class="col-lg-2">
+              <button
+                type="button"
+                class="btn btn-block btn-warning btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+                @click="setTitle('Clarify')"
+              >
+                Clarify
+              </button>
+            </div>
+
+            <div class="col-lg-2">
+              <button
+                type="button"
+                class="btn btn-block btn-danger btn-sm"
+                @click="close()"
+              >
+                Close
+              </button>
+            </div>
+          </aside>
+        </div>
+        <!-- / Buttons -->
 
         <!-- Modal Expense Type -->
         <div class="modal fade" id="modal-expenseType">
@@ -774,7 +928,6 @@
                 </h6>
                 <button
                   type="button"
-                  id="modalCloseButton"
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
@@ -896,7 +1049,6 @@
                 </h6>
                 <button
                   type="button"
-                  id="modalCloseButton"
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
@@ -1045,40 +1197,76 @@
         </div>
         <!-- /. Modal Transporation Details -->
 
-        <!-- / Main Form -->
+        <!-- Modal -->
+        <div class="modal fade" id="modal-default">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <!-- Overlay Loading Spinner -->
+              <div class="overlay" v-show="isLoadingModal">
+                <i class="fas fa-2x fa-sync fa-spin"></i>
+              </div>
 
-        <!-- Button -->
-        <div class="row d-flex justify-content-end mt-3">
-          <div class="col-md-1" v-show="counter">
-            <button
-              type="button"
-              @click="counter--"
-              class="btn btn-block btn-secondary btn-sm"
-            >
-              Previous
-            </button>
-          </div>
-          <div class="col-md-1" v-if="this.counter <= 4">
-            <button
-              type="button"
-              @click="counter++"
-              class="btn btn-block btn-primary btn-sm"
-            >
-              Next
-            </button>
-          </div>
+              <div class="modal-header">
+                <h6 class="modal-title">
+                  <b>{{ this.title }} Request</b>
+                </h6>
+                <button
+                  type="button"
+                  id="modalCloseButton"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row" v-if="isForClarity">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <model-list-select
+                        :list="recipent"
+                        v-model="itemrecipient"
+                        option-value="code"
+                        option-text="name"
+                        placeholder="Select Recipient"
+                        style="padding: 9px"
+                      >
+                      </model-list-select>
+                    </div>
+                  </div>
+                </div>
 
-          <div class="col-md-1" v-else>
-            <button
-              type="button"
-              class="btn btn-block btn-success btn-sm"
-              @click="submit()"
-            >
-              Submit
-            </button>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <textarea
+                        class="form-control"
+                        id="remarks"
+                        rows="5"
+                        v-model="remarks"
+                        placeholder="Please input request remarks here!"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer justify-content-end">
+                <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  @click="submit(title)"
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
           </div>
+          <!-- /.modal-dialog -->
         </div>
-        <!-- / Button -->
+        <!-- /.modal -->
       </div>
     </div>
     <!-- /.card -->
@@ -1086,6 +1274,7 @@
 </template>
 
 <script>
+/*eslint-disable*/
 import { ModelListSelect } from "vue-search-select";
 import axios from "axios";
 import VsToast from "@vuesimple/vs-toast";
@@ -1095,12 +1284,23 @@ export default {
   },
   created() {
     // Request Details
-    this.getProjects();
-    this.getReportingManager();
-    this.todaysDate();
+    this.getPcMain(this.processId);
+    this.getActualSign(this.processId, this.form, this.companyId);
+    this.getAttachments(this.processId, this.form);
+    this.getInprogressId(this.processId, this.companyId, this.form);
+    this.getRecipients(
+      this.processId,
+      this.loggedUserId,
+      this.companyId,
+      this.form
+    );
+
     this.getBusinesses();
     this.getexpenseType();
     this.gettranspoSetup();
+
+    this.getPcExpense(this.processId);
+    this.getPcTranspo(this.processId);
   },
   watch: {
     // Request Details
@@ -1111,6 +1311,31 @@ export default {
     counter() {
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
+    },
+
+    //Navigate
+    $route(newRoute) {
+      this.counter = 0;
+      this.remarks = "";
+      console.log(newRoute);
+
+      // this.todaysDate();
+      this.getPcMain(this.processId);
+      this.getActualSign(this.processId, this.form, this.companyId);
+      this.getAttachments(this.processId, this.form);
+      this.getRecipients(
+        this.processId,
+        this.loggedUserId,
+        this.companyId,
+        this.form
+      );
+
+      this.getBusinesses();
+      this.getexpenseType();
+      this.gettranspoSetup();
+
+      this.getPcExpense(this.processId);
+      this.getPcTranspo(this.processId);
     },
   },
   computed: {
@@ -1133,14 +1358,44 @@ export default {
       return { active: this.counter >= 5 };
     },
 
-    // Calendaer
-    todaysYear() {
-      const today = new Date();
-      // const dd = today.getDate();
-      // const mm = today.getMonth() + 1;
-      const yyyy = today.getFullYear();
-      // const todaysDate = yyyy + "-" + mm + "-" + dd;
-      return yyyy;
+    setExpense() {
+      if (this.isPayable === true) {
+        return 2;
+      } else {
+        return false;
+      }
+    },
+
+    setTranspo() {
+      if (this.isPayable === true) {
+        return 3;
+      } else {
+        return false;
+      }
+    },
+
+    setAttachments() {
+      if (this.isPayable === true) {
+        return 4;
+      } else {
+        return 2;
+      }
+    },
+
+    setReview() {
+      if (this.isPayable === true) {
+        return 5;
+      } else {
+        return 3;
+      }
+    },
+
+    setNextButton() {
+      if (this.isPayable === true) {
+        return 4;
+      } else {
+        return 2;
+      }
     },
 
     // Sum of all amount spend in liquidation
@@ -1166,6 +1421,24 @@ export default {
         return 0;
       }
     },
+
+    // Calendaer
+    todaysYear() {
+      const today = new Date();
+      // const dd = today.getDate();
+      // const mm = today.getMonth() + 1;
+      const yyyy = today.getFullYear();
+      // const todaysDate = yyyy + "-" + mm + "-" + dd;
+      return yyyy;
+    },
+
+    isForClarity() {
+      if (this.title === "Clarify") {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   data() {
     return {
@@ -1173,33 +1446,34 @@ export default {
       // Request Details
       reportingManager: [],
       reportingManagerItem: {},
-      referenceNumber: "",
-      requestDate: "",
       project: [],
       projectItem: {},
-      dateNeeded: "",
-      clientName: "",
       clientId: "",
       mainId: "",
+
+      referenceNumber: "",
+      requestDate: "",
+      dateNeeded: "",
+      reportingManagerName: "",
+      projectName: "",
+      clientName: "",
       purpose: "",
 
-      // Payment Details
-      modeOfPayment: [
-        { code: "Cash", name: "Cash" },
-        { code: "Check", name: "Check" },
-        { code: "Credit to Account", name: "Credit to Account" },
-      ],
-      modeOfPaymentItem: {},
-      currency: [
-        { code: "PHP", name: "PHP" },
-        { code: "AUD", name: "AUD" },
-        { code: "CAD", name: "CAD" },
-        { code: "EUR", name: "EUR" },
-        { code: "USD", name: "USD" },
-      ],
-      currencyItem: {},
+      guid: "",
+
       payeeName: "",
       amount: "",
+
+      realAmount: "",
+
+      // The Attachments
+      selectedFile: [],
+      filespreview: [],
+
+      selectedFileNew: [],
+      filespreviewNew: [],
+
+      removedAttachedFilesId: [],
 
       // expense data modal
       modalclient: [],
@@ -1211,11 +1485,6 @@ export default {
       expenseType_Date: "",
       expenseType_Amount: "",
       expenseType_Remarks: "",
-
-      // The Attachments
-      selectedFile: [],
-      filespreview: [],
-
       isButton: true,
 
       // data for expense type
@@ -1235,16 +1504,55 @@ export default {
       transpoSetup_Data: [],
       transpoSetup_EditData: [],
 
-      // Logged User Data
-      loggedUserId: 136,
-      loggedUserFirstName: "Rosevir",
-      loggedUserLastName: "Ceballos",
-      loggedUserDepartment: "Information Technology",
-      loggedUserPosition: "Senior Developer",
+      // // Logged User Data // initiator
+      // loggedUserId: 136,
+      // loggedUserFirstName: "Rosevir",
+      // loggedUserLastName: "Ceballos",
+      // loggedUserFullName: "Rosevir Ceballos Jr.",
+      // loggedUserDepartment: "Information Technology",
+      // loggedUserPosition: "Senior Developer",
+      // companyId: 1,
+      // companyName: "Cylix Technologies Inc.",
+
+      // // approver
+      // loggedUserId: 11,
+      // loggedUserFirstName: "Konrad",
+      // loggedUserLastName: "Chua",
+      // loggedUserFullName: "Konrad Chua",
+      // loggedUserDepartment: "Management",
+      // loggedUserPosition: "Managing Director",
+      // companyId: 1,
+      // companyName: "Cylix Technologies Inc.",
+
+      // approver 2
+      loggedUserId: 12,
+      loggedUserFirstName: "Carrie",
+      loggedUserLastName: "Chua Lee",
+      loggedUserFullName: "Carrie Chua Lee",
+      loggedUserDepartment: "Accounting and Finance",
+      loggedUserPosition: "Accounting and Finance Head",
       companyId: 1,
       companyName: "Cylix Technologies Inc.",
 
+      isInitiator: false,
       isLoading: false,
+      isLoadingModal: false,
+      processId: this.$route.params.id,
+      form: this.$route.params.frmName,
+
+      remarks: "",
+
+      recipent: [],
+      itemrecipient: {},
+
+      title: "",
+
+      isReleased: false,
+      isApproving: false,
+
+      inprogressId: "",
+
+      isPayable: false,
     };
   },
 
@@ -1252,106 +1560,108 @@ export default {
     setButton() {
       this.isButton = true;
     },
-
-    openToast(position, variant, message) {
-      const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
-      VsToast.show({
-        title: `${toastTitle}`,
-        message: `${message}`,
-        variant,
-        position,
-      });
-    },
-
-    submit() {
-      this.isLoading = true;
+    async submit(type) {
+      this.isLoadingModal = true;
       const fd = new FormData();
 
-      for (let i = 0; i < this.selectedFile.length; i++) {
-        fd.append("file[]", this.selectedFile[i]);
+      for (let i = 0; i < this.selectedFileNew.length; i++) {
+        fd.append("file[]", this.selectedFileNew[i]);
       }
 
-      // console.log(this.reportingManagerItem.code)
-      // console.log(this.reportingManagerItem.name)
-      // // console.log(this.referenceNumber)
-      // console.log(this.requestDate)
-      // console.log(this.projectItem.name)
-      // console.log(this.projectItem.code)
-      // console.log(this.dateNeeded)
-      // console.log(this.clientName)
-      // console.log(this.clientId)
-      // console.log(this.mainId)
-      // console.log(this.purpose)
-
-      // console.log(this.payeeName)
-      // console.log(this.amount)
-      // console.log(this.modeOfPaymentItem.name)
-      // console.log(this.currencyItem.name)
-
-      // console.log(loggedUserId)
-      // console.log(loggedUserFirstName)
-      // console.log(loggedUserLastName)
-      // console.log(loggedUserDepartment)
-      // console.log(loggedUserPosition)
-      // console.log(companyId)
-      // console.log(companyName)
-
-      fd.append("reportingManagerId", this.reportingManagerItem.code);
-      fd.append("reportingManagerName", this.reportingManagerItem.name);
-      // fd.append("",this.referenceNumber)
-      // fd.append("",this.requestDate)
-      fd.append("projectName", this.projectItem.name);
-      fd.append("projectId", this.projectItem.code);
-      fd.append("dateNeeded", this.dateNeeded);
-      fd.append("clientName", this.clientName);
-      fd.append("clientId", this.clientId);
-      fd.append("mainId", this.mainId);
-      fd.append("purpose", this.purpose);
-
-      fd.append("payeeName", this.payeeName);
-      fd.append("amount", this.amount);
-      fd.append("MOP", this.modeOfPaymentItem.name);
-      fd.append("currency", this.currencyItem.name);
-
+      fd.append("form", this.form);
+      fd.append("processId", this.$route.params.id);
       fd.append("loggedUserId", this.loggedUserId);
-      fd.append("loggedUserFirstName", this.loggedUserFirstName);
-      fd.append("loggedUserLastName", this.loggedUserLastName);
-      fd.append("loggedUserDepartment", this.loggedUserDepartment);
-      fd.append("loggedUserPosition", this.loggedUserPosition);
       fd.append("companyId", this.companyId);
-      fd.append("companyName", this.companyName);
+      fd.append("recipientId", this.itemrecipient.code);
+      fd.append("remarks", this.remarks);
+      fd.append("inprogressId", this.inprogressId);
+      fd.append("loggedUserFullname", this.loggedUserFullName);
+      fd.append("referenceNumber", this.referenceNumber);
+      fd.append("isReleased", this.isReleased);
+      fd.append("isApproving", this.isApproving);
+      fd.append("isInitiator", this.isInitiator);
+      fd.append("payeeName", this.payeeName);
+      fd.append("guid", this.guid);
+      fd.append("class", "PC");
 
+      fd.append("removedFiles", JSON.stringify(this.removedAttachedFilesId));
+      fd.append("loggedUserDepartment", this.loggedUserDepartment);
       fd.append("expenseType_Data", JSON.stringify(this.expenseType_Data));
       fd.append("transpoSetup_Data", JSON.stringify(this.transpoSetup_Data));
 
-      axios
-        .post("http://127.0.0.1:8000/api/saveRe", fd)
-        .then((res) => {
-          // handle success
-          // console.log(res.data.message)
-          this.isLoading = false;
+      if (type === "Approve") {
+        try {
+          const resp = await axios.post(
+            "http://127.0.0.1:8000/api/approve-request",
+            fd
+          );
+
+          this.isLoadingModal = false;
+          document.getElementById("modalCloseButton").click();
+          if (resp.status === 200) {
+            // console.log(resp.data);
+            this.openToast("top-right", "success", resp.data.message);
+            this.$router.replace("/approvals");
+          }
+
+          if (resp.status === 202) {
+            // console.log(resp.data);
+            this.openToast("top-right", "error", resp.data.message);
+          }
+        } catch (err) {
+          // Handle Error Here
+          console.error(err);
+          this.isLoadingModal = false;
+        }
+      }
+      if (type === "Reject") {
+        try {
+          const resp = await axios.post(
+            "http://127.0.0.1:8000/api/reject-request",
+            fd
+          );
+
+          this.isLoadingModal = false;
+          if (resp.status === 200) {
+            // console.log(resp.data);
+            document.getElementById("modalCloseButton").click();
+            this.openToast("top-right", "success", resp.data.message);
+            this.$router.replace("/approvals");
+          }
+        } catch (err) {
+          // Handle Error Here
+          console.error(err);
+          this.isLoadingModal = false;
+        }
+      }
+      if (type === "Clarify") {
+        try {
+          const res = await axios.post(
+            "http://127.0.0.1:8000/api/send-clarity",
+            fd
+          );
 
           if (res.status === 200) {
+            this.isLoadingModal = false;
+            document.getElementById("modalCloseButton").click();
             this.openToast("top-right", "success", res.data.message);
-            this.$router.replace("/inprogress");
+            this.$router.replace("/approvals");
+          } else {
+            this.isLoadingModal = false;
+            document.getElementById("modalCloseButton").click();
+            this.openToast("top-right", "error", "Please Try again laer");
           }
-
-          if (res.status === 202) {
-            // console.log(res)
-            this.openToast("top-right", "error", res.data.message);
-          }
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error.data);
-          this.isLoading = false;
-          this.openToast("top-right", "error", error.data);
-        })
-        .then(() => {
-          // always executed
-        });
+        } catch (err) {
+          // Handle Error Here
+          // console.error(err);
+          this.isLoadingModal = false;
+          document.getElementById("modalCloseButton").click();
+          this.openToast("top-right", "error", err);
+        }
+      }
     },
 
+    // CRUD of Expense and Transpo
     insert_transpoSetup() {
       const addData = {
         id: this.i++,
@@ -1483,16 +1793,53 @@ export default {
       // console.log('1'+ index)
       this.expenseType_Data.splice(index, 1);
     },
+    //. Crud of Expense and Transpo
 
-    // Request Details
-    todaysDate() {
-      const today = new Date();
-      const dd = today.getDate();
-      const mm = today.getMonth() + 1;
-      const yyyy = today.getFullYear();
-      const todaysDate = yyyy + "-" + mm + "-" + dd;
-      this.requestDate = todaysDate;
-      // return todaysDate;
+    setTitle(title) {
+      this.title = title;
+    },
+
+    openToast(position, variant, message) {
+      const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
+      VsToast.show({
+        title: `${toastTitle}`,
+        message: `${message}`,
+        variant,
+        position,
+      });
+    },
+
+    close() {
+      this.$router.replace("/approvals");
+    },
+
+    async getPcExpense(id) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-PcExpense/${id}`
+        );
+
+        if (resp.status === 200) {
+          this.expenseType_Data = resp.data;
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+    async getPcTranspo(id) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-PcTranspo/${id}`
+        );
+
+        if (resp.status === 200) {
+          this.transpoSetup_Data = resp.data;
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
     },
 
     async gettranspoSetup() {
@@ -1570,7 +1917,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
@@ -1595,117 +1942,241 @@ export default {
       this.modalclient = client;
     },
 
-    async getProjects() {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/general-projects",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-
-      const responseData = await response.json();
-      if (!response.ok) {
-        const error = new Error(
-          responseData.message || "Failed to fetch Projects."
+    async getRecipients(id, loggedUserId, companyId, form) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/getRecipient/${id}/${loggedUserId}/${companyId}/${form}`
         );
-        throw error;
+
+        if (resp.status === 200) {
+          const recipient = [];
+          for (const key in resp.data) {
+            const request = {
+              code: resp.data[key].uid,
+              name: resp.data[key].name,
+            };
+            recipient.push(request);
+          }
+          this.recipent = recipient;
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
       }
-      const project = [];
-      for (const key in responseData) {
-        const request = {
-          code: responseData[key].project_id,
-          name: responseData[key].project_name,
-        };
-        project.push(request);
-      }
-      this.project = project;
     },
 
-    async getClient(id) {
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/business-client/${id}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-
-      const responseData = await response.json();
-      if (!response.ok) {
-        const error = new Error(
-          responseData.message || "Failed to fetch Reporting Manager."
+    async getPcMain(id) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-PcMain/${id}`
         );
-        throw error;
+
+        if (resp.status === 200) {
+          this.referenceNumber = resp.data.data.REQREF;
+          this.requestDate = resp.data.data.REQUESTED_DATE;
+          this.dateNeeded = resp.data.data.DEADLINE;
+          this.reportingManagerName = resp.data.data.REPORTING_MANAGER;
+          this.projectName = resp.data.data.PROJECT;
+          this.clientName = resp.data.data.CLIENT_NAME;
+          this.purpose = resp.data.data.DESCRIPTION;
+
+          this.amount = resp.data.data.REQUESTED_AMT;
+          this.guid = resp.data.data.GUID;
+
+          if (resp.data.data.UID === this.loggedUserId) {
+            this.isInitiator = true;
+          } else {
+            this.isInitiator = false;
+          }
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
       }
-      const client = [];
-      for (const key in responseData) {
-        const request = {
-          clientId: responseData[key].clientID,
-          clientName: responseData[key].clientName,
-          mainId: responseData[key].mainID,
-        };
-        client.push(request);
+    },
+    async getActualSign(id, form, companyId) {
+      this.isLoading = true;
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`
+        );
+        // console.log(resp.status);
+        if (resp.status === 200) {
+          this.isLoading = false;
+          this.payeeName = resp.data[0].Payee;
+
+          // use to set the is released insert in database in PcMain
+          if (
+            resp.data[0].STATUS === "Completed" &&
+            resp.data[3].STATUS === "Not Started"
+          ) {
+            this.isReleased = true;
+          } else {
+            this.isReleased = false;
+          }
+
+          // use to set done approving in data actual sign table in PC
+          if (resp.data[3].STATUS === "In Progress") {
+            this.isApproving = true;
+          } else {
+            this.isApproving = false;
+          }
+
+          // check if the request is done in payable
+          if (resp.data[1].STATUS === "Completed") {
+            this.isPayable = true;
+          } else {
+            this.isPayable = false;
+          }
+          // console.log(this.isApproving);
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
       }
-      this.clientName = client[0].clientName;
-      this.clientId = client[0].clientId;
-      this.mainId = client[0].mainId;
     },
 
-    async getReportingManager() {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/reporting-manager/136",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-
-      const responseData = await response.json();
-      if (!response.ok) {
-        const error = new Error(
-          responseData.message || "Failed to fetch Reporting Manager."
+    async getInprogressId(id, companyId, form) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-Inprogress/${id}/${companyId}/${form}`
         );
-        throw error;
+        // console.log(resp.status);
+        if (resp.status === 200) {
+          // this.selectedFile = resp.data.data;
+          this.inprogressId = resp.data[0].inpId;
+          console.log(this.inprogressId);
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    async getAttachments(id, form) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`
+        );
+        // console.log(resp.status);
+        if (resp.status === 200) {
+          this.selectedFile = resp.data.data;
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    // Payment Details
+    formatNumber(n) {
+      // format number 1000000 to 1,234,567
+      return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+
+    formatCurrency(input, blur) {
+      // appends $ to value, validates decimal side
+      // and puts cursor back in right position.
+
+      // get input value
+      var input_val = this.amount;
+
+      // don't validate empty input
+      if (input_val === "") {
+        return;
       }
 
-      const reportingManager = [];
-      for (const key in responseData) {
-        const request = {
-          code: responseData[key].RMID,
-          name: responseData[key].RMName,
-        };
-        reportingManager.push(request);
+      // original length
+      var original_len = input_val.length;
+
+      // initial caret position
+      var caret_pos = input.target.selectionStart;
+
+      // check for decimal
+      if (input_val.indexOf(".") >= 0) {
+        // get position of first decimal
+        // this prevents multiple decimals from
+        // being entered
+        var decimal_pos = input_val.indexOf(".");
+
+        // split number by decimal point
+        var left_side = input_val.substring(0, decimal_pos);
+        var right_side = input_val.substring(decimal_pos);
+
+        // add commas to left side of number
+        left_side = this.formatNumber(left_side);
+
+        // validate right side
+        right_side = this.formatNumber(right_side);
+
+        // On blur make sure 2 numbers after decimal
+        if (blur === "blur") {
+          right_side += "00";
+        }
+
+        // Limit decimal to only 2 digits
+        right_side = right_side.substring(0, 2);
+
+        // join number by .
+        input_val = left_side + "." + right_side;
+      } else {
+        // no decimal entered
+        // add commas to number
+        // remove all non-digits
+        input_val = this.formatNumber(input_val);
+        input_val = input_val;
+
+        // final formatting
+        if (blur === "blur") {
+          input_val += ".00";
+        }
       }
-      this.reportingManager = reportingManager;
-      // console.log(this.reportingManager);
+
+      // send updated string to input
+      this.amount = input_val;
+      input.target.value = input_val;
+
+      var realAmount = input_val;
+      if (realAmount.indexOf(",") !== -1) {
+        realAmount = realAmount.replace(/,/g, "");
+      }
+      this.realAmount = realAmount;
+      console.log(this.realAmount);
+
+      // put caret back in the right position
+      var updated_len = input_val.length;
+      caret_pos = updated_len - original_len + caret_pos;
+      input[0].setSelectionRange(caret_pos, caret_pos);
     },
 
     // The Attachments
     onFileSelected(event) {
-      let selectedFiles = event.target.files;
-      for (let i = 0; i < selectedFiles.length; i++) {
-        this.selectedFile.push(selectedFiles[i]);
+      let selectedFilesNew = event.target.files;
+      for (let i = 0; i < selectedFilesNew.length; i++) {
+        this.selectedFileNew.push(selectedFilesNew[i]);
       }
-      this.filePreview();
+      this.filePreviewNew();
+      console.log(this.selectedFileNew);
     },
-    remove(i) {
-      this.selectedFile.splice(i, 1);
-      this.filePreview();
+    removeNew(i) {
+      this.selectedFileNew.splice(i, 1);
+      this.filePreviewNew();
     },
-    preview(i) {
+    previewNew(i) {
       // console.log(i)
-      const url = this.filespreview[i].link;
+      const url = this.filespreviewNew[i].link;
       window.open(url, "_blank", "resizable=yes");
+    },
+
+    removeAttachedFile(index, id, filename, filepath) {
+      const attachmentId = { id: id, filename: filename, filepath: filepath };
+      this.removedAttachedFilesId.push(attachmentId);
+      this.selectedFile.splice(index, 1);
+    },
+
+    preview(mimeType, imageBytes) {
+      var newTab = window.open();
+      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
     },
 
     dragover(event) {
@@ -1730,8 +2201,8 @@ export default {
       event.currentTarget.classList.remove("bg-green-300");
     },
 
-    filePreview() {
-      let files = this.selectedFile;
+    filePreviewNew() {
+      let files = this.selectedFileNew;
       const fileContainer = [];
       for (let i = 0; i < files.length; i++) {
         let tmppath = URL.createObjectURL(files[i]);
@@ -1740,7 +2211,7 @@ export default {
         };
         fileContainer.push(thisFiles);
       }
-      this.filespreview = fileContainer;
+      this.filespreviewNew = fileContainer;
     },
   },
 };

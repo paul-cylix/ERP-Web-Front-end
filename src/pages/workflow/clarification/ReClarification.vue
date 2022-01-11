@@ -123,9 +123,13 @@
                   v-if="isEdit"
                 ></date-picker>
 
-                <input type="text" v-else class="form-control py-3 form-control-sm" disabled  v-model="dateNeeded">
-
-                
+                <input
+                  type="text"
+                  v-else
+                  class="form-control py-3 form-control-sm"
+                  disabled
+                  v-model="dateNeeded"
+                />
               </div>
             </div>
             <div class="col-md-3">
@@ -142,12 +146,17 @@
                   option-text="name"
                   placeholder="select item"
                   style="padding: 9px"
-                   v-if="isEdit"
+                  v-if="isEdit"
                 >
                 </model-list-select>
 
-                <input v-else type="text" disabled class="form-control py-3 form-control-sm" v-model="reportingManagerItem.name">
-
+                <input
+                  v-else
+                  type="text"
+                  disabled
+                  class="form-control py-3 form-control-sm"
+                  v-model="reportingManagerItem.name"
+                />
               </div>
             </div>
           </div>
@@ -167,8 +176,14 @@
                 >
                 </model-list-select>
 
-                <input type="text" v-else disabled class="form-control py-3 form-control-sm" v-model="projectItem.name" id="projectName">
-
+                <input
+                  type="text"
+                  v-else
+                  disabled
+                  class="form-control py-3 form-control-sm"
+                  v-model="projectItem.name"
+                  id="projectName"
+                />
               </div>
             </div>
             <div class="col-md-6">
@@ -197,7 +212,6 @@
                   :disabled="isEdit === false"
                   rows="5"
                 ></textarea>
-
               </div>
             </div>
           </div>
@@ -270,7 +284,7 @@
                     class="form-control form-control-sm py-3"
                     id="amount"
                     v-model="amount"
-                     :disabled="isEdit === false"
+                    :disabled="isEdit === false"
                   />
                 </div>
               </div>
@@ -464,7 +478,6 @@
               @change="onFileSelected"
               ref="file"
               accept=".pdf,.jpg,.jpeg,.png"
-              
             />
 
             <label for="assetsFieldHandle" class="block cursor-pointer">
@@ -556,7 +569,6 @@
                   </div>
                 </div>
               </li>
-
               <!-- /.Newly added files -->
             </ul>
 
@@ -860,8 +872,8 @@
             <!-- /.card-body -->
           </div>
           <!-- /.card -->
-        </aside>
         <!-- ./Attachments Review -->
+        </aside>
 
         <!-- / Form Review -->
 
@@ -997,7 +1009,6 @@
                 </h6>
                 <button
                   type="button"
-                
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
@@ -1159,7 +1170,6 @@
                 <h6 class="modal-title"><b>Reply Request</b></h6>
                 <button
                   type="button"
-               
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
@@ -1199,8 +1209,9 @@
         </div>
         <!-- /.modal -->
 
-        <!-- / Main Form -->
-        <!-- Button -->
+        <!-- /. Main Form -->
+
+        <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
           <aside class="col-lg-6 d-flex justify-content-start">
             <div class="col-lg-2" v-show="counter">
@@ -1247,7 +1258,7 @@
             </div>
           </aside>
         </div>
-        <!-- / Button -->
+        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->
@@ -1342,19 +1353,17 @@ export default {
       }
     },
 
-    isEdit(){
-      
+    isEdit() {
       const x = this.isInitiator === true;
       const y = this.forEdit === true;
-      const z = x && y
+      const z = x && y;
 
-      if(z){
-        return true
+      if (z) {
+        return true;
       } else {
-        return false
+        return false;
       }
-
-    }
+    },
   },
   data() {
     return {
@@ -1538,7 +1547,7 @@ export default {
       fd.append("companyName", this.companyName);
       fd.append("guid", this.guid);
 
-      fd.append("class", 'RE');
+      fd.append("class", "RE");
 
       fd.append("removedFiles", JSON.stringify(this.removedAttachedFilesId));
 
@@ -1547,7 +1556,7 @@ export default {
           "http://127.0.0.1:8000/api/reply-request",
           fd
         );
-     
+
         console.log(res.data);
         this.isLoading = false;
 
@@ -1555,8 +1564,6 @@ export default {
           document.getElementById("modalCloseButton").click();
           this.openToast("top-right", "success", res.data.message);
           this.$router.replace("/approvals");
-
-          
         }
 
         if (res.status === 202) {
@@ -1655,15 +1662,13 @@ export default {
 
             // console.log(responesFive)
 
-            if (responesFive.data[2].STATUS === 'Completed') {
-              this.forEdit = false
+            if (responesFive.data[2].STATUS === "Completed") {
+              this.forEdit = false;
             } else {
-              this.forEdit = true
+              this.forEdit = true;
             }
 
             // console.log(this.forEdit)
-
-            
           })
         )
         .catch((errors) => {
@@ -1678,7 +1683,6 @@ export default {
       this.isButton = true;
     },
 
-
     openToast(position, variant, message) {
       const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
       VsToast.show({
@@ -1688,7 +1692,6 @@ export default {
         position,
       });
     },
-
 
     insert_transpoSetup() {
       const addData = {
