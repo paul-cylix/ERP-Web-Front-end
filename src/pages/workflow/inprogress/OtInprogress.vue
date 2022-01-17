@@ -10,7 +10,7 @@
         <loading-spinner></loading-spinner>
       </div>
       <div class="card-header">
-        <h3 class="card-title">Petty Cash Request</h3>
+        <h3 class="card-title">Overtime Request</h3>
       </div>
       <div class="card-body">
         <!-- Step Numbers -->
@@ -23,9 +23,6 @@
           </div>
           <div class="progressbar" :class="classC">
             <span :class="classC">3</span>
-          </div>
-          <div class="progressbar" :class="classD">
-            <span :class="classD">4</span>
           </div>
         </div>
 
@@ -40,24 +37,18 @@
           <div class="textbar" :class="classB">
             <small
               ><span :class="classB" class="font-weight-bold"
-                >Payment Details</span
+                >Overtime Details</span
               ></small
             >
           </div>
           <div class="textbar" :class="classC">
             <small
               ><span :class="classC" class="font-weight-bold"
-                >Attachments</span
-              ></small
-            >
-          </div>
-          <div class="textbar" :class="classD">
-            <small
-              ><span :class="classD" class="font-weight-bold"
                 >Review</span
               ></small
             >
           </div>
+
         </div>
         <!-- / Step Numbers -->
 
@@ -81,48 +72,24 @@
 
             <div class="col-md-3">
               <div class="form-group">
-                <small><label for="requestDate">Request Date</label></small>
-                <input
-                  type="text"
-                  v-model="requestDate"
-                  class="form-control form-control-sm"
-                  disabled
-                  id="requestDate"
-                />
-                <!-- <date-picker
+                <small><label for="requestedDate">Requested Date</label></small>
+                <date-picker
                   disabled
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px"
-                  v-model="requestDate"
-                ></date-picker> -->
+                  v-model="requestedDate"
+                ></date-picker>
               </div>
             </div>
 
-            <div class="col-md-3">
-              <div class="form-group">
-                <small><label for="dateNeeded">Date Needed</label></small>
-                <!-- <date-picker
-                  v-model="dateNeeded"
-                  valueType="format"
-                  style="display: block; width: 100%; line-height: 20px"
-                ></date-picker> -->
-
-                <input
-                  type="text"
-                  v-model="dateNeeded"
-                  class="form-control form-control-sm"
-                  disabled
-                  id="dateNeeded"
-                />
-              </div>
-            </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
               <div class="form-group">
                 <small
-                  ><label for="reportingManager selextForm"
+                  ><label for="reportingManager selextForm" id="selextForm"
                     >Reporting Manager</label
                   ></small
                 >
+
                 <input
                   type="text"
                   id="reportingManager"
@@ -130,159 +97,73 @@
                   class="form-control py-3 form-control-sm"
                   v-model="reportingManagerName"
                 />
-                <!-- <model-list-select
-                  :list="reportingManager"
-                  v-model="reportingManagerItem"
-                  option-value="code"
-                  option-text="name"
-                  placeholder="select item"
-                  style="padding: 9px"
-                >
-                </model-list-select> -->
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <small><label for="projectName">Project Name</label></small>
-                <input
-                  type="text"
-                  v-model="projectName"
-                  disabled
-                  class="form-control py-3 form-control-sm"
-                  id="projectName"
-                />
-                <!-- <model-list-select
-                  :list="project"
-                  v-model="projectItem"
-                  option-value="code"
-                  option-text="name"
-                  placeholder="select item"
-                  style="padding: 9px"
-                >
-                </model-list-select> -->
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <small><label for="clientName">Client Name</label></small>
-                <input
-                  type="text"
-                  disabled
-                  class="form-control py-3 form-control-sm"
-                  id="clientName"
-                  v-model="clientName"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <small><label for="purpose">Purpose</label></small>
-                <!-- <textarea class="form-control" name="purpose" id="purpose" :value="message" @input="updateMessage"  rows="5"></textarea> -->
-                <textarea
-                  class="form-control"
-                  name="purpose"
-                  id="purpose"
-                  v-model="purpose"
-                  rows="5"
-                  disabled
-                ></textarea>
               </div>
             </div>
           </div>
         </aside>
         <!-- / Request Details -->
 
-        <!-- Payment Details -->
+        <!-- Overtime Details -->
         <div class="row mt-4" v-else-if="this.counter === 1">
-          <div class="col-md-3"></div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <small><label for="payeeName">Payee Name</label></small>
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                v-model="payeeName"
-                id="payeeName"
-                disabled
-              />
-            </div>
-            <div class="form-group">
-              <small><label for="modeOfPayment">Mode of Payment</label></small>
-              <input
-                type="text"
-                disabled
-                class="form-control form-control-sm"
-                id="modeOfPayment"
-              />
-              <!-- <model-list-select
-                :list="modeOfPayment"
-                v-model="modeOfPaymentItem"
-                option-value="code"
-                option-text="name"
-                placeholder="select item"
-                style="padding: 9px"
-                disabled ='tr'
-              >
-              </model-list-select> -->
-            </div>
+          <table
+            class="
+              table table-sm table-bordered table-striped
+              mx-2
+              table-responsive
+              text-nowrap
+            "
+          >
+            <thead>
+              <tr>
+                <th :colspan="headerActual" scope="col">
+                  <aside class="d-flex align-items-center">
+                    <span class="mb-1 ml-1"> Overtime Table</span>
+                  </aside>
+                </th>
+              </tr>
+              <tr>
+                <th scope="col" style="width: 5%" class="text-center">#</th>
+                <th scope="col" style="width: 10%">Employee Name</th>
+                <th scope="col" style="width: 15%">Project Name</th>
+                <th scope="col" style="width: 10%">Ovetime Date</th>
+                <th scope="col" style="width: 10%">Auth. Time Start</th>
+                <th scope="col" style="width: 10%">Auth. Time End</th>
+                <th scope="col" style="width: 10%">Auth. OT Hours</th>
+                <th v-if="isActual" scope="col" style="width: 10%">Actual Time Start</th>
+                <th v-if="isActual" scope="col" style="width: 10%">Actual Time End</th>
+                <th v-if="isActual" scope="col" style="width: 10%">Actual OT Hours</th>
+                <th scope="col" style="width: 20%">Purpose</th>
+              </tr>
+            </thead>
+            <tbody style="font-size: 14px">
+              <tr v-for="(item, index) in overtime" :key="item.id">
+                <td class="text-center">{{ index + 1 }}.</td>
+                <td>{{ item.employee_name }}</td>
+                <td>{{ item.cust_name }}</td>
+                <td>{{ item.overtime_date }}</td>
+                <td>{{ item.ot_in }}</td>
+                <td>{{ item.ot_out }}</td>
+                <td>{{ item.ot_totalhrs }}</td>
+                <td v-if="isActual">{{ item.ot_in_actual }}</td>
+                <td v-if="isActual">{{ item.ot_out_actual }}</td>
+                <td v-if="isActual">{{ item.ot_totalhrs_actual }}</td>
+                <td>{{ item.purpose }}</td>
+              </tr>
 
-            <div class="row">
-              <div class="col-md-4">
-                <div class="form-group">
-                  <small><label for="currency">Currency</label></small>
-                  <input
-                    type="text"
-                    disabled
-                    class="form-control form-control-sm"
-                    id="currency"
-                  />
-                  <!-- <model-list-select
-                    :list="currency"
-                    v-model="currencyItem"
-                    option-value="code"
-                    option-text="name"
-                    placeholder="select item"
-                    style="padding: 9px"
-                  >
-                  </model-list-select> -->
-                </div>
-              </div>
-              <div class="col-md-8">
-                <div class="form-group">
-                  <small><label for="amount">Amount</label></small>
-                  <!-- <input
-                    type="text"
-                    @keyup="formatCurrency($event)"
-                    @blur="formatCurrency($event, 'blur')"
-                    pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
-                    class="form-control form-control-sm py-3"
-                    id="amount"
-                    v-model="amount"
-                  /> -->
-
-                  <input
-                    type="text"
-                    class="form-control form-control-sm py-3"
-                    id="amount"
-                    v-model="amount"
-                    disabled
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3"></div>
+              <tr>
+                <td :colspan="numberActual"></td>
+                <td colspan="2">
+                  <b>Total OT Hours: {{ this.totalOTHours }}</b>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <!-- / Payment Details -->
+
+        <!-- /.Overtime Details -->
 
         <!-- The Attachments -->
-        <div
+        <!-- <div
           v-else-if="this.counter === 2"
           class="
             d-flex
@@ -298,7 +179,7 @@
             <label for="assetsFieldHandle" class="block cursor-pointer">
               <span class="text-secondary">List of Attached File</span>
             </label>
-            <!-- <aside class="d-flex align-items-center justify-content-center"> -->
+
             <ul class="mt-4 text-decoration-none ulUpload" v-cloak>
               <li
                 class="text-sm mt-2"
@@ -342,13 +223,14 @@
               </li>
             </ul>
 
-            <!-- </aside> -->
+      
           </div>
-        </div>
+        </div> -->
         <!-- / The Attachments -->
 
         <!--  Form Review -->
-        <aside v-else-if="this.counter === 3">
+        <aside v-else-if="this.counter === 2">
+          <!-- Request Details Review -->
           <div class="card card-secondary mt-4">
             <div class="card-header">
               <h3 class="card-title">Request Details</h3>
@@ -368,12 +250,6 @@
               <table
                 class="table table-sm table-bordered table-hover table-striped"
               >
-                <!-- <thead>
-          <tr>
-            <th>Form</th>
-            <th style="width: 80%"></th>
-          </tr>
-        </thead> -->
                 <tbody>
                   <tr>
                     <td>Reference Number</td>
@@ -381,38 +257,23 @@
                   </tr>
                   <tr>
                     <td>Requested Date</td>
-                    <td>{{ this.requestDate }}</td>
-                  </tr>
-                  <tr>
-                    <td>Date Needed</td>
-                    <td>{{ this.dateNeeded }}</td>
+                    <td>{{ this.requestedDate }}</td>
                   </tr>
                   <tr>
                     <td>Reporting Manager</td>
                     <td>{{ this.reportingManagerName }}</td>
-                  </tr>
-                  <tr>
-                    <td>Project Name</td>
-                    <td>{{ this.projectName }}</td>
-                  </tr>
-                  <tr>
-                    <td>Client Name</td>
-                    <td>{{ this.clientName }}</td>
-                  </tr>
-                  <tr>
-                    <td>Purpose</td>
-                    <td>{{ this.purpose }}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <!-- /.card-body -->
           </div>
-          <!-- /.card -->
+          <!-- /.Request Details Review -->
 
+          <!-- Overtime Details Review -->
           <div class="card card-secondary">
             <div class="card-header">
-              <h3 class="card-title">Payment Details</h3>
+              <h3 class="card-title">Overtime Details</h3>
 
               <div class="card-tools">
                 <button
@@ -427,34 +288,59 @@
             <!-- /.card-header -->
             <div class="card-body p-0">
               <table
-                class="table table-sm table-bordered table-hover table-striped"
+                class="
+                  table
+                  table-sm
+                  table-bordered
+                  table-hover
+                  table-striped
+                  table-responsive
+                  text-nowrap
+                "
               >
+                <thead>
+                  <tr>
+                    <th style="width: 5%">#</th>
+                    <th style="width: 10%">Employee Name</th>
+                    <th style="width: 20%">Project Name</th>
+                    <th style="width: 10%">Ovetime Date</th>
+                    <th style="width: 15%">Auth. Time Start</th>
+                    <th style="width: 15%">Auth. Time End</th>
+                    <th style="width: 5%">Auth. OT Hours</th>
+                    <th v-if="isActual" style="width: 15%">Actual Time Start</th>
+                    <th v-if="isActual" style="width: 15%">Actual Time End</th>
+                    <th v-if="isActual" style="width: 5%">Actual OT Hours</th>
+                    <th style="width: 20%">Purpose</th>
+                  </tr>
+                </thead>
                 <tbody>
-                  <tr>
-                    <td>Payee Name</td>
-                    <td style="width: 80%">{{ this.payeeName }}</td>
+                  <tr v-for="(item, index) in overtime" :key="item.id">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.employee_name }}</td>
+                    <td>{{ item.cust_name }}</td>
+                    <td>{{ item.overtime_date }}</td>
+                    <td>{{ item.ot_in }}</td>
+                    <td>{{ item.ot_out }}</td>
+                    <td>{{ item.ot_totalhrs }}</td>
+                    <td v-if="isActual">{{ item.ot_in_actual }}</td>
+                    <td v-if="isActual">{{ item.ot_out_actual }}</td>
+                    <td v-if="isActual">{{ item.ot_totalhrs_actual }}</td>
+                    <td>{{ item.purpose }}</td>
                   </tr>
+
                   <tr>
-                    <td>Mode of Payment</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>Currency</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>Amount</td>
-                    <td>{{ this.amount }}</td>
+                    <td :colspan="numberActual"></td>
+                    <b class="px-1">Total OT Hours: {{ totalOTHours }}</b>
                   </tr>
                 </tbody>
               </table>
             </div>
             <!-- /.card-body -->
           </div>
-          <!-- /.card -->
+          <!-- /.Overtime Details Review -->
 
           <!-- Form Review Attachments -->
-          <div class="card card-secondary">
+          <!-- <div class="card card-secondary">
             <div class="card-header">
               <h3 class="card-title">Attachments</h3>
 
@@ -468,7 +354,7 @@
                 </button>
               </div>
             </div>
-            <!-- /.card-header -->
+          
             <div class="card-body p-0">
               <table
                 class="table table-sm table-bordered table-hover table-striped"
@@ -496,13 +382,11 @@
                 </tbody>
               </table>
             </div>
-            <!-- /.card-body -->
-          </div>
+      
+          </div> -->
           <!-- /.Form Review Attachments -->
         </aside>
         <!-- / Form Review -->
-
-        <!-- / Main Form -->
 
         <!-- Modal -->
         <div class="modal fade" id="modal-default">
@@ -572,7 +456,7 @@
               </button>
             </div>
 
-            <div class="col-lg-2" v-if="this.counter <= 2">
+            <div class="col-lg-2" v-if="this.counter <= 1">
               <button
                 type="button"
                 @click="counter++"
@@ -598,8 +482,8 @@
             <div class="col-lg-2">
               <button
                 type="button"
-                class="btn btn-block btn-danger btn-sm"
                 @click="close()"
+                class="btn btn-block btn-danger btn-sm"
               >
                 Close
               </button>
@@ -607,6 +491,8 @@
           </aside>
         </div>
         <!-- / Buttons -->
+
+        <!-- / Main Form -->
       </div>
     </div>
     <!-- /.card -->
@@ -618,20 +504,26 @@
 import { ModelListSelect } from "vue-search-select";
 import axios from "axios";
 import VsToast from "@vuesimple/vs-toast";
+
 export default {
   components: {
     ModelListSelect,
   },
   created() {
-    // Request Details
-    this.getPcMain(this.processId);
-    this.getActualSign(this.processId, this.form, this.companyId);
-    this.getAttachments(this.processId, this.form);
+    this.getOtMain(this.$route.params.id);
+    this.getAttachments(this.$route.params.id, this.$route.params.frmName);
   },
   watch: {
-    // Request Details
-    projectItem(newValue) {
-      this.getClient(newValue.code);
+    counter() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    },
+
+    $route(newRoute) {
+      console.log(newRoute);
+
+      this.getOtMain(this.$route.params.id);
+      this.getAttachments(this.$route.params.id, this.$route.params.frmName);
     },
   },
   computed: {
@@ -644,8 +536,32 @@ export default {
     classC() {
       return { active: this.counter >= 2 };
     },
-    classD() {
-      return { active: this.counter >= 3 };
+
+    numberActual(){
+      if(this.isActual === true){
+        return 9
+      } else {
+        return 6
+      }
+    },
+
+    headerActual(){
+      if(this.isActual === true){
+        return 11
+      }else{
+        return 8
+      }
+    },
+
+    totalOTHours() {
+      if (this.overtime.length > 0) {
+        const total = this.overtime
+          .map((overtime) => parseFloat(overtime.ot_totalhrs))
+          .reduce((acc, overtime) => overtime + acc);
+        return total;
+      } else {
+        return 0;
+      }
     },
 
     // Calendaer
@@ -662,45 +578,36 @@ export default {
     return {
       counter: 0,
       // Request Details
-      reportingManager: [],
-      reportingManagerItem: {},
-      project: [],
-      projectItem: {},
-      clientId: "",
-      mainId: "",
-
       referenceNumber: "",
-      requestDate: "",
-      dateNeeded: "",
+      requestedDate: "",
       reportingManagerName: "",
-      projectName: "",
-      clientName: "",
-      purpose: "",
 
-      payeeName: "",
-      amount: "",
-
-      realAmount: "",
-
-      // The Attachments
-      selectedFile: [],
-      filespreview: [],
+      // purpose: "",
 
       // Logged User Data
       loggedUserId: 136,
       loggedUserFirstName: "Rosevir",
       loggedUserLastName: "Ceballos",
+      loggedUserFullName: "Rosevir Ceballos Jr.",
       loggedUserDepartment: "Information Technology",
       loggedUserPosition: "Senior Developer",
       companyId: 1,
       companyName: "Cylix Technologies Inc.",
 
+      // totalOT: 0,
       isLoading: false,
       isLoadingModal: false,
       processId: this.$route.params.id,
       form: this.$route.params.frmName,
-
       withdrawRemarks: "",
+
+      overtime: [],
+
+      // The Attachments
+      selectedFile: [],
+
+      isActual: false,
+
     };
   },
 
@@ -727,65 +634,22 @@ export default {
         if(resp.status === 200){
           document.getElementById("modalCloseButton").click();
           this.openToast("top-right", "success", resp.data.message);
+          this.$router.replace("/inprogress");
+
         }
       } catch (err) {
         // Handle Error Here
         console.error(err);
       }
-    },
-
-    openToast(position, variant, message) {
-      const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
-      VsToast.show({
-        title: `${toastTitle}`,
-        message: `${message}`,
-        variant,
-        position,
-      });
     },
 
     close() {
       this.$router.replace("/inprogress");
     },
 
-    async getPcMain(id) {
-      try {
-        const resp = await axios.get(
-          `http://127.0.0.1:8000/api/get-PcMain/${id}`
-        );
-
-        if (resp.status === 200) {
-          this.referenceNumber = resp.data.data.REQREF;
-          this.requestDate = resp.data.data.REQUESTED_DATE;
-          this.dateNeeded = resp.data.data.DEADLINE;
-          this.reportingManagerName = resp.data.data.REPORTING_MANAGER;
-          this.projectName = resp.data.data.PROJECT;
-          this.clientName = resp.data.data.CLIENT_NAME;
-          this.purpose = resp.data.data.DESCRIPTION;
-
-          this.amount = resp.data.data.REQUESTED_AMT;
-
-        }
-      } catch (err) {
-        // Handle Error Here
-        console.error(err);
-      }
-    },
-    async getActualSign(id, form, companyId) {
-      this.isLoading = true;
-      try {
-        const resp = await axios.get(
-          `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`
-        );
-        // console.log(resp.status);
-        if (resp.status === 200) {
-          this.isLoading = false;
-          this.payeeName = resp.data[0].Payee;
-        }
-      } catch (err) {
-        // Handle Error Here
-        console.error(err);
-      }
+    preview(mimeType, imageBytes) {
+      var newTab = window.open();
+      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
     },
 
     async getAttachments(id, form) {
@@ -803,144 +667,54 @@ export default {
       }
     },
 
-    // Payment Details
-    formatNumber(n) {
-      // format number 1000000 to 1,234,567
-      return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    },
+    async getOtMain(id) {
+      this.isLoading = true;
+      try {
+        const resp = await axios.get(`http://127.0.0.1:8000/api/ot-main/${id}`);
+        // console.log(resp.data);
+        if (resp.status === 200) {
+          this.isLoading = false;
+          this.referenceNumber = resp.data[0].reference;
+          this.requestedDate = resp.data[0].request_date;
+          this.reportingManagerName = resp.data[0].reporting_manager;
 
-    formatCurrency(input, blur) {
-      // appends $ to value, validates decimal side
-      // and puts cursor back in right position.
+          this.overtime = resp.data;
 
-      // get input value
-      var input_val = this.amount;
+          if(resp.data[0].ot_totalhrs_actual === null){
+            this.isActual = false
+          } else {
+            this.isActual = true
+          }
+            // console.log(this.isActual)
 
-      // don't validate empty input
-      if (input_val === "") {
-        return;
-      }
-
-      // original length
-      var original_len = input_val.length;
-
-      // initial caret position
-      var caret_pos = input.target.selectionStart;
-
-      // check for decimal
-      if (input_val.indexOf(".") >= 0) {
-        // get position of first decimal
-        // this prevents multiple decimals from
-        // being entered
-        var decimal_pos = input_val.indexOf(".");
-
-        // split number by decimal point
-        var left_side = input_val.substring(0, decimal_pos);
-        var right_side = input_val.substring(decimal_pos);
-
-        // add commas to left side of number
-        left_side = this.formatNumber(left_side);
-
-        // validate right side
-        right_side = this.formatNumber(right_side);
-
-        // On blur make sure 2 numbers after decimal
-        if (blur === "blur") {
-          right_side += "00";
+          
         }
-
-        // Limit decimal to only 2 digits
-        right_side = right_side.substring(0, 2);
-
-        // join number by .
-        input_val = left_side + "." + right_side;
-      } else {
-        // no decimal entered
-        // add commas to number
-        // remove all non-digits
-        input_val = this.formatNumber(input_val);
-        input_val = input_val;
-
-        // final formatting
-        if (blur === "blur") {
-          input_val += ".00";
-        }
-      }
-
-      // send updated string to input
-      this.amount = input_val;
-      input.target.value = input_val;
-
-      var realAmount = input_val;
-      if (realAmount.indexOf(",") !== -1) {
-        realAmount = realAmount.replace(/,/g, "");
-      }
-      this.realAmount = realAmount;
-      console.log(this.realAmount);
-
-      // put caret back in the right position
-      var updated_len = input_val.length;
-      caret_pos = updated_len - original_len + caret_pos;
-      input[0].setSelectionRange(caret_pos, caret_pos);
-    },
-
-    // The Attachments
-    onFileSelected(event) {
-      let selectedFiles = event.target.files;
-      for (let i = 0; i < selectedFiles.length; i++) {
-        this.selectedFile.push(selectedFiles[i]);
-      }
-      this.filePreview();
-    },
-    onInputChange(event) {
-      let selectedFiles = event.dataTransfer.files;
-      for (let i = 0; i < selectedFiles.length; i++) {
-        this.selectedFile.push(selectedFiles[i]);
-      }
-      this.filePreview();
-    },
-    remove(i) {
-      this.selectedFile.splice(i, 1);
-      this.filePreview();
-    },
-    preview(mimeType, imageBytes) {
-      var newTab = window.open();
-      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
-    },
-
-    dragover(event) {
-      event.preventDefault();
-      // Add some visual fluff to show the user can drop its files
-      if (!event.currentTarget.classList.contains("bg-white")) {
-        event.currentTarget.classList.remove("bg-light");
-        event.currentTarget.classList.add("bg-white");
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+        this.isLoading = false;
       }
     },
-    dragleave(event) {
-      // Clean up
-      event.currentTarget.classList.add("bg-light");
-      event.currentTarget.classList.remove("bg-white");
-    },
-    drop(event) {
-      event.preventDefault();
-      this.onInputChange(event); // Trigger the onChange event manually
 
-      // Clean up
-      event.currentTarget.classList.add("bg-light");
-      event.currentTarget.classList.remove("bg-white");
+    openToast(position, variant, message) {
+      const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
+      VsToast.show({
+        title: `${toastTitle}`,
+        message: `${message}`,
+        variant,
+        position,
+      });
     },
 
-    filePreview() {
-      let files = this.selectedFile;
-      const fileContainer = [];
-      for (let i = 0; i < files.length; i++) {
-        let tmppath = URL.createObjectURL(files[i]);
-        const thisFiles = {
-          link: tmppath,
-        };
-        fileContainer.push(thisFiles);
-      }
-      this.filespreview = fileContainer;
+    // Request Details
+    todaysDate() {
+      const today = new Date();
+      const dd = today.getDate();
+      const mm = today.getMonth() + 1;
+      const yyyy = today.getFullYear();
+      const todaysDate = yyyy + "-" + mm + "-" + dd;
+      this.requestedDate = todaysDate;
+      // return todaysDate;
     },
   },
 };

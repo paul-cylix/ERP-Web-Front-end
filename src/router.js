@@ -18,6 +18,7 @@ import MyPractice from "./pages/accounting/MyPractice.vue";
 import TheRfp from "./pages/accounting/TheRfp.vue";
 import TheRe from "./pages/accounting/TheRe.vue";
 import ThePc from "./pages/accounting/ThePc.vue";
+import TheOt from "./pages/humanresource/TheOt.vue";
 
 import GetInprogress from "./pages/workflow/inprogress/GetInprogress.vue";
 import GetApproval from "./pages/workflow/approval/GetApproval.vue";
@@ -33,6 +34,11 @@ import ReClarification from "./pages/workflow/clarification/ReClarification.vue"
 import PcInprogress from "./pages/workflow/inprogress/PcInprogress.vue";
 import PcApproval from "./pages/workflow/approval/PcApproval.vue";
 import PcClarification from "./pages/workflow/clarification/PcClarification.vue";
+
+import OtInprogress from "./pages/workflow/inprogress/OtInprogress.vue";
+import OtApproval from "./pages/workflow/approval/OtApproval.vue";
+import OtInput from "./pages/workflow/input/OtInput.vue";
+import OtClarification from "./pages/workflow/clarification/OtClarification.vue";
 
 
 Vue.use(VueRouter);
@@ -62,6 +68,12 @@ const routes = [
             component: ReInput,
             props: true,
           },
+          {
+            path: ":id",
+            name: "Overtime Request-input",
+            component: OtInput,
+            props: true,
+          },
         ],
       },
       {
@@ -84,6 +96,12 @@ const routes = [
             path: ":id",
             name: "Petty Cash Request-approval",
             component: PcApproval,
+            props: true,
+          },
+          {
+            path: ":id",
+            name: "Overtime Request-approval",
+            component: OtApproval,
             props: true,
           },
         ],
@@ -110,6 +128,13 @@ const routes = [
             component: PcInprogress,
             props: true,
           },
+          {
+            path: ":id",
+            name: "Overtime Request-inprogress",
+            component: OtInprogress,
+            props: true,
+          },
+
         ],
       },
       {
@@ -134,6 +159,12 @@ const routes = [
             component: PcClarification,
             props: true,
           },
+          {
+            path: ":id",
+            name: "Overtime Request-clarification",
+            component: OtClarification,
+            props: true,
+          },
         ],
       },
       { path: "/approved", component: TheApproved },
@@ -155,6 +186,7 @@ const routes = [
       { path: "/the-rfp", component: TheRfp },
       { path: "/the-re", component: TheRe },
       { path: "/the-pc", component: ThePc },
+      { path: "/the-ot", component: TheOt },
 
       {
         path: "/:workflow-:frmClass-:id",

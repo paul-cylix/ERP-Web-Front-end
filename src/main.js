@@ -6,6 +6,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner.vue';
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
 import 'vue-search-select/dist/VueSearchSelect.css';
+import TheAlert from '@/components/ui/TheAlert.vue'
 
 import DataTable from "@andresouzaabreu/vue-data-table";
 Vue.component("data-table", DataTable);
@@ -14,6 +15,7 @@ Vue.component("data-table", DataTable);
 import "@andresouzaabreu/vue-data-table/dist/DataTable.css";
 
 Vue.component('loading-spinner', LoadingSpinner)
+Vue.component('the-alert', TheAlert)
 Vue.component('date-picker', DatePicker)
 
 

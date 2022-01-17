@@ -2,7 +2,7 @@
   <div class="col-md-12 mt-3">
     <!-- Form Element sizes -->
     <div class="card card-secondary">
-            <div
+      <div
         class="overlay"
         style="background-color: white !important"
         v-show="isLoading"
@@ -80,7 +80,7 @@
             </div>
 
             <div class="col-md-3">
-                  <div class="form-group">
+              <div class="form-group">
                 <small><label for="requestDate">Request Date</label></small>
                 <!-- <input type="date" class="form-control form-control-sm" id="requestDate"> -->
                 <date-picker
@@ -495,18 +495,17 @@
               Previous
             </button>
           </div>
-          <div class="col-md-1"   v-if="this.counter <= 2">
+          <div class="col-md-1" v-if="this.counter <= 2">
             <button
               type="button"
               @click="counter++"
               class="btn btn-block btn-primary btn-sm"
-            
             >
               Next
             </button>
           </div>
 
-          <div class="col-md-1"    v-else>
+          <div class="col-md-1" v-else>
             <button
               type="button"
               class="btn btn-block btn-success btn-sm"
@@ -527,7 +526,7 @@
 
 <script>
 import { ModelListSelect } from "vue-search-select";
-import axios from 'axios';
+import axios from "axios";
 import VsToast from "@vuesimple/vs-toast";
 export default {
   components: {
@@ -568,8 +567,6 @@ export default {
       // const todaysDate = yyyy + "-" + mm + "-" + dd;
       return yyyy;
     },
-
-
   },
   data() {
     return {
@@ -610,19 +607,14 @@ export default {
       selectedFile: [],
       filespreview: [],
 
-
       // Logged User Data
       loggedUserId: 136,
-      loggedUserFirstName: 'Rosevir',
-      loggedUserLastName: 'Ceballos',
-      loggedUserDepartment: 'Information Technology',
-      loggedUserPosition: 'Senior Developer',
+      loggedUserFirstName: "Rosevir",
+      loggedUserLastName: "Ceballos",
+      loggedUserDepartment: "Information Technology",
+      loggedUserPosition: "Senior Developer",
       companyId: 1,
-      companyName: 'Cylix Technologies Inc.',
-
-
-
-
+      companyName: "Cylix Technologies Inc.",
     };
   },
 
@@ -642,48 +634,48 @@ export default {
 
       const fd = new FormData();
 
-      for(let i=0; i<this.selectedFile.length;i++){
-        fd.append('file[]',this.selectedFile[i]);
+      for (let i = 0; i < this.selectedFile.length; i++) {
+        fd.append("file[]", this.selectedFile[i]);
       }
-  
-      fd.append('dateNeeded', this.dateNeeded);
-      fd.append('reportingManagerId', this.reportingManagerItem.code);
-      fd.append('reportingManagerName', this.reportingManagerItem.name);
-      fd.append('projectId', this.projectItem.code);
-      fd.append('projectName', this.projectItem.name);
-      fd.append('clientId', this.clientId);
-      fd.append('clientName', this.clientName);
-      fd.append('mainId', this.mainId);
-      fd.append('purpose', this.purpose);
-      fd.append('payeeName', this.payeeName);
-      fd.append('modeOfPayment', this.modeOfPaymentItem.name);
-      fd.append('currency', this.currencyItem.name);
-      fd.append('amount', this.amount);
 
-      fd.append('loggedUserId', this.loggedUserId);
-      fd.append('loggedUserFirstName', this.loggedUserFirstName);
-      fd.append('loggedUserLastName', this.loggedUserLastName);
-      fd.append('loggedUserDepartment', this.loggedUserDepartment);
-      fd.append('loggedUserPosition', this.loggedUserPosition);
-      fd.append('companyId', this.companyId);
-      fd.append('companyName', this.companyName);
+      fd.append("dateNeeded", this.dateNeeded);
+      fd.append("reportingManagerId", this.reportingManagerItem.code);
+      fd.append("reportingManagerName", this.reportingManagerItem.name);
+      fd.append("projectId", this.projectItem.code);
+      fd.append("projectName", this.projectItem.name);
+      fd.append("clientId", this.clientId);
+      fd.append("clientName", this.clientName);
+      fd.append("mainId", this.mainId);
+      fd.append("purpose", this.purpose);
+      fd.append("payeeName", this.payeeName);
+      fd.append("modeOfPayment", this.modeOfPaymentItem.name);
+      fd.append("currency", this.currencyItem.name);
+      fd.append("amount", this.amount);
 
-      axios.post('http://127.0.0.1:8000/api/rfp', fd)
-      .then(res => {
-        // handle success
-        console.log(res)
-        this.isLoading = false;
-        this.openToast("top-right", "success", res.data.Success);
-        this.$router.replace("/inprogress");
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      })
-      .then(function () {
-        // always executed
-      });
+      fd.append("loggedUserId", this.loggedUserId);
+      fd.append("loggedUserFirstName", this.loggedUserFirstName);
+      fd.append("loggedUserLastName", this.loggedUserLastName);
+      fd.append("loggedUserDepartment", this.loggedUserDepartment);
+      fd.append("loggedUserPosition", this.loggedUserPosition);
+      fd.append("companyId", this.companyId);
+      fd.append("companyName", this.companyName);
 
+      axios
+        .post("http://127.0.0.1:8000/api/rfp", fd)
+        .then((res) => {
+          // handle success
+          console.log(res);
+          this.isLoading = false;
+          this.openToast("top-right", "success", res.data.Success);
+          this.$router.replace("/inprogress");
+        })
+        .catch(function (error) {
+          // handle error
+          console.log(error);
+        })
+        .then(function () {
+          // always executed
+        });
     },
 
     // Request Details
@@ -697,8 +689,6 @@ export default {
       // return todaysDate;
     },
 
-
-
     async getProjects() {
       const response = await fetch(
         "http://127.0.0.1:8000/api/general-projects",
@@ -706,7 +696,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
@@ -728,7 +718,7 @@ export default {
       }
       this.project = project;
     },
-    
+
     async getClient(id) {
       const response = await fetch(
         `http://127.0.0.1:8000/api/business-client/${id}`,
@@ -736,7 +726,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
@@ -769,7 +759,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
