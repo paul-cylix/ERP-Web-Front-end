@@ -685,7 +685,7 @@
         <!-- / Form Review -->
         <!-- / Main Form -->
 
-        <!-- Button -->
+        <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
           <aside class="col-lg-6 d-flex justify-content-start">
             <div class="col-lg-2" v-show="counter">
@@ -738,7 +738,7 @@
             </div>
           </aside>
         </div>
-        <!-- / Button -->
+        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->

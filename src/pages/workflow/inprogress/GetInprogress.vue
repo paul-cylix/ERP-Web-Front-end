@@ -77,9 +77,9 @@
               ></small
             >
           </div>
-          <div class="textbar" :class="classD" v-if="isLiquidation">
+          <div class="textbar" :class="classE" v-if="isLiquidation">
             <small
-              ><span :class="classD" class="font-weight-bold"
+              ><span :class="classE" class="font-weight-bold"
                 >Review</span
               ></small
             >
@@ -570,7 +570,7 @@
 
         <!-- / Main Form -->
 
-        <!-- Button -->
+        <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
           <aside class="col-lg-6 d-flex justify-content-start">
             <div class="col-lg-2" v-show="counter">
@@ -635,7 +635,7 @@
             </div>
           </aside>
         </div>
-        <!-- / Button -->
+        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->

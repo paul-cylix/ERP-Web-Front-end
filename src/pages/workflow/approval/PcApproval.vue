@@ -27,6 +27,12 @@
           <div class="progressbar" :class="classD">
             <span :class="classD">4</span>
           </div>
+          <div class="progressbar" :class="classE" v-if="isLiquidation">
+            <span :class="classE">5</span>
+          </div>
+          <div class="progressbar" :class="classF" v-if="isLiquidation">
+            <span :class="classF">5</span>
+          </div>
         </div>
 
         <div class="d-flex text-center">
@@ -44,16 +50,47 @@
               ></small
             >
           </div>
-          <div class="textbar" :class="classC">
+
+          <div class="textbar" :class="classC" v-if="!isLiquidation">
             <small
               ><span :class="classC" class="font-weight-bold"
                 >Attachments</span
               ></small
             >
           </div>
-          <div class="textbar" :class="classD">
+          <div class="textbar" :class="classD" v-if="!isLiquidation">
             <small
               ><span :class="classD" class="font-weight-bold"
+                >Review</span
+              ></small
+            >
+          </div>
+
+          <div class="textbar" :class="classC" v-if="isLiquidation">
+            <small
+              ><span :class="classC" class="font-weight-bold"
+                >Expense Details</span
+              ></small
+            >
+          </div>
+          <div class="textbar" :class="classD" v-if="isLiquidation">
+            <small
+              ><span :class="classD" class="font-weight-bold"
+                >Transportation Details</span
+              ></small
+            >
+          </div>
+
+          <div class="textbar" :class="classE" v-if="isLiquidation">
+            <small
+              ><span :class="classE" class="font-weight-bold"
+                >Attachments</span
+              ></small
+            >
+          </div>
+          <div class="textbar" :class="classF" v-if="isLiquidation">
+            <small
+              ><span :class="classF" class="font-weight-bold"
                 >Review</span
               ></small
             >
@@ -199,7 +236,7 @@
         <!-- / Request Details -->
 
         <!-- Payment Details -->
-        <div class="row mt-4" v-else-if="this.counter === 1">
+        <div class="row mt-4" v-if="this.counter === 1">
           <div class="col-md-3"></div>
           <div class="col-md-6">
             <div class="form-group">
@@ -281,9 +318,166 @@
         </div>
         <!-- / Payment Details -->
 
+        <!-- Expense Details -->
+        <div class="row mt-4" v-if="this.counter === isExpense">
+          <table class="table table-sm table-bordered table-striped mx-2">
+            <thead>
+              <tr>
+                <th colspan="6" scope="col">
+                  <aside class="d-flex align-items-center">
+                    <span class="mb-1 ml-1"> Expense Detals</span>
+                  </aside>
+                </th>
+                <th v-if="isApproval">
+                  <aside class="text-center" >
+                    <button
+                      class="btn btn-sm btn-success m-0"
+                      data-toggle="modal"
+                      data-target="#modal-expenseType"
+                      @click="setButton()"
+                    >
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  </aside>
+                </th>
+              </tr>
+              <tr>
+                <th scope="col" class="text-center">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Client Name</th>
+                <th scope="col">Expense Type</th>
+                <th scope="col">Remarks</th>
+                <th scope="col">Amount</th>
+                <th v-if="isApproval" scope="col">Action</th>
+              </tr>
+            </thead>
+
+            <tbody style="font-size: 14px">
+              <tr v-for="(item, index) in expenseType_Data" :key="item.id">
+                <td class="text-center">{{ index + 1 }}.</td>
+                <td>{{ item.date_ }}</td>
+                <td>{{ item.CLIENT_NAME }}</td>
+                <td>{{ item.EXPENSE_TYPE }}</td>
+                <td>{{ item.DESCRIPTION }}</td>
+                <td>{{ item.AMOUNT }}</td>
+                <td v-if="isApproval" class="pl-0 m-0">
+                  <aside class="d-flex justify-content-center">
+                    <button
+                      class="btn btn-sm btn-info m-0"
+                      data-toggle="modal"
+                      data-target="#modal-expenseType"
+                      @click="edit_ExpenseType(expenseType_Data.indexOf(item))"
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-danger m-0 ml-1"
+                      @click="trash_ExpenseType(expenseType_Data.indexOf(item))"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </aside>
+                </td>
+              </tr>
+
+              <tr>
+                <td :colspan="expenseFooter"></td>
+                <td colspan="2">
+                  <b>Total Amount: {{ this.expenseType_totalAmount }}</b>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- /.Expense Details -->
+
+        <!-- Transportation Details -->
+        <div class="row mt-4" v-if="this.counter === isTranspo">
+          <table class="table table-sm table-bordered table-striped mx-2">
+            <thead>
+              <tr>
+                <th colspan="8" scope="col">
+                  <aside class="d-flex align-items-center">
+                    <span class="mb-1 ml-1"> Transportation Detals</span>
+                  </aside>
+                </th>
+                <th v-if="isApproval">
+                  <aside class="text-center">
+                    <button
+                      class="btn btn-sm btn-success m-0"
+                      data-toggle="modal"
+                      data-target="#modal-Transportation"
+                      @click="setButton()"
+                    >
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  </aside>
+                </th>
+              </tr>
+              <tr>
+                <th scope="col" class="text-center">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Client Name</th>
+                <th scope="col">Destination From</th>
+                <th scope="col">Destination To</th>
+                <th scope="col">Mode of Transportation</th>
+                <th scope="col">Remarks</th>
+                <th scope="col">Amount</th>
+                <th v-if="isApproval" scope="col">Action</th>
+              </tr>
+            </thead>
+
+            <tbody style="font-size: 14px">
+              <tr v-for="(item, index) in transpoSetup_Data" :key="item.id">
+                <td class="text-center">{{ index + 1 }}.</td>
+                <td>{{ item.date_ }}</td>
+                <td>{{ item.CLIENT_NAME }}</td>
+                <td>{{ item.DESTINATION_FRM }}</td>
+                <td>{{ item.DESTINATION_TO }}</td>
+                <td>{{ item.MOT }}</td>
+                <td>{{ item.DESCRIPTION }}</td>
+                <td>{{ item.AMT_SPENT }}</td>
+                <td v-if="isApproval" class="pl-0 m-0">
+                  <aside class="d-flex justify-content-center">
+                    <button
+                      class="btn btn-sm btn-info m-0"
+                      data-toggle="modal"
+                      data-target="#modal-Transportation"
+                      @click="
+                        edit_transpoSetup(transpoSetup_Data.indexOf(item))
+                      "
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-danger m-0 ml-1"
+                      @click="
+                        trash_transpoSetup(transpoSetup_Data.indexOf(item))
+                      "
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </aside>
+                </td>
+              </tr>
+
+              <tr>
+                <td :colspan="transpoFooter"></td>
+                <td colspan="2">
+                
+                  <b>Total Amount: {{ this.transpoSetup_totalAmount }}</b>
+
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- /.Transportation Details -->
+
         <!-- The Attachments -->
         <div
-          v-else-if="this.counter === 2"
+          v-if="this.counter === isAttachments"
           class="
             d-flex
             align-items-center
@@ -294,9 +488,25 @@
           "
           id="app"
         >
+          <input
+            v-if="isApproval"
+            type="file"
+            multiple
+            name="fields[assetsFieldHandle][]"
+            id="assetsFieldHandle"
+            class="w-25 h-25 overflow-hidden"
+            @change="onFileSelected"
+            ref="file"
+            accept=".pdf,.jpg,.jpeg,.png"
+          />
           <div class="p-5 col-md-12 rounded" id="uploadContainer">
             <label for="assetsFieldHandle" class="block cursor-pointer">
-              <span class="text-secondary">List of Attached File</span>
+              <span v-if="isApproval" class="text-secondary"
+                >Click here to add new file(s)</span
+              >
+              <span v-else class="text-secondary"
+                >List of Attached file(s)</span
+              >
             </label>
             <!-- <aside class="d-flex align-items-center justify-content-center"> -->
             <ul class="mt-4 text-decoration-none ulUpload" v-cloak>
@@ -313,26 +523,65 @@
                     <div class="col text-left">
                       <span>{{ file.filename }}</span>
                     </div>
+
+                    <div v-if="isApproval">
+                      <button
+                        class="btn btn-danger btn-sm"
+                        type="button"
+                        @click="
+                          removeAttachedFile(
+                            index,
+                            file.id,
+                            file.filename,
+                            file.filepath
+                          )
+                        "
+                        title="Remove file"
+                      >
+                        Remove
+                      </button>
+                    </div>
+
+                    <div class="col-2">
+                      <button
+                        class="btn btn-secondary btn-sm"
+                        @click="preview(file.mimeType, file.imageBytes)"
+                      >
+                        Preview
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <!-- Newly added file -->
+              <li
+                class="text-sm mt-2"
+                v-for="(file, index) in selectedFileNew"
+                :key="file.index"
+              >
+                <div class="row d-flex justify-content-center">
+                  <div class="col-md-4 d-flex">
+                    <div class="col-1">
+                      <b>{{ index + 1 }}.</b>
+                    </div>
+                    <div class="col text-left">
+                      <span>{{ file.name }}</span>
+                    </div>
                     <div>
-                      <button class="btn btn-info btn-sm" type="button">
-                        <a
-                          :download="file.filename"
-                          style="color: white"
-                          :href="
-                            'data:' +
-                            file.mimeType +
-                            ';base64,' +
-                            file.imageBytes
-                          "
-                          target="_blank"
-                          >Download</a
-                        >
+                      <button
+                        class="btn btn-danger btn-sm"
+                        type="button"
+                        @click="removeFileNew(selectedFileNew.indexOf(file))"
+                        title="Remove file"
+                      >
+                        Remove
                       </button>
                     </div>
                     <div class="col-2">
                       <button
                         class="btn btn-secondary btn-sm"
-                        @click="preview(file.mimeType, file.imageBytes)"
+                        @click="filePreviewNew(selectedFileNew.indexOf(file))"
                       >
                         Preview
                       </button>
@@ -348,7 +597,7 @@
         <!-- / The Attachments -->
 
         <!--  Form Review -->
-        <aside v-else-if="this.counter === 3">
+        <aside v-if="this.counter === isReview">
           <div class="card card-secondary mt-4">
             <div class="card-header">
               <h3 class="card-title">Request Details</h3>
@@ -452,6 +701,119 @@
             <!-- /.card-body -->
           </div>
           <!-- /.card -->
+
+          <!-- Expense Details Review -->
+          <div class="card card-secondary" v-if="isLiquidation">
+            <div class="card-header">
+              <h3 class="card-title">Expense Table</h3>
+
+              <div class="card-tools">
+                <button
+                  type="button"
+                  class="btn btn-tool"
+                  data-card-widget="collapse"
+                >
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+              <table
+                class="table table-sm table-bordered table-hover table-striped"
+              >
+                <thead>
+                  <tr>
+                    <th style="width: 5%">#</th>
+                    <th style="width: 10%">Date</th>
+                    <th style="width: 20%">Client Name</th>
+                    <th style="width: 20%">Expense Type</th>
+                    <th style="width: 30%">Remarks</th>
+                    <th style="width: 10%">Amount</th>
+
+                    <!-- <th style="width: 10%">Action</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, index) in expenseType_Data" :key="item.id">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.date_ }}</td>
+                    <td>{{ item.CLIENT_NAME }}</td>
+                    <td>{{ item.EXPENSE_TYPE }}</td>
+                    <td>{{ item.DESCRIPTION }}</td>
+                    <td>{{ item.AMOUNT }}</td>
+                  </tr>
+
+                  <tr>
+                    <td colspan="5"></td>
+                    <b class="px-1"
+                      >Total: {{ this.expenseType_totalAmount }}</b
+                    >
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.Expense Details Review -->
+
+          <!-- Transportation Details Review -->
+          <div class="card card-secondary" v-if="isLiquidation">
+            <div class="card-header">
+              <h3 class="card-title">Transporation Expense Table</h3>
+
+              <div class="card-tools">
+                <button
+                  type="button"
+                  class="btn btn-tool"
+                  data-card-widget="collapse"
+                >
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+              <table
+                class="table table-sm table-bordered table-hover table-striped"
+              >
+                <thead>
+                  <tr>
+                    <th style="width: 5%">#</th>
+                    <th style="width: 10%">Date</th>
+                    <th style="width: 15%">Client Name</th>
+                    <th style="width: 10%">Destination From</th>
+                    <th style="width: 10%">Destination To</th>
+                    <th style="width: 20%">Mode of Transportation</th>
+                    <th style="width: 10%">Remarks</th>
+                    <th style="width: 10%">Amount</th>
+                    <!-- <th style="width: 10%">Action</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, index) in transpoSetup_Data" :key="item.id">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.date_ }}</td>
+                    <td>{{ item.CLIENT_NAME }}</td>
+                    <td>{{ item.DESTINATION_FRM }}</td>
+                    <td>{{ item.DESTINATION_TO }}</td>
+                    <td>{{ item.MOT }}</td>
+                    <td>{{ item.DESCRIPTION }}</td>
+                    <td>{{ item.AMT_SPENT }}</td>
+                  </tr>
+
+                  <tr>
+                    <td colspan="7"></td>
+                    <b class="px-1"
+                      >Total: {{ this.transpoSetup_totalAmount }}</b
+                    >
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.Transportation Details Review -->
 
           <div class="card card-secondary">
             <div class="card-header">
@@ -574,6 +936,297 @@
         </div>
         <!-- /.modal -->
 
+        <!-- Modal Expense Type -->
+        <div
+          class="modal fade"
+          id="modal-expenseType"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h6 class="modal-title">
+                  <b>Expense Type</b>
+                </h6>
+                <button
+                  type="button"
+                  id="modalCloseButton"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <small><label for="reference">Date</label></small>
+
+                      <date-picker
+                        valueType="format"
+                        style="display: block; width: 100%; line-height: 20px"
+                        v-model="expenseType_Date"
+                      ></date-picker>
+                    </div>
+                  </div>
+                  <div class="col-md-8">
+                    <div class="form-group">
+                      <small
+                        ><label for="projectName">Client Name</label></small
+                      >
+                      <model-list-select
+                        :list="modalclient"
+                        v-model="itemclientName"
+                        option-value="code"
+                        option-text="name"
+                        placeholder="select item"
+                        style="padding: 9px"
+                      >
+                      </model-list-select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <small><label for="projectName">Amount</label></small>
+
+                      <input
+                        type="number"
+                        class="form-control form-control-sm py-3"
+                        id="modalamount"
+                        v-model="expenseType_Amount"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col-md-8">
+                    <div class="form-group">
+                      <small
+                        ><label for="modalamount">Expense Type</label></small
+                      >
+                      <model-list-select
+                        :list="modalExpenseType"
+                        v-model="itemmodalExpenseType"
+                        option-value="code"
+                        option-text="name"
+                        placeholder="select item"
+                        style="padding: 9px"
+                      >
+                      </model-list-select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <textarea
+                        class="form-control"
+                        id="remarks"
+                        rows="5"
+                        v-model="expenseType_Remarks"
+                        placeholder="Please input request remarks here!"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer justify-content-end">
+                <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+                <button
+                  v-if="isButton"
+                  type="button"
+                  class="btn btn-success btn-sm"
+                  @click="insert_ExpenseType()"
+                >
+                  insert
+                </button>
+
+                <button
+                  v-else
+                  type="button"
+                  class="btn btn-success btn-sm"
+                  @click="update_ExpenseType()"
+                >
+                  Update
+                </button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+        <!-- /. Modal Expense Type -->
+
+        <!-- Modal Transporation Details  -->
+        <div
+          class="modal fade"
+          id="modal-Transportation"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h6 class="modal-title">
+                  <b>Transportation Details</b>
+                </h6>
+                <button
+                  type="button"
+                  id="modalCloseButton"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <small><label for="reference">Date</label></small>
+
+                      <date-picker
+                        valueType="format"
+                        style="display: block; width: 100%; line-height: 20px"
+                        v-model="transpoSetup_Date"
+                      ></date-picker>
+                    </div>
+                  </div>
+                  <div class="col-md-8">
+                    <div class="form-group">
+                      <small
+                        ><label for="projectName">Client Name</label></small
+                      >
+                      <model-list-select
+                        :list="modalclient"
+                        v-model="itemclientName"
+                        option-value="code"
+                        option-text="name"
+                        placeholder="select item"
+                        style="padding: 9px"
+                      >
+                      </model-list-select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <small
+                        ><label for="projectName"
+                          >Mode of Transportation</label
+                        ></small
+                      >
+
+                      <model-list-select
+                        :list="transpoSetup"
+                        v-model="itemtranspoSetup"
+                        option-value="code"
+                        option-text="name"
+                        placeholder="select item"
+                        style="padding: 9px"
+                      >
+                      </model-list-select>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <small><label for="projectName">Amount</label></small>
+
+                      <input
+                        type="number"
+                        class="form-control form-control-sm py-3"
+                        id="modalamount"
+                        v-model="transpoSetup_Amount"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <small
+                        ><label for="projectName"
+                          >Destination From</label
+                        ></small
+                      >
+
+                      <input
+                        type="text"
+                        class="form-control form-control-sm py-3"
+                        id="modalamount"
+                        v-model="transpoSetup_From"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <small
+                        ><label for="projectName">Destination To</label></small
+                      >
+
+                      <input
+                        type="text"
+                        class="form-control form-control-sm py-3"
+                        id="modalamount"
+                        v-model="transpoSetup_to"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <textarea
+                        class="form-control"
+                        id="remarks"
+                        rows="5"
+                        v-model="transpoSetup_Remarks"
+                        placeholder="Please input request remarks here!"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer justify-content-end">
+                <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+                <button
+                  v-if="isButton"
+                  type="button"
+                  class="btn btn-success btn-sm"
+                  @click="insert_transpoSetup()"
+                >
+                  insert
+                </button>
+
+                <button
+                  v-else
+                  type="button"
+                  class="btn btn-success btn-sm"
+                  @click="update_transpoSetup()"
+                >
+                  Update
+                </button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+        <!-- /. Modal Transporation Details -->
+
         <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
           <aside class="col-lg-6 d-flex justify-content-start">
@@ -587,7 +1240,7 @@
               </button>
             </div>
 
-            <div class="col-lg-2" v-if="this.counter <= 2">
+            <div class="col-lg-2" v-if="this.counter <= isAttachments">
               <button
                 type="button"
                 @click="counter++"
@@ -668,6 +1321,11 @@ export default {
     this.getInprogressId(this.processId, this.companyId, this.form);
     this.getActualSign(this.processId, this.form, this.companyId);
     this.getAttachments(this.processId, this.form);
+    this.getBusinesses(this.companyId);
+    this.getPcExpense(this.processId);
+    this.getPcTranspo(this.processId);
+    this.getexpenseType();
+    this.gettranspoSetup();
     this.getRecipients(
       this.processId,
       this.loggedUserId,
@@ -679,10 +1337,16 @@ export default {
     //Navigate
     $route(newRoute) {
       // this.todaysDate();
+      this.counter = 0;
       this.getPcMain(this.processId);
-      this.getInprogressId(this.processId, this.companyId, this.form)
+      this.getInprogressId(this.processId, this.companyId, this.form);
       this.getActualSign(this.processId, this.form, this.companyId);
       this.getAttachments(this.processId, this.form);
+      this.getBusinesses(this.companyId);
+      this.getPcExpense(this.processId);
+      this.getPcTranspo(this.processId);
+      this.getexpenseType();
+      this.gettranspoSetup();
       this.getRecipients(
         this.processId,
         this.loggedUserId,
@@ -716,12 +1380,105 @@ export default {
     classD() {
       return { active: this.counter >= 3 };
     },
+    classE() {
+      return { active: this.counter >= 4 };
+    },
+    classF() {
+      return { active: this.counter >= 5 };
+    },
+
+    isExpense() {
+      if (this.isLiquidation === true) {
+        return 2;
+      } else {
+        return false;
+      }
+    },
+    isTranspo() {
+      if (this.isLiquidation === true) {
+        return 3;
+      } else {
+        return false;
+      }
+    },
+    isAttachments() {
+      if (this.isLiquidation === true) {
+        return 4;
+      } else {
+        return 2;
+      }
+    },
+
+    buttonsSet() {
+      if (this.isApproval === true) {
+        return 4;
+      } else {
+        return 2;
+      }
+    },
+    isReview() {
+      if (this.isLiquidation === true) {
+        return 5;
+      } else {
+        return 3;
+      }
+    },
+
+    expenseHeader() {
+      if (this.isApproval === false) {
+        return 5;
+      } else {
+        return 6;
+      }
+    },
+
+    expenseFooter() {
+      if (this.isApproval === false) {
+        return 4;
+      } else {
+        return 5;
+      }
+    },
+
+    transpoFooter() {
+      if (this.isApproval === false) {
+        return 6;
+      } else {
+        return 7;
+      }
+    },
+
+    
 
     isForClarity() {
       if (this.title === "Clarify") {
         return true;
       } else {
         return false;
+      }
+    },
+
+    // Sum of all amount spend in liquidation
+    expenseType_totalAmount() {
+      if (this.expenseType_Data.length > 0) {
+        const total = this.expenseType_Data
+          .map((expenseType_Data) => parseInt(expenseType_Data.AMOUNT))
+          .reduce((acc, expenseType_Data) => expenseType_Data + acc);
+        return total;
+      } else {
+        return 0;
+      }
+    },
+
+    // sum of all amount spend in transportation
+    transpoSetup_totalAmount() {
+      if (this.transpoSetup_Data.length > 0) {
+        const total = this.transpoSetup_Data
+          .map((transpoSetup_Data) => parseInt(transpoSetup_Data.AMT_SPENT))
+          .reduce((acc, transpoSetup_Data) => transpoSetup_Data + acc);
+        return total;
+      } else {
+        return 0;
       }
     },
 
@@ -746,6 +1503,8 @@ export default {
       clientId: "",
       mainId: "",
 
+      guid: "",
+
       referenceNumber: "",
       requestDate: "",
       dateNeeded: "",
@@ -762,6 +1521,10 @@ export default {
       // The Attachments
       selectedFile: [],
       filespreview: [],
+      removedAttachedFilesId: [],
+
+      // newly added attachments
+      selectedFileNew: [],
 
       // // Logged User Data // initiator
       // loggedUserId: 136,
@@ -806,8 +1569,38 @@ export default {
       remarks: "",
 
       inprogressId: "",
-      isApproving: "",
-      isReleased: "",
+      isLiquidation: false,
+      isApproval: false,
+
+      // expense data modal
+      modalclient: [],
+      itemclientName: {},
+
+      modalExpenseType: [],
+      itemmodalExpenseType: {},
+
+      expenseType_Date: "",
+      expenseType_Amount: "",
+      expenseType_Remarks: "",
+
+      isButton: true,
+
+      // data for expense type
+      expenseType_Data: [],
+      expenseType_EditData: [],
+      i: 0,
+
+      // data for transportation
+      transpoSetup: [],
+      itemtranspoSetup: {},
+      transpoSetup_Date: "",
+      transpoSetup_Amount: "",
+      transpoSetup_From: "",
+      transpoSetup_to: "",
+      transpoSetup_Remarks: "",
+
+      transpoSetup_Data: [],
+      transpoSetup_EditData: [],
     };
   },
 
@@ -815,7 +1608,9 @@ export default {
     async submit(type) {
       this.isLoadingModal = true;
       const fd = new FormData();
-
+      for (let i = 0; i < this.selectedFileNew.length; i++) {
+        fd.append("file[]", this.selectedFileNew[i]);
+      }
       fd.append("form", this.form);
       fd.append("processId", this.$route.params.id);
       fd.append("loggedUserId", this.loggedUserId);
@@ -828,9 +1623,12 @@ export default {
       fd.append("payeeName", this.payeeName);
       fd.append("class", "PC");
       fd.append("loggedUserDepartment", this.loggedUserDepartment);
-      fd.append("isApproving", this.isApproving);
-      fd.append("isReleased", this.isReleased);
+      fd.append("guid", this.guid);
+      fd.append("isLiquidation", this.isLiquidation);
 
+      fd.append("removedFiles", JSON.stringify(this.removedAttachedFilesId));
+      fd.append("expenseData", JSON.stringify(this.expenseType_Data));
+      fd.append("transpoData", JSON.stringify(this.transpoSetup_Data));
 
       if (type === "Approve") {
         try {
@@ -917,6 +1715,39 @@ export default {
     close() {
       this.$router.replace("/approvals");
     },
+    async getPcExpense(id) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-PcExpense/${id}`
+        );
+
+        if (resp.status === 200) {
+          console.log(resp.data);
+
+          this.expenseType_Data = resp.data;
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    async getPcTranspo(id) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-PcTranspo/${id}`
+        );
+
+        if (resp.status === 200) {
+          console.log(resp.data);
+
+          this.transpoSetup_Data = resp.data;
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
 
     async getPcMain(id) {
       try {
@@ -934,6 +1765,8 @@ export default {
           this.purpose = resp.data.data.DESCRIPTION;
 
           this.amount = resp.data.data.REQUESTED_AMT;
+
+          this.guid = resp.data.data.GUID;
         }
       } catch (err) {
         // Handle Error Here
@@ -964,7 +1797,98 @@ export default {
       }
     },
 
-    
+    async getexpenseType() {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/get-expenseType",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+
+      // console.log(responseData);
+      if (!response.ok) {
+        const error = new Error(
+          responseData.message || "Failed to fetch modal ExpenseType Type."
+        );
+        throw error;
+      }
+      const modalExpenseType = [];
+      for (const key in responseData[0]) {
+        // console.log(key)
+        const request = {
+          code: responseData[0][key].type,
+          name: responseData[0][key].type,
+        };
+        modalExpenseType.push(request);
+      }
+      this.modalExpenseType = modalExpenseType;
+      // console.log(responseData[0].businessNumber)
+    },
+
+    async gettranspoSetup() {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/get-transpoSetup",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+
+      // console.log(responseData);
+      if (!response.ok) {
+        const error = new Error(
+          responseData.message || "Failed to fetch modal ExpenseType Type."
+        );
+        throw error;
+      }
+      const transpoSetup = [];
+      for (const key in responseData[0]) {
+        // console.log(key)
+        const request = {
+          code: responseData[0][key].MODE,
+          name: responseData[0][key].MODE,
+        };
+        transpoSetup.push(request);
+      }
+      this.transpoSetup = transpoSetup;
+      // console.log(responseData[0].businessNumber)
+    },
+
+    async getBusinesses(companyId) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/general-businesses/${companyId}`
+        );
+
+        if (resp.status === 200) {
+          const client = [];
+          for (const key in resp.data) {
+            // console.log(key)
+            const request = {
+              code: resp.data[key].businessNumber,
+              name: resp.data[key].businessName,
+            };
+            client.push(request);
+          }
+          this.modalclient = client;
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
     async getActualSign(id, form, companyId) {
       this.isLoading = true;
       try {
@@ -977,17 +1901,12 @@ export default {
           this.isLoading = false;
           this.payeeName = resp.data[0].Payee;
 
-         
-          if (resp.data[2].STATUS === "In Progress") {
-            this.isApproving = true;
-          } else {
-            this.isApproving = false;
+          if (resp.data[1].STATUS === "Completed") {
+            this.isLiquidation = true;
           }
 
-          if (resp.data[1].STATUS === "In Progress") {
-            this.isReleased = true;
-          } else {
-            this.isReleased = false;
+          if (resp.data[2].STATUS === "In Progress") {
+            this.isApproval = true;
           }
         }
       } catch (err) {
@@ -1026,6 +1945,143 @@ export default {
         // Handle Error Here
         console.error(err);
       }
+    },
+
+    // Expense CRUD
+    insert_ExpenseType() {
+      const addData = {
+        id: this.i++,
+        CLIENT_NAME: this.itemclientName.name,
+        DESCRIPTION: this.expenseType_Remarks,
+        AMOUNT: this.expenseType_Amount,
+        CLIENT_ID: this.itemclientName.code,
+        EXPENSE_TYPE: this.itemmodalExpenseType.name,
+        date_: this.expenseType_Date,
+      };
+      this.expenseType_Data.push(addData);
+    },
+    update_ExpenseType() {
+      const addData = {
+        id: this.expenseType_EditData.id,
+        CLIENT_NAME: this.itemclientName.name,
+        DESCRIPTION: this.expenseType_Remarks,
+        AMOUNT: this.expenseType_Amount,
+        CLIENT_ID: this.itemclientName.code,
+        EXPENSE_TYPE: this.itemmodalExpenseType.name,
+        date_: this.expenseType_Date,
+      };
+
+      this.expenseType_Data.push(addData);
+      this.expenseType_EditData = "";
+      // this.liquidation.push(this.editliquidation)
+      this.expenseType_Data.sort(function (a, b) {
+        return a.id - b.id;
+      });
+
+      console.log(addData.id);
+    },
+
+    edit_ExpenseType(index) {
+      this.isButton = false;
+      const expenseType_Data = this.expenseType_Data[index];
+      this.expenseType_EditData = expenseType_Data;
+      this.expenseType_Data.splice(index, 1);
+
+      console.log(expenseType_Data);
+
+      this.itemclientName = {
+        code: expenseType_Data.CLIENT_ID,
+        name: expenseType_Data.CLIENT_NAME,
+      };
+      this.itemmodalExpenseType = {
+        code: expenseType_Data.EXPENSE_TYPE,
+        name: expenseType_Data.EXPENSE_TYPE,
+      };
+
+      this.expenseType_Date = expenseType_Data.date_;
+      this.expenseType_Amount = expenseType_Data.AMOUNT;
+      this.expenseType_Remarks = expenseType_Data.DESCRIPTION;
+    },
+    trash_ExpenseType(index) {
+      // console.log('1'+ index)
+      this.expenseType_Data.splice(index, 1);
+    },
+
+    // Transpo Crud
+    insert_transpoSetup() {
+      const addData = {
+        id: this.i++,
+        CLIENT_NAME: this.itemclientName.name,
+        DESTINATION_FRM: this.transpoSetup_From,
+        DESTINATION_TO: this.transpoSetup_to,
+        DESCRIPTION: this.transpoSetup_Remarks,
+        AMT_SPENT: this.transpoSetup_Amount,
+        MOT: this.itemtranspoSetup.name,
+        CLIENT_ID: this.itemclientName.code,
+        date_: this.transpoSetup_Date,
+      };
+      this.transpoSetup_Data.push(addData);
+
+      // console.log(this.transpoSetup_Data);
+    },
+
+    update_transpoSetup() {
+      const addData = {
+        id: this.transpoSetup_Data.id,
+        CLIENT_NAME: this.itemclientName.name,
+        DESTINATION_FRM: this.transpoSetup_From,
+        DESTINATION_TO: this.transpoSetup_to,
+        DESCRIPTION: this.transpoSetup_Remarks,
+        AMT_SPENT: this.transpoSetup_Amount,
+        MOT: this.itemtranspoSetup.name,
+        CLIENT_ID: this.itemclientName.code,
+        date_: this.transpoSetup_Date,
+      };
+
+      this.transpoSetup_Data.push(addData);
+      this.transpoSetup_EditData = "";
+
+      this.transpoSetup_Data.sort(function (a, b) {
+        return a.id - b.id;
+      });
+
+      console.log(addData.id);
+    },
+
+    edit_transpoSetup(index) {
+      this.isButton = false;
+      const transpoSetup_Data = this.transpoSetup_Data[index];
+      this.transpoSetup_EditData = transpoSetup_Data;
+      this.transpoSetup_Data.splice(index, 1);
+
+      console.log(transpoSetup_Data);
+
+      this.itemclientName = {
+        code: transpoSetup_Data.CLIENT_ID,
+        name: transpoSetup_Data.CLIENT_NAME,
+      };
+
+      this.itemtranspoSetup = {
+        code: transpoSetup_Data.MOT,
+        name: transpoSetup_Data.MOT,
+      };
+
+      this.transpoSetup_Amount = transpoSetup_Data.AMT_SPENT;
+      this.transpoSetup_From = transpoSetup_Data.DESTINATION_FRM;
+      this.transpoSetup_to = transpoSetup_Data.DESTINATION_TO;
+      this.transpoSetup_Remarks = transpoSetup_Data.DESCRIPTION;
+      this.transpoSetup_Date = transpoSetup_Data.date_;
+
+      // console.log(index)
+    },
+
+    trash_transpoSetup(index) {
+      this.transpoSetup_Data.splice(index, 1);
+      // console.log(index)
+    },
+
+    setButton() {
+      this.isButton = true;
     },
 
     // Payment Details
@@ -1110,28 +2166,57 @@ export default {
     },
 
     // The Attachments
-    onFileSelected(event) {
-      let selectedFiles = event.target.files;
-      for (let i = 0; i < selectedFiles.length; i++) {
-        this.selectedFile.push(selectedFiles[i]);
-      }
-      this.filePreview();
-    },
-    onInputChange(event) {
-      let selectedFiles = event.dataTransfer.files;
-      for (let i = 0; i < selectedFiles.length; i++) {
-        this.selectedFile.push(selectedFiles[i]);
-      }
-      this.filePreview();
-    },
-    remove(i) {
-      this.selectedFile.splice(i, 1);
-      this.filePreview();
-    },
     preview(mimeType, imageBytes) {
       var newTab = window.open();
       newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
     },
+
+    // remove existing attached files
+    removeAttachedFile(index, id, filename, filepath) {
+      const attachmentId = { id: id, filename: filename, filepath: filepath };
+      this.removedAttachedFilesId.push(attachmentId);
+      this.selectedFile.splice(index, 1);
+
+      console.log(this.removedAttachedFilesId);
+    },
+
+    // Add new files scripts
+    onFileSelected(event) {
+      let selectedFiles = event.target.files;
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.selectedFileNew.push(selectedFiles[i]);
+      }
+      this.setFilePreviewNew();
+    },
+
+    // set a preview function for newly added files
+    setFilePreviewNew() {
+      let files = this.selectedFileNew;
+      const fileContainer = [];
+      for (let i = 0; i < files.length; i++) {
+        let tmppath = URL.createObjectURL(files[i]);
+        const thisFiles = {
+          link: tmppath,
+        };
+        fileContainer.push(thisFiles);
+      }
+      this.filespreviewNew = fileContainer;
+    },
+
+    // preview function of newly added files
+    filePreviewNew(i) {
+      // console.log(i)
+      const url = this.filespreviewNew[i].link;
+      window.open(url, "_blank", "resizable=yes");
+    },
+
+    // remove newly added files
+    removeFileNew(i) {
+      this.selectedFileNew.splice(i, 1);
+      this.setFilePreviewNew();
+    },
+
+    // End Attachments
 
     dragover(event) {
       event.preventDefault();
@@ -1153,19 +2238,6 @@ export default {
       // Clean up
       event.currentTarget.classList.add("bg-light");
       event.currentTarget.classList.remove("bg-white");
-    },
-
-    filePreview() {
-      let files = this.selectedFile;
-      const fileContainer = [];
-      for (let i = 0; i < files.length; i++) {
-        let tmppath = URL.createObjectURL(files[i]);
-        const thisFiles = {
-          link: tmppath,
-        };
-        fileContainer.push(thisFiles);
-      }
-      this.filespreview = fileContainer;
     },
   },
 };

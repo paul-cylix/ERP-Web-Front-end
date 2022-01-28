@@ -765,7 +765,12 @@
         <!-- / Form Review -->
 
         <!-- Modal Expense Type -->
-        <div class="modal fade" id="modal-expenseType">
+        <div
+          class="modal fade"
+          id="modal-expenseType"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
@@ -887,7 +892,12 @@
         <!-- /. Modal Expense Type -->
 
         <!-- Modal Transporation Details  -->
-        <div class="modal fade" id="modal-Transportation">
+        <div
+          class="modal fade"
+          id="modal-Transportation"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
@@ -1570,7 +1580,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );

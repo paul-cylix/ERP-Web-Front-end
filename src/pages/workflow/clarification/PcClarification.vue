@@ -10,10 +10,10 @@
         <loading-spinner></loading-spinner>
       </div>
       <div class="card-header">
-        <h3 class="card-title">{{ this.isInitiator }}</h3>
+        <h3 class="card-title">Petty Cash Request</h3>
       </div>
       <div class="card-body">
-       <!-- Step Numbers -->
+        <!-- Step Numbers -->
         <div class="d-flex progressBarWrapper text-center">
           <div class="progressbar" :class="classA">
             <span :class="classA">1</span>
@@ -26,6 +26,12 @@
           </div>
           <div class="progressbar" :class="classD">
             <span :class="classD">4</span>
+          </div>
+          <div class="progressbar" :class="classE" v-if="isLiquidation">
+            <span :class="classE">5</span>
+          </div>
+          <div class="progressbar" :class="classF" v-if="isLiquidation">
+            <span :class="classF">5</span>
           </div>
         </div>
 
@@ -44,16 +50,47 @@
               ></small
             >
           </div>
-          <div class="textbar" :class="classC">
+
+          <div class="textbar" :class="classC" v-if="!isLiquidation">
             <small
               ><span :class="classC" class="font-weight-bold"
                 >Attachments</span
               ></small
             >
           </div>
-          <div class="textbar" :class="classD">
+          <div class="textbar" :class="classD" v-if="!isLiquidation">
             <small
               ><span :class="classD" class="font-weight-bold"
+                >Review</span
+              ></small
+            >
+          </div>
+
+          <div class="textbar" :class="classC" v-if="isLiquidation">
+            <small
+              ><span :class="classC" class="font-weight-bold"
+                >Expense Details</span
+              ></small
+            >
+          </div>
+          <div class="textbar" :class="classD" v-if="isLiquidation">
+            <small
+              ><span :class="classD" class="font-weight-bold"
+                >Transportation Details</span
+              ></small
+            >
+          </div>
+
+          <div class="textbar" :class="classE" v-if="isLiquidation">
+            <small
+              ><span :class="classE" class="font-weight-bold"
+                >Attachments</span
+              ></small
+            >
+          </div>
+          <div class="textbar" :class="classF" v-if="isLiquidation">
+            <small
+              ><span :class="classF" class="font-weight-bold"
                 >Review</span
               ></small
             >
@@ -96,12 +133,12 @@
               <div class="form-group">
                 <small><label for="dateNeeded">Date Needed</label></small>
                 <date-picker
-                v-if="isEditable"
+                  v-if="isEditable"
                   v-model="dateNeeded"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px"
                 ></date-picker>
-                  <input
+                <input
                   v-else
                   type="text"
                   v-model="dateNeeded"
@@ -114,9 +151,7 @@
             <div class="col-md-3">
               <div class="form-group">
                 <small
-                  ><label for="reportingManager selextForm" id="selextForm"
-                    >{{this.isEditable}}</label
-                  ></small
+                  ><label for="reportingManager selextForm" id="selextForm">Reporting Manager</label></small
                 >
                 <model-list-select
                   :list="reportingManager"
@@ -128,8 +163,14 @@
                   v-if="isEditable"
                 >
                 </model-list-select>
-                <input type="text" v-else v-model="reportingManagerItem.name" disabled class="form-control py-3 form-control-sm" id="reportingManager">
-
+                <input
+                  type="text"
+                  v-else
+                  v-model="reportingManagerItem.name"
+                  disabled
+                  class="form-control py-3 form-control-sm"
+                  id="reportingManager"
+                />
               </div>
             </div>
           </div>
@@ -148,7 +189,14 @@
                   style="padding: 9px"
                 >
                 </model-list-select>
-                <input type="text" v-model="projectItem.name" disabled v-else class="form-control py-3 form-control-sm" id="projectName">
+                <input
+                  type="text"
+                  v-model="projectItem.name"
+                  disabled
+                  v-else
+                  class="form-control py-3 form-control-sm"
+                  id="projectName"
+                />
               </div>
             </div>
             <div class="col-md-6">
@@ -267,9 +315,164 @@
         </div>
         <!-- / Payment Details -->
 
+        <!-- Expense Details -->
+        <div class="row mt-4" v-if="this.counter === isExpense">
+          <table class="table table-sm table-bordered table-striped mx-2">
+            <thead>
+              <tr>
+                <th colspan="6" scope="col">
+                  <aside class="d-flex align-items-center">
+                    <span class="mb-1 ml-1"> Expense Detals</span>
+                  </aside>
+                </th>
+                <th v-if="isApproval">
+                  <aside class="text-center">
+                    <button
+                      class="btn btn-sm btn-success m-0"
+                      data-toggle="modal"
+                      data-target="#modal-expenseType"
+                      @click="setButton()"
+                    >
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  </aside>
+                </th>
+              </tr>
+              <tr>
+                <th scope="col" class="text-center">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Client Name</th>
+                <th scope="col">Expense Type</th>
+                <th scope="col">Remarks</th>
+                <th scope="col">Amount</th>
+                <th v-if="isApproval" scope="col">Action</th>
+              </tr>
+            </thead>
+
+            <tbody style="font-size: 14px">
+              <tr v-for="(item, index) in expenseType_Data" :key="item.id">
+                <td class="text-center">{{ index + 1 }}.</td>
+                <td>{{ item.date_ }}</td>
+                <td>{{ item.CLIENT_NAME }}</td>
+                <td>{{ item.EXPENSE_TYPE }}</td>
+                <td>{{ item.DESCRIPTION }}</td>
+                <td>{{ item.AMOUNT }}</td>
+                <td v-if="isApproval" class="pl-0 m-0">
+                  <aside class="d-flex justify-content-center">
+                    <button
+                      class="btn btn-sm btn-info m-0"
+                      data-toggle="modal"
+                      data-target="#modal-expenseType"
+                      @click="edit_ExpenseType(expenseType_Data.indexOf(item))"
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-danger m-0 ml-1"
+                      @click="trash_ExpenseType(expenseType_Data.indexOf(item))"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </aside>
+                </td>
+              </tr>
+
+              <tr>
+                <td :colspan="expenseFooter"></td>
+                <td colspan="2">
+                  <b>Total Amount: {{ this.expenseType_totalAmount }}</b>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- /.Expense Details -->
+
+        <!-- Transportation Details -->
+        <div class="row mt-4" v-if="this.counter === isTranspo">
+          <table class="table table-sm table-bordered table-striped mx-2">
+            <thead>
+              <tr>
+                <th colspan="8" scope="col">
+                  <aside class="d-flex align-items-center">
+                    <span class="mb-1 ml-1"> Transportation Detals</span>
+                  </aside>
+                </th>
+                <th v-if="isApproval">
+                  <aside class="text-center">
+                    <button
+                      class="btn btn-sm btn-success m-0"
+                      data-toggle="modal"
+                      data-target="#modal-Transportation"
+                      @click="setButton()"
+                    >
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  </aside>
+                </th>
+              </tr>
+              <tr>
+                <th scope="col" class="text-center">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Client Name</th>
+                <th scope="col">Destination From</th>
+                <th scope="col">Destination To</th>
+                <th scope="col">Mode of Transportation</th>
+                <th scope="col">Remarks</th>
+                <th scope="col">Amount</th>
+                <th v-if="isApproval" scope="col">Action</th>
+              </tr>
+            </thead>
+
+            <tbody style="font-size: 14px">
+              <tr v-for="(item, index) in transpoSetup_Data" :key="item.id">
+                <td class="text-center">{{ index + 1 }}.</td>
+                <td>{{ item.date_ }}</td>
+                <td>{{ item.CLIENT_NAME }}</td>
+                <td>{{ item.DESTINATION_FRM }}</td>
+                <td>{{ item.DESTINATION_TO }}</td>
+                <td>{{ item.MOT }}</td>
+                <td>{{ item.DESCRIPTION }}</td>
+                <td>{{ item.AMT_SPENT }}</td>
+                <td v-if="isApproval" class="pl-0 m-0">
+                  <aside class="d-flex justify-content-center">
+                    <button
+                      class="btn btn-sm btn-info m-0"
+                      data-toggle="modal"
+                      data-target="#modal-Transportation"
+                      @click="
+                        edit_transpoSetup(transpoSetup_Data.indexOf(item))
+                      "
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-danger m-0 ml-1"
+                      @click="
+                        trash_transpoSetup(transpoSetup_Data.indexOf(item))
+                      "
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </aside>
+                </td>
+              </tr>
+
+              <tr>
+                <td :colspan="transpoFooter"></td>
+                <td colspan="2">
+                  <b>Total Amount: {{ this.transpoSetup_totalAmount }}</b>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- /.Transportation Details -->
+
         <!-- The Attachments -->
         <div
-          v-else-if="this.counter === 2"
+          v-if="this.counter === isAttachments"
           class="
             d-flex
             align-items-center
@@ -397,7 +600,7 @@
         <!-- / The Attachments -->
 
         <!--  Form Review -->
-        <aside v-else-if="this.counter === 3">
+        <aside v-if="this.counter === isReview">
           <div class="card card-secondary mt-4">
             <div class="card-header">
               <h3 class="card-title">Request Details</h3>
@@ -501,6 +704,119 @@
             <!-- /.card-body -->
           </div>
           <!-- /.card -->
+
+          <!-- Expense Details Review -->
+          <div class="card card-secondary" v-if="isLiquidation">
+            <div class="card-header">
+              <h3 class="card-title">Expense Table</h3>
+
+              <div class="card-tools">
+                <button
+                  type="button"
+                  class="btn btn-tool"
+                  data-card-widget="collapse"
+                >
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+              <table
+                class="table table-sm table-bordered table-hover table-striped"
+              >
+                <thead>
+                  <tr>
+                    <th style="width: 5%">#</th>
+                    <th style="width: 10%">Date</th>
+                    <th style="width: 20%">Client Name</th>
+                    <th style="width: 20%">Expense Type</th>
+                    <th style="width: 30%">Remarks</th>
+                    <th style="width: 10%">Amount</th>
+
+                    <!-- <th style="width: 10%">Action</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, index) in expenseType_Data" :key="item.id">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.date_ }}</td>
+                    <td>{{ item.CLIENT_NAME }}</td>
+                    <td>{{ item.EXPENSE_TYPE }}</td>
+                    <td>{{ item.DESCRIPTION }}</td>
+                    <td>{{ item.AMOUNT }}</td>
+                  </tr>
+
+                  <tr>
+                    <td colspan="5"></td>
+                    <b class="px-1"
+                      >Total: {{ this.expenseType_totalAmount }}</b
+                    >
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.Expense Details Review -->
+
+          <!-- Transportation Details Review -->
+          <div class="card card-secondary" v-if="isLiquidation">
+            <div class="card-header">
+              <h3 class="card-title">Transporation Expense Table</h3>
+
+              <div class="card-tools">
+                <button
+                  type="button"
+                  class="btn btn-tool"
+                  data-card-widget="collapse"
+                >
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+              <table
+                class="table table-sm table-bordered table-hover table-striped"
+              >
+                <thead>
+                  <tr>
+                    <th style="width: 5%">#</th>
+                    <th style="width: 10%">Date</th>
+                    <th style="width: 15%">Client Name</th>
+                    <th style="width: 10%">Destination From</th>
+                    <th style="width: 10%">Destination To</th>
+                    <th style="width: 20%">Mode of Transportation</th>
+                    <th style="width: 10%">Remarks</th>
+                    <th style="width: 10%">Amount</th>
+                    <!-- <th style="width: 10%">Action</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, index) in transpoSetup_Data" :key="item.id">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.date_ }}</td>
+                    <td>{{ item.CLIENT_NAME }}</td>
+                    <td>{{ item.DESTINATION_FRM }}</td>
+                    <td>{{ item.DESTINATION_TO }}</td>
+                    <td>{{ item.MOT }}</td>
+                    <td>{{ item.DESCRIPTION }}</td>
+                    <td>{{ item.AMT_SPENT }}</td>
+                  </tr>
+
+                  <tr>
+                    <td colspan="7"></td>
+                    <b class="px-1"
+                      >Total: {{ this.transpoSetup_totalAmount }}</b
+                    >
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.Transportation Details Review -->
 
           <!-- Attachments Review -->
           <div class="card card-secondary">
@@ -653,7 +969,7 @@
               </button>
             </div>
 
-            <div class="col-lg-2" v-if="this.counter <= 2">
+            <div class="col-lg-2" v-if="this.counter <= isAttachments">
               <button
                 type="button"
                 @click="counter++"
@@ -708,6 +1024,8 @@ export default {
     this.getProjects();
     this.getReportingManager(this.loggedUserId);
     this.todaysDate();
+    this.getPcExpense(this.processId);
+    this.getPcTranspo(this.processId);
 
     // Request Details
     this.getPcMain(this.processId);
@@ -728,15 +1046,21 @@ export default {
       this.getProjects();
       this.getReportingManager(this.loggedUserId);
       this.todaysDate();
+      this.getPcExpense(this.processId);
+      this.getPcTranspo(this.processId);
+      // Request Details
+      this.getPcMain(this.processId);
+      this.getActualSign(this.processId, this.form, this.companyId);
+      this.getAttachments(this.processId, this.form);
       console.log(newRoute);
     },
   },
   computed: {
-    isEditable(){
+    isEditable() {
       if (this.isEdit === this.isInitiator) {
-        return true
+        return true;
       } else {
-        return false
+        return false;
       }
     },
     classA() {
@@ -750,6 +1074,97 @@ export default {
     },
     classD() {
       return { active: this.counter >= 3 };
+    },
+    classE() {
+      return { active: this.counter >= 4 };
+    },
+    classF() {
+      return { active: this.counter >= 5 };
+    },
+
+    isExpense() {
+      if (this.isLiquidation === true) {
+        return 2;
+      } else {
+        return false;
+      }
+    },
+    isTranspo() {
+      if (this.isLiquidation === true) {
+        return 3;
+      } else {
+        return false;
+      }
+    },
+    isAttachments() {
+      if (this.isLiquidation === true) {
+        return 4;
+      } else {
+        return 2;
+      }
+    },
+
+    buttonsSet() {
+      if (this.isApproval === true) {
+        return 4;
+      } else {
+        return 2;
+      }
+    },
+    isReview() {
+      if (this.isLiquidation === true) {
+        return 5;
+      } else {
+        return 3;
+      }
+    },
+
+    expenseHeader() {
+      if (this.isApproval === false) {
+        return 5;
+      } else {
+        return 6;
+      }
+    },
+
+    expenseFooter() {
+      if (this.isApproval === false) {
+        return 4;
+      } else {
+        return 5;
+      }
+    },
+
+    transpoFooter() {
+      if (this.isApproval === false) {
+        return 6;
+      } else {
+        return 7;
+      }
+    },
+
+    // Sum of all amount spend in liquidation
+    expenseType_totalAmount() {
+      if (this.expenseType_Data.length > 0) {
+        const total = this.expenseType_Data
+          .map((expenseType_Data) => parseInt(expenseType_Data.AMOUNT))
+          .reduce((acc, expenseType_Data) => expenseType_Data + acc);
+        return total;
+      } else {
+        return 0;
+      }
+    },
+
+    // sum of all amount spend in transportation
+    transpoSetup_totalAmount() {
+      if (this.transpoSetup_Data.length > 0) {
+        const total = this.transpoSetup_Data
+          .map((transpoSetup_Data) => parseInt(transpoSetup_Data.AMT_SPENT))
+          .reduce((acc, transpoSetup_Data) => transpoSetup_Data + acc);
+        return total;
+      } else {
+        return 0;
+      }
     },
 
     // Calendaer
@@ -806,25 +1221,25 @@ export default {
 
       removedAttachedFilesId: [],
 
-      // // Logged User Data
-      // loggedUserId: 136,
-      // loggedUserFirstName: "Rosevir",
-      // loggedUserLastName: "Ceballos",
-      // loggedUserFullName: "Rosevir Ceballos Jr.",
-      // loggedUserDepartment: "Information Technology",
-      // loggedUserPosition: "Senior Developer",
-      // companyId: 1,
-      // companyName: "Cylix Technologies Inc.",
-
-      // approver
-      loggedUserId: 11,
-      loggedUserFirstName: "Konrad",
-      loggedUserLastName: "Chua",
-      loggedUserFullName: "Konrad Chua",
-      loggedUserDepartment: "Management",
-      loggedUserPosition: "Managing Director",
+      // Logged User Data
+      loggedUserId: 136,
+      loggedUserFirstName: "Rosevir",
+      loggedUserLastName: "Ceballos",
+      loggedUserFullName: "Rosevir Ceballos Jr.",
+      loggedUserDepartment: "Information Technology",
+      loggedUserPosition: "Senior Developer",
       companyId: 1,
       companyName: "Cylix Technologies Inc.",
+
+      // // approver
+      // loggedUserId: 11,
+      // loggedUserFirstName: "Konrad",
+      // loggedUserLastName: "Chua",
+      // loggedUserFullName: "Konrad Chua",
+      // loggedUserDepartment: "Management",
+      // loggedUserPosition: "Managing Director",
+      // companyId: 1,
+      // companyName: "Cylix Technologies Inc.",
 
       // // approver 2
       // loggedUserId: 12,
@@ -842,16 +1257,51 @@ export default {
       form: this.$route.params.frmName,
 
       isInitiator: false,
+      isLiquidation: false,
 
-      isEdit: true,
+      isEdit: false,
 
       remarks: "",
+
+      // from approval
+
+      isApproval: false,
+
+      // expense data modal
+      modalclient: [],
+      itemclientName: {},
+
+      modalExpenseType: [],
+      itemmodalExpenseType: {},
+
+      expenseType_Date: "",
+      expenseType_Amount: "",
+      expenseType_Remarks: "",
+
+      isButton: true,
+
+      // data for expense type
+      expenseType_Data: [],
+      expenseType_EditData: [],
+      i: 0,
+
+      // data for transportation
+      transpoSetup: [],
+      itemtranspoSetup: {},
+      transpoSetup_Date: "",
+      transpoSetup_Amount: "",
+      transpoSetup_From: "",
+      transpoSetup_to: "",
+      transpoSetup_Remarks: "",
+
+      transpoSetup_Data: [],
+      transpoSetup_EditData: [],
     };
   },
 
   methods: {
     async reply() {
-      this.isLoadingModal = true
+      this.isLoadingModal = true;
       // console.log("reply");
 
       // console.log(this.dateNeeded);
@@ -959,6 +1409,40 @@ export default {
       // return todaysDate;
     },
 
+    async getPcExpense(id) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-PcExpense/${id}`
+        );
+
+        if (resp.status === 200) {
+          console.log(resp.data);
+
+          this.expenseType_Data = resp.data;
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    async getPcTranspo(id) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-PcTranspo/${id}`
+        );
+
+        if (resp.status === 200) {
+          console.log(resp.data);
+
+          this.transpoSetup_Data = resp.data;
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
     // PcInprogress loaded data
     async getPcMain(id) {
       try {
@@ -978,9 +1462,7 @@ export default {
           this.amount = resp.data.data.REQUESTED_AMT;
 
           if (resp.data.data.UID === this.loggedUserId) {
-            this.isInitiator = true
-          } else {
-            this.isInitiator = false
+            this.isInitiator = true;
           }
         }
       } catch (err) {
@@ -999,15 +1481,13 @@ export default {
           this.isLoading = false;
           this.payeeName = resp.data[0].Payee;
 
-          
-          if (resp.data[2].STATUS === 'For Clarification') {
-          this.isEdit = false;
-            
-          } else {
-          this.isEdit = true;
-            
+          if (resp.data[2].STATUS === "Not Started") {
+            this.isEdit = true;
           }
-          
+
+          if (resp.data[1].STATUS === "Completed") {
+            this.isLiquidation = true;
+          }
 
           const reportingManagerItem = {
             code: resp.data[0].RM_ID,

@@ -704,7 +704,7 @@ export default {
         if (res.status === 200) {
           // document.getElementById("modalCloseButton").click();
           this.openToast("top-right", "success", res.data.message);
-          this.$router.replace("/approvals");
+          this.$router.replace("/inprogress");
 
           
         }

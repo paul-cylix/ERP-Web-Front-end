@@ -1046,14 +1046,13 @@ export default {
       this.clientName = selectedOvertime.Project_Name;
       this.clientId = selectedOvertime.PRJID;
 
-      // const test = this.convertTimeAndDate(selectedOvertime.ot_in);
     },
 
     convertTimeAndDate(datetime) {
       const date = new Date(datetime);
 
       let month = date.getMonth() + 1;
-      const day = date.getDate();
+      let day = date.getDate();
       const year = date.getFullYear();
 
       if (month < 10) {
@@ -1067,6 +1066,7 @@ export default {
       hours = hours ? hours : 12;
       hours = hours < 10 ? "0" + hours : hours;
       minutes = minutes < 10 ? "0" + minutes : minutes;
+      day = day < 10 ? "0" + day : day;
       const time = hours + ":" + minutes + " " + ampm;
       const dit = `${month}/${day}/${year}`;
       const dateTimeReal = `${dit} ${time}`;

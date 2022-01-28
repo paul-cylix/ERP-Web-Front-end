@@ -756,7 +756,7 @@
             </div>
           </aside>
         </div>
-        <!-- / Button -->
+        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->

@@ -1570,15 +1570,14 @@ export default {
     close() {
       this.$router.replace("/clarifications");
     },
+
+
+    // The Attachments
     preview(mimeType, imageBytes) {
       var newTab = window.open();
       newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
 
-      // const url = this.filespreviewNew[i].link;
-      // window.open(url, "_blank", "resizable=yes");
     },
-
-    // The Attachments
 
     // Add new files scripts
     onFileSelected(event) {
@@ -1627,6 +1626,8 @@ export default {
       this.selectedFileNew.splice(i, 1);
       this.setFilePreviewNew();
     },
+
+    // End Attachments
 
     update() {
       const addData = {

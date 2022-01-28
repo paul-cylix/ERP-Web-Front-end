@@ -19,6 +19,9 @@ import TheRfp from "./pages/accounting/TheRfp.vue";
 import TheRe from "./pages/accounting/TheRe.vue";
 import ThePc from "./pages/accounting/ThePc.vue";
 import TheOt from "./pages/humanresource/TheOt.vue";
+import TheItf from "./pages/humanresource/TheItf.vue";
+import TheLaf from "./pages/humanresource/TheLaf.vue";
+
 
 import GetInprogress from "./pages/workflow/inprogress/GetInprogress.vue";
 import GetApproval from "./pages/workflow/approval/GetApproval.vue";
@@ -39,6 +42,18 @@ import OtInprogress from "./pages/workflow/inprogress/OtInprogress.vue";
 import OtApproval from "./pages/workflow/approval/OtApproval.vue";
 import OtInput from "./pages/workflow/input/OtInput.vue";
 import OtClarification from "./pages/workflow/clarification/OtClarification.vue";
+
+import ItfInprogress from "./pages/workflow/inprogress/ItfInprogress.vue";
+import ItfApproval from "./pages/workflow/approval/ItfApproval.vue";
+import ItfInput from "./pages/workflow/input/ItfInput.vue";
+import ItfClarification from "./pages/workflow/clarification/ItfClarification.vue";
+
+import LafInprogress from "./pages/workflow/inprogress/LafInprogress.vue";
+import LafApproval from "./pages/workflow/approval/LafApproval.vue";
+import LafClarification from "./pages/workflow/clarification/LafClarification.vue";
+
+
+
 
 
 Vue.use(VueRouter);
@@ -74,6 +89,12 @@ const routes = [
             component: OtInput,
             props: true,
           },
+          {
+            path: ":id",
+            name: "Itinerary Request-input",
+            component: ItfInput,
+            props: true,
+          },
         ],
       },
       {
@@ -102,6 +123,18 @@ const routes = [
             path: ":id",
             name: "Overtime Request-approval",
             component: OtApproval,
+            props: true,
+          },
+          {
+            path: ":id",
+            name: "Itinerary Request-approval",
+            component: ItfApproval,
+            props: true,
+          },
+          {
+            path: ":id",
+            name: "Leave Request-approval",
+            component: LafApproval,
             props: true,
           },
         ],
@@ -134,7 +167,20 @@ const routes = [
             component: OtInprogress,
             props: true,
           },
+          {
+            path: ":id",
+            name: "Itinerary Request-inprogress",
+            component: ItfInprogress,
+            props: true,
+          },
+          {
+            path: ":id",
+            name: "Leave Request-inprogress",
+            component: LafInprogress,
+            props: true,
+          },
 
+          
         ],
       },
       {
@@ -165,6 +211,18 @@ const routes = [
             component: OtClarification,
             props: true,
           },
+          {
+            path: ":id",
+            name: "Itinerary Request-clarification",
+            component: ItfClarification,
+            props: true,
+          },
+          {
+            path: ":id",
+            name: "Leave Request-clarification",
+            component: LafClarification,
+            props: true,
+          },
         ],
       },
       { path: "/approved", component: TheApproved },
@@ -187,6 +245,9 @@ const routes = [
       { path: "/the-re", component: TheRe },
       { path: "/the-pc", component: ThePc },
       { path: "/the-ot", component: TheOt },
+      { path: "/the-itf", component: TheItf },
+      { path: "/the-laf", component: TheLaf },
+
 
       {
         path: "/:workflow-:frmClass-:id",

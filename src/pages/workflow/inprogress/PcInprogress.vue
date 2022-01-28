@@ -27,6 +27,12 @@
           <div class="progressbar" :class="classD">
             <span :class="classD">4</span>
           </div>
+          <div class="progressbar" :class="classE" v-if="isLiquidation">
+            <span :class="classE">5</span>
+          </div>
+          <div class="progressbar" :class="classF" v-if="isLiquidation">
+            <span :class="classF">5</span>
+          </div>
         </div>
 
         <div class="d-flex text-center">
@@ -44,16 +50,47 @@
               ></small
             >
           </div>
-          <div class="textbar" :class="classC">
+
+          <div class="textbar" :class="classC" v-if="!isLiquidation">
             <small
               ><span :class="classC" class="font-weight-bold"
                 >Attachments</span
               ></small
             >
           </div>
-          <div class="textbar" :class="classD">
+          <div class="textbar" :class="classD" v-if="!isLiquidation">
             <small
               ><span :class="classD" class="font-weight-bold"
+                >Review</span
+              ></small
+            >
+          </div>
+
+          <div class="textbar" :class="classC" v-if="isLiquidation">
+            <small
+              ><span :class="classC" class="font-weight-bold"
+                >Expense Details</span
+              ></small
+            >
+          </div>
+          <div class="textbar" :class="classD" v-if="isLiquidation">
+            <small
+              ><span :class="classD" class="font-weight-bold"
+                >Transportation Details</span
+              ></small
+            >
+          </div>
+
+          <div class="textbar" :class="classE" v-if="isLiquidation">
+            <small
+              ><span :class="classE" class="font-weight-bold"
+                >Attachments</span
+              ></small
+            >
+          </div>
+          <div class="textbar" :class="classF" v-if="isLiquidation">
+            <small
+              ><span :class="classF" class="font-weight-bold"
                 >Review</span
               ></small
             >
@@ -199,7 +236,7 @@
         <!-- / Request Details -->
 
         <!-- Payment Details -->
-        <div class="row mt-4" v-else-if="this.counter === 1">
+        <div class="row mt-4" v-if="this.counter === 1">
           <div class="col-md-3"></div>
           <div class="col-md-6">
             <div class="form-group">
@@ -281,9 +318,97 @@
         </div>
         <!-- / Payment Details -->
 
+        <!-- Expense Details -->
+        <div class="row mt-4" v-if="this.counter === isExpense">
+          <table class="table table-sm table-bordered table-striped mx-2">
+            <thead>
+              <tr>
+                <th colspan="6" scope="col">
+                  <aside class="d-flex align-items-center">
+                    <span class="mb-1 ml-1"> Expense Detals</span>
+                  </aside>
+                </th>
+              </tr>
+              <tr>
+                <th scope="col" class="text-center">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Client Name</th>
+                <th scope="col">Expense Type</th>
+                <th scope="col">Remarks</th>
+                <th scope="col">Amount</th>
+              </tr>
+            </thead>
+
+            <tbody style="font-size: 14px">
+              <tr v-for="(item, index) in expenseType_Data" :key="item.id">
+                <td class="text-center">{{ index + 1 }}.</td>
+                <td>{{ item.date_ }}</td>
+                <td>{{ item.CLIENT_NAME }}</td>
+                <td>{{ item.EXPENSE_TYPE }}</td>
+                <td>{{ item.DESCRIPTION }}</td>
+                <td>{{ item.AMOUNT }}</td>
+              </tr>
+
+              <tr>
+                <td :colspan="expenseFooter"></td>
+                <td colspan="2">
+                  <b>Total Amount: {{ this.expenseType_totalAmount }}</b>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- /.Expense Details -->
+
+        <!-- Transportation Details -->
+        <div class="row mt-4" v-if="this.counter === isTranspo">
+          <table class="table table-sm table-bordered table-striped mx-2">
+            <thead>
+              <tr>
+                <th colspan="8" scope="col">
+                  <aside class="d-flex align-items-center">
+                    <span class="mb-1 ml-1"> Transportation Detals</span>
+                  </aside>
+                </th>
+              </tr>
+              <tr>
+                <th scope="col" class="text-center">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Client Name</th>
+                <th scope="col">Destination From</th>
+                <th scope="col">Destination To</th>
+                <th scope="col">Mode of Transportation</th>
+                <th scope="col">Remarks</th>
+                <th scope="col">Amount</th>
+              </tr>
+            </thead>
+
+            <tbody style="font-size: 14px">
+              <tr v-for="(item, index) in transpoSetup_Data" :key="item.id">
+                <td class="text-center">{{ index + 1 }}.</td>
+                <td>{{ item.date_ }}</td>
+                <td>{{ item.CLIENT_NAME }}</td>
+                <td>{{ item.DESTINATION_FRM }}</td>
+                <td>{{ item.DESTINATION_TO }}</td>
+                <td>{{ item.MOT }}</td>
+                <td>{{ item.DESCRIPTION }}</td>
+                <td>{{ item.AMT_SPENT }}</td>
+              </tr>
+
+              <tr>
+                <td :colspan="transpoFooter"></td>
+                <td colspan="2">
+                  <b>Total Amount: {{ this.transpoSetup_totalAmount }}</b>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- /.Transportation Details -->
+
         <!-- The Attachments -->
         <div
-          v-else-if="this.counter === 2"
+          v-if="this.counter === isAttachments"
           class="
             d-flex
             align-items-center
@@ -348,7 +473,7 @@
         <!-- / The Attachments -->
 
         <!--  Form Review -->
-        <aside v-else-if="this.counter === 3">
+        <aside v-if="this.counter === isReview">
           <div class="card card-secondary mt-4">
             <div class="card-header">
               <h3 class="card-title">Request Details</h3>
@@ -452,6 +577,119 @@
             <!-- /.card-body -->
           </div>
           <!-- /.card -->
+
+          <!-- Expense Details Review -->
+          <div class="card card-secondary" v-if="isLiquidation">
+            <div class="card-header">
+              <h3 class="card-title">Expense Table</h3>
+
+              <div class="card-tools">
+                <button
+                  type="button"
+                  class="btn btn-tool"
+                  data-card-widget="collapse"
+                >
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+              <table
+                class="table table-sm table-bordered table-hover table-striped"
+              >
+                <thead>
+                  <tr>
+                    <th style="width: 5%">#</th>
+                    <th style="width: 10%">Date</th>
+                    <th style="width: 20%">Client Name</th>
+                    <th style="width: 20%">Expense Type</th>
+                    <th style="width: 30%">Remarks</th>
+                    <th style="width: 10%">Amount</th>
+
+                    <!-- <th style="width: 10%">Action</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, index) in expenseType_Data" :key="item.id">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.date_ }}</td>
+                    <td>{{ item.CLIENT_NAME }}</td>
+                    <td>{{ item.EXPENSE_TYPE }}</td>
+                    <td>{{ item.DESCRIPTION }}</td>
+                    <td>{{ item.AMOUNT }}</td>
+                  </tr>
+
+                  <tr>
+                    <td colspan="5"></td>
+                    <b class="px-1"
+                      >Total: {{ this.expenseType_totalAmount }}</b
+                    >
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.Expense Details Review -->
+
+          <!-- Transportation Details Review -->
+          <div class="card card-secondary" v-if="isLiquidation">
+            <div class="card-header">
+              <h3 class="card-title">Transporation Expense Table</h3>
+
+              <div class="card-tools">
+                <button
+                  type="button"
+                  class="btn btn-tool"
+                  data-card-widget="collapse"
+                >
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+              <table
+                class="table table-sm table-bordered table-hover table-striped"
+              >
+                <thead>
+                  <tr>
+                    <th style="width: 5%">#</th>
+                    <th style="width: 10%">Date</th>
+                    <th style="width: 15%">Client Name</th>
+                    <th style="width: 10%">Destination From</th>
+                    <th style="width: 10%">Destination To</th>
+                    <th style="width: 20%">Mode of Transportation</th>
+                    <th style="width: 10%">Remarks</th>
+                    <th style="width: 10%">Amount</th>
+                    <!-- <th style="width: 10%">Action</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, index) in transpoSetup_Data" :key="item.id">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.date_ }}</td>
+                    <td>{{ item.CLIENT_NAME }}</td>
+                    <td>{{ item.DESTINATION_FRM }}</td>
+                    <td>{{ item.DESTINATION_TO }}</td>
+                    <td>{{ item.MOT }}</td>
+                    <td>{{ item.DESCRIPTION }}</td>
+                    <td>{{ item.AMT_SPENT }}</td>
+                  </tr>
+
+                  <tr>
+                    <td colspan="7"></td>
+                    <b class="px-1"
+                      >Total: {{ this.transpoSetup_totalAmount }}</b
+                    >
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.Transportation Details Review -->
 
           <!-- Form Review Attachments -->
           <div class="card card-secondary">
@@ -572,7 +810,7 @@
               </button>
             </div>
 
-            <div class="col-lg-2" v-if="this.counter <= 2">
+            <div class="col-lg-2" v-if="this.counter <= isAttachments">
               <button
                 type="button"
                 @click="counter++"
@@ -627,6 +865,8 @@ export default {
     this.getPcMain(this.processId);
     this.getActualSign(this.processId, this.form, this.companyId);
     this.getAttachments(this.processId, this.form);
+    this.getPcExpense(this.processId);
+    this.getPcTranspo(this.processId);
   },
   watch: {
     // Request Details
@@ -646,6 +886,105 @@ export default {
     },
     classD() {
       return { active: this.counter >= 3 };
+    },
+    classE() {
+      return { active: this.counter >= 4 };
+    },
+    classF() {
+      return { active: this.counter >= 5 };
+    },
+
+    isExpense() {
+      if (this.isLiquidation === true) {
+        return 2;
+      } else {
+        return false;
+      }
+    },
+    isTranspo() {
+      if (this.isLiquidation === true) {
+        return 3;
+      } else {
+        return false;
+      }
+    },
+    isAttachments() {
+      if (this.isLiquidation === true) {
+        return 4;
+      } else {
+        return 2;
+      }
+    },
+
+    buttonsSet() {
+      if (this.isApproval === true) {
+        return 4;
+      } else {
+        return 2;
+      }
+    },
+    isReview() {
+      if (this.isLiquidation === true) {
+        return 5;
+      } else {
+        return 3;
+      }
+    },
+
+    expenseHeader() {
+      if (this.isApproval === false) {
+        return 5;
+      } else {
+        return 6;
+      }
+    },
+
+    expenseFooter() {
+      if (this.isApproval === false) {
+        return 4;
+      } else {
+        return 5;
+      }
+    },
+
+    transpoFooter() {
+      if (this.isApproval === false) {
+        return 6;
+      } else {
+        return 7;
+      }
+    },
+
+    isForClarity() {
+      if (this.title === "Clarify") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    // Sum of all amount spend in liquidation
+    expenseType_totalAmount() {
+      if (this.expenseType_Data.length > 0) {
+        const total = this.expenseType_Data
+          .map((expenseType_Data) => parseInt(expenseType_Data.AMOUNT))
+          .reduce((acc, expenseType_Data) => expenseType_Data + acc);
+        return total;
+      } else {
+        return 0;
+      }
+    },
+
+    // sum of all amount spend in transportation
+    transpoSetup_totalAmount() {
+      if (this.transpoSetup_Data.length > 0) {
+        const total = this.transpoSetup_Data
+          .map((transpoSetup_Data) => parseInt(transpoSetup_Data.AMT_SPENT))
+          .reduce((acc, transpoSetup_Data) => transpoSetup_Data + acc);
+        return total;
+      } else {
+        return 0;
+      }
     },
 
     // Calendaer
@@ -701,13 +1040,14 @@ export default {
       form: this.$route.params.frmName,
 
       withdrawRemarks: "",
+
+      isLiquidation: false,
     };
   },
 
   methods: {
     async withdrawn() {
-
-      this.isLoadingModal = true
+      this.isLoadingModal = true;
       const fd = new FormData();
 
       fd.append("withdrawRemarks", this.withdrawRemarks);
@@ -716,7 +1056,6 @@ export default {
       fd.append("companyId", this.companyId);
       fd.append("loggedUserId", this.loggedUserId);
 
-
       try {
         const resp = await axios.post(
           "http://127.0.0.1:8000/api/withdraw-request",
@@ -724,9 +1063,11 @@ export default {
         );
         console.log(resp.data);
 
-        if(resp.status === 200){
+        if (resp.status === 200) {
           document.getElementById("modalCloseButton").click();
           this.openToast("top-right", "success", resp.data.message);
+          this.$router.replace("/inprogress");
+
         }
       } catch (err) {
         // Handle Error Here
@@ -747,6 +1088,40 @@ export default {
     close() {
       this.$router.replace("/inprogress");
     },
+    
+    async getPcExpense(id) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-PcExpense/${id}`
+        );
+
+        if (resp.status === 200) {
+          console.log(resp.data);
+
+          this.expenseType_Data = resp.data;
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    async getPcTranspo(id) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-PcTranspo/${id}`
+        );
+
+        if (resp.status === 200) {
+          console.log(resp.data);
+
+          this.transpoSetup_Data = resp.data;
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
 
     async getPcMain(id) {
       try {
@@ -764,7 +1139,6 @@ export default {
           this.purpose = resp.data.data.DESCRIPTION;
 
           this.amount = resp.data.data.REQUESTED_AMT;
-
         }
       } catch (err) {
         // Handle Error Here
@@ -781,6 +1155,10 @@ export default {
         if (resp.status === 200) {
           this.isLoading = false;
           this.payeeName = resp.data[0].Payee;
+
+          if (resp.data[1].STATUS === "Completed") {
+            this.isLiquidation = true;
+          }
         }
       } catch (err) {
         // Handle Error Here
