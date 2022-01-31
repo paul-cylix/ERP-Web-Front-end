@@ -207,15 +207,12 @@
             <div class="form-group">
               <small><label for="modeOfPayment">Mode of Payment</label></small>
               <!-- <input type="text" class="form-control form-control-sm" id="modeOfPayment"> -->
-              <model-list-select
-                :list="modeOfPayment"
-                v-model="modeOfPaymentItem"
-                option-value="code"
-                option-text="name"
-                placeholder="select item"
-                style="padding: 9px"
-              >
-              </model-list-select>
+              <input
+                type="text"
+                disabled
+                class="form-control form-control-sm"
+                id="modeOfPayment"
+              />
             </div>
 
             <div class="row">
@@ -223,15 +220,12 @@
                 <div class="form-group">
                   <small><label for="currency">Currency</label></small>
                   <!-- <input type="text" class="form-control form-control-sm" id="currency"> -->
-                  <model-list-select
-                    :list="currency"
-                    v-model="currencyItem"
-                    option-value="code"
-                    option-text="name"
-                    placeholder="select item"
-                    style="padding: 9px"
-                  >
-                  </model-list-select>
+                  <input
+                    type="text"
+                    disabled
+                    class="form-control form-control-sm"
+                    id="currency"
+                  />
                 </div>
               </div>
               <div class="col-md-8">
@@ -420,8 +414,8 @@
           "
           id="app"
         >
-          <div
-            class="p-5 col-md-12 rounded"
+                <div
+            class="pt-2 col-md-12 rounded"
             @dragover="dragover"
             @dragleave="dragleave"
             @drop="drop"
@@ -438,56 +432,57 @@
               accept=".pdf,.jpg,.jpeg,.png"
             />
 
-            <label for="assetsFieldHandle" class="block cursor-pointer">
-              <span class="text-secondary">Drag and Drop files here</span>
-              <br /><span class="text-secondary">or</span><br />
-              <div id="uploadText" class="mt-2 btn btn-sm btn-primary">
-                Select files
-              </div>
-            </label>
-            <!-- <aside class="d-flex align-items-center justify-content-center"> -->
-            <ul
-              class="mt-4 text-decoration-none ulUpload"
-              v-if="this.selectedFile.length"
-              v-cloak
+            <label
+              for="assetsFieldHandle"
+              style="width: 100%; cursor: pointer"
+              class="block p-5 cursor-pointer"
             >
-              <li
-                class="text-sm mt-2"
-                v-for="(file, index) in selectedFile"
-                :key="file.name"
+              <span class="text-secondary">Click here or drop file(s)</span>
+              <br />
+              <!-- <small
+                class="text-danger p-0 m-0"
+                v-if="missingAttachments && attemptNextTwo"
+                >Attachments is required!</small
+              > -->
+              <ul
+                class="mt-4 text-decoration-none ulUpload"
+                v-if="this.selectedFile.length"
+                v-cloak
               >
-                <div class="row d-flex justify-content-center">
-                  <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 + "." }}</b>
-                    </div>
-                    <div class="col text-left">
-                      <span>{{ file.name }}</span>
-                    </div>
-                    <div class="co-2">
-                      <button
-                        class="btn btn-danger btn-sm"
-                        type="button"
-                        @click="remove(selectedFile.indexOf(file))"
-                        title="Remove file"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <div class="col-2">
-                      <button
-                        @click="preview(selectedFile.indexOf(file))"
-                        class="btn btn-secondary btn-sm"
-                      >
-                        Preview
-                      </button>
+                <li
+                  class="text-sm mt-2"
+                  v-for="file in selectedFile"
+                  :key="file.name"
+                >
+                  <div class="row d-flex justify-content-center">
+                    <div class="col-md-4 d-flex">
+                      <div class="col text-left">
+                        <span>{{ file.name }}</span>
+                      </div>
+                      <div class="co-2">
+                        <button
+                          class="btn btn-danger btn-sm"
+                          type="button"
+                          @click="remove(selectedFile.indexOf(file))"
+                          title="Remove file"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <div class="col-2">
+                        <button
+                          @click="preview(selectedFile.indexOf(file))"
+                          class="btn btn-secondary btn-sm"
+                        >
+                          Preview
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </li>
-            </ul>
+                </li>
+              </ul>
+            </label>
 
-            <!-- </aside> -->
           </div>
         </div>
         <!-- / The Attachments -->
@@ -1497,12 +1492,20 @@ export default {
     // Request Details
     todaysDate() {
       const today = new Date();
-      const dd = today.getDate();
-      const mm = today.getMonth() + 1;
+      let dd = today.getDate();
+      let mm = today.getMonth() + 1;
       const yyyy = today.getFullYear();
+
+      if (mm < 10) {
+        mm = `0${mm}`;
+      }
+
+      if (dd < 10) {
+        dd = `0${dd}`;
+      }
+
       const todaysDate = yyyy + "-" + mm + "-" + dd;
       this.requestDate = todaysDate;
-      // return todaysDate;
     },
 
     async gettranspoSetup() {

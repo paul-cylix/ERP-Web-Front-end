@@ -1,6 +1,7 @@
 <template>
   <div class="col-md-12 mt-3">
     <!-- Form Element sizes -->
+
     <div class="card card-secondary">
       <div
         class="overlay"
@@ -14,6 +15,7 @@
       </div>
       <div class="card-body">
         <!-- Step Numbers -->
+
         <div class="d-flex progressBarWrapper text-center">
           <div class="progressbar" :class="classA">
             <span :class="classA">1</span>
@@ -59,6 +61,7 @@
             >
           </div>
         </div>
+
         <!-- / Step Numbers -->
 
         <!-- Main Form -->
@@ -98,8 +101,13 @@
                 <date-picker
                   v-model="dateNeeded"
                   valueType="format"
-                  style="display: block; width: 100%; line-height: 20px"
+                  style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingDateNeeded && attemptNext"
+                  >Date Needed is required!</small
+                >
               </div>
             </div>
             <div class="col-md-3">
@@ -119,6 +127,11 @@
                   style="padding: 9px"
                 >
                 </model-list-select>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingReportingManager && attemptNext"
+                  >Reporting Manager is required!</small
+                >
               </div>
             </div>
           </div>
@@ -137,6 +150,11 @@
                   style="padding: 9px"
                 >
                 </model-list-select>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="this.missingProjectItem && attemptNext"
+                  >Project Name is required!</small
+                >
               </div>
             </div>
             <div class="col-md-6">
@@ -162,9 +180,14 @@
                   class="form-control"
                   name="purpose"
                   id="purpose"
-                  v-model="purpose"
+                  v-model.trim="purpose"
                   rows="5"
                 ></textarea>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="this.missingPurpose && attemptNext"
+                  >Purpose is required!</small
+                >
               </div>
             </div>
           </div>
@@ -180,9 +203,15 @@
               <input
                 type="text"
                 class="form-control form-control-sm"
-                v-model="payeeName"
+                v-model.trim="payeeName"
                 id="payeeName"
               />
+
+              <small
+                class="text-danger p-0 m-0"
+                v-if="this.missingPayeeName && attemptNextOne"
+                >Payee Name is required!</small
+              >
             </div>
             <div class="form-group">
               <small><label for="modeOfPayment">Mode of Payment</label></small>
@@ -196,6 +225,11 @@
                 style="padding: 9px"
               >
               </model-list-select>
+              <small
+                class="text-danger p-0 m-0"
+                v-if="this.missingModeOfPayment && attemptNextOne"
+                >Mode of Payment is required!</small
+              >
             </div>
 
             <div class="row">
@@ -212,6 +246,11 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="this.missingCurrency && attemptNextOne"
+                    >Currency is required!</small
+                  >
                 </div>
               </div>
               <div class="col-md-8">
@@ -219,10 +258,18 @@
                   <small><label for="amount">Amount</label></small>
                   <input
                     type="text"
+                    @keyup="formatCurrency($event)"
+                    @blur="formatCurrency($event, 'blur')"
+                    pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
                     class="form-control form-control-sm py-3"
                     id="amount"
                     v-model="amount"
                   />
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="this.missingAmount && attemptNextOne"
+                    >Amount is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -245,7 +292,7 @@
           id="app"
         >
           <div
-            class="p-5 col-md-12 rounded"
+            class="pt-2 col-md-12 rounded"
             @dragover="dragover"
             @dragleave="dragleave"
             @drop="drop"
@@ -262,56 +309,57 @@
               accept=".pdf,.jpg,.jpeg,.png"
             />
 
-            <label for="assetsFieldHandle" class="block cursor-pointer">
-              <span class="text-secondary">Drag and Drop files here</span>
-              <br /><span class="text-secondary">or</span><br />
-              <div id="uploadText" class="mt-2 btn btn-sm btn-primary">
-                Select files
-              </div>
-            </label>
-            <!-- <aside class="d-flex align-items-center justify-content-center"> -->
-            <ul
-              class="mt-4 text-decoration-none ulUpload"
-              v-if="this.selectedFile.length"
-              v-cloak
+            <label
+              for="assetsFieldHandle"
+              style="width: 100%; cursor: pointer"
+              class="block p-5 cursor-pointer"
             >
-              <li
-                class="text-sm mt-2"
-                v-for="(file, index) in selectedFile"
-                :key="file.name"
+              <span class="text-secondary">Click here or drop file(s)</span>
+              <br />
+              <small
+                class="text-danger p-0 m-0"
+                v-if="missingAttachments && attemptNextTwo"
+                >Attachments is required!</small
               >
-                <div class="row d-flex justify-content-center">
-                  <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 + "." }}</b>
-                    </div>
-                    <div class="col text-left">
-                      <span>{{ file.name }}</span>
-                    </div>
-                    <div class="co-2">
-                      <button
-                        class="btn btn-danger btn-sm"
-                        type="button"
-                        @click="remove(selectedFile.indexOf(file))"
-                        title="Remove file"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <div class="col-2">
-                      <button
-                        @click="preview(selectedFile.indexOf(file))"
-                        class="btn btn-secondary btn-sm"
-                      >
-                        Preview
-                      </button>
+              <ul
+                class="mt-4 text-decoration-none ulUpload"
+                v-if="this.selectedFile.length"
+                v-cloak
+              >
+                <li
+                  class="text-sm mt-2"
+                  v-for="file in selectedFile"
+                  :key="file.name"
+                >
+                  <div class="row d-flex justify-content-center">
+                    <div class="col-md-4 d-flex">
+                      <div class="col text-left">
+                        <span>{{ file.name }}</span>
+                      </div>
+                      <div class="co-2">
+                        <button
+                          class="btn btn-danger btn-sm"
+                          type="button"
+                          @click="remove(selectedFile.indexOf(file))"
+                          title="Remove file"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <div class="col-2">
+                        <button
+                          @click="preview(selectedFile.indexOf(file))"
+                          class="btn btn-secondary btn-sm"
+                        >
+                          Preview
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </li>
-            </ul>
+                </li>
+              </ul>
+            </label>
 
-            <!-- </aside> -->
           </div>
         </div>
         <!-- / The Attachments -->
@@ -337,12 +385,6 @@
               <table
                 class="table table-sm table-bordered table-hover table-striped"
               >
-                <!-- <thead>
-          <tr>
-            <th>Form</th>
-            <th style="width: 80%"></th>
-          </tr>
-        </thead> -->
                 <tbody>
                   <tr>
                     <td>Reference Number</td>
@@ -398,12 +440,7 @@
               <table
                 class="table table-sm table-bordered table-hover table-striped"
               >
-                <!-- <thead>
-          <tr>
-            <th>Form</th>
-            <th style="width: 80%"></th>
-          </tr>
-        </thead> -->
+
                 <tbody>
                   <tr>
                     <td>Payee Name</td>
@@ -498,11 +535,14 @@
           <div class="col-md-1" v-if="this.counter <= 2">
             <button
               type="button"
-              @click="counter++"
               class="btn btn-block btn-primary btn-sm"
+              @click="next()"
             >
               Next
             </button>
+
+            <!-- For Testing purposes -->
+            <!-- <button @click="test()">test2</button> -->
           </div>
 
           <div class="col-md-1" v-else>
@@ -517,7 +557,7 @@
 
           <!-- <button @click="sendRequest()">test</button> -->
         </div>
-        <!-- / Button -->
+        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->
@@ -535,7 +575,7 @@ export default {
   created() {
     // Request Details
     this.getProjects();
-    this.getReportingManager();
+    this.getReportingManager(this.loggedUserId);
     this.todaysDate();
   },
   watch: {
@@ -567,11 +607,88 @@ export default {
       // const todaysDate = yyyy + "-" + mm + "-" + dd;
       return yyyy;
     },
+
+    // Validation
+    missingDateNeeded() {
+      if (this.dateNeeded === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingReportingManager() {
+      if (this.reportingManagerItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingProjectItem() {
+      if (this.projectItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingPurpose() {
+      if (this.purpose.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingPayeeName() {
+      if (this.payeeName.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModeOfPayment() {
+      if (this.modeOfPaymentItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingCurrency() {
+      if (this.currencyItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingAmount() {
+      if (this.amount.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingAttachments() {
+      if (this.selectedFile.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   data() {
     return {
       counter: 0,
       isLoading: false,
+      attemptNext: false,
+      attemptNextOne: false,
+      attemptNextTwo: false,
+
       // Request Details
       reportingManager: [],
       reportingManagerItem: {},
@@ -579,7 +696,7 @@ export default {
       requestDate: "",
       project: [],
       projectItem: {},
-      dateNeeded: "",
+      dateNeeded: null,
       clientName: "",
       clientId: "",
       mainId: "",
@@ -602,6 +719,7 @@ export default {
       currencyItem: {},
       payeeName: "",
       amount: "",
+      realAmount: "",
 
       // The Attachments
       selectedFile: [],
@@ -615,10 +733,78 @@ export default {
       loggedUserPosition: "Senior Developer",
       companyId: 1,
       companyName: "Cylix Technologies Inc.",
+
+      // fields: [
+      //   "Reference Number",
+      //   "Request Date",
+      //   "Date Needed",
+      //   "Date Needed",
+      //   "Date Needed",
+      //   "Date Needed",
+      //   "Date Needed",
+      // ],
     };
   },
 
   methods: {
+    // for test purposes
+    test() {
+      // console.log(this.dateNeeded.length);
+
+      // if (this.payeeName.length === 0) {
+      //   console.log(true);
+      // } else {
+      //   console.log(false);
+      // }
+
+      console.log(this.selectedFile.length);
+
+      // console.log(this.missingModeOfPayment);
+    },
+
+    next() {
+      if (this.counter === 0) {
+        this.attemptNext = true;
+      } else if (this.counter === 1) {
+        this.attemptNext = false;
+        this.attemptNextOne = true;
+      } else if (this.counter === 2) {
+        this.attemptNextOne = false;
+        this.attemptNextTwo = true;
+      }
+
+      this.validateCurrentTab(this.counter);
+    },
+
+    validateCurrentTab(counter) {
+      // Request Details
+      if (counter === 0) {
+        if (
+          !this.missingDateNeeded &&
+          !this.missingReportingManager &&
+          !this.missingProjectItem &&
+          !this.missingPurpose
+        ) {
+          this.counter++;
+        }
+        // Payment Details
+      } else if (counter === 1) {
+        if (
+          !this.missingPayeeName &&
+          !this.missingModeOfPayment &&
+          !this.missingCurrency &&
+          !this.missingAmount
+        ) {
+          this.counter++;
+        }
+        // Attachments
+      } else if (counter === 2) {
+        if (!this.missingAttachments) {
+          this.counter++;
+        }
+      }
+    },
+
     openToast(position, variant, message) {
       const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
       VsToast.show({
@@ -650,7 +836,7 @@ export default {
       fd.append("payeeName", this.payeeName);
       fd.append("modeOfPayment", this.modeOfPaymentItem.name);
       fd.append("currency", this.currencyItem.name);
-      fd.append("amount", this.amount);
+      fd.append("amount", this.realAmount);
 
       fd.append("loggedUserId", this.loggedUserId);
       fd.append("loggedUserFirstName", this.loggedUserFirstName);
@@ -681,15 +867,25 @@ export default {
     // Request Details
     todaysDate() {
       const today = new Date();
-      const dd = today.getDate();
-      const mm = today.getMonth() + 1;
+      let dd = today.getDate();
+      let mm = today.getMonth() + 1;
       const yyyy = today.getFullYear();
+
+      if (mm < 10) {
+        mm = `0${mm}`;
+      }
+
+      if (dd < 10) {
+        dd = `0${dd}`;
+      }
+
       const todaysDate = yyyy + "-" + mm + "-" + dd;
       this.requestDate = todaysDate;
-      // return todaysDate;
     },
 
     async getProjects() {
+      this.isLoading = true;
+
       const response = await fetch(
         "http://127.0.0.1:8000/api/general-projects",
         {
@@ -708,6 +904,9 @@ export default {
         );
         throw error;
       }
+
+      this.isLoading = false;
+
       const project = [];
       for (const key in responseData) {
         const request = {
@@ -752,9 +951,11 @@ export default {
       this.mainId = client[0].mainId;
     },
 
-    async getReportingManager() {
+    async getReportingManager(loggedUserId) {
+      this.isLoading = true;
+
       const response = await fetch(
-        "http://127.0.0.1:8000/api/reporting-manager/136",
+        `http://127.0.0.1:8000/api/reporting-manager/${loggedUserId}`,
         {
           method: "GET",
           headers: {
@@ -771,6 +972,7 @@ export default {
         );
         throw error;
       }
+      this.isLoading = false;
 
       const reportingManager = [];
       for (const key in responseData) {
@@ -791,6 +993,15 @@ export default {
         this.selectedFile.push(selectedFiles[i]);
       }
       this.filePreview();
+
+      console.log(this.selectedFile);
+    },
+    onInputChange(event) {
+      let selectedFiles = event.dataTransfer.files;
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.selectedFile.push(selectedFiles[i]);
+      }
+      this.filePreview();
     },
     remove(i) {
       this.selectedFile.splice(i, 1);
@@ -805,23 +1016,23 @@ export default {
     dragover(event) {
       event.preventDefault();
       // Add some visual fluff to show the user can drop its files
-      if (!event.currentTarget.classList.contains("bg-green-300")) {
-        event.currentTarget.classList.remove("bg-gray-100");
-        event.currentTarget.classList.add("bg-green-300");
+      if (!event.currentTarget.classList.contains("bg-white")) {
+        event.currentTarget.classList.remove("bg-light");
+        event.currentTarget.classList.add("bg-white");
       }
     },
     dragleave(event) {
       // Clean up
-      event.currentTarget.classList.add("bg-gray-100");
-      event.currentTarget.classList.remove("bg-green-300");
+      event.currentTarget.classList.add("bg-light");
+      event.currentTarget.classList.remove("bg-white");
     },
     drop(event) {
       event.preventDefault();
-      this.onFileSelected(); // Trigger the onChange event manually
+      this.onInputChange(event); // Trigger the onChange event manually
 
       // Clean up
-      event.currentTarget.classList.add("bg-gray-100");
-      event.currentTarget.classList.remove("bg-green-300");
+      event.currentTarget.classList.add("bg-light");
+      event.currentTarget.classList.remove("bg-white");
     },
 
     filePreview() {
@@ -835,6 +1046,88 @@ export default {
         fileContainer.push(thisFiles);
       }
       this.filespreview = fileContainer;
+    },
+
+    // Amount aldrin script
+
+    formatNumber(n) {
+      // format number 1000000 to 1,234,567
+      return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+
+    formatCurrency(input, blur) {
+      // appends $ to value, validates decimal side
+      // and puts cursor back in right position.
+
+      // get input value
+      let input_val = this.amount;
+
+      // don't validate empty input
+      if (input_val === "") {
+        return;
+      }
+
+      // original length
+      let original_len = input_val.length;
+
+      // initial caret position
+      let caret_pos = input.target.selectionStart;
+
+      // check for decimal
+      if (input_val.indexOf(".") >= 0) {
+        // get position of first decimal
+        // this prevents multiple decimals from
+        // being entered
+        let decimal_pos = input_val.indexOf(".");
+
+        // split number by decimal point
+        let left_side = input_val.substring(0, decimal_pos);
+        let right_side = input_val.substring(decimal_pos);
+
+        // add commas to left side of number
+        left_side = this.formatNumber(left_side);
+
+        // validate right side
+        right_side = this.formatNumber(right_side);
+
+        // On blur make sure 2 numbers after decimal
+        if (blur === "blur") {
+          right_side += "00";
+        }
+
+        // Limit decimal to only 2 digits
+        right_side = right_side.substring(0, 2);
+
+        // join number by .
+        input_val = left_side + "." + right_side;
+      } else {
+        // no decimal entered
+        // add commas to number
+        // remove all non-digits
+        input_val = this.formatNumber(input_val);
+        // input_val = input_val;
+
+        // final formatting
+        if (blur === "blur") {
+          input_val += ".00";
+        }
+      }
+
+      // send updated string to input
+      this.amount = input_val;
+      input.target.value = input_val;
+
+      let realAmount = input_val;
+      if (realAmount.indexOf(",") !== -1) {
+        realAmount = realAmount.replace(/,/g, "");
+      }
+      this.realAmount = realAmount;
+      console.log(this.realAmount);
+
+      // put caret back in the right position
+      let updated_len = input_val.length;
+      caret_pos = updated_len - original_len + caret_pos;
+      input.target.setSelectionRange(caret_pos, caret_pos);
     },
   },
 };
@@ -908,5 +1201,16 @@ export default {
   padding: 0;
   margin: 0;
   text-decoration: none;
+}
+
+.formInvalid {
+  background-color: #fff6f6;
+  border-color: #e0b4b4;
+}
+
+.glowing-border {
+  /* border: 2px solid #e0b4b4; */
+  outline: none;
+  box-shadow: 0 0 13px #e0b4b4;
 }
 </style>

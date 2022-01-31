@@ -12,8 +12,6 @@ import TheClarification from "./pages/workflow/clarification/TheClarification.vu
 import TheApproved from "./pages/workflow/TheApproved.vue";
 import TheWithdrawn from "./pages/workflow/TheWithdrawn.vue";
 import TheRejected from "./pages/workflow/rejected/TheRejected.vue";
-import CreateRfp from "./pages/accounting/CreateRfp.vue";
-import MyPractice from "./pages/accounting/MyPractice.vue";
 
 import TheRfp from "./pages/accounting/TheRfp.vue";
 import TheRe from "./pages/accounting/TheRe.vue";
@@ -23,11 +21,11 @@ import TheItf from "./pages/humanresource/TheItf.vue";
 import TheLaf from "./pages/humanresource/TheLaf.vue";
 
 
-import GetInprogress from "./pages/workflow/inprogress/GetInprogress.vue";
-import GetApproval from "./pages/workflow/approval/GetApproval.vue";
-import GetRejected from "./pages/workflow/rejected/GetRejected.vue";
-import GetInput from "./pages/workflow/input/GetInput.vue";
-import GetClarification from "./pages/workflow/clarification/GetClarification.vue";
+import RfpInprogress from "./pages/workflow/inprogress/RfpInprogress.vue";
+import RfpApproval from "./pages/workflow/approval/RfpApproval.vue";
+import RfpRejected from "./pages/workflow/rejected/RfpRejected.vue";
+import RfpInput from "./pages/workflow/input/RfpInput.vue";
+import RfpClarification from "./pages/workflow/clarification/RfpClarification.vue";
 
 import ReInprogress from "./pages/workflow/inprogress/ReInprogress.vue";
 import ReApproval from "./pages/workflow/approval/ReApproval.vue";
@@ -74,7 +72,7 @@ const routes = [
           {
             path: ":id",
             name: "Request for Payment-input",
-            component: GetInput,
+            component: RfpInput,
             props: true,
           },
           {
@@ -104,7 +102,7 @@ const routes = [
           {
             path: ":id",
             name: "Request for Payment-approval",
-            component: GetApproval,
+            component: RfpApproval,
             props: true,
           },
           {
@@ -146,7 +144,7 @@ const routes = [
           {
             path: ":id",
             name: "Request for Payment-inprogress",
-            component: GetInprogress,
+            component: RfpInprogress,
             props: true,
           },
           {
@@ -190,7 +188,7 @@ const routes = [
           {
             path: ":id",
             name: "Request for Payment-clarification",
-            component: GetClarification,
+            component: RfpClarification,
             props: true,
           },
           {
@@ -234,13 +232,11 @@ const routes = [
           {
             path: ":id",
             name: "rejectedbyId",
-            component: GetRejected,
+            component: RfpRejected,
             props: true,
           },
         ],
       },
-      { path: "/create-rfp", component: CreateRfp },
-      { path: "/upload", component: MyPractice },
       { path: "/the-rfp", component: TheRfp },
       { path: "/the-re", component: TheRe },
       { path: "/the-pc", component: ThePc },
@@ -249,14 +245,7 @@ const routes = [
       { path: "/the-laf", component: TheLaf },
 
 
-      {
-        path: "/:workflow-:frmClass-:id",
-        name: "open-inprogress-requestforpayment",
-        component: GetInprogress,
-        props: true,
-      },
 
-      //Accounting
     ],
   },
 ];

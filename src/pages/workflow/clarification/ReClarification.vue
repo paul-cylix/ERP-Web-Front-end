@@ -2062,7 +2062,7 @@ export default {
     },
 
     dragover(event) {
-      event.preventDefault();
+      // event.preventDefault();
       // Add some visual fluff to show the user can drop its files
       if (!event.currentTarget.classList.contains("bg-green-300")) {
         event.currentTarget.classList.remove("bg-gray-100");
@@ -2075,7 +2075,7 @@ export default {
       event.currentTarget.classList.remove("bg-green-300");
     },
     drop(event) {
-      event.preventDefault();
+      // event.preventDefault();
       this.onFileSelected(); // Trigger the onChange event manually
 
       // Clean up

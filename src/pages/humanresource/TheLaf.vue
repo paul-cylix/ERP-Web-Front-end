@@ -964,7 +964,6 @@ export default {
 
       const todaysDate = yyyy + "-" + mm + "-" + dd;
       this.requestedDate = todaysDate;
-      // return todaysDate;
     },
 
     addAlert(header, message, type) {
