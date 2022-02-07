@@ -40,7 +40,7 @@ export default {
             title: "Request Type",
           },
           {
-            key: "dueDate",
+            key: "date",
             title: "Request Date",
           },
           {
@@ -82,7 +82,7 @@ export default {
   },
   methods: {
     async getApprovals() {
-      const loggedUserId = 12;
+      const loggedUserId = 136;
       const companyId = 1;
 
       const response = await fetch(

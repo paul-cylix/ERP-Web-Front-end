@@ -124,10 +124,8 @@
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px"
                   v-if="strictInitAndLiquidation"
-
                 ></date-picker>
-                
-                
+
                 <input
                   type="text"
                   disabled
@@ -136,8 +134,11 @@
                   v-model="dateNeeded"
                   v-else
                 />
-
-          
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingDateNeeded && attemptNext"
+                  >Date Needed is required!</small
+                >
               </div>
             </div>
             <div class="col-md-3">
@@ -227,9 +228,9 @@
                   class="form-control"
                   name="purpose"
                   id="purpose"
-                  v-model="purpose"
+                  v-model.trim="purpose"
                   rows="5"
-                 v-if="strictInitAndLiquidation"
+                  v-if="strictInitAndLiquidation"
                 ></textarea>
 
                 <textarea
@@ -239,9 +240,13 @@
                   disabled
                   v-model="purpose"
                   rows="5"
-                 v-else
+                  v-else
                 ></textarea>
-
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="this.missingPurpose && attemptNext"
+                  >Purpose is required!</small
+                >
               </div>
             </div>
           </div>
@@ -257,7 +262,7 @@
               <input
                 type="text"
                 class="form-control form-control-sm"
-                v-model="payeeName"
+                v-model.trim="payeeName"
                 id="payeeName"
                 v-if="strictInitAndLiquidation"
               />
@@ -270,8 +275,11 @@
                 id="payeeName"
                 v-else
               />
-
-
+              <small
+                class="text-danger p-0 m-0"
+                v-if="this.missingPayeeName && attemptNextOne"
+                >Payee Name is required!</small
+              >
             </div>
             <div class="form-group">
               <small><label for="modeOfPayment">Mode of Payment</label></small>
@@ -325,15 +333,19 @@
               <div class="col-md-8">
                 <div class="form-group">
                   <small><label for="amount">Amount</label></small>
+
                   <input
                     type="text"
+                    @keyup="formatCurrency($event)"
+                    @blur="formatCurrency($event, 'blur')"
+                    pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
                     class="form-control form-control-sm py-3"
                     id="amount"
                     v-model="amount"
                     v-if="strictInitAndLiquidation"
                   />
 
-                    <input
+                  <input
                     v-else
                     type="text"
                     class="form-control form-control-sm py-3"
@@ -341,6 +353,11 @@
                     v-model="amount"
                     :disabled="true"
                   />
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="this.missingAmount && attemptNextOne"
+                    >Amount is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -351,7 +368,6 @@
 
         <!-- Liquidation -->
         <div class="row mt-4" v-if="this.counter === setLiq">
-
           <!-- Read only Liquidation -->
           <table class="table table-sm table-bordered table-striped mx-2">
             <thead>
@@ -383,6 +399,7 @@
                 <th scope="col">Description</th>
                 <th scope="col">Currency</th>
                 <th scope="col">Amount</th>
+                <th scope="col" v-if="isInitiatorAndLiquidation">Action</th>
               </tr>
             </thead>
             <tbody style="font-size: 14px">
@@ -437,106 +454,116 @@
           "
           id="app"
         >
-          <input v-if="isInitiator"
-            type="file"
-            multiple
-            name="fields[assetsFieldHandle][]"
-            id="assetsFieldHandle"
-            class="w-25 h-25 overflow-hidden"
-            @change="onFileSelected"
-            ref="file"
-            accept=".pdf,.jpg,.jpeg,.png"
-          />
+          <div
+            class="pt-2 col-md-12 rounded"
+            @dragover="dragover"
+            @dragleave="dragleave"
+            @drop="drop"
+            id="uploadContainer"
+          >
+            <input
+              v-if="isInitiator"
+              type="file"
+              multiple
+              name="fields[assetsFieldHandle][]"
+              id="assetsFieldHandle"
+              class="w-25 h-25 overflow-hidden"
+              @change="onFileSelected"
+              ref="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+            />
 
-          <div class="p-5 col-md-12 rounded" id="uploadContainer">
-            <label for="assetsFieldHandle" class="block cursor-pointer">
-              <span v-if="isInitiator" class="text-secondary">Click here to add new file(s)</span>
-              <span v-else class="text-secondary">List of Attached file(s)</span>
+            <label
+              for="assetsFieldHandle"
+              style="width: 100%; cursor: pointer"
+              class="block p-5 cursor-pointer"
+            >
+              <span class="text-secondary" v-if="isInitiator"
+                >Click here or drop file(s)</span
+              >
+              <span class="text-secondary" v-else
+                >List of attached file(s)</span
+              >
+
+              <!-- <aside class="d-flex align-items-center justify-content-center"> -->
+              <ul class="mt-4 text-decoration-none ulUpload">
+                <li
+                  class="text-sm mt-2"
+                  v-for="(file, index) in selectedFile"
+                  :key="file.newFilename"
+                >
+                  <div class="row d-flex justify-content-center">
+                    <div class="col-md-4 d-flex">
+                      <div class="col text-left">
+                        <span>{{ file.filename }}</span>
+                      </div>
+
+                      <div v-if="isInitiator">
+                        <button
+                          class="btn btn-danger btn-sm"
+                          type="button"
+                          @click="
+                            removeAttachedFile(
+                              index,
+                              file.id,
+                              file.filename,
+                              file.filepath
+                            )
+                          "
+                          title="Remove file"
+                        >
+                          Remove
+                        </button>
+                      </div>
+
+                      <div class="col-2">
+                        <button
+                          class="btn btn-secondary btn-sm"
+                          @click="preview(file.mimeType, file.imageBytes)"
+                        >
+                          Preview
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <!-- Newly added file -->
+                <li
+                  class="text-sm mt-2"
+                  v-for="file in selectedFileNew"
+                  :key="file.index"
+                >
+                  <div class="row d-flex justify-content-center">
+                    <div class="col-md-4 d-flex">
+                      <div class="col text-left">
+                        <span>{{ file.name }}</span>
+                      </div>
+                      <div>
+                        <button
+                          class="btn btn-danger btn-sm"
+                          type="button"
+                          @click="removeFileNew(selectedFileNew.indexOf(file))"
+                          title="Remove file"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <div class="col-2">
+                        <button
+                          class="btn btn-secondary btn-sm"
+                          @click="filePreviewNew(selectedFileNew.indexOf(file))"
+                        >
+                          Preview
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+
+              <!-- </aside> -->
             </label>
-            <!-- <aside class="d-flex align-items-center justify-content-center"> -->
-            <ul class="mt-4 text-decoration-none ulUpload">
-              <li
-                class="text-sm mt-2"
-                v-for="(file, index) in selectedFile"
-                :key="file.newFilename"
-              >
-                <div class="row d-flex justify-content-center">
-                  <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 + "." }}</b>
-                    </div>
-                    <div class="col text-left">
-                      <span>{{ file.filename }}</span>
-                    </div>
-
-                    <div v-if="isInitiator">
-                      <button
-                        class="btn btn-danger btn-sm"
-                        type="button"
-                        @click="
-                          removeAttachedFile(
-                            index,
-                            file.id,
-                            file.filename,
-                            file.filepath
-                          )
-                        "
-                        title="Remove file"
-                      >
-                        Remove
-                      </button>
-                    </div>
-
-                    <div class="col-2">
-                      <button
-                        class="btn btn-secondary btn-sm"
-                        @click="preview(file.mimeType, file.imageBytes)"
-                      >
-                        Preview
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </li>
-
-              <!-- Newly added file -->
-              <li
-                class="text-sm mt-2"
-                v-for="(file, index) in selectedFileNew"
-                :key="file.index"
-              >
-                <div class="row d-flex justify-content-center">
-                  <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 }}.</b>
-                    </div>
-                    <div class="col text-left">
-                      <span>{{ file.name }}</span>
-                    </div>
-                    <div>
-                      <button
-                        class="btn btn-danger btn-sm"
-                        type="button"
-                        @click="removeFileNew(selectedFileNew.indexOf(file))"
-                        title="Remove file"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <div class="col-2">
-                      <button
-                        class="btn btn-secondary btn-sm"
-                        @click="filePreviewNew(selectedFileNew.indexOf(file))"
-                      >
-                        Preview
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-
-            <!-- </aside> -->
           </div>
         </div>
         <!-- / The Attachments -->
@@ -721,17 +748,12 @@
               >
                 <thead>
                   <tr>
-                    <th style="width: 5%">#</th>
                     <th style="width: 80%">Filename</th>
-                    <th style="width: 15%">Actions</th>
+                    <th style="width: 20%">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(file, index) in selectedFile"
-                    :key="file.id"
-                  >
-                    <td>{{ index + 1 }}</td>
+                  <tr v-for="(file, index) in selectedFile" :key="file.id">
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
@@ -757,11 +779,7 @@
                       </button>
                     </td>
                   </tr>
-                  <tr
-                    v-for="(file, index) in selectedFileNew"
-                    :key="file.index"
-                  >
-                    <td>{{ index + 1 }}</td>
+                  <tr v-for="file in selectedFileNew" :key="file.index">
                     <td>{{ file.name }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
@@ -791,7 +809,7 @@
 
         <!-- / Main Form -->
 
-        <!-- Button -->
+        <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
           <aside class="col-lg-6 d-flex justify-content-start">
             <div class="col-lg-2" v-show="counter">
@@ -808,12 +826,23 @@
               v-show="!isLiquidation"
               v-if="this.counter <= 2"
             >
+              <!-- validation button initiator for next page if you are the initiator -->
               <button
+                v-if="isInitiator"
+                type="button"
+                @click="next()"
+                class="btn btn-block btn-primary btn-sm"
+              >
+                Next
+              </button>
+              <!-- validation button for approver -->
+              <button
+                v-else
                 type="button"
                 @click="counter++"
                 class="btn btn-block btn-primary btn-sm"
               >
-                Next2
+                Next
               </button>
             </div>
 
@@ -827,7 +856,7 @@
                 @click="counter++"
                 class="btn btn-block btn-primary btn-sm"
               >
-                Next3
+                Next
               </button>
             </div>
           </aside>
@@ -855,13 +884,18 @@
             </div>
           </aside>
         </div>
-        <!-- / Button -->
+        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->
 
     <!-- Modal -->
-    <div class="modal fade" id="modal-default">
+    <div
+      class="modal fade"
+      id="modal-default"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <!-- Overlay Loading Spinner -->
@@ -877,11 +911,18 @@
               class="close"
               data-dismiss="modal"
               aria-label="Close"
+              @click="closeModalReply()"
             >
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
+            <the-alert
+              v-show="isAlert"
+              v-bind:header="this.header"
+              v-bind:message="this.message"
+              v-bind:type="this.type"
+            ></the-alert>
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group">
@@ -890,8 +931,13 @@
                     class="form-control"
                     id="remarks"
                     rows="5"
-                    v-model="remarks"
+                    v-model.trim="remarks"
                   ></textarea>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="this.missingModalDefaultRemarks && attemptReply"
+                    >Remarks is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -901,7 +947,7 @@
             <button
               type="button"
               class="btn btn-primary btn-sm"
-              @click="reply()"
+              @click="replyValidate()"
             >
               Reply
             </button>
@@ -914,9 +960,17 @@
     <!-- /.modal -->
 
     <!-- Modal Liquidation-->
-    <div class="modal fade" id="modal-liquidation">
+    <div
+      class="modal fade"
+      id="modal-liquidation"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
+          <div class="overlay" v-show="isLoadingModal">
+            <i class="fas fa-2x fa-sync fa-spin"></i>
+          </div>
           <div class="modal-header">
             <h6 class="modal-title">
               <b>Liquidation</b>
@@ -927,21 +981,32 @@
               class="close"
               data-dismiss="modal"
               aria-label="Close"
+              @click="closeModalLiq()"
             >
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
+            <the-alert
+              v-show="isAlert"
+              v-bind:header="this.header"
+              v-bind:message="this.message"
+              v-bind:type="this.type"
+            ></the-alert>
             <div class="row">
               <div class="col-md-4">
                 <div class="form-group">
                   <small><label for="reference">Date</label></small>
-
                   <date-picker
                     valueType="format"
                     style="display: block; width: 100%; line-height: 20px"
                     v-model="modalDate"
                   ></date-picker>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalDate && attemptInsert"
+                    >Date is required!</small
+                  >
                 </div>
               </div>
               <div class="col-md-8">
@@ -957,6 +1022,11 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalProjectName && attemptInsert"
+                    >Project Name is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -975,6 +1045,11 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalExpenseType && attemptInsert"
+                    >Expense Type is required!</small
+                  >
                 </div>
               </div>
               <div class="col-md-4">
@@ -990,6 +1065,11 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalCurrencyType && attemptInsert"
+                    >Currency Type is required!</small
+                  >
                 </div>
               </div>
               <div class="col-md-4">
@@ -997,10 +1077,19 @@
                   <small><label for="modalamount">Amount</label></small>
                   <input
                     type="text"
+                    @keyup="formatModalCurrency($event)"
+                    @blur="formatModalCurrency($event, 'blur')"
+                    pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
                     class="form-control form-control-sm py-3"
                     id="modalamount"
                     v-model="modalamount"
                   />
+
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalAmount && attemptInsert"
+                    >Amount is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -1015,12 +1104,18 @@
                     v-model="modalremarks"
                     placeholder="Please input request remarks here!"
                   ></textarea>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalRemarks && attemptInsert"
+                    >Remarks is required!</small
+                  >
                 </div>
               </div>
             </div>
           </div>
           <div class="modal-footer justify-content-end">
             <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+
             <button
               v-if="isButton"
               type="button"
@@ -1055,28 +1150,6 @@ import { ModelListSelect } from "vue-search-select";
 export default {
   components: {
     ModelListSelect,
-  },
-  watch: {
-    // Request Details
-    projectItem(newValue) {
-      this.getClient(newValue.code);
-    },
-
-    // go to top page when changing steps
-    counter() {
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
-    },
-
-    //Navigate
-    $route(newRoute) {
-      this.showRfpMain(this.$route.params.id);
-      this.showRfpDetail(this.$route.params.id);
-      this.showRfpAttachments(this.$route.params.id, "Request for Payment");
-      this.counter = 0;
-      this.remarks = "";
-      console.log(newRoute);
-    },
   },
   computed: {
     classA() {
@@ -1119,6 +1192,89 @@ export default {
       }
     },
 
+    missingDateNeeded() {
+      if (this.dateNeeded === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingPurpose() {
+      if (this.purpose.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingPayeeName() {
+      if (this.payeeName.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingAmount() {
+      if (this.amount.length === 0 || parseFloat(this.amount) < 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalDefaultRemarks() {
+      if (this.remarks.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    // modal liquidation validation
+    missingModalDate() {
+      if (this.modalDate === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalProjectName() {
+      if (this.itemclientName.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalExpenseType() {
+      if (this.itemmodalExpenseType.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalCurrencyType() {
+      if (this.itemmodalCurrency.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalAmount() {
+      if (this.modalamount.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalRemarks() {
+      if (this.modalremarks.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     // Calendaer
     todaysYear() {
       const today = new Date();
@@ -1126,21 +1282,14 @@ export default {
       return yyyy;
     },
 
-    todaysDate() {
-      const today = new Date();
-      const dd = today.getDate();
-      const mm = today.getMonth() + 1;
-      const yyyy = today.getFullYear();
-      const todaysDate = yyyy + "-" + mm + "-" + dd;
-      return todaysDate;
-    },
-
     totalAmount() {
-      const total = this.liquidation
-        .map((liquidation) => parseInt(liquidation.Amount))
-        .reduce((acc, liquidation) => liquidation + acc);
-      if (total) {
-        return total;
+      if (this.liquidation.length > 0) {
+        const total = this.liquidation
+          .map((liquidation) =>
+            parseFloat(liquidation.Amount.replace(/,/g, ""))
+          )
+          .reduce((acc, liquidation) => liquidation + acc);
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
       }
@@ -1150,19 +1299,25 @@ export default {
       return this.isLiquidation && this.isInitiator;
     },
 
-    strictInitAndLiquidation(){
-        let x;
-        x = this.isLiquidation
-        x = !x
-        let y = this.isInitiator
-        const z = y && x
-        return z
-
-    }
+    strictInitAndLiquidation() {
+      let x;
+      x = this.isLiquidation;
+      x = !x;
+      let y = this.isInitiator;
+      const z = y && x;
+      return z;
+    },
   },
   data() {
     return {
       counter: 0,
+      attemptNext: false,
+      attemptNextOne: false,
+      attemptNextTwo: false,
+      attemptReply: false,
+      attemptInsert: false,
+      setIndex: "",
+
       // Request Details
       referenceNumber: "",
       requestDate: "",
@@ -1197,6 +1352,7 @@ export default {
       ],
       currencyItem: {},
       amount: "",
+      realAmount: "",
 
       // The Attachments
       selectedFile: [],
@@ -1239,7 +1395,6 @@ export default {
       // companyId: 1,
       // companyName: "Cylix Technologies Inc.",
 
-
       // // approver 2
       // loggedUserId: 12,
       // loggedUserFirstName: "Carrie",
@@ -1250,10 +1405,6 @@ export default {
       // companyId: 1,
       // companyName: "Cylix Technologies Inc.",
 
-
-
-
-
       // switch button in liquidation part
       isButton: true,
 
@@ -1263,191 +1414,211 @@ export default {
       liquidation: [],
       editliquidation: [],
 
-      modalDate: "",
+      // modal insert liq
+      modalDate: null,
       modalclient: [],
       itemclientName: {},
-
       modalCurrency: [],
       itemmodalCurrency: {},
-
       modalExpenseType: [],
       itemmodalExpenseType: {},
-
       modalamount: "",
-
+      modalRealamount: "",
       modalremarks: "",
+
+      // The Alert
+      isAlert: false,
+      header: "", // Syccess or Failed
+      message: "", // added successfully
+      type: "", // true or false
     };
   },
 
   created() {
-    // console.log(this.$route.params.id);
-    // this.showRfpMain(this.$route.params.id);
-    // this.showRfpDetail(this.$route.params.id);
-    // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
-
-    this.getRfpClarification(
-      this.$route.params.id,
-      this.$route.params.frmName,
-      this.companyId
-      // this.loggedUserId
-    );
-
     // use for liquidation
-    this.getBusinesses();
+    this.getRfpMain(this.processId);
+    this.getRfpDetails(this.processId);
+    this.getBusinesses(this.companyId);
+    this.getActualSign(this.processId, this.form, this.companyId);
     this.getcurrencyName();
     this.getexpenseType();
-    this.getLiquidation(this.$route.params.id);
+    // this.getLiquidation(this.$route.params.id);
     this.getReportingManager(this.loggedUserId);
     this.getProjects();
     this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+  },
+  watch: {
+    // Request Details
+    projectItem(newValue) {
+      this.getClient(newValue.code);
+    },
 
-    // this.getRfpClarification(this.$route.params.id, "Request for Payment",136);
+    // go to top page when changing steps
+    counter() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    },
   },
 
   methods: {
-    getRfpClarification(id, form, companyId) {
-      // getRfpClarification(id, form,loggedUserId) {
+    closeModalLiq() {
+      this.resetAlert();
+      this.resetModal();
+    },
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
+    },
+
+    resetAlert() {
+      this.isAlert = false;
+      this.header = "";
+      this.message = "";
+      this.type = "";
+    },
+    closeModalReply() {
+      this.resetAlert();
+      this.remarks = "";
+      this.attemptReply = false;
+    },
+    next() {
+      if (this.counter === 0) {
+        this.attemptNext = true;
+      } else if (this.counter === 1) {
+        this.attemptNext = false;
+        this.attemptNextOne = true;
+      } else if (this.counter === 2) {
+        this.attemptNextOne = false;
+        this.attemptNextTwo = true;
+      }
+
+      this.validateCurrentTab(this.counter);
+    },
+
+    validateCurrentTab(counter) {
+      // Request Details
+      if (counter === 0) {
+        if (
+          !this.missingDateNeeded &&
+          !this.missingReportingManager &&
+          !this.missingProjectItem &&
+          !this.missingPurpose
+        ) {
+          this.counter++;
+        }
+        // Payment Details
+      } else if (counter === 1) {
+        if (
+          !this.missingPayeeName &&
+          !this.missingModeOfPayment &&
+          !this.missingCurrency &&
+          !this.missingAmount
+        ) {
+          this.counter++;
+        }
+        // Attachments
+      } else if (counter === 2) {
+        this.counter++;
+      }
+    },
+
+    async getRfpMain(id) {
       this.isLoading = true;
-      let showRfpMain = `http://127.0.0.1:8000/api/rfp-main/${id}`;
-      let showRfpDetail = `http://127.0.0.1:8000/api/rfp-main-detail/${id}`;
-      // let showRfpAttachments = `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`;
-      let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`;
-      // let showLiquidation = `http://127.0.0.1:8000/api/rfp-main-liquidation/${id}`;
-      // let showReportingManager = `http://127.0.0.1:8000/api/reporting-manager/${loggedUserId}`;
-      // let showProjects = `http://127.0.0.1:8000/api/general-projects`;
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/rfp-main/${id}`
+        );
 
-      const requestOne = axios.get(showRfpMain);
-      const requestTwo = axios.get(showRfpDetail);
-      // const requestThree = axios.get(showRfpAttachments);
-      const requestFour = axios.get(showActualSign);
-      // const requestFive = axios.get(showLiquidation);
-      // const requestSix = axios.get(showReportingManager);
-      // const requestSeven = axios.get(showProjects);
-
-      axios
-        .all([
-          requestOne,
-          requestTwo,
-          // requestThree.catch(() => null),
-          requestFour,
-          // requestFive.catch(() => null),
-          // requestSix,
-          // requestSeven,
-        ])
-
-        .then(
-          axios.spread((...responses) => {
-            const responseOne = responses[0];
-            const responseTwo = responses[1];
-            // const responesThree = responses[2];
-            const responesFour = responses[2];
-            // const responesFive = responses[4];
-            // const responesSix = responses[5];
-            // const responesSeven = responses[6];
-
-            // showRfpMain - responseOne
-            this.referenceNumber = responseOne.data.data.REQREF;
-            this.requestDate = responseOne.data.data.DATE;
-            this.dateNeeded = responseOne.data.data.Deadline;
-            // this.reportingManager = responseOne.data.data.REPORTING_MANAGER;
-            this.amount = responseOne.data.data.AMOUNT;
-            this.uid = responseOne.data.data.UID;
-
-            if (responseOne.data.data.UID === this.loggedUserId) {
-              this.isInitiator = true;
-              this.counter = 0;
-            } else {
-              this.isInitiator = false;
-            }
-            // console.log(responseOne)
-
-            // showRfpDetail - responseTwo
-            this.projectName = responseTwo.data.data.PROJECT;
-            this.clientName = responseTwo.data.data.CLIENTNAME;
-            this.purpose = responseTwo.data.data.PURPOSED;
-            this.payeeName = responseTwo.data.data.PAYEE;
-            // this.currency = responseTwo.data.data.CURRENCY;
-            // this.modeOfPayment = responseTwo.data.data.MOP;
-            const currencyItem = {
-              code: responseTwo.data.data.CURRENCY,
-              name: responseTwo.data.data.CURRENCY,
-            };
-            this.currencyItem = currencyItem;
-            const modeOfPaymentItem = {
-              code: responseTwo.data.data.MOP,
-              name: responseTwo.data.data.MOP,
-            };
-            this.modeOfPaymentItem = modeOfPaymentItem;
-
-            // showRfpAttachments - responesThree
-            // this.selectedFile = responesThree.data.data;
-
-            //showActualSign - responesFour
-            const reportingManagerItem = {
-              code: responesFour.data[2].RM_ID,
-              name: responesFour.data[2].REPORTING_MANAGER,
-            };
-            this.reportingManagerItem = reportingManagerItem;
-
-            // console.log(reportingManagerItem)
-
-            const projectItem = {
-              code: responesFour.data[0].PROJECTID,
-              name: responesFour.data[0].PROJECT,
-            };
-            this.projectItem = projectItem;
-
-            // console.log(projectItem)
-            // console.log('test')
-
-            if (responesFour.data[2].STATUS === "Completed") {
-              console.log("liquidation is true");
-              this.isLiquidation = true;
-            } else {
-              // alert('false')
-              console.log("liquidation is false");
-              this.isLiquidation = false;
-            }
-            // showLiquidation - responesFive
-            // console.log(responesFive);
-            // this.liquidation = responesFive.data;
-
-            // console.log('sad')
-
-            // showReportingManager - responesSix
-            // const reportingManager = [];
-            // for (const key in responesSix.data) {
-            //   const request = {
-            //     code: responesSix.data[key].RMID,
-            //     name: responesSix.data[key].RMName,
-            //   };
-            //   reportingManager.push(request);
-            // }
-            // this.reportingManager = reportingManager;
-
-            // console.log(responesSix.data);
-
-            // showProjects - responesSeven
-            // console.log(responesSeven);
-
-            // const projects = [];
-            // for (const key in responesSeven.data) {
-            //   const request = {
-            //     code: responesSeven.data[key].project_id,
-            //     name: responesSeven.data[key].project_name,
-            //   };
-            //   projects.push(request);
-            // }
-            // this.project = projects;
-          })
-        )
-        .catch((errors) => {
-          // react on errors.
-          console.log(errors);
-        })
-        .then(() => {
+        if (resp.status === 200) {
           this.isLoading = false;
-        });
+          this.referenceNumber = resp.data.data.REQREF;
+          this.requestDate = resp.data.data.DATE;
+          this.dateNeeded = resp.data.data.Deadline;
+          this.amount = parseFloat(resp.data.data.AMOUNT).toLocaleString(
+            undefined,
+            { minimumFractionDigits: 2 }
+          );
+          this.uid = resp.data.data.UID;
+
+          if (resp.data.data.UID === this.loggedUserId) {
+            this.isInitiator = true;
+          }
+        }
+      } catch (err) {
+        this.isLoading = false;
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    async getRfpDetails(id) {
+      this.isLoading = true;
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/rfp-main-detail/${id}`
+        );
+
+        if (resp.status === 200) {
+          this.isLoading = false;
+          this.clientName = resp.data.data.CLIENTNAME;
+          this.purpose = resp.data.data.PURPOSED;
+          this.payeeName = resp.data.data.PAYEE;
+
+          const currencyItem = {
+            code: resp.data.data.CURRENCY,
+            name: resp.data.data.CURRENCY,
+          };
+          this.currencyItem = currencyItem;
+
+          const modeOfPaymentItem = {
+            code: resp.data.data.MOP,
+            name: resp.data.data.MOP,
+          };
+          this.modeOfPaymentItem = modeOfPaymentItem;
+
+          const projectItem = {
+            code: resp.data.data.PROJECTID,
+            name: resp.data.data.PROJECT,
+          };
+          this.projectItem = projectItem;
+        }
+      } catch (err) {
+        this.isLoading = false;
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    async getActualSign(id, form, companyId) {
+      this.isLoading = true;
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`
+        );
+        if (resp.status === 200) {
+          this.isLoading = false;
+          const reportingManagerItem = {
+            code: resp.data[2].RM_ID,
+            name: resp.data[2].REPORTING_MANAGER,
+          };
+          this.reportingManagerItem = reportingManagerItem;
+
+          if (resp.data[2].STATUS === "Completed") {
+            console.log("liquidation is true");
+            this.isLiquidation = true;
+            this.getLiquidation(id);
+          } else {
+            // alert('false')
+            console.log("liquidation is false");
+            this.isLiquidation = false;
+          }
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
     },
 
     async getClient(id) {
@@ -1493,32 +1664,17 @@ export default {
       });
     },
 
+    replyValidate() {
+      this.attemptReply = true;
+      if (!this.missingModalDefaultRemarks) {
+        this.reply();
+      } else {
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
+    },
+
     reply() {
       this.isLoadingModal = true;
-      // console.log(this.dateNeeded)
-      // console.log(this.reportingManagerItem.code)
-      // console.log(this.reportingManagerItem.name)
-      // console.log(this.projectItem.code)
-      // console.log(this.projectItem.name)
-      // console.log(this.clientName)
-      // console.log(this.clientId)
-      // console.log(this.mainId)
-      // console.log(this.purpose)
-
-      // console.log(this.payeeName)
-      // console.log(this.modeOfPaymentItem.name)
-      // console.log(this.currencyItem.name)
-      // console.log(this.amount)
-
-      // console.log(this.removedAttachedFilesId)
-      // console.log(this.remarks)
-      // console.log(this.processId)
-      // console.log(this.form)
-      // console.log(this.loggedUserId)
-      // console.log(this.loggedUserFullName)
-      // console.log(this.companyId)
-      // console.log(this.companyName)
-
       const fd = new FormData();
       for (let i = 0; i < this.selectedFileNew.length; i++) {
         fd.append("file[]", this.selectedFileNew[i]);
@@ -1571,12 +1727,12 @@ export default {
       this.$router.replace("/clarifications");
     },
 
-
     // The Attachments
+    // preview existing
+
     preview(mimeType, imageBytes) {
       var newTab = window.open();
       newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
-
     },
 
     // Add new files scripts
@@ -1586,6 +1742,21 @@ export default {
         this.selectedFileNew.push(selectedFiles[i]);
       }
       this.setFilePreviewNew();
+    },
+
+    onInputChange(event) {
+      let selectedFiles = event.dataTransfer.files;
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.selectedFileNew.push(selectedFiles[i]);
+      }
+      this.setFilePreviewNew();
+    },
+
+    // preview function of newly added files
+    filePreviewNew(i) {
+      // console.log(i)
+      const url = this.filespreviewNew[i].link;
+      window.open(url, "_blank", "resizable=yes");
     },
 
     // set a preview function for newly added files
@@ -1602,11 +1773,10 @@ export default {
       this.filespreviewNew = fileContainer;
     },
 
-    // preview function of newly added files
-    filePreviewNew(i) {
-      // console.log(i)
-      const url = this.filespreviewNew[i].link;
-      window.open(url, "_blank", "resizable=yes");
+    // remove newly added files
+    removeFileNew(i) {
+      this.selectedFileNew.splice(i, 1);
+      this.setFilePreviewNew();
     },
 
     // remove existing attached files
@@ -1614,48 +1784,72 @@ export default {
       const attachmentId = { id: id, filename: filename, filepath: filepath };
       this.removedAttachedFilesId.push(attachmentId);
       this.selectedFile.splice(index, 1);
-      // this.setFilePreviewNew();
-
-      // console.log(this.removedAttachedFilesId);
-      // console.log(this.selectedFile);
-      // console.log(this.filespreviewNew);
     },
 
-    // remove newly added files
-    removeFileNew(i) {
-      this.selectedFileNew.splice(i, 1);
-      this.setFilePreviewNew();
+    dragover(event) {
+      event.preventDefault();
+      // Add some visual fluff to show the user can drop its files
+      if (!event.currentTarget.classList.contains("bg-white")) {
+        event.currentTarget.classList.remove("bg-light");
+        event.currentTarget.classList.add("bg-white");
+      }
     },
+    dragleave(event) {
+      // Clean up
+      event.currentTarget.classList.add("bg-light");
+      event.currentTarget.classList.remove("bg-white");
+    },
+    drop(event) {
+      event.preventDefault();
+      this.onInputChange(event); // Trigger the onChange event manually
 
+      // Clean up
+      event.currentTarget.classList.add("bg-light");
+      event.currentTarget.classList.remove("bg-white");
+    },
     // End Attachments
 
     update() {
-      const addData = {
-        id: this.editliquidation.id,
-        trans_date: this.modalDate,
-        client_id: this.itemclientName.code,
-        client_name: this.itemclientName.name,
-        expense_type: this.itemmodalExpenseType.name,
-        currency: this.itemmodalCurrency.name,
-        Amount: this.modalamount,
-        description: this.modalremarks,
-      };
-      this.liquidation.push(addData);
+      this.isLoadingModal = true;
+      this.attemptInsert = true;
+      this.resetAlert();
+      const validated = this.validateEmptyFields();
+      if (validated) {
+        // start
+        this.isLoadingModal = false;
 
-      this.editliquidation = "";
-      // this.liquidation.push(this.editliquidation)
-      this.liquidation.sort(function (a, b) {
-        return a.id - b.id;
-      });
+        const addData = {
+          id: this.editliquidation.id,
+          trans_date: this.modalDate,
+          client_id: this.itemclientName.code,
+          client_name: this.itemclientName.name,
+          expense_type: this.itemmodalExpenseType.name,
+          currency: this.itemmodalCurrency.name,
+          Amount: this.modalamount,
+          description: this.modalremarks,
+        };
+        this.liquidation.push(addData);
+        this.liquidation.splice(this.setIndex, 1);
 
-      console.log(addData.id);
+        this.editliquidation = "";
+        // this.liquidation.push(this.editliquidation)
+        this.liquidation.sort(function (a, b) {
+          return a.id - b.id;
+        });
+        this.addAlert("Success", "Added Successfully!", "true");
+        this.resetModal();
+        // end
+      } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
     },
 
     edit(index) {
       this.isButton = false;
       const selectedLiquidation = this.liquidation[index];
       this.editliquidation = selectedLiquidation;
-      this.liquidation.splice(index, 1);
+      this.setIndex = index;
 
       console.log(selectedLiquidation);
 
@@ -1672,7 +1866,12 @@ export default {
         code: selectedLiquidation.expense_type,
         name: selectedLiquidation.expense_type,
       };
+
       this.modalamount = selectedLiquidation.Amount;
+      // this.modalamount = parseFloat(selectedLiquidation.Amount).toLocaleString(
+      //   undefined,
+      //   { minimumFractionDigits: 2 }
+      // );
       this.modalremarks = selectedLiquidation.description;
     },
 
@@ -1685,22 +1884,63 @@ export default {
     },
 
     insert() {
-      const addData = {
-        id: this.i++,
-        trans_date: this.modalDate,
-        client_id: this.itemclientName.code,
-        client_name: this.itemclientName.name,
-        expense_type: this.itemmodalExpenseType.name,
-        description: this.modalremarks,
-        currency: this.itemmodalCurrency.name,
-        Amount: this.modalamount,
-      };
-      this.liquidation.push(addData);
+      this.isLoadingModal = true;
+      this.attemptInsert = true;
+      this.resetAlert();
+      const validated = this.validateEmptyFields();
+      if (validated) {
+        // start
+        this.isLoadingModal = false;
+
+        const addData = {
+          id: this.i++,
+          trans_date: this.modalDate,
+          client_id: this.itemclientName.code,
+          client_name: this.itemclientName.name,
+          expense_type: this.itemmodalExpenseType.name,
+          description: this.modalremarks,
+          currency: this.itemmodalCurrency.name,
+          Amount: this.modalamount,
+        };
+        this.liquidation.push(addData);
+        this.addAlert("Success", "Added Successfully!", "true");
+        this.resetModal();
+        // end
+      } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
     },
 
-    async getBusinesses() {
+    validateEmptyFields() {
+      if (
+        !this.missingModalDate &&
+        !this.missingModalProjectName &&
+        !this.missingModalExpenseType &&
+        !this.missingModalCurrencyType &&
+        !this.missingModalAmount &&
+        !this.missingModalRemarks
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    resetModal() {
+      this.attemptInsert = false;
+      this.modalDate = null;
+      this.itemclientName = {};
+      this.itemmodalCurrency = {};
+      this.itemmodalExpenseType = {};
+      this.modalamount = "";
+      this.modalremarks = "";
+      this.modalRealamount = "";
+    },
+
+    async getBusinesses(companyId) {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/general-businesses/1",
+        `http://127.0.0.1:8000/api/general-businesses/${companyId}`,
         {
           method: "GET",
           headers: {
@@ -1802,7 +2042,34 @@ export default {
           `http://127.0.0.1:8000/api/rfp-main-liquidation/${id}`
         );
         // console.log(resp.data);
-        this.liquidation = resp.data;
+        // this.liquidation = resp.data;
+
+        const liquidation = [];
+        for (const key in resp.data) {
+          const data = {
+            Amount: parseFloat(resp.data[key].Amount).toLocaleString(
+              undefined,
+              { minimumFractionDigits: 2 }
+            ),
+            ISLIQUIDATED: resp.data[key].ISLIQUIDATED,
+            RFPID: resp.data[key].RFPID,
+            STATUS: resp.data[key].STATUS,
+            amt_due_to_comp: resp.data[key].amt_due_to_comp,
+            amt_due_to_emp: resp.data[key].amt_due_to_emp,
+            client_id: resp.data[key].client_id,
+            client_name: resp.data[key].client_name,
+            currency: resp.data[key].currency,
+            currency_id: resp.data[key].currency_id,
+            date_: resp.data[key].date_,
+            description: resp.data[key].description,
+            expense_type: resp.data[key].expense_type,
+            id: resp.data[key].id,
+            trans_date: resp.data[key].trans_date,
+            ts: resp.data[key].ts,
+          };
+          liquidation.push(data);
+        }
+        this.liquidation = liquidation;
       } catch (err) {
         // Handle Error Here
         console.error(err);
@@ -1865,6 +2132,166 @@ export default {
         // Handle Error Here
         console.error(err);
       }
+    },
+
+    // Amount aldrin script
+
+    formatNumber(n) {
+      // format number 1000000 to 1,234,567
+      return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+
+    formatCurrency(input, blur) {
+      // appends $ to value, validates decimal side
+      // and puts cursor back in right position.
+
+      // get input value
+      let input_val = this.amount;
+
+      // don't validate empty input
+      if (input_val === "") {
+        return;
+      }
+
+      // original length
+      let original_len = input_val.length;
+
+      // initial caret position
+      let caret_pos = input.target.selectionStart;
+
+      // check for decimal
+      if (input_val.indexOf(".") >= 0) {
+        // get position of first decimal
+        // this prevents multiple decimals from
+        // being entered
+        let decimal_pos = input_val.indexOf(".");
+
+        // split number by decimal point
+        let left_side = input_val.substring(0, decimal_pos);
+        let right_side = input_val.substring(decimal_pos);
+
+        // add commas to left side of number
+        left_side = this.formatNumber(left_side);
+
+        // validate right side
+        right_side = this.formatNumber(right_side);
+
+        // On blur make sure 2 numbers after decimal
+        if (blur === "blur") {
+          right_side += "00";
+        }
+
+        // Limit decimal to only 2 digits
+        right_side = right_side.substring(0, 2);
+
+        // join number by .
+        input_val = left_side + "." + right_side;
+      } else {
+        // no decimal entered
+        // add commas to number
+        // remove all non-digits
+        input_val = this.formatNumber(input_val);
+        // input_val = input_val;
+
+        // final formatting
+        if (blur === "blur") {
+          input_val += ".00";
+        }
+      }
+
+      // send updated string to input
+      this.amount = input_val;
+      input.target.value = input_val;
+
+      let realAmount = input_val;
+      if (realAmount.indexOf(",") !== -1) {
+        realAmount = realAmount.replace(/,/g, "");
+      }
+      this.realAmount = realAmount;
+
+      // put caret back in the right position
+      let updated_len = input_val.length;
+      caret_pos = updated_len - original_len + caret_pos;
+      input.target.setSelectionRange(caret_pos, caret_pos);
+    },
+
+    formatModalNumber(n) {
+      // format number 1000000 to 1,234,567
+      return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+
+    formatModalCurrency(input, blur) {
+      // appends $ to value, validates decimal side
+      // and puts cursor back in right position.
+
+      // get input value
+      let input_val = this.modalamount;
+
+      // don't validate empty input
+      if (input_val === "") {
+        return;
+      }
+
+      // original length
+      let original_len = input_val.length;
+
+      // initial caret position
+      let caret_pos = input.target.selectionStart;
+
+      // check for decimal
+      if (input_val.indexOf(".") >= 0) {
+        // get position of first decimal
+        // this prevents multiple decimals from
+        // being entered
+        let decimal_pos = input_val.indexOf(".");
+
+        // split number by decimal point
+        let left_side = input_val.substring(0, decimal_pos);
+        let right_side = input_val.substring(decimal_pos);
+
+        // add commas to left side of number
+        left_side = this.formatNumber(left_side);
+
+        // validate right side
+        right_side = this.formatNumber(right_side);
+
+        // On blur make sure 2 numbers after decimal
+        if (blur === "blur") {
+          right_side += "00";
+        }
+
+        // Limit decimal to only 2 digits
+        right_side = right_side.substring(0, 2);
+
+        // join number by .
+        input_val = left_side + "." + right_side;
+      } else {
+        // no decimal entered
+        // add commas to number
+        // remove all non-digits
+        input_val = this.formatNumber(input_val);
+        // input_val = input_val;
+
+        // final formatting
+        if (blur === "blur") {
+          input_val += ".00";
+        }
+      }
+
+      // send updated string to input
+      this.modalamount = input_val;
+      input.target.value = input_val;
+
+      let realAmount = input_val;
+      if (realAmount.indexOf(",") !== -1) {
+        realAmount = realAmount.replace(/,/g, "");
+      }
+      this.modalRealamount = realAmount;
+
+      // put caret back in the right position
+      let updated_len = input_val.length;
+      caret_pos = updated_len - original_len + caret_pos;
+      input.target.setSelectionRange(caret_pos, caret_pos);
     },
   },
 };

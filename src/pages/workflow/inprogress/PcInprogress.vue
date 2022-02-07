@@ -427,14 +427,11 @@
             <ul class="mt-4 text-decoration-none ulUpload" v-cloak>
               <li
                 class="text-sm mt-2"
-                v-for="(file, index) in selectedFile"
+                v-for="file in selectedFile"
                 :key="file.newFilename"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 + "." }}</b>
-                    </div>
                     <div class="col text-left">
                       <span>{{ file.filename }}</span>
                     </div>
@@ -713,14 +710,12 @@
               >
                 <thead>
                   <tr>
-                    <th style="width: 5%">#</th>
                     <th style="width: 80%">Filename</th>
-                    <th style="width: 15%">Actions</th>
+                    <th style="width: 20%">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(file, index) in selectedFile" :key="file.name">
-                    <td>{{ index + 1 }}</td>
+                  <tr v-for="file in selectedFile" :key="file.name">
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
@@ -1067,7 +1062,6 @@ export default {
           document.getElementById("modalCloseButton").click();
           this.openToast("top-right", "success", resp.data.message);
           this.$router.replace("/inprogress");
-
         }
       } catch (err) {
         // Handle Error Here
@@ -1088,7 +1082,7 @@ export default {
     close() {
       this.$router.replace("/inprogress");
     },
-    
+
     async getPcExpense(id) {
       try {
         const resp = await axios.get(

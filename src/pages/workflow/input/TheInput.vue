@@ -41,7 +41,7 @@ export default {
             title: "Request Type",
           },
           {
-            key: "dueDate",
+            key: "date",
             title: "Request Date",
           },
           {
@@ -76,7 +76,7 @@ export default {
   methods: {
     async getInputs() {
 
-      const loggedUserId = 136;
+      const loggedUserId = 12;
       const companyId = 1;
 
       const response = await fetch(`http://127.0.0.1:8000/api/getInputs/${loggedUserId}/${companyId}`, {

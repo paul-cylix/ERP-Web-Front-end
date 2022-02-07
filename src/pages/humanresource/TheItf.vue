@@ -72,20 +72,12 @@
             <div class="col-md-3">
               <div class="form-group">
                 <small><label for="requestedDate">Requested Date</label></small>
-                <!-- <date-picker
+                <date-picker
                   disabled
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px"
                   v-model="requestedDate"
-                ></date-picker> -->
-
-                <input
-                  type="text"
-                  class="form-control form-control-sm py-3"
-                  id="reference"
-                  disabled
-                  v-model="requestedDate"
-                />
+                ></date-picker>
               </div>
             </div>
 
@@ -105,6 +97,11 @@
                   style="padding: 9px"
                 >
                 </model-list-select>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingReportingManager && attemptNext"
+                  >Reporting Manager is required!</small
+                >
               </div>
             </div>
           </div>
@@ -296,7 +293,7 @@
           <div class="col-md-1" v-if="this.counter <= 1">
             <button
               type="button"
-              @click="counter++"
+              @click="next()"
               class="btn btn-block btn-primary btn-sm"
             >
               Next
@@ -367,6 +364,11 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalClient && attemptInsert"
+                    >Client Name is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -381,12 +383,16 @@
                   >
                   <date-picker
                     v-model="authTimeStart"
-                
                     format="MM/DD/YYYY hh:mm A"
                     value-type="format"
                     type="datetime"
                     style="display: block; width: 100%; line-height: 20px"
                   ></date-picker>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalStart && attemptInsert"
+                    >Authorized Time Start is required!</small
+                  >
                 </div>
               </div>
 
@@ -397,12 +403,16 @@
                   >
                   <date-picker
                     v-model="authTimeEnd"
-                
                     format="MM/DD/YYYY hh:mm A"
                     value-type="format"
                     type="datetime"
                     style="display: block; width: 100%; line-height: 20px"
                   ></date-picker>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalEnd && attemptInsert"
+                    >Authorized Time End is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -415,8 +425,13 @@
                     class="form-control"
                     id="purpose"
                     rows="3"
-                    v-model="modalPurpose"
+                    v-model.trim="modalPurpose"
                   ></textarea>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalPurpose && attemptInsert"
+                    >Purpose is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -465,9 +480,7 @@ export default {
     this.getReportingManager(this.loggedUserId);
     this.todaysDate();
   },
-  watch: {
-
-  },
+  watch: {},
   computed: {
     classA() {
       return { active: this.counter >= 0 };
@@ -490,6 +503,46 @@ export default {
       }
     },
 
+    missingReportingManager() {
+      if (this.reportingManagerItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalClient() {
+      if (this.itemModalClient.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalStart() {
+      if (this.authTimeStart === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalEnd() {
+      if (this.authTimeEnd === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalPurpose() {
+      if (this.modalPurpose.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     // Calendaer
     todaysYear() {
       const today = new Date();
@@ -503,6 +556,10 @@ export default {
   data() {
     return {
       counter: 0,
+      setIndex: "",
+      attemptNext: false,
+      attemptNextOne: false,
+      attemptInsert: false,
       // Request Details
       referenceNumber: "",
       requestedDate: "",
@@ -529,8 +586,8 @@ export default {
       // itinerary Details
       client: [],
       itemModalClient: {},
-      authTimeStart: "",
-      authTimeEnd: "",
+      authTimeStart: null,
+      authTimeEnd: null,
       modalPurpose: "",
 
       itinerary: [],
@@ -550,6 +607,37 @@ export default {
   },
 
   methods: {
+    next() {
+      if (this.counter === 0) {
+        this.attemptNext = true;
+      } else if (this.counter === 1) {
+        this.attemptNext = false;
+        this.attemptNextOne = true;
+      }
+
+      this.validateCurrentTab(this.counter);
+    },
+
+    validateCurrentTab(counter) {
+      // Request Details
+      if (counter === 0) {
+        if (!this.missingReportingManager) {
+          this.counter++;
+        }
+        // Payment Details
+      } else if (counter === 1) {
+        if (this.itinerary.length > 0) {
+          this.counter++;
+        } else {
+          this.openToast(
+            "top-right",
+            "warning",
+            "Please add your Itineray data!"
+          );
+        }
+      }
+    },
+
     openToast(position, variant, message) {
       const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
       VsToast.show({
@@ -569,7 +657,6 @@ export default {
       this.isLoading = true;
       const fd = new FormData();
 
-
       fd.append("requestedDate", this.requestedDate);
 
       fd.append("reportingManagerId", this.reportingManagerItem.code);
@@ -587,8 +674,6 @@ export default {
       fd.append("class", "ITF");
 
       fd.append("itineraryData", JSON.stringify(this.itinerary));
-
-
 
       try {
         const resp = await axios.post("http://127.0.0.1:8000/api/save-itf", fd);
@@ -608,12 +693,20 @@ export default {
     // Request Details
     todaysDate() {
       const today = new Date();
-      const dd = today.getDate();
-      const mm = today.getMonth() + 1;
+      let dd = today.getDate();
+      let mm = today.getMonth() + 1;
       const yyyy = today.getFullYear();
+
+      if (mm < 10) {
+        mm = `0${mm}`;
+      }
+
+      if (dd < 10) {
+        dd = `0${dd}`;
+      }
+
       const todaysDate = yyyy + "-" + mm + "-" + dd;
       this.requestedDate = todaysDate;
-      // return todaysDate;
     },
 
     async getReportingManager(rmid) {
@@ -673,34 +766,52 @@ export default {
 
     update() {
       this.isLoadingModal = true;
+      this.attemptInsert = true;
       this.resetAlert();
 
-      const addData = {
-        id: this.editItinerary.id,
-        client_id: this.itemModalClient.code,
-        client_name: this.itemModalClient.name,
-        time_start: this.authTimeStart,
-        time_end: this.authTimeEnd,
-        purpose: this.modalPurpose,
-      };
-      this.itinerary.push(addData)
-      this.addAlert("Success", "Added Successfully!", "true");
+      const validated = this.validateEmptyFields();
+      const isGreaterThan = this.validateStartEndDate(
+        this.authTimeStart,
+        this.authTimeEnd
+      );
 
-      this.itinerary.sort(function (a, b) {
-        return a.id - b.id;
-      });
-      this.removeModalDetails();
-      this.isLoadingModal = false;
-
-      console.log(this.itinerary)
+      if (validated && isGreaterThan) {
+        // start
+        const addData = {
+          id: this.editItinerary.id,
+          client_id: this.itemModalClient.code,
+          client_name: this.itemModalClient.name,
+          time_start: this.authTimeStart,
+          time_end: this.authTimeEnd,
+          purpose: this.modalPurpose,
+        };
+        this.itinerary.push(addData);
+        this.itinerary.splice(this.setIndex, 1);
+        this.itinerary.sort(function (a, b) {
+          return a.id - b.id;
+        });
+        this.addAlert("Success", "Added Successfully!", "true");
+        this.resetModal();
+        this.isLoadingModal = false;
+        // end
+      } else if (isGreaterThan === false && validated) {
+        this.isLoadingModal = false;
+        this.addAlert(
+          "Failed",
+          "Authorize Time End must be greater than Authorize Time Start!",
+          "false"
+        );
+      } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
     },
 
     edit(index) {
       this.isButton = false;
       const seletectedItinerary = this.itinerary[index];
       this.editItinerary = seletectedItinerary;
-      this.itinerary.splice(index, 1);
-
+      this.setIndex = index;
       this.itemModalClient = {
         code: seletectedItinerary.client_id,
         name: seletectedItinerary.client_name,
@@ -748,28 +859,69 @@ export default {
 
     insert() {
       this.isLoadingModal = true;
+      this.attemptInsert = true;
       this.resetAlert();
+      const validated = this.validateEmptyFields();
+      const isGreaterThan = this.validateStartEndDate(
+        this.authTimeStart,
+        this.authTimeEnd
+      );
 
-      const addData = {
-        id: this.i++,
-        client_id: this.itemModalClient.code,
-        client_name: this.itemModalClient.name,
-        time_start: this.authTimeStart,
-        time_end: this.authTimeEnd,
-        purpose: this.modalPurpose,
-      };
-
-      this.itinerary.push(addData);
-      this.addAlert("Success", "Added Successfully!", "true");
-      this.removeModalDetails();
-      this.isLoadingModal = false;
+      if (validated && isGreaterThan) {
+        // start
+        const addData = {
+          id: this.i++,
+          client_id: this.itemModalClient.code,
+          client_name: this.itemModalClient.name,
+          time_start: this.authTimeStart,
+          time_end: this.authTimeEnd,
+          purpose: this.modalPurpose,
+        };
+        this.isLoadingModal = false;
+        this.itinerary.push(addData);
+        this.addAlert("Success", "Added Successfully!", "true");
+        this.resetModal();
+        // end
+      } else if (isGreaterThan === false && validated) {
+        this.isLoadingModal = false;
+        this.addAlert(
+          "Failed",
+          "Authorize Time End must be greater than Authorize Time Start!",
+          "false"
+        );
+      } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
     },
 
-    removeModalDetails(){
-      this.authTimeStart = '';
-      this.authTimeEnd = '';
-      this.modalPurpose = '';
-    }
+    resetModal() {
+      this.attemptInsert = false;
+      this.itemModalClient = {};
+      this.authTimeStart = null;
+      this.authTimeEnd = null;
+      this.modalPurpose = "";
+    },
+
+    validateEmptyFields() {
+      if (
+        !this.missingModalClient &&
+        !this.missingModalStart &&
+        !this.missingModalEnd &&
+        !this.missingModalPurpose
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    validateStartEndDate(from, to) {
+      const startDate = new Date(from);
+      const endDate = new Date(to);
+      const check = endDate > startDate ? true : false;
+      return check;
+    },
   },
 };
 </script>

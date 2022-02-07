@@ -279,7 +279,7 @@
                 <td>{{ item.expense_type }}</td>
                 <td>{{ item.description }}</td>
                 <td>{{ item.currency }}</td>
-                <td>{{ item.Amount }}</td>
+                <td>{{ parseFloat(item.Amount).toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</td>
               </tr>
               <tr>
                 <td colspan="6"></td>
@@ -313,16 +313,14 @@
             <ul class="mt-4 text-decoration-none ulUpload">
               <li
                 class="text-sm mt-2"
-                v-for="(file, index) in selectedFile"
+                v-for="(file) in selectedFile"
                 :key="file.newFilename"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 + "." }}</b>
-                    </div>
+
                     <div class="col text-left">
-                      <span>{{ file.filename }}</span>
+                      <span><label>{{ file.filename }}</label></span>
                     </div>
                     <div>
                       <button class="btn btn-info btn-sm" type="button">
@@ -352,6 +350,7 @@
                 </div>
               </li>
             </ul>
+        
 
             <!-- </aside> -->
           </div>
@@ -500,7 +499,7 @@
                     <td>{{ item.expense_type }}</td>
                     <td>{{ item.description }}</td>
                     <td>{{ item.currency }}</td>
-                    <td>{{ item.Amount }}</td>
+                    <td>{{ parseFloat(item.Amount).toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</td>
                   </tr>
 
                   <tr>
@@ -536,17 +535,17 @@
               >
                 <thead>
                   <tr>
-                    <th style="width: 5%">#</th>
+
                     <th style="width: 80%">Filename</th>
-                    <th style="width: 15%">Actions</th>
+                    <th style="width: 20%">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr
-                    v-for="(file, index) in selectedFile"
+                    v-for="(file) in selectedFile"
                     :key="file.filename"
                   >
-                    <td>{{ index + 1 }}</td>
+         
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
@@ -593,7 +592,7 @@
                 @click="counter++"
                 class="btn btn-block btn-primary btn-sm"
               >
-                Next2
+                Next
               </button>
             </div>
 
@@ -607,7 +606,7 @@
                 @click="counter++"
                 class="btn btn-block btn-primary btn-sm"
               >
-                Next3
+                Next
               </button>
             </div>
           </aside>
@@ -778,11 +777,13 @@ export default {
     },
 
     totalAmount() {
-      const total = this.liquidation
-        .map((liquidation) => parseInt(liquidation.Amount))
-        .reduce((acc, liquidation) => liquidation + acc);
-      if (total) {
-        return total;
+      if (this.liquidation.length > 0) {
+        const total = this.liquidation
+          .map((liquidation) =>
+            parseFloat(liquidation.Amount.replace(/,/g, ""))
+          )
+          .reduce((acc, liquidation) => liquidation + acc);
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
       }
@@ -904,7 +905,8 @@ export default {
             this.requestDate = responseOne.data.data.DATE;
             this.dateNeeded = responseOne.data.data.Deadline;
             this.reportingManager = responseOne.data.data.REPORTING_MANAGER;
-            this.amount = responseOne.data.data.AMOUNT;
+            this.amount = parseFloat(responseOne.data.data.AMOUNT).toLocaleString(undefined, { minimumFractionDigits: 2 });
+            
             this.uid = responseOne.data.data.UID;
 
             if (responseOne.data.data.UID === this.loggedUserId) {

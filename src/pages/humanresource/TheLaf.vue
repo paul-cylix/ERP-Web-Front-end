@@ -97,6 +97,11 @@
                   style="padding: 9px"
                 >
                 </model-list-select>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingReportingManager && attemptNext"
+                  >Reporting Manager is required!</small
+                >
               </div>
             </div>
           </div>
@@ -114,6 +119,11 @@
                   style="padding: 9px"
                 >
                 </model-list-select>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingEmployee && attemptNext"
+                  >Employee Name is required!</small
+                >
               </div>
             </div>
             <div class="col-md-3">
@@ -130,6 +140,11 @@
                   style="padding: 9px"
                 >
                 </model-list-select>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingReport && attemptNext"
+                  >Medium of Report is required!</small
+                >
               </div>
             </div>
             <div class="col-md-3">
@@ -143,6 +158,11 @@
                   type="datetime"
                   style="display: block; width: 100%; line-height: 20px"
                 ></date-picker>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingReportTime && attemptNext"
+                  >Report Time is required!</small
+                >
               </div>
             </div>
           </div>
@@ -158,6 +178,11 @@
                   v-model="reason"
                   rows="5"
                 ></textarea>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingPurpose && attemptNext"
+                  >Reason is required!</small
+                >
               </div>
             </div>
           </div>
@@ -171,7 +196,7 @@
               <tr>
                 <th colspan="7" scope="col">
                   <aside class="d-flex align-items-center">
-                    <span class="mb-1 ml-1"> Expense Detals</span>
+                    <span class="mb-1 ml-1">Leave Table</span>
                   </aside>
                 </th>
                 <th>
@@ -389,17 +414,18 @@
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
+                  @click="closeModal()"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
-              <the-alert
-              v-show="isAlert"
-              v-bind:header="this.header"
-              v-bind:message="this.message"
-              v-bind:type="this.type"
-            ></the-alert>
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
 
                 <div class="row">
                   <div class="col-md-12">
@@ -415,6 +441,11 @@
                         style="padding: 9px"
                       >
                       </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalLeaveType && attemptInsert"
+                        >Leave Type is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -431,6 +462,11 @@
                         style="display: block; width: 100%; line-height: 20px"
                         v-model="leaveFrom"
                       ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalDateFrom && attemptInsert"
+                        >Leave Date From is required!</small
+                      >
                     </div>
                   </div>
 
@@ -444,6 +480,11 @@
                         style="display: block; width: 100%; line-height: 20px"
                         v-model="leaveTo"
                       ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalDateTo && attemptInsert"
+                        >Leave Date To is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -461,6 +502,11 @@
                         style="padding: 9px"
                       >
                       </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalPayType && attemptInsert"
+                        >Pay Type is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -496,7 +542,7 @@
           <div class="col-md-1" v-if="this.counter <= 1">
             <button
               type="button"
-              @click="counter++"
+              @click="next()"
               class="btn btn-block btn-primary btn-sm"
             >
               Next
@@ -550,6 +596,78 @@ export default {
       return { active: this.counter >= 2 };
     },
 
+    missingReportingManager() {
+      if (this.reportingManagerItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingEmployee() {
+      if (this.employeeItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingReport() {
+      if (this.reportItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingReportTime() {
+      if (this.reportDateTime === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingPurpose() {
+      if (this.reason.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalLeaveType() {
+      if (this.leaveTypeItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalDateFrom() {
+      if (this.leaveFrom === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalDateTo() {
+      if (this.leaveTo === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalPayType() {
+      if (this.payTypeItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     todaysYear() {
       const today = new Date();
       // const dd = today.getDate();
@@ -562,6 +680,9 @@ export default {
   data() {
     return {
       counter: 0,
+      attemptNext: false,
+      attemptNextOne: false,
+      attemptInsert: false,
       // Request Details
       referenceNumber: "",
       requestedDate: "",
@@ -571,14 +692,14 @@ export default {
       employeeItem: {},
       report: [],
       reportItem: {},
-      reportDateTime: "",
+      reportDateTime: null,
       reason: "",
 
       // modal
       leaveType: [],
       leaveTypeItem: {},
-      leaveFrom: "",
-      leaveTo: "",
+      leaveFrom: null,
+      leaveTo: null,
       payType: [
         { code: "wp", name: "With Pay" },
         { code: "wop", name: "Without Pay" },
@@ -612,12 +733,48 @@ export default {
   },
 
   methods: {
+    closeModal() {
+      this.resetModal();
+      this.resetAlert();
+    },
+
+    resetModal() {
+      this.attemptInsert = false;
+      this.leaveTypeItem = {};
+      this.leaveFrom = null;
+      this.leaveTo = null;
+      this.payTypeItem = {};
+    },
+
+    next() {
+      if (this.counter === 0) {
+        this.attemptNext = true;
+      } else if (this.counter === 1) {
+        this.attemptNext = false;
+        this.attemptNextOne = true;
+      }
+
+      this.validateCurrentTab(this.counter);
+    },
+
+    validateCurrentTab(counter) {
+      // Request Details
+      if (counter === 0) {
+        if (!this.missingReportingManager) {
+          this.counter++;
+        }
+        // Payment Details
+      } else if (counter === 1) {
+        if (this.leaveData.length > 0) {
+          this.counter++;
+        } else {
+          this.openToast("top-right", "warning", "Please add your Leave data!");
+        }
+      }
+    },
     async submit() {
       this.isLoading = true;
       const fd = new FormData();
-
-
-   
 
       fd.append("requestedDate", this.requestedDate);
 
@@ -630,9 +787,6 @@ export default {
       fd.append("reportDateTime", this.reportDateTime);
       fd.append("purpose", this.reason);
 
-
-
-
       fd.append("loggedUserId", this.loggedUserId);
       fd.append("loggedUserFirstName", this.loggedUserFirstName);
       fd.append("loggedUserLastName", this.loggedUserLastName);
@@ -642,12 +796,10 @@ export default {
       fd.append("companyId", this.companyId);
       fd.append("companyName", this.companyName);
 
-
       fd.append("form", "Leave Request");
       fd.append("class", "LAF");
 
       fd.append("leaveData", JSON.stringify(this.leaveData));
-
 
       try {
         const resp = await axios.post("http://127.0.0.1:8000/api/save-laf", fd);
@@ -665,138 +817,163 @@ export default {
       }
     },
 
-
-
     async insert() {
-      this.isLoadingModal = true
+      this.isLoadingModal = true;
+      this.attemptInsert = true;
       this.resetAlert();
 
-      // returns true or false
-      const isValidated = this.validateInsert();
+      // returns true if date to is greater than from
+      const validated = this.validateEmptyFields();
+      const isGreaterThan = this.validateStartEndDate(
+        this.leaveFrom,
+        this.leaveTo
+      );
 
       // validation if
-     if (isValidated) {
-
-    // start of loop insert
-      let start = new Date(this.leaveFrom);
-      let end = new Date(this.leaveTo);
-      // While loop
-      let newend = end.setDate(end.getDate() + 1);
-      end = new Date(newend);
-
-      let leaveDates = [];
-      while (start < end) {
-        let year = start.getFullYear();
-        let month = (start.getMonth() + 1) < 10 ? (`0${start.getMonth() + 1}`) : (start.getMonth() + 1);
-        let day = (start.getDate()) < 10 ? (`0${start.getDate()}`) : (start.getDate());
-
-        let genDate = `${year}-${month}-${day}`;
-
-        leaveDates.push(genDate)
-
-        let newDate = start.setDate(start.getDate() + 1);
-        start = new Date(newDate);
-      }
-
-
-    
-    const fd = new FormData();
-    fd.append("employeeId", this.employeeItem.code);
-    fd.append("companyId", this.companyId);
-    fd.append("leaveDates", JSON.stringify(leaveDates));
-    
-
-      try {
-        const resp = await axios.post(
-          "http://127.0.0.1:8000/api/validate-laf-insert",
-          fd
-        );
-        console.log(resp.data.length);
-        console.log(resp.data)
-
-        if(resp.status === 200){
-
-          // exist
-          if (resp.data.length) {
-            this.isLoadingModal = false
-            let existDates = [];
-            for (const key in resp.data) {
-              existDates.push(resp.data[key].leave_date)
-            }
-            const stringExistDates = existDates.toString().split(',').join(',\n')
-            const message = `This leave date(s)\n${stringExistDates}\nAlready exist in our records!`
-            this.addAlert("Failed", message, "false");
-            
-          // not exist
-          } else {
-            this.isLoadingModal = false
-            this.insertLeaveDates();
-            this.addAlert("Success", 'Leave date added successfully!', "true");
-  
-          }
-
-        }
-
-      } catch (err) {
-        // Handle Error Here
-        console.error(err);
-      }
-       
-    // End of loop insert
-
-
-     //   validation else
-     } else {
-        this.isLoadingModal = false
-        this.addAlert("Failed", 'Please Input Required Fields!', "false");
-       
-     }
-
-
-  
-    },
-
-    validateInsert(){
-      const startDate = new Date(this.leaveFrom);
-      const endDate = new Date(this.leaveTo);
-
-      const check = endDate > startDate ? (true) : (false)
-
-      return check;
-     
-    },
-
-
-    insertLeaveDates(){
-        let startActual = new Date(this.leaveFrom);
-        let endActual = new Date(this.leaveTo);
+      if (validated && isGreaterThan) {
+        // start of loop insert
+        let start = new Date(this.leaveFrom);
+        let end = new Date(this.leaveTo);
         // While loop
-        let newendActual = endActual.setDate(endActual.getDate() + 1);
-        endActual = new Date(newendActual);
+        let newend = end.setDate(end.getDate() + 1);
+        end = new Date(newend);
 
-    
-        while (startActual < endActual) {
-          let year = startActual.getFullYear();
-          let month = (startActual.getMonth() + 1) < 10 ? (`0${startActual.getMonth() + 1}`) : (startActual.getMonth() + 1);
-          let day = (startActual.getDate()) < 10 ? (`0${startActual.getDate()}`) : (startActual.getDate());
+        let leaveDates = [];
+        // Date range loop
+        while (start < end) {
+          let year = start.getFullYear();
+          let month =
+            start.getMonth() + 1 < 10
+              ? `0${start.getMonth() + 1}`
+              : start.getMonth() + 1;
+          let day =
+            start.getDate() < 10 ? `0${start.getDate()}` : start.getDate();
 
           let genDate = `${year}-${month}-${day}`;
 
-          const addData = {
-            id: this.i++,
-            leave_typeId: this.leaveTypeItem.code,
-            leave_type: this.leaveTypeItem.name,
-            leave_date: genDate,
-            leave_paytype: this.payTypeItem.code, // wp / wop
-            leave_paytypeName: this.payTypeItem.name, // Withpay / Withoutpay
-            leave_halfday: "Wholeday", // whole day / am or pm
-            num_days: 1, // count / 1 . .5
-          };
-          this.leaveData.push(addData);
-          let newDate = startActual.setDate(startActual.getDate() + 1);
-          startActual = new Date(newDate);
+          leaveDates.push(genDate);
 
+          let newDate = start.setDate(start.getDate() + 1);
+          start = new Date(newDate);
         }
+
+        const fd = new FormData();
+        fd.append("employeeId", this.employeeItem.code);
+        fd.append("companyId", this.companyId);
+        fd.append("leaveDates", JSON.stringify(leaveDates));
+
+        try {
+          const resp = await axios.post(
+            "http://127.0.0.1:8000/api/validate-laf-insert",
+            fd
+          );
+          console.log(resp.data.length);
+          console.log(resp.data);
+
+          if (resp.status === 200) {
+            // exist
+            if (resp.data.length) {
+              this.isLoadingModal = false;
+              let existDates = [];
+              for (const key in resp.data) {
+                existDates.push(resp.data[key].leave_date);
+              }
+              const stringExistDates = existDates
+                .toString()
+                .split(",")
+                .join(",\n");
+              const message = `This leave date(s)\n${stringExistDates}\nAlready exist in our records!`;
+              this.addAlert("Failed", message, "false");
+
+              // not exist
+            } else {
+              this.isLoadingModal = false;
+              this.insertLeaveDates();
+              this.addAlert(
+                "Success",
+                "Leave date added successfully!",
+                "true"
+              );
+              this.resetModal()
+            }
+          }
+        } catch (err) {
+          // Handle Error Here
+          console.error(err);
+        }
+
+        // End of loop insert
+
+        //   validation else
+      } else if (isGreaterThan === false && validated) {
+        this.isLoadingModal = false;
+        this.addAlert(
+          "Failed",
+          "Authorize Time End must be greater than Authorize Time Start!",
+          "false"
+        );
+      } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
+    },
+
+    validateStartEndDate(from, to) {
+      const startDate = new Date(from);
+      const endDate = new Date(to);
+
+      const check = endDate > startDate ? true : false;
+      return check;
+    },
+
+    validateEmptyFields() {
+      if (
+        !this.missingEmployee &&
+        !this.missingModalLeaveType &&
+        !this.missingModalDateFrom &&
+        !this.missingModalDateTo &&
+        !this.missingModalPayType
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    insertLeaveDates() {
+      let startActual = new Date(this.leaveFrom);
+      let endActual = new Date(this.leaveTo);
+      // While loop
+      let newendActual = endActual.setDate(endActual.getDate() + 1);
+      endActual = new Date(newendActual);
+
+      while (startActual < endActual) {
+        let year = startActual.getFullYear();
+        let month =
+          startActual.getMonth() + 1 < 10
+            ? `0${startActual.getMonth() + 1}`
+            : startActual.getMonth() + 1;
+        let day =
+          startActual.getDate() < 10
+            ? `0${startActual.getDate()}`
+            : startActual.getDate();
+
+        let genDate = `${year}-${month}-${day}`;
+
+        const addData = {
+          id: this.i++,
+          leave_typeId: this.leaveTypeItem.code,
+          leave_type: this.leaveTypeItem.name,
+          leave_date: genDate,
+          leave_paytype: this.payTypeItem.code, // wp / wop
+          leave_paytypeName: this.payTypeItem.name, // Withpay / Withoutpay
+          leave_halfday: "Wholeday", // whole day / am or pm
+          num_days: 1, // count / 1 . .5
+        };
+        this.leaveData.push(addData);
+        let newDate = startActual.setDate(startActual.getDate() + 1);
+        startActual = new Date(newDate);
+      }
     },
 
     // table functions

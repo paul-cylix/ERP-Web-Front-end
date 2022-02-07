@@ -24,7 +24,6 @@
           <div class="progressbar" :class="classC">
             <span :class="classC">3</span>
           </div>
-  
         </div>
 
         <div class="d-flex text-center">
@@ -49,7 +48,6 @@
               ></small
             >
           </div>
-
         </div>
         <!-- / Step Numbers -->
 
@@ -99,6 +97,11 @@
                   style="padding: 9px"
                 >
                 </model-list-select>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingReportingManager && attemptNext"
+                  >Reporting Manager is required!</small
+                >
               </div>
             </div>
           </div>
@@ -433,9 +436,6 @@
   
           </div> -->
           <!-- /. Attachments form review -->
-
-
-
         </aside>
         <!-- / Form Review -->
 
@@ -455,7 +455,7 @@
           <div class="col-md-1" v-if="this.counter <= 1">
             <button
               type="button"
-              @click="counter++"
+              @click="next()"
               class="btn btn-block btn-primary btn-sm"
             >
               Next
@@ -471,6 +471,7 @@
               Submit
             </button>
           </div>
+          
         </div>
         <!-- / Buttons -->
       </div>
@@ -524,14 +525,20 @@
                     option-text="name"
                     placeholder="Select Project Name"
                     style="padding: 9px"
+            
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalProject && attemptInsert"
+                    >Project Name is required!</small
+                  >
                 </div>
               </div>
             </div>
 
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-5">
                 <div class="form-group">
                   <small><label for="employeeName">Employee Name</label></small>
                   <model-list-select
@@ -543,10 +550,15 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalEmployee && attemptInsert"
+                    >Employee Name is required!</small
+                  >
                 </div>
               </div>
 
-              <div class="col-md-3">
+              <div class="col-md-7">
                 <div class="form-group">
                   <small><label for="overtimeDate">Overtime Date</label></small>
                   <date-picker
@@ -554,24 +566,17 @@
                     style="display: block; width: 100%; line-height: 20px"
                     v-model="overtimeDate"
                   ></date-picker>
-                </div>
-              </div>
-
-              <div class="col-md-3">
-                <div class="form-group">
-                  <small><label for="authOT">Auth OT Hrs</label></small>
-                  <input
-                    type="text"
-                    disabled
-                    v-model="authOThrs"
-                    class="form-control py-3 form-control-sm"
-                  />
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalOTDate && attemptInsert"
+                    >Overtime Date is required!</small
+                  >
                 </div>
               </div>
             </div>
 
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-5">
                 <div class="form-group">
                   <small
                     ><label for="authTimeStart"
@@ -587,10 +592,15 @@
                     type="datetime"
                     style="display: block; width: 100%; line-height: 20px"
                   ></date-picker>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalAuthStart && attemptInsert"
+                    >Auth. Start is required!</small
+                  >
                 </div>
               </div>
 
-              <div class="col-md-6">
+              <div class="col-md-5">
                 <div class="form-group">
                   <small
                     ><label for="authTimeEnd">Authorized Time End</label></small
@@ -604,6 +614,23 @@
                     type="datetime"
                     style="display: block; width: 100%; line-height: 20px"
                   ></date-picker>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalAuthEnd && attemptInsert"
+                    >Auth. End is required!</small
+                  >
+                </div>
+              </div>
+
+              <div class="col-md-2">
+                <div class="form-group">
+                  <small><label for="authOT">Auth Hrs</label></small>
+                  <input
+                    type="text"
+                    disabled
+                    v-model="authOThrs"
+                    class="form-control py-3 form-control-sm"
+                  />
                 </div>
               </div>
             </div>
@@ -616,8 +643,13 @@
                     class="form-control"
                     id="purpose"
                     rows="3"
-                    v-model="modalPurpose"
+                    v-model.trim="modalPurpose"
                   ></textarea>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalPurpose && attemptInsert"
+                    >Purpose is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -640,6 +672,7 @@
             >
               Update
             </button>
+
           </div>
         </div>
         <!-- /.modal-content -->
@@ -668,9 +701,10 @@ export default {
     this.getEmployees(this.companyId);
   },
   watch: {
-    // Request Details
     itemModalProjectName(newValue) {
+      if(newValue.code > 0){
       this.getClient(newValue.code);
+      }
     },
   },
   computed: {
@@ -684,6 +718,65 @@ export default {
       return { active: this.counter >= 2 };
     },
 
+    missingReportingManager() {
+      if (this.reportingManagerItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingOTData() {
+      if (this.overtime.length < 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    // modal
+    missingModalProject() {
+      if (this.itemModalProjectName.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalEmployee() {
+      if (this.itemEmployeeName.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalOTDate() {
+      if (this.overtimeDate === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalAuthStart() {
+      if (this.authTimeStart === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalAuthEnd() {
+      if (this.authTimeEnd === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalPurpose() {
+      if (this.modalPurpose.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
 
     totalOTHours() {
       if (this.overtime.length > 0) {
@@ -709,6 +802,10 @@ export default {
   data() {
     return {
       counter: 0,
+      setIndex: "",
+      attemptNext: false,
+      attemptNextOne: false,
+      attemptInsert: false,
       // Request Details
       referenceNumber: "",
       requestedDate: "",
@@ -742,9 +839,9 @@ export default {
       clientId: "",
       mainId: "",
 
-      overtimeDate: "",
-      authTimeStart: "",
-      authTimeEnd: "",
+      overtimeDate: null,
+      authTimeStart: null,
+      authTimeEnd: null,
       authOThrs: "",
       modalPurpose: "",
       // totalOT: 0,
@@ -762,6 +859,59 @@ export default {
   },
 
   methods: {
+    validateEmptyFields() {
+      if (
+        !this.missingModalProject &&
+        !this.missingModalEmployee &&
+        !this.missingModalOTDate &&
+        !this.missingModalAuthStart &&
+        !this.missingModalAuthEnd &&
+        !this.missingModalPurpose
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    validateStartEndDate(from, to) {
+      const startDate = new Date(from);
+      const endDate = new Date(to);
+
+      const check = endDate > startDate ? true : false;
+      return check;
+    },
+    next() {
+      if (this.counter === 0) {
+        this.attemptNext = true;
+      } else if (this.counter === 1) {
+        this.attemptNext = false;
+        this.attemptNextOne = true;
+      }
+
+      this.validateCurrentTab(this.counter);
+    },
+
+    validateCurrentTab(counter) {
+      // Request Details
+      if (counter === 0) {
+        if (!this.missingReportingManager) {
+          this.counter++;
+        }
+        // Payment Details
+      } else if (counter === 1) {
+        if (!this.missingOTData) {
+          this.counter++;
+        } else {
+          this.openToast(
+            "top-right",
+            "warning",
+            "Please add your Overtime data!"
+          );
+        }
+      }
+    },
+
     openToast(position, variant, message) {
       const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
       VsToast.show({
@@ -823,7 +973,7 @@ export default {
 
       fd.append("overtimeData", JSON.stringify(this.overtime));
 
-      console.log(this.overtime)
+      console.log(this.overtime);
 
       try {
         const resp = await axios.post("http://127.0.0.1:8000/api/save-ot", fd);
@@ -844,12 +994,89 @@ export default {
     // Request Details
     todaysDate() {
       const today = new Date();
-      const dd = today.getDate();
-      const mm = today.getMonth() + 1;
+      let dd = today.getDate();
+      let mm = today.getMonth() + 1;
       const yyyy = today.getFullYear();
+
+      if (mm < 10) {
+        mm = `0${mm}`;
+      }
+
+      if (dd < 10) {
+        dd = `0${dd}`;
+      }
+
       const todaysDate = yyyy + "-" + mm + "-" + dd;
       this.requestedDate = todaysDate;
-      // return todaysDate;
+    },
+
+    async getEmployees(companyId) {
+      this.isLoading = true;
+
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-employees/${companyId}`
+        );
+
+        if (resp.status === 200) {
+          this.isLoading = false;
+
+          // console.log(resp);
+
+          const employeeName = [];
+          for (const key in resp.data) {
+            const request = {
+              code: resp.data[key].SysPK_Empl,
+              name: resp.data[key].Name_Empl,
+            };
+            employeeName.push(request);
+          }
+          this.employeeName = employeeName;
+          // console.log(this.employeeName);
+        }
+      } catch (err) {
+        this.isLoading = false;
+
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    async getReportingManager() {
+      this.isLoading = true;
+
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/reporting-manager/136",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        this.isLoading = false;
+
+        const error = new Error(
+          responseData.message || "Failed to fetch Reporting Manager."
+        );
+        throw error;
+      }
+      this.isLoading = false;
+
+      const reportingManager = [];
+      for (const key in responseData) {
+        const request = {
+          code: responseData[key].RMID,
+          name: responseData[key].RMName,
+        };
+        reportingManager.push(request);
+      }
+      this.reportingManager = reportingManager;
+      // console.log(this.reportingManager);
     },
 
     async getClient(id) {
@@ -884,69 +1111,11 @@ export default {
       this.clientId = client[0].clientId;
       this.mainId = client[0].mainId;
 
-      // console.log(this.clientName)
-    },
-
-    async getEmployees(companyId) {
-      try {
-        const resp = await axios.get(
-          `http://127.0.0.1:8000/api/get-employees/${companyId}`
-        );
-
-        if (resp.status === 200) {
-          // console.log(resp);
-
-          const employeeName = [];
-          for (const key in resp.data) {
-            const request = {
-              code: resp.data[key].SysPK_Empl,
-              name: resp.data[key].Name_Empl,
-            };
-            employeeName.push(request);
-          }
-          this.employeeName = employeeName;
-          // console.log(this.employeeName);
-        }
-      } catch (err) {
-        // Handle Error Here
-        console.error(err);
-      }
-    },
-
-    async getReportingManager() {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/reporting-manager/136",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-
-      const responseData = await response.json();
-      if (!response.ok) {
-        const error = new Error(
-          responseData.message || "Failed to fetch Reporting Manager."
-        );
-        throw error;
-      }
-
-      const reportingManager = [];
-      for (const key in responseData) {
-        const request = {
-          code: responseData[key].RMID,
-          name: responseData[key].RMName,
-        };
-        reportingManager.push(request);
-      }
-      this.reportingManager = reportingManager;
-      // console.log(this.reportingManager);
     },
 
     // Overtime Details
     async getProjects() {
+      this.isLoading = true;
       const response = await fetch(
         "http://127.0.0.1:8000/api/general-projects",
         {
@@ -960,11 +1129,15 @@ export default {
 
       const responseData = await response.json();
       if (!response.ok) {
+        this.isLoading = false;
+
         const error = new Error(
           responseData.message || "Failed to fetch Projects."
         );
         throw error;
       }
+      this.isLoading = false;
+
       const project = [];
       for (const key in responseData) {
         const request = {
@@ -978,58 +1151,87 @@ export default {
 
     async update() {
       this.isLoadingModal = true;
+      this.attemptInsert = true;
       this.resetAlert();
+      const validated = this.validateEmptyFields();
+      const isGreaterThan = this.validateStartEndDate(
+        this.authTimeStart,
+        this.authTimeEnd
+      );
 
-      const addData = {
-        id: this.editOvertime.id,
-        overtime_date: this.overtimeDate,
-        ot_in: this.authTimeStart,
-        ot_out: this.authTimeEnd,
-        ot_totalhrs: this.authOThrs,
-        employee_id: this.itemEmployeeName.code,
-        employee_name: this.itemEmployeeName.name,
-        purpose: this.modalPurpose,
-        cust_id: this.itemModalProjectName.code,
-        cust_name: this.itemModalProjectName.name,
-        PRJID: this.clientId,
-        main_id: this.mainId,
-      };
-      // this.overtime.push(addData);
-      // this.liquidation.push(this.editliquidation)
+      if (validated && isGreaterThan) {
+        // start
+        const addData = {
+          id: this.editOvertime.id,
+          overtime_date: this.overtimeDate,
+          ot_in: this.authTimeStart,
+          ot_out: this.authTimeEnd,
+          ot_totalhrs: this.authOThrs,
+          employee_id: this.itemEmployeeName.code,
+          employee_name: this.itemEmployeeName.name,
+          purpose: this.modalPurpose,
+          cust_id: this.itemModalProjectName.code,
+          cust_name: this.itemModalProjectName.name,
+          PRJID: this.clientId,
+          main_id: this.mainId,
+        };
+        // this.overtime.push(addData);
+        // this.liquidation.push(this.editliquidation)
 
-      const otData = [];
-      otData.push(addData);
+        const otData = [];
+        otData.push(addData);
 
-      const fd = new FormData();
-      fd.append("overtimeData", JSON.stringify(otData));
+        const fd = new FormData();
+        fd.append("overtimeData", JSON.stringify(otData));
 
-      try {
-        const resp = await axios.post(
-          "http://127.0.0.1:8000/api/validateOT",
-          fd
+        try {
+          const resp = await axios.post(
+            "http://127.0.0.1:8000/api/validateOT",
+            fd
+          );
+
+          if (resp.status === 200) {
+            this.overtime.push(addData);
+            this.isLoadingModal = false;
+
+            this.addAlert("Success", resp.data.message, "true");
+            this.editOvertime = "";
+            this.overtime.splice(this.setIndex, 1);
+            this.resetModal();
+            this.overtime.sort(function (a, b) {
+              return a.id - b.id;
+            });
+          }
+
+          if (resp.status === 202) {
+            this.isLoadingModal = false;
+            this.addAlert("Failed", resp.data.message, "false");
+          }
+
+          console.log(resp.data);
+        } catch (err) {
+          // Handle Error Here
+          this.isLoadingModal = false;
+          this.addAlert(
+            "Failed",
+            "Please Contact the administrator! and try again later",
+            "false"
+          );
+
+          // Handle Error Here
+          console.error(err);
+        }
+        // end
+      } else if (isGreaterThan === false && validated) {
+        this.isLoadingModal = false;
+        this.addAlert(
+          "Failed",
+          "Authorize Time End must be greater than Authorize Time Start!",
+          "false"
         );
-
-        if (resp.status === 200) {
-          this.overtime.push(addData);
-          this.isLoadingModal = false;
-
-          this.addAlert("Success", resp.data.message, "true");
-          this.editOvertime = "";
-
-          this.overtime.sort(function (a, b) {
-            return a.id - b.id;
-          });
-        }
-
-        if (resp.status === 202) {
-          this.isLoadingModal = false;
-          this.addAlert("Failed", resp.data.message, "false");
-        }
-
-        console.log(resp.data);
-      } catch (err) {
-        // Handle Error Here
-        console.error(err);
+      } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
       }
     },
 
@@ -1037,7 +1239,7 @@ export default {
       this.isButton = false;
       const selectedOvertime = this.overtime[index];
       this.editOvertime = selectedOvertime;
-      this.overtime.splice(index, 1);
+      this.setIndex = index;
 
       console.log(this.editOvertime);
 
@@ -1052,6 +1254,7 @@ export default {
       this.overtimeDate = selectedOvertime.overtime_date;
       this.authTimeStart = selectedOvertime.ot_in;
       this.authTimeEnd = selectedOvertime.ot_out;
+      this.authOThrs = selectedOvertime.ot_totalhrs;
       this.modalPurpose = selectedOvertime.purpose;
     },
 
@@ -1071,16 +1274,14 @@ export default {
     },
 
     resetModal() {
-      this.overtimeDate = "";
-      this.authTimeStart = "";
-      this.authTimeEnd = "";
+      this.overtimeDate = null;
+      this.authTimeStart = null;
+      this.authTimeEnd = null;
       this.authOThrs = "";
       this.itemEmployeeName = {};
       this.modalPurpose = "";
-      // this.itemModalProjectName = {}
-      // this.clientId = "";
-      // this.clientName = "";
-      // this.mainId = "";
+      this.attemptInsert = false;
+      this.itemModalProjectName = {};
     },
 
     addAlert(header, message, type) {
@@ -1092,51 +1293,77 @@ export default {
 
     async insert() {
       this.isLoadingModal = true;
+      this.attemptInsert = true;
       this.resetAlert();
+      const validated = this.validateEmptyFields();
+      const isGreaterThan = this.validateStartEndDate(
+        this.authTimeStart,
+        this.authTimeEnd
+      );
+      if (validated && isGreaterThan) {
+        // start
+        const otData = [];
+        const addData = {
+          id: this.i++,
+          overtime_date: this.overtimeDate,
+          ot_in: this.authTimeStart,
+          ot_out: this.authTimeEnd,
+          ot_totalhrs: this.authOThrs,
+          employee_id: this.itemEmployeeName.code,
+          employee_name: this.itemEmployeeName.name,
+          purpose: this.modalPurpose,
+          cust_id: this.itemModalProjectName.code,
+          cust_name: this.itemModalProjectName.name,
+          PRJID: this.clientId,
+          main_id: this.mainId,
+        };
+        // this.overtime.push(addData);
+        otData.push(addData);
 
-      const otData = [];
-      const addData = {
-        id: this.i++,
-        overtime_date: this.overtimeDate,
-        ot_in: this.authTimeStart,
-        ot_out: this.authTimeEnd,
-        ot_totalhrs: this.authOThrs,
-        employee_id: this.itemEmployeeName.code,
-        employee_name: this.itemEmployeeName.name,
-        purpose: this.modalPurpose,
-        cust_id: this.itemModalProjectName.code,
-        cust_name: this.itemModalProjectName.name,
-        PRJID: this.clientId,
-        main_id: this.mainId,
-      };
-      // this.overtime.push(addData);
-      otData.push(addData);
+        const fd = new FormData();
+        fd.append("overtimeData", JSON.stringify(otData));
 
-      const fd = new FormData();
-      fd.append("overtimeData", JSON.stringify(otData));
+        try {
+          const resp = await axios.post(
+            "http://127.0.0.1:8000/api/validateOT",
+            fd
+          );
 
-      try {
-        const resp = await axios.post(
-          "http://127.0.0.1:8000/api/validateOT",
-          fd
+          if (resp.status === 200) {
+            this.overtime.push(addData);
+            this.isLoadingModal = false;
+
+            this.addAlert("Success", resp.data.message, "true");
+            this.resetModal();
+          }
+
+          if (resp.status === 202) {
+            this.isLoadingModal = false;
+            this.addAlert("Failed", resp.data.message, "false");
+          }
+        } catch (err) {
+          this.isLoadingModal = false;
+          this.addAlert(
+            "Failed",
+            "Please Contact the administrator! and try again later",
+            "false"
+          );
+
+          // Handle Error Here
+          console.error(err);
+        }
+
+        // end
+      } else if (isGreaterThan === false && validated) {
+        this.isLoadingModal = false;
+        this.addAlert(
+          "Failed",
+          "Authorize Time End must be greater than Authorize Time Start!",
+          "false"
         );
-
-        if (resp.status === 200) {
-          this.overtime.push(addData);
-          this.isLoadingModal = false;
-
-          this.addAlert("Success", resp.data.message, "true");
-        }
-
-        if (resp.status === 202) {
-          this.isLoadingModal = false;
-          this.addAlert("Failed", resp.data.message, "false");
-        }
-
-        console.log(resp.data);
-      } catch (err) {
-        // Handle Error Here
-        console.error(err);
+      } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
       }
     },
 

@@ -2,7 +2,7 @@
   <div class="col-md-12 mt-3">
     <!-- Form Element sizes -->
     <div class="card card-secondary">
-            <div
+      <div
         class="overlay"
         style="background-color: white !important"
         v-show="isLoading"
@@ -243,14 +243,11 @@
             <ul class="mt-4 text-decoration-none ulUpload">
               <li
                 class="text-sm mt-2"
-                v-for="(file, index) in selectedFile"
+                v-for="file in selectedFile"
                 :key="file.newFilename"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 + "." }}</b>
-                    </div>
                     <div class="col text-left">
                       <span>{{ file.filename }}</span>
                     </div>
@@ -415,17 +412,12 @@
               >
                 <thead>
                   <tr>
-                    <th style="width: 5%">#</th>
                     <th style="width: 80%">Filename</th>
-                    <th style="width: 15%">Actions</th>
+                    <th style="width: 20%">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(file, index) in selectedFile"
-                    :key="file.filename"
-                  >
-                    <td>{{ index + 1 }}</td>
+                  <tr v-for="file in selectedFile" :key="file.filename">
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
@@ -524,7 +516,12 @@
     <!-- /.card -->
 
     <!-- Modal -->
-    <div class="modal fade" id="modal-default">
+    <div
+      class="modal fade"
+      id="modal-default"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <!-- Overlay Loading Spinner -->
@@ -621,8 +618,12 @@ export default {
       // this.showRfpDetail(this.$route.params.id);
       // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
 
-      this.getRfpApproval(this.$route.params.id, this.form, this.companyId, this.loggedUserId);
-
+      this.getRfpApproval(
+        this.$route.params.id,
+        this.form,
+        this.companyId,
+        this.loggedUserId
+      );
 
       this.counter = 0;
       this.remarks = "";
@@ -701,24 +702,24 @@ export default {
       isLoading: false,
       isLoadingModal: false,
 
-      form: 'Request for Payment',
+      form: "Request for Payment",
 
       // Check if its for liquidation
       isInitiator: false,
       isLiquidation: false,
 
       liquidation: [],
-      inprogressId: '',
+      inprogressId: "",
 
       // approver 2
       loggedUserId: 12,
-      loggedUserFirstName: 'Carrie',
-      loggedUserLastName: 'Chua Lee',
-      loggedUserFullName: 'Carrie Chua Lee',
-      loggedUserDepartment: 'Accounting and Finance',
-      loggedUserPosition: 'Accounting and Finance Head',
+      loggedUserFirstName: "Carrie",
+      loggedUserLastName: "Chua Lee",
+      loggedUserFullName: "Carrie Chua Lee",
+      loggedUserDepartment: "Accounting and Finance",
+      loggedUserPosition: "Accounting and Finance Head",
       companyId: 1,
-      companyName: 'Cylix Technologies Inc.',
+      companyName: "Cylix Technologies Inc.",
     };
   },
 
@@ -728,8 +729,12 @@ export default {
     // this.showRfpDetail(this.$route.params.id);
     // this.showRfpAttachments(this.$route.params.id, this.form);
 
-    this.getRfpApproval(this.$route.params.id, this.form, this.companyId, this.loggedUserId);
-
+    this.getRfpApproval(
+      this.$route.params.id,
+      this.form,
+      this.companyId,
+      this.loggedUserId
+    );
   },
 
   methods: {
@@ -741,7 +746,7 @@ export default {
       let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/1`;
       let showLiquidation = `http://127.0.0.1:8000/api/rfp-main-liquidation/${id}`;
       let showRecipient = `http://127.0.0.1:8000/api/getRecipient/${id}/${loggedUserId}/${companyId}/${form}`;
-      let showInprogressId = `http://127.0.0.1:8000/api/get-Inprogress/${id}/${companyId}/${form}`
+      let showInprogressId = `http://127.0.0.1:8000/api/get-Inprogress/${id}/${companyId}/${form}`;
 
       const requestOne = axios.get(showRfpMain);
       const requestTwo = axios.get(showRfpDetail);
@@ -750,7 +755,6 @@ export default {
       const requestFive = axios.get(showLiquidation);
       const requestSix = axios.get(showRecipient);
       const requestSeven = axios.get(showInprogressId);
-
 
       axios
         .all([
@@ -777,7 +781,10 @@ export default {
             this.requestDate = responseOne.data.data.DATE;
             this.dateNeeded = responseOne.data.data.Deadline;
             this.reportingManager = responseOne.data.data.REPORTING_MANAGER;
-            this.amount = responseOne.data.data.AMOUNT;
+            // this.amount = responseOne.data.data.AMOUNT;
+            this.amount = parseFloat(
+              responseOne.data.data.AMOUNT
+            ).toLocaleString(undefined, { minimumFractionDigits: 2 });
             this.uid = responseOne.data.data.UID;
 
             if (responseOne.data.data.UID === this.loggedUserId) {
@@ -824,13 +831,11 @@ export default {
             }
 
             this.recipent = recipient;
-            console.log(this.recipent)
-
+            console.log(this.recipent);
 
             // showInprogressId - responesSeven
-            this.inprogressId = responesSeven.data[0].inpId
+            this.inprogressId = responesSeven.data[0].inpId;
             // console.log(this.inprogressId)
-
           })
         )
         .catch((errors) => {
@@ -841,7 +846,7 @@ export default {
           this.isLoading = false;
         });
     },
-  // End of get rfp data
+    // End of get rfp data
 
     setTitle(title) {
       this.title = title;
@@ -916,7 +921,6 @@ export default {
         fd.append("loggedUserFullname", this.loggedUserFullName);
         fd.append("reference", this.referenceNumber);
 
-
         axios
           .post("http://127.0.0.1:8000/api/inputs-clarity", fd)
           .then((res) => {
@@ -935,12 +939,7 @@ export default {
           .then(() => {
             // always executed
             this.isLoadingModal = false;
-
           });
-
-
-
-
       }
     },
     close() {

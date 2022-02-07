@@ -357,7 +357,13 @@
                 <td>{{ item.expense_type }}</td>
                 <td>{{ item.description }}</td>
                 <td>{{ item.currency }}</td>
-                <td>{{ item.Amount }}</td>
+                <td>
+                  {{
+                    parseFloat(item.Amount).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                    })
+                  }}
+                </td>
               </tr>
               <tr>
                 <td colspan="6"></td>
@@ -383,120 +389,122 @@
           id="app"
           v-if="this.counter === setAttach"
         >
-          <input
-            type="file"
-            multiple
-            name="fields[assetsFieldHandle][]"
-            id="assetsFieldHandle"
-            class="w-25 h-25 overflow-hidden"
-            @change="onFileSelected"
-            ref="file"
-            accept=".pdf,.jpg,.jpeg,.png"
-            v-if="isInitiator"
-          />
+          <div
+            class="pt-2 col-md-12 rounded"
+            @dragover="dragover"
+            @dragleave="dragleave"
+            @drop="drop"
+            id="uploadContainer"
+          >
+            <input
+              type="file"
+              multiple
+              name="fields[assetsFieldHandle][]"
+              id="assetsFieldHandle"
+              class="w-25 h-25 overflow-hidden"
+              @change="onFileSelected"
+              ref="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+              v-if="isInitiator"
+            />
 
-          <div class="p-5 col-md-12 rounded" id="uploadContainer">
-            <label for="assetsFieldHandle" class="block cursor-pointer">
+            <label
+              for="assetsFieldHandle"
+              style="width: 100%; cursor: pointer"
+              class="block p-5 cursor-pointer"
+            >
               <span class="text-secondary" v-if="isInitiator"
-                >Click here to attach file(s)</span
+                >Click here or drop file(s)</span
               >
               <span class="text-secondary" v-else
                 >List of attached file(s)</span
               >
+
+              <ul class="mt-4 text-decoration-none ulUpload">
+                <li
+                  class="text-sm mt-2"
+                  v-for="(file, index) in selectedFile"
+                  :key="file.id"
+                >
+                  <div class="row d-flex justify-content-center">
+                    <div class="col-md-4 d-flex">
+                      <div class="col text-left">
+                        <span>{{ file.filename }}</span>
+                      </div>
+                      <div v-if="isInitiator">
+                        <button
+                          class="btn btn-danger btn-sm"
+                          type="button"
+                          @click="
+                            removeAttachedFile(
+                              index,
+                              file.id,
+                              file.filename,
+                              file.filepath
+                            )
+                          "
+                          title="Remove file"
+                        >
+                          Remove
+                        </button>
+                      </div>
+
+                      <div class="col-2">
+                        <button
+                          class="btn btn-secondary btn-sm"
+                          @click="preview(file.mimeType, file.imageBytes)"
+                        >
+                          Preview
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <!-- Newly added file -->
+                <li
+                  class="text-sm mt-2"
+                  v-for="file in selectedFileLiquidation"
+                  :key="file.index"
+                >
+                  <div class="row d-flex justify-content-center">
+                    <div class="col-md-4 d-flex">
+                      <div class="col text-left">
+                        <span>{{ file.name }}</span>
+                      </div>
+                      <div v-if="isInitiator">
+                        <button
+                          class="btn btn-danger btn-sm"
+                          type="button"
+                          @click="
+                            removeFileLiquidation(
+                              selectedFileLiquidation.indexOf(file)
+                            )
+                          "
+                          title="Remove file"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <div class="col-2">
+                        <button
+                          class="btn btn-secondary btn-sm"
+                          @click="
+                            filePreviewLiquidation(
+                              selectedFileLiquidation.indexOf(file)
+                            )
+                          "
+                        >
+                          Preview
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+
+              <!-- </aside> -->
             </label>
-
-            <!-- paul -->
-            <!-- <aside class="d-flex align-items-center justify-content-center"> -->
-            <ul class="mt-4 text-decoration-none ulUpload">
-              <li
-                class="text-sm mt-2"
-                v-for="(file, index) in selectedFile"
-                :key="file.id"
-              >
-                <div class="row d-flex justify-content-center">
-                  <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 + "." }}</b>
-                    </div>
-                    <div class="col text-left">
-                      <span>{{ file.filename }}</span>
-                    </div>
-                    <div v-if="isInitiator">
-                      <button
-                        class="btn btn-danger btn-sm"
-                        type="button"
-                        @click="
-                          removeAttachedFile(
-                            index,
-                            file.id,
-                            file.filename,
-                            file.filepath
-                          )
-                        "
-                        title="Remove file"
-                      >
-                        Remove
-                      </button>
-                    </div>
-
-                    <div class="col-2">
-                      <button
-                        class="btn btn-secondary btn-sm"
-                        @click="preview(file.mimeType, file.imageBytes)"
-                      >
-                        Preview
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </li>
-
-              <!-- Newly added file -->
-              <li
-                class="text-sm mt-2"
-                v-for="(file, index) in selectedFileLiquidation"
-                :key="file.index"
-              >
-                <div class="row d-flex justify-content-center">
-                  <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 }}.</b>
-                    </div>
-                    <div class="col text-left">
-                      <span>{{ file.name }}</span>
-                    </div>
-                    <div v-if="isInitiator">
-                      <button
-                        class="btn btn-danger btn-sm"
-                        type="button"
-                        @click="
-                          removeFileLiquidation(
-                            selectedFileLiquidation.indexOf(file)
-                          )
-                        "
-                        title="Remove file"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <div class="col-2">
-                      <button
-                        class="btn btn-secondary btn-sm"
-                        @click="
-                          filePreviewLiquidation(
-                            selectedFileLiquidation.indexOf(file)
-                          )
-                        "
-                      >
-                        Preview
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-
-            <!-- </aside> -->
           </div>
         </div>
         <!-- / The Attachments -->
@@ -641,7 +649,13 @@
                     <td>{{ item.expense_type }}</td>
                     <td>{{ item.description }}</td>
                     <td>{{ item.currency }}</td>
-                    <td>{{ item.Amount }}</td>
+                    <td>
+                      {{
+                        parseFloat(item.Amount).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                        })
+                      }}
+                    </td>
                   </tr>
 
                   <tr>
@@ -676,17 +690,12 @@
               >
                 <thead>
                   <tr>
-                    <th style="width: 5%">#</th>
                     <th style="width: 80%">Filename</th>
                     <th style="width: 15%">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(file, index) in selectedFile"
-                    :key="file.id"
-                  >
-                    <td>{{ index + 1 }}</td>
+                  <tr v-for="(file, index) in selectedFile" :key="file.id">
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
@@ -713,11 +722,7 @@
                     </td>
                   </tr>
 
-                  <tr
-                    v-for="(file, index) in selectedFileLiquidation"
-                    :key="file.index"
-                  >
-                    <td>{{ index + 1 }}</td>
+                  <tr v-for="file in selectedFileLiquidation" :key="file.index">
                     <td>{{ file.name }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
@@ -766,7 +771,7 @@
                 Previous
               </button>
             </div>
-
+            <!-- liquidation is false -->
             <div
               class="col-lg-2"
               v-show="!isLiquidation"
@@ -777,10 +782,11 @@
                 @click="counter++"
                 class="btn btn-block btn-primary btn-sm"
               >
-                Next2
+                Next
               </button>
             </div>
 
+            <!-- liquidation is true -->
             <div
               class="col-lg-2"
               v-show="isLiquidation"
@@ -788,10 +794,10 @@
             >
               <button
                 type="button"
-                @click="counter++"
+                @click="next()"
                 class="btn btn-block btn-primary btn-sm"
               >
-                Next3
+                Next
               </button>
             </div>
           </aside>
@@ -842,6 +848,8 @@
                 Close
               </button>
             </div>
+
+            <button @click="test()">test</button>
           </aside>
         </div>
         <!-- / Button -->
@@ -850,7 +858,12 @@
     <!-- /.card -->
 
     <!-- Modal -->
-    <div class="modal fade" id="modal-default">
+    <div
+      class="modal fade"
+      id="modal-default"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <!-- Overlay Loading Spinner -->
@@ -868,11 +881,19 @@
               class="close"
               data-dismiss="modal"
               aria-label="Close"
+              @click="closeDefaultModal()"
             >
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
+            <the-alert
+              v-show="isAlert"
+              v-bind:header="this.header"
+              v-bind:message="this.message"
+              v-bind:type="this.type"
+            ></the-alert>
+
             <div class="row" v-if="isForClarity">
               <div class="col-md-12">
                 <div class="form-group">
@@ -885,6 +906,11 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalRecipient && attemptClarify"
+                    >Recipient is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -896,7 +922,7 @@
                     class="form-control"
                     id="remarks"
                     rows="5"
-                    v-model="remarks"
+                    v-model.trim="remarks"
                     placeholder="Please input request remarks here!"
                   ></textarea>
                 </div>
@@ -920,7 +946,8 @@
               class="btn btn-primary btn-sm"
               @click="submit('SubmitInitiator')"
             >
-              Submit Double
+              <!-- button initiator submit all liquidation -->
+              Submit
             </button>
           </div>
         </div>
@@ -931,7 +958,12 @@
     <!-- /.modal -->
 
     <!-- Modal Liquidation-->
-    <div class="modal fade" id="modal-liquidation">
+    <div
+      class="modal fade"
+      id="modal-liquidation"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -944,11 +976,18 @@
               class="close"
               data-dismiss="modal"
               aria-label="Close"
+              @click="closeModal()"
             >
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
+            <the-alert
+              v-show="isAlert"
+              v-bind:header="this.header"
+              v-bind:message="this.message"
+              v-bind:type="this.type"
+            ></the-alert>
             <div class="row">
               <div class="col-md-4">
                 <div class="form-group">
@@ -959,6 +998,11 @@
                     style="display: block; width: 100%; line-height: 20px"
                     v-model="modalDate"
                   ></date-picker>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalDate && attemptInsert"
+                    >Date is required!</small
+                  >
                 </div>
               </div>
               <div class="col-md-8">
@@ -974,6 +1018,11 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalProjectName && attemptInsert"
+                    >Project Name is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -992,6 +1041,11 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalExpenseType && attemptInsert"
+                    >Expense Type is required!</small
+                  >
                 </div>
               </div>
               <div class="col-md-4">
@@ -1007,6 +1061,11 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalCurrencyType && attemptInsert"
+                    >Currency Type is required!</small
+                  >
                 </div>
               </div>
               <div class="col-md-4">
@@ -1014,10 +1073,18 @@
                   <small><label for="modalamount">Amount</label></small>
                   <input
                     type="text"
+                    @keyup="formatCurrency($event)"
+                    @blur="formatCurrency($event, 'blur')"
+                    pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
                     class="form-control form-control-sm py-3"
                     id="modalamount"
                     v-model="modalamount"
                   />
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalAmount && attemptInsert"
+                    >Amount is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -1029,9 +1096,14 @@
                     class="form-control"
                     id="remarks"
                     rows="5"
-                    v-model="modalremarks"
+                    v-model.trim="modalremarks"
                     placeholder="Please input request remarks here!"
                   ></textarea>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalRemarks && attemptInsert"
+                    >Remarks is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -1075,39 +1147,6 @@ export default {
     ModelListSelect,
   },
 
-  watch: {
-    // Liquidation total amount
-    liquidation(newValue) {
-      let x = 0;
-      for (const key in newValue) {
-        x += parseInt(newValue[key].amount);
-      }
-      this.totalAmt = x;
-    },
-
-    // Request Details
-    projectItem(newValue) {
-      this.getClient(newValue.code);
-    },
-
-    counter() {
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
-    },
-
-    //Navigate
-    $route(newRoute) {
-      // this.showRfpMain(this.$route.params.id);
-      // this.showRfpDetail(this.$route.params.id);
-      // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
-
-      this.getRfpApproval(this.$route.params.id, this.form);
-
-      this.counter = 0;
-      this.withdrawRemarks = "";
-      console.log(newRoute);
-    },
-  },
   computed: {
     classA() {
       return { active: this.counter >= 0 };
@@ -1174,13 +1213,67 @@ export default {
       }
     },
 
+    // modal liquidation validation
+    missingModalDate() {
+      if (this.modalDate === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalProjectName() {
+      if (this.itemclientName.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalExpenseType() {
+      if (this.itemmodalExpenseType.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalCurrencyType() {
+      if (this.itemmodalCurrency.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalAmount() {
+      if (this.modalamount.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalRemarks() {
+      if (this.modalremarks.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalRecipient() {
+      if (this.itemrecipient.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     // Sum of all amount spend in liquidation
     totalAmount() {
       if (this.liquidation.length > 0) {
         const total = this.liquidation
-          .map((liquidation) => parseInt(liquidation.Amount))
+          .map((liquidation) =>
+            parseFloat(liquidation.Amount.replace(/,/g, ""))
+          )
           .reduce((acc, liquidation) => liquidation + acc);
-        return total;
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
       }
@@ -1189,6 +1282,10 @@ export default {
   data() {
     return {
       counter: 0,
+      setIndex: "",
+      attemptInsert: false,
+      attemptClarify: false,
+
       // Request Details
       referenceNumber: "",
       requestDate: "",
@@ -1212,19 +1309,26 @@ export default {
       remarks: "",
       title: "",
 
+      // The Alert
+      isAlert: false,
+      header: "", // Syccess or Failed
+      message: "", // added successfully
+      type: "", // true or false
+
       isLoading: false,
       isLoadingModal: false,
-      form: "Request for Payment",
+      processId: this.$route.params.id,
+      form: this.$route.params.frmName,
 
-      // // Logged User Data // initiator
-      // loggedUserId: 136,
-      // loggedUserFirstName: 'Rosevir',
-      // loggedUserLastName: 'Ceballos',
-      // loggedUserFullName: 'Rosevir Ceballos Jr.',
-      // loggedUserDepartment: 'Information Technology',
-      // loggedUserPosition: 'Senior Developer',
-      // companyId: 1,
-      // companyName: 'Cylix Technologies Inc.',
+      // Logged User Data // initiator
+      loggedUserId: 136,
+      loggedUserFirstName: "Rosevir",
+      loggedUserLastName: "Ceballos",
+      loggedUserFullName: "Rosevir Ceballos Jr.",
+      loggedUserDepartment: "Information Technology",
+      loggedUserPosition: "Senior Developer",
+      companyId: 1,
+      companyName: "Cylix Technologies Inc.",
 
       // // approver
       // loggedUserId: 11,
@@ -1236,15 +1340,15 @@ export default {
       // companyId: 1,
       // companyName: "Cylix Technologies Inc.",
 
-      // approver 2
-      loggedUserId: 12,
-      loggedUserFirstName: "Carrie",
-      loggedUserLastName: "Chua Lee",
-      loggedUserFullName: "Carrie Chua Lee",
-      loggedUserDepartment: "Accounting and Finance",
-      loggedUserPosition: "Accounting and Finance Head",
-      companyId: 1,
-      companyName: "Cylix Technologies Inc.",
+      // // approver 2
+      // loggedUserId: 12,
+      // loggedUserFirstName: "Carrie",
+      // loggedUserLastName: "Chua Lee",
+      // loggedUserFullName: "Carrie Chua Lee",
+      // loggedUserDepartment: "Accounting and Finance",
+      // loggedUserPosition: "Accounting and Finance Head",
+      // companyId: 1,
+      // companyName: "Cylix Technologies Inc.",
 
       // Check if its for liquidation
       isInitiator: false,
@@ -1261,19 +1365,15 @@ export default {
 
       liquidation: [],
       editliquidation: [],
-
-      modalDate: "",
+      modalDate: null,
       modalclient: [],
       itemclientName: {},
-
       modalCurrency: [],
       itemmodalCurrency: {},
-
       modalExpenseType: [],
       itemmodalExpenseType: {},
-
       modalamount: "",
-
+      modalRealamount: "",
       modalremarks: "",
 
       isButton: true,
@@ -1291,26 +1391,108 @@ export default {
   },
 
   created() {
-    // console.log(this.$route.params.id);
-    // this.showRfpMain(this.$route.params.id);
-    // this.showRfpDetail(this.$route.params.id);
-    // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
-    // this.showActualSign(this.$route.params.id, "Request for Payment");
-
-    this.getRfpApproval(
-      this.$route.params.id,
-      this.form,
+    this.getActualSign(this.processId, this.form, this.companyId);
+    this.getRfpMain(this.processId);
+    this.getRfpDetails(this.processId);
+    this.getAttachments(this.processId, this.form);
+    this.getRecipient(
+      this.processId,
+      this.loggedUserId,
       this.companyId,
-      this.loggedUserId
+      this.form
     );
-
-    // use for liquidation
-    this.getBusinesses();
+    this.getInprogressId(this.processId, this.companyId, this.form);
+    this.getBusinesses(this.companyId);
     this.getcurrencyName();
     this.getexpenseType();
   },
 
+  watch: {
+    // Liquidation total amount
+    liquidation(newValue) {
+      let x = 0;
+      for (const key in newValue) {
+        x += parseInt(newValue[key].amount);
+      }
+      this.totalAmt = x;
+    },
+
+    // Request Details
+    projectItem(newValue) {
+      this.getClient(newValue.code);
+    },
+
+    counter() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    },
+
+    //Navigate
+    $route(newRoute) {
+      // this.getRfpApproval(this.$route.params.id, this.form);
+
+      this.counter = 0;
+      this.withdrawRemarks = "";
+      console.log(newRoute);
+
+      this.getActualSign(this.processId, this.form, this.companyId);
+      this.getRfpMain(this.processId);
+      this.getRfpDetails(this.processId);
+      this.getAttachments(this.processId, this.form);
+      this.getRecipient(
+        this.processId,
+        this.loggedUserId,
+        this.companyId,
+        this.form
+      );
+      this.getInprogressId(this.processId, this.companyId, this.form);
+      this.getBusinesses(this.companyId);
+      this.getcurrencyName();
+      this.getexpenseType();
+    },
+  },
+
   methods: {
+    test(){
+      console.log(this.liquidation)
+    },
+
+    closeDefaultModal() {
+      this.attemptClarify = false;
+      this.remarks = "";
+      this.itemrecipient = {};
+      this.resetAlert();
+    },
+    next() {
+      if (this.isInitiator) {
+        if (this.counter <= 1) {
+          this.counter++;
+        } else if (this.counter === 2) {
+          if (this.liquidation.length > 0) {
+            this.counter++;
+          } else {
+            this.openToast(
+              "top-right",
+              "warning",
+              "Please provide your liquidation!"
+            );
+          }
+        } else if (this.counter === 3) {
+          if (this.selectedFile.length || this.selectedFileLiquidation.length) {
+            this.counter++;
+          } else {
+            this.openToast(
+              "top-right",
+              "warning",
+              "Please provide an attachments!"
+            );
+          }
+        }
+      } else {
+        this.counter++;
+      }
+    },
+
     setTitle(title) {
       this.title = title;
     },
@@ -1375,7 +1557,7 @@ export default {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Accept": "application/json",
+              Accept: "application/json",
             },
             body: JSON.stringify({
               remarks: this.remarks,
@@ -1410,36 +1592,46 @@ export default {
       }
 
       if (type === "Clarify") {
-        const fd = new FormData();
+        this.attemptClarify = true;
+        this.resetAlert();
+        const validated = this.validateModalDefault();
+        if (validated) {
+          // start
+          const fd = new FormData();
 
-        fd.append("form", this.form);
-        fd.append("processId", this.$route.params.id);
-        fd.append("loggedUserId", this.loggedUserId);
-        fd.append("companyId", this.companyId);
-        fd.append("recipientId", this.itemrecipient.code);
-        fd.append("remarks", this.remarks);
-        fd.append("inprogressId", this.inprogressId);
-        fd.append("loggedUserFullname", this.loggedUserFullName);
+          fd.append("form", this.form);
+          fd.append("processId", this.$route.params.id);
+          fd.append("loggedUserId", this.loggedUserId);
+          fd.append("companyId", this.companyId);
+          fd.append("recipientId", this.itemrecipient.code);
+          fd.append("remarks", this.remarks);
+          fd.append("inprogressId", this.inprogressId);
+          fd.append("loggedUserFullname", this.loggedUserFullName);
 
-        axios
-          .post("http://127.0.0.1:8000/api/send-clarity", fd)
-          .then((res) => {
-            // handle success
-            document.getElementById("modalCloseButton").click();
-            // console.log(res);
-            this.openToast("top-right", "success", res.data.message);
-            this.$router.replace("/approvals");
-          })
-          .catch((error) => {
-            // handle error
-            console.log(error);
-            document.getElementById("modalCloseButton").click();
-            this.openToast("top-right", "error", error);
-          })
-          .then(() => {
-            // always executed
-            this.isLoadingModal = false;
-          });
+          axios
+            .post("http://127.0.0.1:8000/api/send-clarity", fd)
+            .then((res) => {
+              // handle success
+              document.getElementById("modalCloseButton").click();
+              this.openToast("top-right", "success", res.data.message);
+              this.$router.replace("/approvals");
+            })
+            .catch((error) => {
+              // handle error
+              console.log(error);
+              document.getElementById("modalCloseButton").click();
+              this.openToast("top-right", "error", error);
+            })
+            .then(() => {
+              // always executed
+              this.isLoadingModal = false;
+            });
+
+          // end
+        } else {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", "Please select recipent!", "false");
+        }
       }
 
       // liqudidation
@@ -1489,223 +1681,309 @@ export default {
     close() {
       this.$router.replace("/approvals");
     },
-    preview(mimeType, imageBytes) {
-      var newTab = window.open();
-      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+
+    validateModalDefault() {
+      if (!this.missingModalRecipient === true) {
+        return true;
+      } else {
+        return false;
+      }
     },
 
-    getRfpApproval(id, form, companyId, loggedUserId) {
+    // getRfpApproval(id, form, companyId, loggedUserId) {
+    //   this.isLoading = true;
+    //   let showRfpMain = `http://127.0.0.1:8000/api/rfp-main/${id}`;
+    //   let showRfpDetail = `http://127.0.0.1:8000/api/rfp-main-detail/${id}`;
+    //   let showRfpAttachments = `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`;
+    //   let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`;
+    //   let showLiquidation = `http://127.0.0.1:8000/api/rfp-main-liquidation/${id}`;
+    //   let showRecipient = `http://127.0.0.1:8000/api/getRecipient/${id}/${loggedUserId}/${companyId}/${form}`;
+    //   let showInprogressId = `http://127.0.0.1:8000/api/get-Inprogress/${id}/${companyId}/${form}`;
+
+    //   const requestOne = axios.get(showRfpMain);
+    //   const requestTwo = axios.get(showRfpDetail);
+    //   const requestThree = axios.get(showRfpAttachments);
+    //   const requestFour = axios.get(showActualSign);
+    //   const requestFive = axios.get(showLiquidation);
+    //   const requestSix = axios.get(showRecipient);
+    //   const requestSeven = axios.get(showInprogressId);
+
+    //   axios
+    //     .all([
+    //       requestOne,
+    //       requestTwo,
+    //       requestThree.catch(() => null),
+    //       requestFour,
+    //       requestFive.catch(() => null),
+    //       requestSix,
+    //       requestSeven.catch(() => null),
+    //     ])
+
+    //     .then(
+    //       axios.spread((...responses) => {
+    //         const responseOne = responses[0];
+    //         const responseTwo = responses[1];
+    //         const responesThree = responses[2];
+    //         const responesFour = responses[3];
+    //         const responesFive = responses[4];
+    //         const responesSix = responses[5];
+    //         const responesSeven = responses[6];
+
+    //         // showRfpMain - responseOne
+    //         this.referenceNumber = responseOne.data.data.REQREF;
+    //         this.requestDate = responseOne.data.data.DATE;
+    //         this.dateNeeded = responseOne.data.data.Deadline;
+    //         this.reportingManager = responseOne.data.data.REPORTING_MANAGER;
+    //         // this.amount = responseOne.data.data.AMOUNT;
+    //         this.amount = parseFloat(
+    //           responseOne.data.data.AMOUNT
+    //         ).toLocaleString(undefined, { minimumFractionDigits: 2 });
+
+    //         this.uid = responseOne.data.data.UID;
+
+    //         if (responseOne.data.data.UID === this.loggedUserId) {
+    //           this.isInitiator = true;
+    //           this.counter = 2;
+    //         } else {
+    //           this.isInitiator = false;
+    //         }
+
+    //         // showRfpDetail - responseTwo
+    //         this.projectName = responseTwo.data.data.PROJECT;
+    //         this.clientName = responseTwo.data.data.CLIENTNAME;
+    //         this.purpose = responseTwo.data.data.PURPOSED;
+    //         this.payeeName = responseTwo.data.data.PAYEE;
+    //         this.currency = responseTwo.data.data.CURRENCY;
+    //         this.modeOfPayment = responseTwo.data.data.MOP;
+
+    //         // showRfpAttachments - responesThree
+    //         this.selectedFile = responesThree.data.data;
+    //         // console.log(this.selectedFile);
+
+    //         //showActualSign - responesFour
+    //         if (responesFour.data[2].STATUS === "Completed") {
+    //           console.log("liquidation is true");
+    //           // console.log(responesFour.data)
+    //           this.isLiquidation = true;
+    //         } else {
+    //           // alert('false')
+    //           console.log("liquidation is false");
+    //           this.isLiquidation = false;
+    //         }
+    //         // showLiquidation - responesFive
+    //         // console.log(responesFive.data.length);
+    //         if (responesFive) {
+    //           this.liquidation = responesFive.data;
+    //         }
+
+    //         // showRecipient - responseSix
+    //         const recipient = [];
+    //         for (const key in responesSix.data) {
+    //           const request = {
+    //             code: responesSix.data[key].uid,
+    //             name: responesSix.data[key].name,
+    //           };
+
+    //           recipient.push(request);
+    //         }
+
+    //         this.recipent = recipient;
+
+    //         // showInprogressId - responesSeven
+    //         this.inprogressId = responesSeven.data[0].inpId;
+    //       })
+    //     )
+    //     .catch((errors) => {
+    //       // react on errors.
+    //       console.log(errors);
+    //     })
+    //     .then(() => {
+    //       this.isLoading = false;
+    //     });
+    // },
+
+    async getRfpMain(id) {
       this.isLoading = true;
-      let showRfpMain = `http://127.0.0.1:8000/api/rfp-main/${id}`;
-      let showRfpDetail = `http://127.0.0.1:8000/api/rfp-main-detail/${id}`;
-      let showRfpAttachments = `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`;
-      let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/1`;
-      let showLiquidation = `http://127.0.0.1:8000/api/rfp-main-liquidation/${id}`;
-      let showRecipient = `http://127.0.0.1:8000/api/getRecipient/${id}/${loggedUserId}/${companyId}/${form}`;
-      let showInprogressId = `http://127.0.0.1:8000/api/get-Inprogress/${id}/${companyId}/${form}`;
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/rfp-main/${id}`
+        );
 
-      const requestOne = axios.get(showRfpMain);
-      const requestTwo = axios.get(showRfpDetail);
-      const requestThree = axios.get(showRfpAttachments);
-      const requestFour = axios.get(showActualSign);
-      const requestFive = axios.get(showLiquidation);
-      const requestSix = axios.get(showRecipient);
-      const requestSeven = axios.get(showInprogressId);
-
-      axios
-        .all([
-          requestOne,
-          requestTwo,
-          requestThree.catch(() => null),
-          requestFour,
-          requestFive.catch(() => null),
-          requestSix,
-          requestSeven.catch(() => null),
-        ])
-        
-        .then(
-          axios.spread((...responses) => {
-            const responseOne = responses[0];
-            const responseTwo = responses[1];
-            const responesThree = responses[2];
-            const responesFour = responses[3];
-            const responesFive = responses[4];
-            const responesSix = responses[5];
-            const responesSeven = responses[6];
-
-            // showRfpMain - responseOne
-            this.referenceNumber = responseOne.data.data.REQREF;
-            this.requestDate = responseOne.data.data.DATE;
-            this.dateNeeded = responseOne.data.data.Deadline;
-            this.reportingManager = responseOne.data.data.REPORTING_MANAGER;
-            this.amount = responseOne.data.data.AMOUNT;
-            this.uid = responseOne.data.data.UID;
-
-            if (responseOne.data.data.UID === this.loggedUserId) {
-              this.isInitiator = true;
-              this.counter = 2;
-            } else {
-              this.isInitiator = false;
-            }
-
-            // showRfpDetail - responseTwo
-            this.projectName = responseTwo.data.data.PROJECT;
-            this.clientName = responseTwo.data.data.CLIENTNAME;
-            this.purpose = responseTwo.data.data.PURPOSED;
-            this.payeeName = responseTwo.data.data.PAYEE;
-            this.currency = responseTwo.data.data.CURRENCY;
-            this.modeOfPayment = responseTwo.data.data.MOP;
-
-            // showRfpAttachments - responesThree
-            this.selectedFile = responesThree.data.data;
-            // console.log(this.selectedFile);
-
-            //showActualSign - responesFour
-            if (responesFour.data[2].STATUS === "Completed") {
-              console.log("liquidation is true");
-              // console.log(responesFour.data)
-              this.isLiquidation = true;
-            } else {
-              // alert('false')
-              console.log("liquidation is false");
-              this.isLiquidation = false;
-            }
-            // showLiquidation - responesFive
-            // console.log(responesFive.data.length);
-            if (responesFive) {
-              this.liquidation = responesFive.data;
-            }
-
-            // console.log(responesFive.data)
-
-            // showRecipient - responseSix
-            const recipient = [];
-            for (const key in responesSix.data) {
-              const request = {
-                code: responesSix.data[key].uid,
-                name: responesSix.data[key].name,
-              };
-
-              recipient.push(request);
-            }
-
-            this.recipent = recipient;
-            console.log(this.recipent);
-
-            // showInprogressId - responesSeven
-            this.inprogressId = responesSeven.data[0].inpId;
-            console.log(this.inprogressId)
-          })
-        )
-        .catch((errors) => {
-          // react on errors.
-          console.log(errors);
-        })
-        .then(() => {
+        if (resp.status === 200) {
           this.isLoading = false;
-        });
+          this.reportingManager = resp.data.data.REPORTING_MANAGER;
+
+          this.referenceNumber = resp.data.data.REQREF;
+          this.requestDate = resp.data.data.DATE;
+          this.dateNeeded = resp.data.data.Deadline;
+          this.amount = parseFloat(resp.data.data.AMOUNT).toLocaleString(
+            undefined,
+            { minimumFractionDigits: 2 }
+          );
+          this.uid = resp.data.data.UID;
+
+          if (resp.data.data.UID === this.loggedUserId) {
+            this.isInitiator = true;
+            this.counter = 2;
+          }
+        }
+      } catch (err) {
+        this.isLoading = false;
+        // Handle Error Here
+        console.error(err);
+      }
     },
 
-    // showRfpMain(id) {
-    //   axios
-    //     .get(`http://127.0.0.1:8000/api/rfp-main/${id}`)
-    //     .then((response) => {
-    //       // handle success
-    //       this.referenceNumber = response.data.data.REQREF;
-    //       this.requestDate = response.data.data.DATE;
-    //       this.dateNeeded = response.data.data.Deadline;
-    //       this.reportingManager = response.data.data.REPORTING_MANAGER;
-    //       this.amount = response.data.data.AMOUNT;
-    //       this.uid = response.data.data.UID;
+    async getRfpDetails(id) {
+      this.isLoading = true;
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/rfp-main-detail/${id}`
+        );
 
-    //       if (response.data.data.UID === this.loggedUserId) {
-    //         this.isInitiator = true;
-    //         this.counter = 2;
-    //       } else {
-    //         this.isInitiator = false;
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       // handle error
-    //       console.log(error);
-    //     })
-    //     .then(() => {
-    //       // always executed
-    //       // console.log(response)
-    //     });
-    // },
-    // showRfpDetail(id) {
-    //   axios
-    //     .get(`http://127.0.0.1:8000/api/rfp-main-detail/${id}`)
-    //     .then((response) => {
-    //       // handle success
-    //       this.projectName = response.data.data.PROJECT;
-    //       this.clientName = response.data.data.CLIENTNAME;
-    //       this.purpose = response.data.data.PURPOSED;
-    //       this.payeeName = response.data.data.PAYEE;
-    //       this.currency = response.data.data.CURRENCY;
-    //       this.modeOfPayment = response.data.data.MOP;
-    //     })
-    //     .catch((error) => {
-    //       // handle error
-    //       console.log(error);
-    //     })
-    //     .then(() => {
-    //       // always executed
-    //     });
-    // },
+        if (resp.status === 200) {
+          this.isLoading = false;
+          this.clientName = resp.data.data.CLIENTNAME;
+          this.purpose = resp.data.data.PURPOSED;
+          this.payeeName = resp.data.data.PAYEE;
 
-    // showRfpAttachments(id, form) {
-    //   axios
-    //     .get(`http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`)
-    //     .then((response) => {
-    //       // handle success
-    //       this.selectedFile = response.data.data;
+          // const currencyItem = {
+          //   code: resp.data.data.CURRENCY,
+          //   name: resp.data.data.CURRENCY,
+          // };
+          // this.currencyItem = currencyItem;
 
-    //       console.log(this.selectedFile.length);
-    //     })
-    //     .catch((error) => {
-    //       // handle error
-    //       console.log(error);
-    //     })
-    //     .then(() => {
-    //       // always executed
-    //     });
-    // },
+          // const modeOfPaymentItem = {
+          //   code: resp.data.data.MOP,
+          //   name: resp.data.data.MOP,
+          // };
+          // this.modeOfPaymentItem = modeOfPaymentItem;
 
-    // showActualSign(id, form) {
-    //   axios
-    //     .get(`http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/1`)
-    //     .then((response) => {
-    //       // handle success
+          // const projectItem = {
+          //   code: resp.data.data.PROJECTID,
+          //   name: resp.data.data.PROJECT,
+          // };
+          // this.projectItem = projectItem;
 
-    //       if (
-    //         response.data[3].STATUS === "In Progress" ||
-    //         response.data[4].STATUS === "In Progress"
-    //       ) {
-    //         console.log("liquidation is true");
-    //         this.isLiquidation = true;
-    //       } else {
-    //         // alert('false')
-    //         console.log("liquidation is false");
+          this.currency = resp.data.data.CURRENCY;
+          this.modeOfPayment = resp.data.data.MOP;
+          this.projectName = resp.data.data.PROJECT;
+        }
+      } catch (err) {
+        this.isLoading = false;
+        // Handle Error Here
+        console.error(err);
+      }
+    },
 
-    //         this.isLiquidation = false;
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       // handle error
-    //       console.log(error);
-    //     })
-    //     .then(() => {
-    //       // always executed
-    //     });
-    // },
+    async getAttachments(id, form) {
+      this.isLoading = true;
 
-    // for liquidation dropdown /////////////////////////////
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`
+        );
+        // console.log(resp.data);
 
-    async getBusinesses() {
+        // showReportingManager - responesSix
+        this.selectedFile = resp.data.data;
+      } catch (err) {
+        this.isLoading = false;
+
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    async getActualSign(id, form, companyId) {
+      this.isLoading = true;
+      let apiRes = null;
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`
+        );
+
+        console.log(resp.status);
+        if (resp.status === 200) {
+          this.isLoading = false;
+
+          const reportingManagerItem = {
+            code: resp.data[2].RM_ID,
+            name: resp.data[2].REPORTING_MANAGER,
+          };
+          this.reportingManagerItem = reportingManagerItem;
+
+          if (resp.data[2].STATUS === "Completed") {
+            console.log("liquidation is true");
+            this.isLiquidation = true;
+            this.getLiquidation(id);
+          } else {
+            // alert('false')
+            console.log("liquidation is false");
+            this.isLiquidation = false;
+          }
+        }
+      } catch (err) {
+        this.isLoading = false;
+        apiRes = err.response;
+        // Handle Error Here
+        console.error(err);
+      } finally {
+        console.log(apiRes); // Could be success or error
+      }
+    },
+
+    async getLiquidation(id) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/rfp-main-liquidation/${id}`
+        );
+        // console.log(resp.data);
+        this.liquidation = resp.data;
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    async getRecipient(id, loggedUserId, companyId, form) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/getRecipient/${id}/${loggedUserId}/${companyId}/${form}`
+        );
+        // console.log(resp.data);
+        // this.liquidation = resp.data;
+        const recipient = [];
+        for (const key in resp.data) {
+          const request = {
+            code: resp.data[key].uid,
+            name: resp.data[key].name,
+          };
+          recipient.push(request);
+        }
+        this.recipent = recipient;
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    async getInprogressId(id, companyId, form) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-Inprogress/${id}/${companyId}/${form}`
+        );
+        // this.liquidation = resp.data;
+        this.inprogressId = resp.data[0].inpId;
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+    async getBusinesses(companyId) {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/general-businesses/1",
+        `http://127.0.0.1:8000/api/general-businesses/${companyId}`,
         {
           method: "GET",
           headers: {
@@ -1802,32 +2080,41 @@ export default {
     },
 
     update() {
-      const addData = {
-        id: this.editliquidation.id,
-        trans_date: this.modalDate,
-        client_id: this.itemclientName.code,
-        client_name: this.itemclientName.name,
-        expense_type: this.itemmodalExpenseType.name,
-        currency: this.itemmodalCurrency.name,
-        Amount: this.modalamount,
-        description: this.modalremarks,
-      };
-      this.liquidation.push(addData);
-
-      this.editliquidation = "";
-      // this.liquidation.push(this.editliquidation)
-      this.liquidation.sort(function (a, b) {
-        return a.id - b.id;
-      });
-
-      console.log(addData.id);
+      this.isLoadingModal = true;
+      this.attemptInsert = true;
+      this.resetAlert();
+      const validated = this.validateEmptyFields();
+      if (validated) {
+        const addData = {
+          id: this.editliquidation.id,
+          trans_date: this.modalDate,
+          client_id: this.itemclientName.code,
+          client_name: this.itemclientName.name,
+          expense_type: this.itemmodalExpenseType.name,
+          currency: this.itemmodalCurrency.name,
+          Amount: this.modalamount,
+          description: this.modalremarks,
+        };
+        this.liquidation.push(addData);
+        this.liquidation.splice(this.setIndex, 1);
+        this.editliquidation = "";
+        // this.liquidation.push(this.editliquidation)
+        this.liquidation.sort(function (a, b) {
+          return a.id - b.id;
+        });
+        this.addAlert("Success", "Added Successfully!", "true");
+        this.resetModal();
+      } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
     },
 
     edit(index) {
       this.isButton = false;
       const selectedLiquidation = this.liquidation[index];
       this.editliquidation = selectedLiquidation;
-      this.liquidation.splice(index, 1);
+      this.setIndex = index;
 
       console.log(selectedLiquidation);
 
@@ -1856,23 +2143,94 @@ export default {
       this.liquidation.splice(index, 1);
     },
 
+    resetModal() {
+      this.attemptInsert = false;
+      this.modalDate = null;
+      this.itemclientName = {};
+      this.itemmodalCurrency = {};
+      this.itemmodalExpenseType = {};
+      this.modalamount = "";
+      this.modalremarks = "";
+      this.modalRealamount = "";
+    },
+
     insert() {
-      const addData = {
-        id: this.i++,
-        trans_date: this.modalDate,
-        client_id: this.itemclientName.code,
-        client_name: this.itemclientName.name,
-        expense_type: this.itemmodalExpenseType.name,
-        description: this.modalremarks,
-        currency: this.itemmodalCurrency.name,
-        Amount: this.modalamount,
-      };
-      this.liquidation.push(addData);
+      this.isLoadingModal = true;
+      this.attemptInsert = true;
+      this.resetAlert();
+      const validated = this.validateEmptyFields();
+
+      if (validated) {
+        this.isLoadingModal = false;
+
+        const addData = {
+          id: this.i++,
+          trans_date: this.modalDate,
+          client_id: this.itemclientName.code,
+          client_name: this.itemclientName.name,
+          expense_type: this.itemmodalExpenseType.name,
+          description: this.modalremarks,
+          currency: this.itemmodalCurrency.name,
+          Amount: this.modalamount,
+        };
+        this.liquidation.push(addData);
+        this.addAlert("Success", "Added Successfully!", "true");
+        this.resetModal();
+      } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
+    },
+
+    closeModal() {
+      this.resetModal();
+      this.resetAlert();
+    },
+
+    validateEmptyFields() {
+      if (
+        !this.missingModalDate &&
+        !this.missingModalProjectName &&
+        !this.missingModalExpenseType &&
+        !this.missingModalCurrencyType &&
+        !this.missingModalAmount &&
+        !this.missingModalRemarks
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    resetAlert() {
+      this.isAlert = false;
+      this.header = "";
+      this.message = "";
+      this.type = "";
+    },
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
     },
 
     // The Attachments
+    preview(mimeType, imageBytes) {
+      var newTab = window.open();
+      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+    },
+
     onFileSelected(event) {
       let selectedFiles = event.target.files;
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.selectedFileLiquidation.push(selectedFiles[i]);
+      }
+      this.setFilePreviewLiquidation();
+    },
+
+    onInputChange(event) {
+      let selectedFiles = event.dataTransfer.files;
       for (let i = 0; i < selectedFiles.length; i++) {
         this.selectedFileLiquidation.push(selectedFiles[i]);
       }
@@ -1912,6 +2270,110 @@ export default {
       console.log(this.removedAttachedFilesId);
       console.log(this.selectedFile);
       console.log(this.filespreviewLiquidation);
+    },
+
+    dragover(event) {
+      event.preventDefault();
+      // Add some visual fluff to show the user can drop its files
+      if (!event.currentTarget.classList.contains("bg-white")) {
+        event.currentTarget.classList.remove("bg-light");
+        event.currentTarget.classList.add("bg-white");
+      }
+    },
+    dragleave(event) {
+      // Clean up
+      event.currentTarget.classList.add("bg-light");
+      event.currentTarget.classList.remove("bg-white");
+    },
+    drop(event) {
+      event.preventDefault();
+      this.onInputChange(event); // Trigger the onChange event manually
+
+      // Clean up
+      event.currentTarget.classList.add("bg-light");
+      event.currentTarget.classList.remove("bg-white");
+    },
+
+    // End Attachments
+
+    formatNumber(n) {
+      // format number 1000000 to 1,234,567
+      return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+
+    formatCurrency(input, blur) {
+      // appends $ to value, validates decimal side
+      // and puts cursor back in right position.
+
+      // get input value
+      let input_val = this.modalamount;
+
+      // don't validate empty input
+      if (input_val === "") {
+        return;
+      }
+
+      // original length
+      let original_len = input_val.length;
+
+      // initial caret position
+      let caret_pos = input.target.selectionStart;
+
+      // check for decimal
+      if (input_val.indexOf(".") >= 0) {
+        // get position of first decimal
+        // this prevents multiple decimals from
+        // being entered
+        let decimal_pos = input_val.indexOf(".");
+
+        // split number by decimal point
+        let left_side = input_val.substring(0, decimal_pos);
+        let right_side = input_val.substring(decimal_pos);
+
+        // add commas to left side of number
+        left_side = this.formatNumber(left_side);
+
+        // validate right side
+        right_side = this.formatNumber(right_side);
+
+        // On blur make sure 2 numbers after decimal
+        if (blur === "blur") {
+          right_side += "00";
+        }
+
+        // Limit decimal to only 2 digits
+        right_side = right_side.substring(0, 2);
+
+        // join number by .
+        input_val = left_side + "." + right_side;
+      } else {
+        // no decimal entered
+        // add commas to number
+        // remove all non-digits
+        input_val = this.formatNumber(input_val);
+        // input_val = input_val;
+
+        // final formatting
+        if (blur === "blur") {
+          input_val += ".00";
+        }
+      }
+
+      // send updated string to input
+      this.modalamount = input_val;
+      input.target.value = input_val;
+
+      let realAmount = input_val;
+      if (realAmount.indexOf(",") !== -1) {
+        realAmount = realAmount.replace(/,/g, "");
+      }
+      this.modalRealamount = realAmount;
+      console.log(this.modalRealamount);
+
+      // put caret back in the right position
+      let updated_len = input_val.length;
+      caret_pos = updated_len - original_len + caret_pos;
+      input.target.setSelectionRange(caret_pos, caret_pos);
     },
   },
 };

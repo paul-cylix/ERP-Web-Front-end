@@ -41,7 +41,7 @@ export default {
             title: "Request Type",
           },
           {
-            key: "dueDate",
+            key: "date",
             title: "Request Date",
           },
           {

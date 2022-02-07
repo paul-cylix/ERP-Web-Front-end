@@ -655,14 +655,14 @@
               >
                 <thead>
                   <tr>
-                    <th style="width: 5%">#</th>
+    
                     <th style="width: 80%">Filename</th>
-                    <th style="width: 15%">Actions</th>
+                    <th style="width: 20%">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(file, index) in selectedFile" :key="file.id">
-                    <td>{{ index + 1 }}</td>
+                  <tr v-for="(file) in selectedFile" :key="file.id">
+
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
  

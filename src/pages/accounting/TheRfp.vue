@@ -316,11 +316,7 @@
             >
               <span class="text-secondary">Click here or drop file(s)</span>
               <br />
-              <small
-                class="text-danger p-0 m-0"
-                v-if="missingAttachments && attemptNextTwo"
-                >Attachments is required!</small
-              >
+
               <ul
                 class="mt-4 text-decoration-none ulUpload"
                 v-if="this.selectedFile.length"
@@ -359,7 +355,6 @@
                 </li>
               </ul>
             </label>
-
           </div>
         </div>
         <!-- / The Attachments -->
@@ -440,7 +435,6 @@
               <table
                 class="table table-sm table-bordered table-hover table-striped"
               >
-
                 <tbody>
                   <tr>
                     <td>Payee Name</td>
@@ -486,14 +480,12 @@
               >
                 <thead>
                   <tr>
-                    <th style="width: 5%">#</th>
                     <th style="width: 80%">Filename</th>
-                    <th style="width: 15%">Actions</th>
+                    <th style="width: 20%">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(file, index) in selectedFile" :key="file.name">
-                    <td>{{ index + 1 }}</td>
+                  <tr v-for="(file) in selectedFile" :key="file.name">
                     <td>{{ file.name }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
@@ -672,14 +664,6 @@ export default {
         return false;
       }
     },
-
-    missingAttachments() {
-      if (this.selectedFile.length === 0) {
-        return true;
-      } else {
-        return false;
-      }
-    },
   },
   data() {
     return {
@@ -799,9 +783,7 @@ export default {
         }
         // Attachments
       } else if (counter === 2) {
-        if (!this.missingAttachments) {
-          this.counter++;
-        }
+        this.counter++;
       }
     },
 
@@ -857,7 +839,13 @@ export default {
         })
         .catch(function (error) {
           // handle error
-          console.log(error);
+          console.log(error.data);
+          this.isLoading = false;
+          this.openToast(
+            "top-right",
+            "error",
+            "Please Contact the administrator! and try again later"
+          );
         })
         .then(function () {
           // always executed
@@ -994,7 +982,6 @@ export default {
       }
       this.filePreview();
 
-      console.log(this.selectedFile);
     },
     onInputChange(event) {
       let selectedFiles = event.dataTransfer.files;
@@ -1122,8 +1109,7 @@ export default {
         realAmount = realAmount.replace(/,/g, "");
       }
       this.realAmount = realAmount;
-      console.log(this.realAmount);
-
+  
       // put caret back in the right position
       let updated_len = input_val.length;
       caret_pos = updated_len - original_len + caret_pos;
