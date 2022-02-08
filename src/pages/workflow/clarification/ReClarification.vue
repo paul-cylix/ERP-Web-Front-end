@@ -163,6 +163,11 @@
                   class="form-control py-3 form-control-sm"
                   v-model="reportingManagerItem.name"
                 />
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingReportingManager && attemptNext"
+                  >Reporting Manager is required!</small
+                >
               </div>
             </div>
           </div>
@@ -190,6 +195,11 @@
                   v-model="projectItem.name"
                   id="projectName"
                 />
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="this.missingProjectItem && attemptNext"
+                  >Project Name is required!</small
+                >
               </div>
             </div>
             <div class="col-md-6">
@@ -1523,6 +1533,22 @@ export default {
 
     missingDateNeeded() {
       if (this.dateNeeded === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingReportingManager() {
+      if (this.reportingManagerItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingProjectItem() {
+      if (this.projectItem.code === undefined) {
         return true;
       } else {
         return false;

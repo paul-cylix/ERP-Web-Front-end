@@ -1052,25 +1052,25 @@ export default {
       transpoSetup_EditData: [],
       form: this.$route.params.frmName,
 
-      // Logged User Data // initiator
-      loggedUserId: 136,
-      loggedUserFirstName: 'Rosevir',
-      loggedUserLastName: 'Ceballos',
-      loggedUserFullName: 'Rosevir Ceballos Jr.',
-      loggedUserDepartment: 'Information Technology',
-      loggedUserPosition: 'Senior Developer',
-      companyId: 1,
-      companyName: 'Cylix Technologies Inc.',
-
-      // // approver
-      // loggedUserId: 11,
-      // loggedUserFirstName: "Konrad",
-      // loggedUserLastName: "Chua",
-      // loggedUserFullName: "Konrad Chua",
-      // loggedUserDepartment: "Management",
-      // loggedUserPosition: "Managing Director",
+      // // Logged User Data // initiator
+      // loggedUserId: 136,
+      // loggedUserFirstName: 'Rosevir',
+      // loggedUserLastName: 'Ceballos',
+      // loggedUserFullName: 'Rosevir Ceballos Jr.',
+      // loggedUserDepartment: 'Information Technology',
+      // loggedUserPosition: 'Senior Developer',
       // companyId: 1,
-      // companyName: "Cylix Technologies Inc.",
+      // companyName: 'Cylix Technologies Inc.',
+
+      // approver
+      loggedUserId: 11,
+      loggedUserFirstName: "Konrad",
+      loggedUserLastName: "Chua",
+      loggedUserFullName: "Konrad Chua",
+      loggedUserDepartment: "Management",
+      loggedUserPosition: "Managing Director",
+      companyId: 1,
+      companyName: "Cylix Technologies Inc.",
 
       // // approver 2
       // loggedUserId: 12,

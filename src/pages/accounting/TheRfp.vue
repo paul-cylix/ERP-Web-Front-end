@@ -653,7 +653,7 @@ export default {
     },
 
     missingAmount() {
-      if (this.amount.length === 0) {
+      if (this.amount.length === 0 || parseFloat(this.amount) < 1) {
         return true;
       } else {
         return false;
@@ -738,7 +738,6 @@ export default {
 
       console.log(this.selectedFile.length);
 
-      // console.log(this.missingModeOfPayment);
     },
 
     next() {

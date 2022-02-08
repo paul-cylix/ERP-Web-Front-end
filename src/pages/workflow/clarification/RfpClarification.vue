@@ -174,6 +174,11 @@
                   v-model="reportingManagerItem.name"
                   id="reportingManager"
                 />
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingReportingManager && attemptNext"
+                  >Reporting Manager is required!</small
+                >
               </div>
             </div>
           </div>
@@ -202,6 +207,11 @@
                   v-model="projectItem.name"
                   id="projectName"
                 />
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="this.missingProjectItem && attemptNext"
+                  >Project Name is required!</small
+                >
               </div>
             </div>
 
@@ -302,6 +312,11 @@
                 class="form-control form-control-sm"
                 id="modeOfPayment"
               />
+              <small
+                class="text-danger p-0 m-0"
+                v-if="this.missingModeOfPayment && attemptNextOne"
+                >Mode of Payment is required!</small
+              >
             </div>
 
             <div class="row">
@@ -328,6 +343,11 @@
                     class="form-control form-control-sm"
                     id="currency"
                   />
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="this.missingCurrency && attemptNextOne"
+                    >Currency is required!</small
+                  >
                 </div>
               </div>
               <div class="col-md-8">
@@ -486,83 +506,83 @@
               >
             </label>
 
-              <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                <li
-                  class="text-sm mt-2"
-                  v-for="(file, index) in selectedFile"
-                  :key="file.id"
-                >
-                  <div class="row d-flex justify-content-center">
-                    <div class="col-md-4 d-flex">
-                      <div class="col text-left">
-                        <span>{{ file.filename }}</span>
-                      </div>
+            <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
+              <li
+                class="text-sm mt-2"
+                v-for="(file, index) in selectedFile"
+                :key="file.id"
+              >
+                <div class="row d-flex justify-content-center">
+                  <div class="col-md-4 d-flex">
+                    <div class="col text-left">
+                      <span>{{ file.filename }}</span>
+                    </div>
 
-                      <div v-if="isInitiator">
-                        <button
-                          class="btn btn-danger btn-sm"
-                          type="button"
-                          @click="
-                            removeAttachedFile(
-                              index,
-                              file.id,
-                              file.filename,
-                              file.filepath
-                            )
-                          "
-                          title="Remove file"
-                        >
-                          Remove
-                        </button>
-                      </div>
+                    <div v-if="isInitiator">
+                      <button
+                        class="btn btn-danger btn-sm"
+                        type="button"
+                        @click="
+                          removeAttachedFile(
+                            index,
+                            file.id,
+                            file.filename,
+                            file.filepath
+                          )
+                        "
+                        title="Remove file"
+                      >
+                        Remove
+                      </button>
+                    </div>
 
-                      <div class="col-2">
-                        <button
-                          class="btn btn-secondary btn-sm"
-                          @click="preview(file.mimeType, file.imageBytes)"
-                        >
-                          Preview
-                        </button>
-                      </div>
+                    <div class="col-2">
+                      <button
+                        class="btn btn-secondary btn-sm"
+                        @click="preview(file.mimeType, file.imageBytes)"
+                      >
+                        Preview
+                      </button>
                     </div>
                   </div>
-                </li>
+                </div>
+              </li>
 
-                <!-- Newly added file -->
-                <li
-                  class="text-sm mt-2"
-                  v-for="file in selectedFileNew"
-                  :key="file.index"
-                >
-                  <div class="row d-flex justify-content-center">
-                    <div class="col-md-4 d-flex">
-                      <div class="col text-left">
-                        <span>{{ file.name }}</span>
-                      </div>
-                      <div>
-                        <button
-                          class="btn btn-danger btn-sm"
-                          type="button"
-                          @click="removeFileNew(selectedFileNew.indexOf(file))"
-                          title="Remove file"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      <div class="col-2">
-                        <button
-                          class="btn btn-secondary btn-sm"
-                          @click="filePreviewNew(selectedFileNew.indexOf(file))"
-                        >
-                          Preview
-                        </button>
-                      </div>
+              <!-- Newly added file -->
+              <li
+                class="text-sm mt-2"
+                v-for="file in selectedFileNew"
+                :key="file.index"
+              >
+                <div class="row d-flex justify-content-center">
+                  <div class="col-md-4 d-flex">
+                    <div class="col text-left">
+                      <span>{{ file.name }}</span>
+                    </div>
+                    <div>
+                      <button
+                        class="btn btn-danger btn-sm"
+                        type="button"
+                        @click="removeFileNew(selectedFileNew.indexOf(file))"
+                        title="Remove file"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div class="col-2">
+                      <button
+                        class="btn btn-secondary btn-sm"
+                        @click="filePreviewNew(selectedFileNew.indexOf(file))"
+                      >
+                        Preview
+                      </button>
                     </div>
                   </div>
-                </li>
-              </ul>
+                </div>
+              </li>
+            </ul>
 
-              <!-- </aside> -->
+            <!-- </aside> -->
           </div>
         </div>
         <!-- / The Attachments -->
@@ -1199,6 +1219,22 @@ export default {
       }
     },
 
+    missingReportingManager() {
+      if (this.reportingManagerItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingProjectItem() {
+      if (this.projectItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     missingPurpose() {
       if (this.purpose.length === 0) {
         return true;
@@ -1214,6 +1250,23 @@ export default {
         return false;
       }
     },
+
+    missingModeOfPayment() {
+      if (this.modeOfPaymentItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingCurrency() {
+      if (this.currencyItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     missingAmount() {
       if (this.amount.length === 0 || parseFloat(this.amount) < 1) {
         return true;
@@ -1374,25 +1427,25 @@ export default {
       processId: this.$route.params.id,
       form: "Request for Payment",
 
-      // // Logged User Data // initiator
-      // loggedUserId: 136,
-      // loggedUserFirstName: "Rosevir",
-      // loggedUserLastName: "Ceballos",
-      // loggedUserFullName: "Rosevir Ceballos Jr.",
-      // loggedUserDepartment: "Information Technology",
-      // loggedUserPosition: "Senior Developer",
-      // companyId: 1,
-      // companyName: "Cylix Technologies Inc.",
-
-      // approver
-      loggedUserId: 11,
-      loggedUserFirstName: "Konrad",
-      loggedUserLastName: "Chua",
-      loggedUserFullName: "Konrad Chua",
-      loggedUserDepartment: "Management",
-      loggedUserPosition: "Managing Director",
+      // Logged User Data // initiator
+      loggedUserId: 136,
+      loggedUserFirstName: "Rosevir",
+      loggedUserLastName: "Ceballos",
+      loggedUserFullName: "Rosevir Ceballos Jr.",
+      loggedUserDepartment: "Information Technology",
+      loggedUserPosition: "Senior Developer",
       companyId: 1,
       companyName: "Cylix Technologies Inc.",
+
+      // // approver
+      // loggedUserId: 11,
+      // loggedUserFirstName: "Konrad",
+      // loggedUserLastName: "Chua",
+      // loggedUserFullName: "Konrad Chua",
+      // loggedUserDepartment: "Management",
+      // loggedUserPosition: "Managing Director",
+      // companyId: 1,
+      // companyName: "Cylix Technologies Inc.",
 
       // // approver 2
       // loggedUserId: 12,
