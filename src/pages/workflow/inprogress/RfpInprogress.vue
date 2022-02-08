@@ -651,7 +651,12 @@
     <!-- /.card -->
 
     <!-- Modal -->
-    <div class="modal fade" id="modal-default">
+    <div
+      class="modal fade"
+      id="modal-default"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <!-- Overlay Loading Spinner -->

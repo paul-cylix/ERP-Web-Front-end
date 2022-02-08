@@ -146,12 +146,19 @@
                   disabled
                   id="dateNeeded"
                 />
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingDateNeeded && attemptNext"
+                  >Date Needed is required!</small
+                >
               </div>
             </div>
             <div class="col-md-3">
               <div class="form-group">
                 <small
-                  ><label for="reportingManager selextForm" id="selextForm">Reporting Manager</label></small
+                  ><label for="reportingManager selextForm" id="selextForm"
+                    >Reporting Manager</label
+                  ></small
                 >
                 <model-list-select
                   :list="reportingManager"
@@ -171,6 +178,11 @@
                   class="form-control py-3 form-control-sm"
                   id="reportingManager"
                 />
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingReportingManager && attemptNext"
+                  >Reporting Manager is required!</small
+                >
               </div>
             </div>
           </div>
@@ -197,6 +209,11 @@
                   class="form-control py-3 form-control-sm"
                   id="projectName"
                 />
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="this.missingProjectItem && attemptNext"
+                  >Project Name is required!</small
+                >
               </div>
             </div>
             <div class="col-md-6">
@@ -207,7 +224,7 @@
                   disabled
                   class="form-control py-3 form-control-sm"
                   id="clientName"
-                  v-model="clientName"
+                  v-model.trim="clientName"
                 />
               </div>
             </div>
@@ -223,9 +240,14 @@
                   name="purpose"
                   :disabled="isEditable === false"
                   id="purpose"
-                  v-model="purpose"
+                  v-model.trim="purpose"
                   rows="5"
                 ></textarea>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="this.missingPurpose && attemptNext"
+                  >Purpose is required!</small
+                >
               </div>
             </div>
           </div>
@@ -241,10 +263,15 @@
               <input
                 type="text"
                 class="form-control form-control-sm"
-                v-model="payeeName"
+                v-model.trim="payeeName"
                 id="payeeName"
                 :disabled="isEditable === false"
               />
+              <small
+                class="text-danger p-0 m-0"
+                v-if="this.missingPayeeName && attemptNextOne"
+                >Payee Name is required!</small
+              >
             </div>
             <div class="form-group">
               <small><label for="modeOfPayment">Mode of Payment</label></small>
@@ -290,23 +317,30 @@
               <div class="col-md-8">
                 <div class="form-group">
                   <small><label for="amount">Amount</label></small>
-                  <!-- <input
+                  <input
                     type="text"
                     @keyup="formatCurrency($event)"
                     @blur="formatCurrency($event, 'blur')"
                     pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
                     class="form-control form-control-sm py-3"
                     id="amount"
+                    :disabled="isEditable === false"
                     v-model="amount"
-                  /> -->
+                  />
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="this.missingAmount && attemptNextOne"
+                    >Amount is required!</small
+                  >
 
-                  <input
+                  <!-- <input
                     type="text"
                     class="form-control form-control-sm py-3"
                     id="amount"
                     :disabled="isEditable === false"
+
                     v-model="amount"
-                  />
+                  /> -->
                 </div>
               </div>
             </div>
@@ -356,7 +390,14 @@
                 <td>{{ item.CLIENT_NAME }}</td>
                 <td>{{ item.EXPENSE_TYPE }}</td>
                 <td>{{ item.DESCRIPTION }}</td>
-                <td>{{ item.AMOUNT }}</td>
+                <td>
+                  {{
+                    parseFloat(item.AMOUNT).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                    })
+                  }}
+                </td>
+
                 <td v-if="isApproval" class="pl-0 m-0">
                   <aside class="d-flex justify-content-center">
                     <button
@@ -433,7 +474,14 @@
                 <td>{{ item.DESTINATION_TO }}</td>
                 <td>{{ item.MOT }}</td>
                 <td>{{ item.DESCRIPTION }}</td>
-                <td>{{ item.AMT_SPENT }}</td>
+                <td>
+                  {{
+                    parseFloat(item.AMT_SPENT).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                    })
+                  }}
+                </td>
+
                 <td v-if="isApproval" class="pl-0 m-0">
                   <aside class="d-flex justify-content-center">
                     <button
@@ -484,7 +532,7 @@
           id="app"
         >
           <div
-            class="p-5 col-md-12 rounded"
+            class="pt-2 col-md-12 rounded"
             @dragover="dragover"
             @dragleave="dragleave"
             @drop="drop"
@@ -502,16 +550,19 @@
               accept=".pdf,.jpg,.jpeg,.png"
             />
 
-            <label for="assetsFieldHandle" class="block cursor-pointer">
-              <span v-if="isEditable" class="text-secondary"
-                >Click here to add new file(s)</span
+            <label
+              for="assetsFieldHandle"
+              style="width: 100%; cursor: pointer"
+              class="block pt-3 cursor-pointer"
+            >
+              <span class="text-secondary" v-if="isEditable"
+                >Click here or drop file(s)</span
               >
-              <span v-else class="text-secondary"
-                >List of Attached file(s)</span
+              <span class="text-secondary" v-else
+                >List of attached file(s)</span
               >
             </label>
-            <!-- <aside class="d-flex align-items-center justify-content-center"> -->
-            <ul class="mt-4 text-decoration-none ulUpload">
+            <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
               <!-- Already attached files -->
 
               <li
@@ -521,9 +572,6 @@
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 + "." }}</b>
-                    </div>
                     <div class="col text-left">
                       <span>{{ file.filename }}</span>
                     </div>
@@ -559,14 +607,11 @@
               <!-- Newly added files -->
               <li
                 class="text-sm mt-2"
-                v-for="(file, index) in selectedFileNew"
+                v-for="file in selectedFileNew"
                 :key="file.id"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 + "." }}</b>
-                    </div>
                     <div class="col text-left">
                       <span>{{ file.name }}</span>
                     </div>
@@ -620,12 +665,6 @@
               <table
                 class="table table-sm table-bordered table-hover table-striped"
               >
-                <!-- <thead>
-          <tr>
-            <th>Form</th>
-            <th style="width: 80%"></th>
-          </tr>
-        </thead> -->
                 <tbody>
                   <tr>
                     <td>Reference Number</td>
@@ -733,8 +772,6 @@
                     <th style="width: 20%">Expense Type</th>
                     <th style="width: 30%">Remarks</th>
                     <th style="width: 10%">Amount</th>
-
-                    <!-- <th style="width: 10%">Action</th> -->
                   </tr>
                 </thead>
                 <tbody>
@@ -744,9 +781,14 @@
                     <td>{{ item.CLIENT_NAME }}</td>
                     <td>{{ item.EXPENSE_TYPE }}</td>
                     <td>{{ item.DESCRIPTION }}</td>
-                    <td>{{ item.AMOUNT }}</td>
+                    <td>
+                      {{
+                        parseFloat(item.AMOUNT).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                        })
+                      }}
+                    </td>
                   </tr>
-
                   <tr>
                     <td colspan="5"></td>
                     <b class="px-1"
@@ -802,7 +844,13 @@
                     <td>{{ item.DESTINATION_TO }}</td>
                     <td>{{ item.MOT }}</td>
                     <td>{{ item.DESCRIPTION }}</td>
-                    <td>{{ item.AMT_SPENT }}</td>
+                    <td>
+                      {{
+                        parseFloat(item.AMT_SPENT).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                        })
+                      }}
+                    </td>
                   </tr>
 
                   <tr>
@@ -840,14 +888,12 @@
               >
                 <thead>
                   <tr>
-                    <th style="width: 5%">#</th>
                     <th style="width: 80%">Filename</th>
-                    <th style="width: 15%">Actions</th>
+                    <th style="width: 20%">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="(file, index) in selectedFile" :key="file.id">
-                    <td>{{ index + 1 }}</td>
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
@@ -874,8 +920,7 @@
                     </td>
                   </tr>
 
-                  <tr v-for="(file, index) in selectedFileNew" :key="file.name">
-                    <td>{{ index + 1 }}</td>
+                  <tr v-for="file in selectedFileNew" :key="file.name">
                     <td>{{ file.name }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
@@ -903,7 +948,12 @@
         <!-- /. Form Review -->
 
         <!-- Modal -->
-        <div class="modal fade" id="modal-default">
+        <div
+          class="modal fade"
+          id="modal-default"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
           <div class="modal-dialog">
             <div class="modal-content">
               <!-- Overlay Loading Spinner -->
@@ -919,11 +969,18 @@
                   data-dismiss="modal"
                   aria-label="Close"
                   id="modalCloseButton"
+                  @click="closeModalDefault()"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
                 <div class="row">
                   <div class="col-md-12">
                     <div class="form-group">
@@ -934,6 +991,11 @@
                         rows="5"
                         v-model="remarks"
                       ></textarea>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingReplyRemarks && attemptReply"
+                        >Transportation remarks is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -971,6 +1033,15 @@
 
             <div class="col-lg-2" v-if="this.counter <= isAttachments">
               <button
+                v-if="this.isInitiator"
+                type="button"
+                @click="next()"
+                class="btn btn-block btn-primary btn-sm"
+              >
+                NextInit
+              </button>
+              <button
+                v-else
                 type="button"
                 @click="counter++"
                 class="btn btn-block btn-primary btn-sm"
@@ -1143,13 +1214,72 @@ export default {
       }
     },
 
+    // Validation
+    missingDateNeeded() {
+      if (this.dateNeeded === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingReportingManager() {
+      if (this.reportingManagerItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingProjectItem() {
+      if (this.projectItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingPurpose() {
+      if (this.purpose.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingPayeeName() {
+      if (this.payeeName.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingAmount() {
+      if (this.amount.length === 0 || parseFloat(this.amount) < 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingReplyRemarks() {
+      if (this.remarks.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     // Sum of all amount spend in liquidation
     expenseType_totalAmount() {
       if (this.expenseType_Data.length > 0) {
         const total = this.expenseType_Data
-          .map((expenseType_Data) => parseInt(expenseType_Data.AMOUNT))
+          .map((expenseType_Data) =>
+            parseFloat(expenseType_Data.AMOUNT.replace(/,/g, ""))
+          )
           .reduce((acc, expenseType_Data) => expenseType_Data + acc);
-        return total;
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
       }
@@ -1159,9 +1289,11 @@ export default {
     transpoSetup_totalAmount() {
       if (this.transpoSetup_Data.length > 0) {
         const total = this.transpoSetup_Data
-          .map((transpoSetup_Data) => parseInt(transpoSetup_Data.AMT_SPENT))
+          .map((transpoSetup_Data) =>
+            parseFloat(transpoSetup_Data.AMT_SPENT.replace(/,/g, ""))
+          )
           .reduce((acc, transpoSetup_Data) => transpoSetup_Data + acc);
-        return total;
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
       }
@@ -1180,6 +1312,10 @@ export default {
   data() {
     return {
       counter: 0,
+      attemptNext: false,
+      attemptReply: false,
+      attemptNextOne: false,
+      attemptNextTwo: false,
       // Request Details
       reportingManager: [],
       reportingManagerItem: {},
@@ -1187,7 +1323,7 @@ export default {
       requestDate: "",
       project: [],
       projectItem: {},
-      dateNeeded: "",
+      dateNeeded: null,
       clientName: "",
       clientId: "",
       mainId: "",
@@ -1274,7 +1410,7 @@ export default {
       modalExpenseType: [],
       itemmodalExpenseType: {},
 
-      expenseType_Date: "",
+      expenseType_Date: null,
       expenseType_Amount: "",
       expenseType_Remarks: "",
 
@@ -1288,7 +1424,7 @@ export default {
       // data for transportation
       transpoSetup: [],
       itemtranspoSetup: {},
-      transpoSetup_Date: "",
+      transpoSetup_Date: null,
       transpoSetup_Amount: "",
       transpoSetup_From: "",
       transpoSetup_to: "",
@@ -1296,93 +1432,95 @@ export default {
 
       transpoSetup_Data: [],
       transpoSetup_EditData: [],
+
+      // The Alert
+      isAlert: false,
+      header: "", // Syccess or Failed
+      message: "", // added successfully
+      type: "", // true or false
     };
   },
 
   methods: {
     async reply() {
       this.isLoadingModal = true;
-      // console.log("reply");
+      this.attemptReply = true;
+      this.resetAlert();
+      const validated = this.validate_reply();
 
-      // console.log(this.dateNeeded);
-      // console.log(this.reportingManagerItem.code);
-      // console.log(this.reportingManagerItem.name);
-      // console.log(this.projectItem.code);
-      // console.log(this.projectItem.name);
-      // console.log(this.clientName);
-      // console.log(this.clientId);
-      // console.log(this.mainId);
-      // console.log(this.purpose);
+      if (validated) {
+        const fd = new FormData();
 
-      // console.log(this.payeeName);
-      // console.log(this.amount);
+        for (let i = 0; i < this.selectedFileNew.length; i++) {
+          fd.append("file[]", this.selectedFileNew[i]);
+        }
 
-      // console.log(this.remarks);
-      // console.log(this.processId);
+        fd.append("referenceNumber", this.referenceNumber);
+        fd.append("dateNeeded", this.dateNeeded);
+        fd.append("reportingManagerId", this.reportingManagerItem.code);
+        fd.append("reportingManagerName", this.reportingManagerItem.name);
+        fd.append("projectId", this.projectItem.code);
+        fd.append("projectName", this.projectItem.name);
+        fd.append("clientName", this.clientName);
+        fd.append("clientId", this.clientId);
+        fd.append("mainId", this.mainId);
+        fd.append("purpose", this.purpose);
 
-      // console.log(this.form);
-      // console.log(this.loggedUserId);
-      // console.log(this.loggedUserFullName);
-      // console.log(this.companyId);
-      // console.log(this.companyName);
+        fd.append("payeeName", this.payeeName);
+        fd.append("amount", this.amount);
 
-      // console.log(this.selectedFileNew);
-      // console.log(this.removedAttachedFilesId);
+        fd.append("remarks", this.remarks);
+        fd.append("processId", this.processId);
 
-      const fd = new FormData();
+        fd.append("form", this.form);
+        fd.append("loggedUserId", this.loggedUserId);
+        fd.append("loggedUserFullName", this.loggedUserFullName);
+        fd.append("companyId", this.companyId);
+        fd.append("companyName", this.companyName);
+        fd.append("class", "PC");
 
-      for (let i = 0; i < this.selectedFileNew.length; i++) {
-        fd.append("file[]", this.selectedFileNew[i]);
-      }
+        fd.append("removedFiles", JSON.stringify(this.removedAttachedFilesId));
 
-      fd.append("referenceNumber", this.referenceNumber);
-      fd.append("dateNeeded", this.dateNeeded);
-      fd.append("reportingManagerId", this.reportingManagerItem.code);
-      fd.append("reportingManagerName", this.reportingManagerItem.name);
-      fd.append("projectId", this.projectItem.code);
-      fd.append("projectName", this.projectItem.name);
-      fd.append("clientName", this.clientName);
-      fd.append("clientId", this.clientId);
-      fd.append("mainId", this.mainId);
-      fd.append("purpose", this.purpose);
+        try {
+          const res = await axios.post(
+            "http://127.0.0.1:8000/api/reply-request",
+            fd
+          );
 
-      fd.append("payeeName", this.payeeName);
-      fd.append("amount", this.amount);
+          console.log(res.data);
 
-      fd.append("remarks", this.remarks);
-      fd.append("processId", this.processId);
+          if (res.status === 200) {
+            this.isLoadingModal = false;
 
-      fd.append("form", this.form);
-      fd.append("loggedUserId", this.loggedUserId);
-      fd.append("loggedUserFullName", this.loggedUserFullName);
-      fd.append("companyId", this.companyId);
-      fd.append("companyName", this.companyName);
-      fd.append("class", "PC");
+            document.getElementById("modalCloseButton").click();
+            this.openToast("top-right", "success", res.data.message);
+            this.$router.replace("/approvals");
+          }
 
-      fd.append("removedFiles", JSON.stringify(this.removedAttachedFilesId));
+          if (res.status === 202) {
+            this.isLoadingModal = false;
 
-      try {
-        const res = await axios.post(
-          "http://127.0.0.1:8000/api/reply-request",
-          fd
-        );
+            // console.log(res)
+            this.openToast("top-right", "error", res.data.message);
+          }
+        } catch (err) {
+          this.isLoadingModal = false;
 
-        console.log(res.data);
+          // Handle Error Here
+          console.error(err);
+          this.openToast("top-right", "error", err);
+        }
+      } else {
         this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
+    },
 
-        if (res.status === 200) {
-          document.getElementById("modalCloseButton").click();
-          this.openToast("top-right", "success", res.data.message);
-          this.$router.replace("/approvals");
-        }
-
-        if (res.status === 202) {
-          // console.log(res)
-          this.openToast("top-right", "error", res.data.message);
-        }
-      } catch (err) {
-        // Handle Error Here
-        console.error(err);
+    validate_reply() {
+      if (!this.missingReplyRemarks) {
+        return true;
+      } else {
+        return false;
       }
     },
     close() {
@@ -1396,6 +1534,26 @@ export default {
         variant,
         position,
       });
+    },
+
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
+    },
+
+    resetAlert() {
+      this.isAlert = false;
+      this.header = "";
+      this.message = "";
+      this.type = "";
+    },
+
+    closeModalDefault() {
+      this.attemptReply = false;
+      this.remarks = "";
+      this.resetAlert();
     },
 
     // Request Details
@@ -1459,7 +1617,11 @@ export default {
           this.clientName = resp.data.data.CLIENT_NAME;
           this.purpose = resp.data.data.DESCRIPTION;
 
-          this.amount = resp.data.data.REQUESTED_AMT;
+          // this.amount = resp.data.data.REQUESTED_AMT;
+          this.amount = parseFloat(resp.data.data.REQUESTED_AMT).toLocaleString(
+            undefined,
+            { minimumFractionDigits: 2 }
+          );
 
           if (resp.data.data.UID === this.loggedUserId) {
             this.isInitiator = true;
@@ -1617,7 +1779,45 @@ export default {
       // console.log(this.reportingManager);
     },
 
-    // Payment Details
+    // next function can only be run by initiator
+    next() {
+      // is isLiquidation - step is 6
+      if (this.isLiquidation) {
+        // is Not isLiquidation - step is 4
+        this.counter++;
+      } else {
+        // Request DEtails
+        if (this.counter === 0) {
+          this.attemptNext = true;
+          if (
+            !this.missingDateNeeded &&
+            !this.missingReportingManager &&
+            !this.missingProjectItem &&
+            !this.missingPurpose
+          ) {
+            this.counter++;
+          }
+          // Payment Details
+        } else if (this.counter === 1) {
+          this.attemptNext = false;
+          this.attemptNextOne = true;
+          if (
+            !this.missingPayeeName &&
+            !this.missingModeOfPayment &&
+            !this.missingCurrency &&
+            !this.missingAmount
+          ) {
+            this.counter++;
+          }
+          // Attachments
+        } else if (this.counter === 2) {
+          this.counter++;
+        }
+      }
+    },
+
+    // Amount aldrin script
+
     formatNumber(n) {
       // format number 1000000 to 1,234,567
       return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -1628,7 +1828,7 @@ export default {
       // and puts cursor back in right position.
 
       // get input value
-      var input_val = this.amount;
+      let input_val = this.amount;
 
       // don't validate empty input
       if (input_val === "") {
@@ -1636,21 +1836,21 @@ export default {
       }
 
       // original length
-      var original_len = input_val.length;
+      let original_len = input_val.length;
 
       // initial caret position
-      var caret_pos = input.target.selectionStart;
+      let caret_pos = input.target.selectionStart;
 
       // check for decimal
       if (input_val.indexOf(".") >= 0) {
         // get position of first decimal
         // this prevents multiple decimals from
         // being entered
-        var decimal_pos = input_val.indexOf(".");
+        let decimal_pos = input_val.indexOf(".");
 
         // split number by decimal point
-        var left_side = input_val.substring(0, decimal_pos);
-        var right_side = input_val.substring(decimal_pos);
+        let left_side = input_val.substring(0, decimal_pos);
+        let right_side = input_val.substring(decimal_pos);
 
         // add commas to left side of number
         left_side = this.formatNumber(left_side);
@@ -1673,7 +1873,7 @@ export default {
         // add commas to number
         // remove all non-digits
         input_val = this.formatNumber(input_val);
-        input_val = input_val;
+        // input_val = input_val;
 
         // final formatting
         if (blur === "blur") {
@@ -1685,47 +1885,68 @@ export default {
       this.amount = input_val;
       input.target.value = input_val;
 
-      var realAmount = input_val;
+      let realAmount = input_val;
       if (realAmount.indexOf(",") !== -1) {
         realAmount = realAmount.replace(/,/g, "");
       }
       this.realAmount = realAmount;
-      console.log(this.realAmount);
 
       // put caret back in the right position
-      var updated_len = input_val.length;
+      let updated_len = input_val.length;
       caret_pos = updated_len - original_len + caret_pos;
-      input[0].setSelectionRange(caret_pos, caret_pos);
+      input.target.setSelectionRange(caret_pos, caret_pos);
     },
 
     // The Attachments
+    preview(mimeType, imageBytes) {
+      var newTab = window.open();
+      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+    },
+
     onFileSelected(event) {
       let selectedFilesNew = event.target.files;
       for (let i = 0; i < selectedFilesNew.length; i++) {
         this.selectedFileNew.push(selectedFilesNew[i]);
       }
       this.filePreviewNew();
-      console.log(this.selectedFileNew);
     },
-    removeNew(i) {
-      this.selectedFileNew.splice(i, 1);
+
+    onInputChange(event) {
+      let selectedFilesNew = event.dataTransfer.files;
+      for (let i = 0; i < selectedFilesNew.length; i++) {
+        this.selectedFileNew.push(selectedFilesNew[i]);
+      }
       this.filePreviewNew();
     },
+
     previewNew(i) {
       // console.log(i)
       const url = this.filespreviewNew[i].link;
       window.open(url, "_blank", "resizable=yes");
     },
 
+    filePreviewNew() {
+      let files = this.selectedFileNew;
+      const fileContainer = [];
+      for (let i = 0; i < files.length; i++) {
+        let tmppath = URL.createObjectURL(files[i]);
+        const thisFiles = {
+          link: tmppath,
+        };
+        fileContainer.push(thisFiles);
+      }
+      this.filespreviewNew = fileContainer;
+    },
+
+    removeNew(i) {
+      this.selectedFileNew.splice(i, 1);
+      this.filePreviewNew();
+    },
+
     removeAttachedFile(index, id, filename, filepath) {
       const attachmentId = { id: id, filename: filename, filepath: filepath };
       this.removedAttachedFilesId.push(attachmentId);
       this.selectedFile.splice(index, 1);
-    },
-
-    preview(mimeType, imageBytes) {
-      var newTab = window.open();
-      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
     },
 
     dragover(event) {
@@ -1748,19 +1969,6 @@ export default {
       // Clean up
       event.currentTarget.classList.add("bg-light");
       event.currentTarget.classList.remove("bg-white");
-    },
-
-    filePreviewNew() {
-      let files = this.selectedFileNew;
-      const fileContainer = [];
-      for (let i = 0; i < files.length; i++) {
-        let tmppath = URL.createObjectURL(files[i]);
-        const thisFiles = {
-          link: tmppath,
-        };
-        fileContainer.push(thisFiles);
-      }
-      this.filespreviewNew = fileContainer;
     },
   },
 };

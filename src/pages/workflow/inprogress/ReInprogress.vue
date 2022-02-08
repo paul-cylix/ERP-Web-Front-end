@@ -307,7 +307,13 @@
                 <td>{{ item.CLIENT_NAME }}</td>
                 <td>{{ item.EXPENSE_TYPE }}</td>
                 <td>{{ item.DESCRIPTION }}</td>
-                <td>{{ parseFloat(item.AMOUNT).toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</td>
+                <td>
+                  {{
+                    parseFloat(item.AMOUNT).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                    })
+                  }}
+                </td>
               </tr>
 
               <tr>
@@ -353,7 +359,13 @@
                 <td>{{ item.DESTINATION_TO }}</td>
                 <td>{{ item.MOT }}</td>
                 <td>{{ item.DESCRIPTION }}</td>
-                <td>{{ parseFloat(item.AMT_SPENT).toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</td>
+                <td>
+                  {{
+                    parseFloat(item.AMT_SPENT).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                    })
+                  }}
+                </td>
               </tr>
 
               <tr>
@@ -388,24 +400,21 @@
             >
               <span class="text-secondary">List of Attached File</span>
             </label>
-            
-            
-            
+
             <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
               <li
                 class="text-sm mt-2"
-                v-for="(file) in selectedFile"
+                v-for="file in selectedFile"
                 :key="file.id"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
-  
                     <div class="col text-left">
                       <span>{{ file.filename }}</span>
                     </div>
 
                     <div class="col-2">
-                    <button
+                      <button
                         class="btn btn-secondary btn-sm ml-1"
                         @click="preview(file.mimeType, file.imageBytes)"
                       >
@@ -563,7 +572,13 @@
                     <td>{{ item.CLIENT_NAME }}</td>
                     <td>{{ item.EXPENSE_TYPE }}</td>
                     <td>{{ item.DESCRIPTION }}</td>
-                    <td>{{ parseFloat(item.AMOUNT).toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</td>
+                    <td>
+                      {{
+                        parseFloat(item.AMOUNT).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                        })
+                      }}
+                    </td>
                   </tr>
 
                   <tr>
@@ -621,7 +636,13 @@
                     <td>{{ item.DESTINATION_TO }}</td>
                     <td>{{ item.MOT }}</td>
                     <td>{{ item.DESCRIPTION }}</td>
-                    <td>{{ parseFloat(item.AMT_SPENT).toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</td>
+                    <td>
+                      {{
+                        parseFloat(item.AMT_SPENT).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                        })
+                      }}
+                    </td>
                   </tr>
 
                   <tr>
@@ -659,17 +680,14 @@
               >
                 <thead>
                   <tr>
-    
                     <th style="width: 80%">Filename</th>
                     <th style="width: 20%">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(file) in selectedFile" :key="file.id">
-
+                  <tr v-for="file in selectedFile" :key="file.id">
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
- 
                       <button
                         @click="preview(file.mimeType, file.imageBytes)"
                         class="btn btn-secondary btn-sm ml-1"
@@ -702,11 +720,7 @@
               </button>
             </div>
 
-            <div
-              class="col-lg-2"
-            
-              v-if="this.counter <= 4"
-            >
+            <div class="col-lg-2" v-if="this.counter <= 4">
               <button
                 type="button"
                 @click="counter++"
@@ -715,8 +729,6 @@
                 Next
               </button>
             </div>
-
-    
           </aside>
 
           <aside class="col-lg-6 d-flex justify-content-end">
@@ -748,7 +760,12 @@
     <!-- /.card -->
 
     <!-- Modal -->
-    <div class="modal fade" id="modal-default">
+    <div
+      class="modal fade"
+      id="modal-default"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <!-- Overlay Loading Spinner -->
@@ -799,7 +816,6 @@
       <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
-
 
     <!-- End -->
   </div>
@@ -856,7 +872,9 @@ export default {
     expenseType_totalAmount() {
       if (this.expenseType_Data.length > 0) {
         const total = this.expenseType_Data
-          .map((expenseType_Data) => parseFloat(expenseType_Data.AMOUNT.replace(/,/g, "")))
+          .map((expenseType_Data) =>
+            parseFloat(expenseType_Data.AMOUNT.replace(/,/g, ""))
+          )
           .reduce((acc, expenseType_Data) => expenseType_Data + acc);
         return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
@@ -868,7 +886,9 @@ export default {
     transpoSetup_totalAmount() {
       if (this.transpoSetup_Data.length > 0) {
         const total = this.transpoSetup_Data
-          .map((transpoSetup_Data) => parseFloat(transpoSetup_Data.AMT_SPENT.replace(/,/g, "")))
+          .map((transpoSetup_Data) =>
+            parseFloat(transpoSetup_Data.AMT_SPENT.replace(/,/g, ""))
+          )
           .reduce((acc, transpoSetup_Data) => transpoSetup_Data + acc);
         return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
@@ -955,8 +975,7 @@ export default {
 
       isLoading: false,
 
-
-      withdrawRemarks: '',
+      withdrawRemarks: "",
 
       processId: this.$route.params.id,
     };
@@ -983,7 +1002,7 @@ export default {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
           body: JSON.stringify({
             withdrawRemarks: this.withdrawRemarks,
@@ -1019,13 +1038,8 @@ export default {
         // }
 
         console.log(error.message);
-     
       }
     },
-
-
-
-
 
     setButton() {
       this.isButton = true;
@@ -1058,7 +1072,7 @@ export default {
     getReInprogress(id, form, companyId, loggedUserId) {
       this.isLoading = true;
       console.log(loggedUserId);
-      console.log(companyId)
+      console.log(companyId);
       let showMain = `http://127.0.0.1:8000/api/getRE/${id}`;
       let showExpense = `http://127.0.0.1:8000/api/get-ReExpense/${id}`;
       let showTranspo = `http://127.0.0.1:8000/api/get-ReTranspo/${id}`;
@@ -1101,7 +1115,9 @@ export default {
             this.purpose = responseOne.data.data.DESCRIPTION;
             this.payeeName = responseOne.data.data.PAYEE;
 
-            this.amount = parseFloat(responseOne.data.data.TOTAL_AMT_SPENT).toLocaleString(undefined, { minimumFractionDigits: 2 });
+            this.amount = parseFloat(
+              responseOne.data.data.TOTAL_AMT_SPENT
+            ).toLocaleString(undefined, { minimumFractionDigits: 2 });
             this.uid = responseOne.data.data.UID;
 
             if (responseOne.data.data.UID === this.loggedUserId) {
@@ -1121,14 +1137,11 @@ export default {
             this.selectedFile = responesFour.data.data;
 
             // typeof(responesFour.data.data)
-// console.warn(this.selectedFile)
+            // console.warn(this.selectedFile)
             // console.log(responesFour.data.data[0].filename)
 
-  
             // showLiquidation - responesFive
             // console.log(responesFive);
-
-     
           })
         )
         .catch((errors) => {

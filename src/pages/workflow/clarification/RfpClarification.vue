@@ -1780,8 +1780,6 @@ export default {
     },
 
     // The Attachments
-    // preview existing
-
     preview(mimeType, imageBytes) {
       var newTab = window.open();
       newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;

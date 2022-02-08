@@ -329,7 +329,7 @@
                   </aside>
                 </th>
                 <th v-if="isApproval">
-                  <aside class="text-center" >
+                  <aside class="text-center">
                     <button
                       class="btn btn-sm btn-success m-0"
                       data-toggle="modal"
@@ -464,9 +464,7 @@
               <tr>
                 <td :colspan="transpoFooter"></td>
                 <td colspan="2">
-                
                   <b>Total Amount: {{ this.transpoSetup_totalAmount }}</b>
-
                 </td>
               </tr>
             </tbody>
@@ -488,28 +486,43 @@
           "
           id="app"
         >
-          <input
-            v-if="isApproval"
-            type="file"
-            multiple
-            name="fields[assetsFieldHandle][]"
-            id="assetsFieldHandle"
-            class="w-25 h-25 overflow-hidden"
-            @change="onFileSelected"
-            ref="file"
-            accept=".pdf,.jpg,.jpeg,.png"
-          />
-          <div class="p-5 col-md-12 rounded" id="uploadContainer">
-            <label for="assetsFieldHandle" class="block cursor-pointer">
-              <span v-if="isApproval" class="text-secondary"
-                >Click here to add new file(s)</span
+          <div
+            class="pt-2 col-md-12 rounded"
+            @dragover="dragover"
+            @dragleave="dragleave"
+            @drop="drop"
+            id="uploadContainer"
+          >
+            <input
+              v-if="isApproval"
+              type="file"
+              multiple
+              name="fields[assetsFieldHandle][]"
+              id="assetsFieldHandle"
+              class="w-25 h-25 overflow-hidden"
+              @change="onFileSelected"
+              ref="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+            />
+            <label
+              for="assetsFieldHandle"
+              style="width: 100%; cursor: pointer"
+              class="block pt-3 cursor-pointer"
+            >
+              <span class="text-secondary" v-if="isApproval"
+                >Click here or drop file(s)</span
               >
-              <span v-else class="text-secondary"
-                >List of Attached file(s)</span
+              <span class="text-secondary" v-else
+                >List of attached file(s)</span
               >
             </label>
-            <!-- <aside class="d-flex align-items-center justify-content-center"> -->
-            <ul class="mt-4 text-decoration-none ulUpload" v-cloak>
+            <small
+              class="text-danger p-0 m-0"
+              v-if="missingAttachments && attemptNextTwo"
+              >Attachments is required!</small
+            >
+
+            <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
               <li
                 class="text-sm mt-2"
                 v-for="(file, index) in selectedFile"
@@ -517,9 +530,6 @@
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 + "." }}</b>
-                    </div>
                     <div class="col text-left">
                       <span>{{ file.filename }}</span>
                     </div>
@@ -557,14 +567,11 @@
               <!-- Newly added file -->
               <li
                 class="text-sm mt-2"
-                v-for="(file, index) in selectedFileNew"
+                v-for="file in selectedFileNew"
                 :key="file.index"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 }}.</b>
-                    </div>
                     <div class="col text-left">
                       <span>{{ file.name }}</span>
                     </div>
@@ -836,18 +843,27 @@
               >
                 <thead>
                   <tr>
-                    <th style="width: 5%">#</th>
                     <th style="width: 80%">Filename</th>
-                    <th style="width: 15%">Actions</th>
+                    <th style="width: 20%">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(file, index) in selectedFile" :key="file.name">
-                    <td>{{ index + 1 }}</td>
+                  <tr v-for="file in selectedFile" :key="file.name">
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
                         @click="preview(file.mimeType, file.imageBytes)"
+                        class="btn btn-secondary btn-sm ml-1"
+                      >
+                        Preview
+                      </button>
+                    </td>
+                  </tr>
+                  <tr v-for="file in selectedFileNew" :key="file.index">
+                    <td>{{ file.name }}</td>
+                    <td class="pl-2 pr-2 text-center">
+                      <button
+                        @click="filePreviewNew(selectedFileNew.indexOf(file))"
                         class="btn btn-secondary btn-sm ml-1"
                       >
                         Preview
@@ -866,7 +882,12 @@
         <!-- / Main Form -->
 
         <!-- Modal -->
-        <div class="modal fade" id="modal-default">
+        <div
+          class="modal fade"
+          id="modal-default"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
           <div class="modal-dialog">
             <div class="modal-content">
               <!-- Overlay Loading Spinner -->
@@ -884,11 +905,18 @@
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
+                  @click="closeDefaultModal()"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
                 <div class="row" v-if="isForClarity">
                   <div class="col-md-12">
                     <div class="form-group">
@@ -901,6 +929,11 @@
                         style="padding: 9px"
                       >
                       </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalRecipient && attemptClarify"
+                        >Recipient is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -951,15 +984,21 @@
                 </h6>
                 <button
                   type="button"
-                  id="modalCloseButton"
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
+                  @click="closeModal()"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
                 <div class="row">
                   <div class="col-md-4">
                     <div class="form-group">
@@ -970,6 +1009,11 @@
                         style="display: block; width: 100%; line-height: 20px"
                         v-model="expenseType_Date"
                       ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingXPDateNeeded && attemptXpInsert"
+                        >Date is required!</small
+                      >
                     </div>
                   </div>
                   <div class="col-md-8">
@@ -986,6 +1030,11 @@
                         style="padding: 9px"
                       >
                       </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingXPClientItem && attemptXpInsert"
+                        >Client Name is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -996,11 +1045,19 @@
                       <small><label for="projectName">Amount</label></small>
 
                       <input
-                        type="number"
+                        type="text"
+                        @keyup="formatCurrencyExpense($event)"
+                        @blur="formatCurrencyExpense($event, 'blur')"
+                        pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
                         class="form-control form-control-sm py-3"
-                        id="modalamount"
                         v-model="expenseType_Amount"
                       />
+
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingXPAmount && attemptXpInsert"
+                        >Amount is required!</small
+                      >
                     </div>
                   </div>
 
@@ -1018,6 +1075,11 @@
                         style="padding: 9px"
                       >
                       </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingXPType && attemptXpInsert"
+                        >Expense Type is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -1032,6 +1094,11 @@
                         v-model="expenseType_Remarks"
                         placeholder="Please input request remarks here!"
                       ></textarea>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingXPRemarks && attemptXpInsert"
+                        >Reporting Manager is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -1078,15 +1145,21 @@
                 </h6>
                 <button
                   type="button"
-                  id="modalCloseButton"
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
+                  @click="closeModal()"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
                 <div class="row">
                   <div class="col-md-4">
                     <div class="form-group">
@@ -1097,6 +1170,11 @@
                         style="display: block; width: 100%; line-height: 20px"
                         v-model="transpoSetup_Date"
                       ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingTDDateNeeded && attemptTdInsert"
+                        >Date is required!</small
+                      >
                     </div>
                   </div>
                   <div class="col-md-8">
@@ -1113,6 +1191,11 @@
                         style="padding: 9px"
                       >
                       </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingTDClientItem && attemptTdInsert"
+                        >Client name is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -1135,6 +1218,11 @@
                         style="padding: 9px"
                       >
                       </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingTDMot && attemptTdInsert"
+                        >Mode of transportation is required!</small
+                      >
                     </div>
                   </div>
 
@@ -1143,11 +1231,18 @@
                       <small><label for="projectName">Amount</label></small>
 
                       <input
-                        type="number"
+                        type="text"
+                        @keyup="formatCurrencyTranspo($event)"
+                        @blur="formatCurrencyTranspo($event, 'blur')"
+                        pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
                         class="form-control form-control-sm py-3"
-                        id="modalamount"
                         v-model="transpoSetup_Amount"
                       />
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingTDAmount && attemptTdInsert"
+                        >Amount is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -1164,9 +1259,13 @@
                       <input
                         type="text"
                         class="form-control form-control-sm py-3"
-                        id="modalamount"
-                        v-model="transpoSetup_From"
+                        v-model.trim="transpoSetup_From"
                       />
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingTDFrom && attemptTdInsert"
+                        >Destination from is required!</small
+                      >
                     </div>
                   </div>
 
@@ -1175,13 +1274,16 @@
                       <small
                         ><label for="projectName">Destination To</label></small
                       >
-
                       <input
                         type="text"
                         class="form-control form-control-sm py-3"
-                        id="modalamount"
-                        v-model="transpoSetup_to"
+                        v-model.trim="transpoSetup_to"
                       />
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingTDTo && attemptTdInsert"
+                        >Destination to is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -1193,9 +1295,14 @@
                         class="form-control"
                         id="remarks"
                         rows="5"
-                        v-model="transpoSetup_Remarks"
+                        v-model.trim="transpoSetup_Remarks"
                         placeholder="Please input request remarks here!"
                       ></textarea>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingTDRemarks && attemptTdInsert"
+                        >Transportation remarks is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -1233,7 +1340,7 @@
             <div class="col-lg-2" v-show="counter">
               <button
                 type="button"
-                @click="counter--"
+                @click="previous()"
                 class="btn btn-block btn-secondary btn-sm"
               >
                 Previous
@@ -1242,6 +1349,16 @@
 
             <div class="col-lg-2" v-if="this.counter <= isAttachments">
               <button
+                v-if="this.isLiquidation"
+                type="button"
+                @click="next()"
+                class="btn btn-block btn-primary btn-sm"
+              >
+                Next
+              </button>
+
+              <button
+                v-else
                 type="button"
                 @click="counter++"
                 class="btn btn-block btn-primary btn-sm"
@@ -1448,10 +1565,137 @@ export default {
       }
     },
 
-    
-
     isForClarity() {
       if (this.title === "Clarify") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingXPDateNeeded() {
+      if (this.expenseType_Date === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingXPClientItem() {
+      if (this.itemclientName.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingXPAmount() {
+      if (
+        this.expenseType_Amount.length === 0 ||
+        parseFloat(this.expenseType_Amount) < 1
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingXPType() {
+      if (this.itemmodalExpenseType.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingXPRemarks() {
+      if (this.expenseType_Remarks.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingTDDateNeeded() {
+      if (this.transpoSetup_Date === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingTDClientItem() {
+      if (this.itemclientName.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingTDMot() {
+      if (this.itemtranspoSetup.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingTDAmount() {
+      if (
+        this.transpoSetup_Amount.length === 0 ||
+        parseFloat(this.transpoSetup_Amount) < 1
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingTDFrom() {
+      if (this.transpoSetup_From.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingTDTo() {
+      if (this.transpoSetup_to.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingTDRemarks() {
+      if (this.transpoSetup_Remarks.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingExpenses() {
+      if (
+        this.expenseType_Data.length >= 1 ||
+        this.transpoSetup_Data.length >= 1
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+
+    missingAttachments() {
+      if (this.selectedFile.length >= 1 || this.selectedFileNew.length >= 1) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+
+    missingModalRecipient() {
+      if (this.itemrecipient.code === undefined) {
         return true;
       } else {
         return false;
@@ -1461,10 +1705,14 @@ export default {
     // Sum of all amount spend in liquidation
     expenseType_totalAmount() {
       if (this.expenseType_Data.length > 0) {
-        const total = this.expenseType_Data
-          .map((expenseType_Data) => parseInt(expenseType_Data.AMOUNT))
+        let total = this.expenseType_Data
+          .map((expenseType_Data) =>
+            // convert money type string to float
+            parseFloat(expenseType_Data.AMOUNT.replace(/,/g, ""))
+          )
           .reduce((acc, expenseType_Data) => expenseType_Data + acc);
-        return total;
+        // convert to money type
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
       }
@@ -1473,10 +1721,14 @@ export default {
     // sum of all amount spend in transportation
     transpoSetup_totalAmount() {
       if (this.transpoSetup_Data.length > 0) {
-        const total = this.transpoSetup_Data
-          .map((transpoSetup_Data) => parseInt(transpoSetup_Data.AMT_SPENT))
+        let total = this.transpoSetup_Data
+          .map((transpoSetup_Data) =>
+            // convert money type string to float
+            parseFloat(transpoSetup_Data.AMT_SPENT.replace(/,/g, ""))
+          )
           .reduce((acc, transpoSetup_Data) => transpoSetup_Data + acc);
-        return total;
+        // convert to money type
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
       }
@@ -1495,6 +1747,13 @@ export default {
   data() {
     return {
       counter: 0,
+      setIndex: "",
+      attemptNext: false,
+      attemptNextTwo: false,
+      attemptClarify: false,
+      attemptXpInsert: false,
+      attemptTdInsert: false,
+
       // Request Details
       reportingManager: [],
       reportingManagerItem: {},
@@ -1515,7 +1774,6 @@ export default {
 
       payeeName: "",
       amount: "",
-
       realAmount: "",
 
       // The Attachments
@@ -1579,8 +1837,10 @@ export default {
       modalExpenseType: [],
       itemmodalExpenseType: {},
 
-      expenseType_Date: "",
+      expenseType_Date: null,
       expenseType_Amount: "",
+      expenseType_RealAmount: "",
+
       expenseType_Remarks: "",
 
       isButton: true,
@@ -1593,14 +1853,21 @@ export default {
       // data for transportation
       transpoSetup: [],
       itemtranspoSetup: {},
-      transpoSetup_Date: "",
+      transpoSetup_Date: null,
       transpoSetup_Amount: "",
+      transpoSetup_RealAmount: "",
       transpoSetup_From: "",
       transpoSetup_to: "",
       transpoSetup_Remarks: "",
 
       transpoSetup_Data: [],
       transpoSetup_EditData: [],
+
+      // The Alert
+      isAlert: false,
+      header: "", // Syccess or Failed
+      message: "", // added successfully
+      type: "", // true or false
     };
   },
 
@@ -1674,28 +1941,96 @@ export default {
         }
       }
       if (type === "Clarify") {
-        try {
-          const res = await axios.post(
-            "http://127.0.0.1:8000/api/send-clarity",
-            fd
-          );
+        this.attemptClarify = true;
+        this.resetAlert();
+        const validated = this.validateModalDefault();
+        if (validated) {
+          // start
+          try {
+            const res = await axios.post(
+              "http://127.0.0.1:8000/api/send-clarity",
+              fd
+            );
 
-          document.getElementById("modalCloseButton").click();
-          this.openToast("top-right", "success", res.data.message);
-          if (res.status === 200) {
-            this.$router.replace("/approvals");
-          } else {
             document.getElementById("modalCloseButton").click();
-            this.openToast("top-right", "error", "Please Try again laer");
-          }
-        } catch (err) {
-          // Handle Error Here
-          // console.error(err);
+            this.openToast("top-right", "success", res.data.message);
+            if (res.status === 200) {
+              this.isLoadingModal = false;
+              this.$router.replace("/approvals");
+            } else {
+              this.isLoadingModal = false;
 
-          document.getElementById("modalCloseButton").click();
-          this.openToast("top-right", "error", err);
+              document.getElementById("modalCloseButton").click();
+              this.openToast("top-right", "error", "Please Try again laer");
+            }
+          } catch (err) {
+            this.isLoadingModal = false;
+
+            // Handle Error Here
+            // console.error(err);
+
+            document.getElementById("modalCloseButton").click();
+            this.openToast("top-right", "error", err);
+          }
+          // end
+        } else {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", "Please select recipent!", "false");
         }
       }
+    },
+
+    next() {
+      if (this.counter === 0 || this.counter === 1 || this.counter === 2) {
+        this.counter++;
+        // console.log("alert 012");
+      } else if (this.counter === 3) {
+        this.attemptNext = true;
+
+        if (!this.missingExpenses) {
+          this.counter++;
+        } else {
+          this.openToast(
+            "top-right",
+            "warning",
+            "Please provide your expenses!"
+          );
+        }
+      } else if (this.counter === 4) {
+        this.attemptNextTwo = true;
+        if (!this.missingAttachments) {
+          this.counter++;
+        } else {
+          this.openToast("top-right", "warning", "Attachments is required!");
+        }
+      }
+    },
+
+    closeDefaultModal() {
+      this.resetAlert();
+      this.itemrecipient = {};
+      this.remarks = "";
+      this.attemptClarify = false;
+    },
+
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
+    },
+
+    resetAlert() {
+      this.isAlert = false;
+      this.header = "";
+      this.message = "";
+      this.type = "";
+    },
+
+    previous() {
+      this.counter--;
+      this.attemptNext = false;
+      this.attemptNextTwo = false;
     },
 
     setTitle(title) {
@@ -1722,13 +2057,42 @@ export default {
         );
 
         if (resp.status === 200) {
-          console.log(resp.data);
+          const expenseType_Data = [];
+          for (const key in resp.data) {
+            const data = {
+              AMOUNT: parseFloat(resp.data[key].AMOUNT).toLocaleString(
+                undefined,
+                { minimumFractionDigits: 2 }
+              ),
+              CLIENT_ID: resp.data[key].CLIENT_ID,
+              CLIENT_NAME: resp.data[key].CLIENT_NAME,
+              DEPT: resp.data[key].DEPT,
+              DESCRIPTION: resp.data[key].DESCRIPTION,
+              EXPENSE_TYPE: resp.data[key].EXPENSE_TYPE,
+              GUID: resp.data[key].GUID,
+              ISLIQUIDATED: resp.data[key].ISLIQUIDATED,
+              MAINID: resp.data[key].MAINID,
+              PAYEE: resp.data[key].PAYEE,
+              PCID: resp.data[key].PCID,
+              PRJID: resp.data[key].PRJID,
+              PROJECT: resp.data[key].PROJECT,
+              RELEASEDCASH: resp.data[key].RELEASEDCASH,
+              STATUS: resp.data[key].STATUS,
+              TITLEID: resp.data[key].TITLEID,
+              TS: resp.data[key].TS,
+              date_: resp.data[key].date_,
+              id: resp.data[key].id,
+              payee_id: resp.data[key].payee_id,
+            };
+            expenseType_Data.push(data);
+          }
 
-          this.expenseType_Data = resp.data;
+          this.expenseType_Data = expenseType_Data;
         }
       } catch (err) {
         // Handle Error Here
         console.error(err);
+        this.openToast("top-right", "warning", err);
       }
     },
 
@@ -1739,9 +2103,38 @@ export default {
         );
 
         if (resp.status === 200) {
-          console.log(resp.data);
+          const transpoSetup_Data = [];
+          for (const key in resp.data) {
+            const data = {
+              AMT_SPENT: parseFloat(
+                resp.data[key].AMT_SPENT
+              ).toLocaleString(undefined, { minimumFractionDigits: 2 }),
+              CLIENT_ID: resp.data[key].CLIENT_ID,
+              CLIENT_NAME: resp.data[key].CLIENT_NAME,
+              DEPT: resp.data[key].DEPT,
+              DESCRIPTION: resp.data[key].DESCRIPTION,
+              DESTINATION_FRM: resp.data[key].DESTINATION_FRM,
+              DESTINATION_TO: resp.data[key].DESTINATION_TO,
+              GUID: resp.data[key].GUID,
+              ISLIQUIDATED: resp.data[key].ISLIQUIDATED,
+              MAINID: resp.data[key].MAINID,
+              MOT: resp.data[key].MOT,
+              PAYEE: resp.data[key].PAYEE,
+              PCID: resp.data[key].PCID,
+              PRJID: resp.data[key].PRJID,
+              PROJECT: resp.data[key].PROJECT,
+              RELEASEDCASH: resp.data[key].RELEASEDCASH,
+              STATUS: resp.data[key].STATUS,
+              TITLEID: resp.data[key].TITLEID,
+              TS: resp.data[key].TS,
+              date_: resp.data[key].date_,
+              id: resp.data[key].id,
+              payee_id: resp.data[key].payee_id,
+            };
+            transpoSetup_Data.push(data);
+          }
 
-          this.transpoSetup_Data = resp.data;
+          this.transpoSetup_Data = transpoSetup_Data;
         }
       } catch (err) {
         // Handle Error Here
@@ -1764,7 +2157,11 @@ export default {
           this.clientName = resp.data.data.CLIENT_NAME;
           this.purpose = resp.data.data.DESCRIPTION;
 
-          this.amount = resp.data.data.REQUESTED_AMT;
+          // this.amount = resp.data.data.REQUESTED_AMT;
+          this.amount = parseFloat(resp.data.data.REQUESTED_AMT).toLocaleString(
+            undefined,
+            { minimumFractionDigits: 2 }
+          );
 
           this.guid = resp.data.data.GUID;
         }
@@ -1924,7 +2321,7 @@ export default {
         if (resp.status === 200) {
           // this.selectedFile = resp.data.data;
           this.inprogressId = resp.data[0].inpId;
-          console.log(this.inprogressId);
+          // console.log(this.inprogressId);
         }
       } catch (err) {
         // Handle Error Here
@@ -1949,45 +2346,88 @@ export default {
 
     // Expense CRUD
     insert_ExpenseType() {
-      const addData = {
-        id: this.i++,
-        CLIENT_NAME: this.itemclientName.name,
-        DESCRIPTION: this.expenseType_Remarks,
-        AMOUNT: this.expenseType_Amount,
-        CLIENT_ID: this.itemclientName.code,
-        EXPENSE_TYPE: this.itemmodalExpenseType.name,
-        date_: this.expenseType_Date,
-      };
-      this.expenseType_Data.push(addData);
+      this.attemptXpInsert = true;
+      const validated = this.validate_expenseType();
+      this.resetAlert();
+      if (validated) {
+        const addData = {
+          id: this.i++,
+          CLIENT_NAME: this.itemclientName.name,
+          DESCRIPTION: this.expenseType_Remarks,
+          AMOUNT: this.expenseType_Amount,
+          CLIENT_ID: this.itemclientName.code,
+          EXPENSE_TYPE: this.itemmodalExpenseType.name,
+          date_: this.expenseType_Date,
+        };
+        this.expenseType_Data.push(addData);
+        this.clear_expenseType();
+        this.attemptXpInsert = false;
+
+        this.addAlert("Success", "Expense details added successfully!", "true");
+      } else {
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
+    },
+    clear_expenseType() {
+      this.expenseType_Date = null;
+      this.itemclientName = {};
+      this.expenseType_Amount = "";
+      this.itemmodalExpenseType = {};
+      this.expenseType_RealAmount = "";
+      this.expenseType_Remarks = "";
+    },
+
+    clear_transpo() {
+      this.transpoSetup_Date = null;
+      this.itemclientName = {};
+      this.itemtranspoSetup = {};
+      this.transpoSetup_Amount = "";
+      this.transpoSetup_RealAmount = "";
+      this.transpoSetup_From = "";
+      this.transpoSetup_to = "";
+      this.transpoSetup_Remarks = "";
     },
     update_ExpenseType() {
-      const addData = {
-        id: this.expenseType_EditData.id,
-        CLIENT_NAME: this.itemclientName.name,
-        DESCRIPTION: this.expenseType_Remarks,
-        AMOUNT: this.expenseType_Amount,
-        CLIENT_ID: this.itemclientName.code,
-        EXPENSE_TYPE: this.itemmodalExpenseType.name,
-        date_: this.expenseType_Date,
-      };
+      this.attemptXpInsert = true;
+      const validated = this.validate_expenseType();
+      this.resetAlert();
+      if (validated) {
+        // start
+        const addData = {
+          id: this.expenseType_EditData.id,
+          CLIENT_NAME: this.itemclientName.name,
+          DESCRIPTION: this.expenseType_Remarks,
+          AMOUNT: this.expenseType_Amount,
+          CLIENT_ID: this.itemclientName.code,
+          EXPENSE_TYPE: this.itemmodalExpenseType.name,
+          date_: this.expenseType_Date,
+        };
 
-      this.expenseType_Data.push(addData);
-      this.expenseType_EditData = "";
-      // this.liquidation.push(this.editliquidation)
-      this.expenseType_Data.sort(function (a, b) {
-        return a.id - b.id;
-      });
+        this.expenseType_Data.push(addData);
+        this.expenseType_EditData = "";
+        this.expenseType_Data.splice(this.setIndex, 1);
 
-      console.log(addData.id);
+        // this.liquidation.push(this.editliquidation)
+        this.expenseType_Data.sort(function (a, b) {
+          return a.id - b.id;
+        });
+        this.clear_expenseType();
+        this.attemptXpInsert = false;
+        // end
+        this.addAlert("Success", "Expense details added successfully!", "true");
+      } else {
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
     },
 
     edit_ExpenseType(index) {
       this.isButton = false;
       const expenseType_Data = this.expenseType_Data[index];
       this.expenseType_EditData = expenseType_Data;
-      this.expenseType_Data.splice(index, 1);
+      // this.expenseType_Data.splice(index, 1);
+      this.setIndex = index;
 
-      console.log(expenseType_Data);
+      // console.log(expenseType_Data);
 
       this.itemclientName = {
         code: expenseType_Data.CLIENT_ID,
@@ -2007,54 +2447,126 @@ export default {
       this.expenseType_Data.splice(index, 1);
     },
 
+    validate_expenseType() {
+      if (
+        !this.missingXPDateNeeded &&
+        !this.missingXPClientItem &&
+        !this.missingXPAmount &&
+        !this.missingXPType &&
+        !this.missingXPRemarks
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    validate_Transpo() {
+      if (
+        !this.missingTDDateNeeded &&
+        !this.missingTDClientItem &&
+        !this.missingTDMot &&
+        !this.missingTDAmount &&
+        !this.missingTDFrom &&
+        !this.missingTDTo &&
+        !this.missingTDRemarks
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    validateModalDefault() {
+      if (!this.missingModalRecipient === true) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    // modal td & xd
+    closeModal() {
+      this.clear_expenseType();
+      this.clear_transpo();
+      this.resetAlert();
+      this.attemptXpInsert = false;
+      this.attemptTdInsert = false;
+    },
+
     // Transpo Crud
     insert_transpoSetup() {
-      const addData = {
-        id: this.i++,
-        CLIENT_NAME: this.itemclientName.name,
-        DESTINATION_FRM: this.transpoSetup_From,
-        DESTINATION_TO: this.transpoSetup_to,
-        DESCRIPTION: this.transpoSetup_Remarks,
-        AMT_SPENT: this.transpoSetup_Amount,
-        MOT: this.itemtranspoSetup.name,
-        CLIENT_ID: this.itemclientName.code,
-        date_: this.transpoSetup_Date,
-      };
-      this.transpoSetup_Data.push(addData);
+      this.attemptTdInsert = true;
+      const validated = this.validate_Transpo();
+      this.resetAlert();
+      if (validated) {
+        const addData = {
+          id: this.i++,
+          CLIENT_NAME: this.itemclientName.name,
+          DESTINATION_FRM: this.transpoSetup_From,
+          DESTINATION_TO: this.transpoSetup_to,
+          DESCRIPTION: this.transpoSetup_Remarks,
+          AMT_SPENT: this.transpoSetup_Amount,
+          MOT: this.itemtranspoSetup.name,
+          CLIENT_ID: this.itemclientName.code,
+          date_: this.transpoSetup_Date,
+        };
+        this.transpoSetup_Data.push(addData);
+        this.clear_expenseType();
+        this.clear_transpo();
+        this.attemptTdInsert = false;
 
-      // console.log(this.transpoSetup_Data);
+        this.addAlert("Success", "Expense details added successfully!", "true");
+      } else {
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
     },
 
     update_transpoSetup() {
-      const addData = {
-        id: this.transpoSetup_Data.id,
-        CLIENT_NAME: this.itemclientName.name,
-        DESTINATION_FRM: this.transpoSetup_From,
-        DESTINATION_TO: this.transpoSetup_to,
-        DESCRIPTION: this.transpoSetup_Remarks,
-        AMT_SPENT: this.transpoSetup_Amount,
-        MOT: this.itemtranspoSetup.name,
-        CLIENT_ID: this.itemclientName.code,
-        date_: this.transpoSetup_Date,
-      };
+      this.attemptTdInsert = true;
+      const validated = this.validate_Transpo();
+      this.resetAlert();
 
-      this.transpoSetup_Data.push(addData);
-      this.transpoSetup_EditData = "";
+      if (validated) {
+        const addData = {
+          id: this.transpoSetup_EditData.id,
+          CLIENT_NAME: this.itemclientName.name,
+          DESTINATION_FRM: this.transpoSetup_From,
+          DESTINATION_TO: this.transpoSetup_to,
+          DESCRIPTION: this.transpoSetup_Remarks,
+          AMT_SPENT: this.transpoSetup_Amount,
+          MOT: this.itemtranspoSetup.name,
+          CLIENT_ID: this.itemclientName.code,
+          date_: this.transpoSetup_Date,
+        };
+        this.transpoSetup_Data.push(addData);
+        this.transpoSetup_EditData = "";
+        this.transpoSetup_Data.splice(this.setIndex, 1);
 
-      this.transpoSetup_Data.sort(function (a, b) {
-        return a.id - b.id;
-      });
+        this.transpoSetup_Data.sort(function (a, b) {
+          return a.id - b.id;
+        });
 
-      console.log(addData.id);
+        this.clear_expenseType();
+        this.clear_transpo();
+        this.attemptTdInsert = false;
+        this.addAlert(
+          "Success",
+          "Transportation details added successfully!",
+          "true"
+        );
+      } else {
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
     },
 
     edit_transpoSetup(index) {
       this.isButton = false;
       const transpoSetup_Data = this.transpoSetup_Data[index];
       this.transpoSetup_EditData = transpoSetup_Data;
-      this.transpoSetup_Data.splice(index, 1);
+      this.setIndex = index;
 
-      console.log(transpoSetup_Data);
+      // console.log(transpoSetup_Data);
 
       this.itemclientName = {
         code: transpoSetup_Data.CLIENT_ID,
@@ -2157,7 +2669,7 @@ export default {
         realAmount = realAmount.replace(/,/g, "");
       }
       this.realAmount = realAmount;
-      console.log(this.realAmount);
+      // console.log(this.realAmount);
 
       // put caret back in the right position
       var updated_len = input_val.length;
@@ -2171,15 +2683,6 @@ export default {
       newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
     },
 
-    // remove existing attached files
-    removeAttachedFile(index, id, filename, filepath) {
-      const attachmentId = { id: id, filename: filename, filepath: filepath };
-      this.removedAttachedFilesId.push(attachmentId);
-      this.selectedFile.splice(index, 1);
-
-      console.log(this.removedAttachedFilesId);
-    },
-
     // Add new files scripts
     onFileSelected(event) {
       let selectedFiles = event.target.files;
@@ -2187,6 +2690,21 @@ export default {
         this.selectedFileNew.push(selectedFiles[i]);
       }
       this.setFilePreviewNew();
+    },
+
+    onInputChange(event) {
+      let selectedFiles = event.dataTransfer.files;
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.selectedFileNew.push(selectedFiles[i]);
+      }
+      this.setFilePreviewNew();
+    },
+
+    // preview function of newly added files
+    filePreviewNew(i) {
+      // console.log(i)
+      const url = this.filespreviewNew[i].link;
+      window.open(url, "_blank", "resizable=yes");
     },
 
     // set a preview function for newly added files
@@ -2203,17 +2721,19 @@ export default {
       this.filespreviewNew = fileContainer;
     },
 
-    // preview function of newly added files
-    filePreviewNew(i) {
-      // console.log(i)
-      const url = this.filespreviewNew[i].link;
-      window.open(url, "_blank", "resizable=yes");
-    },
-
     // remove newly added files
     removeFileNew(i) {
       this.selectedFileNew.splice(i, 1);
       this.setFilePreviewNew();
+    },
+
+    // remove existing attached files
+    removeAttachedFile(index, id, filename, filepath) {
+      const attachmentId = { id: id, filename: filename, filepath: filepath };
+      this.removedAttachedFilesId.push(attachmentId);
+      this.selectedFile.splice(index, 1);
+
+      // console.log(this.removedAttachedFilesId);
     },
 
     // End Attachments
@@ -2238,6 +2758,163 @@ export default {
       // Clean up
       event.currentTarget.classList.add("bg-light");
       event.currentTarget.classList.remove("bg-white");
+    },
+
+    // Amount aldrin script
+
+    formatNumber(n) {
+      // format number 1000000 to 1,234,567
+      return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+
+    formatCurrencyExpense(input, blur) {
+      // appends $ to value, validates decimal side
+      // and puts cursor back in right position.
+
+      // get input value
+      let input_val = this.expenseType_Amount;
+
+      // don't validate empty input
+      if (input_val === "") {
+        return;
+      }
+
+      // original length
+      let original_len = input_val.length;
+
+      // initial caret position
+      let caret_pos = input.target.selectionStart;
+
+      // check for decimal
+      if (input_val.indexOf(".") >= 0) {
+        // get position of first decimal
+        // this prevents multiple decimals from
+        // being entered
+        let decimal_pos = input_val.indexOf(".");
+
+        // split number by decimal point
+        let left_side = input_val.substring(0, decimal_pos);
+        let right_side = input_val.substring(decimal_pos);
+
+        // add commas to left side of number
+        left_side = this.formatNumber(left_side);
+
+        // validate right side
+        right_side = this.formatNumber(right_side);
+
+        // On blur make sure 2 numbers after decimal
+        if (blur === "blur") {
+          right_side += "00";
+        }
+
+        // Limit decimal to only 2 digits
+        right_side = right_side.substring(0, 2);
+
+        // join number by .
+        input_val = left_side + "." + right_side;
+      } else {
+        // no decimal entered
+        // add commas to number
+        // remove all non-digits
+        input_val = this.formatNumber(input_val);
+        // input_val = input_val;
+
+        // final formatting
+        if (blur === "blur") {
+          input_val += ".00";
+        }
+      }
+
+      // send updated string to input
+      this.expenseType_Amount = input_val;
+      input.target.value = input_val;
+
+      let realAmount = input_val;
+      if (realAmount.indexOf(",") !== -1) {
+        realAmount = realAmount.replace(/,/g, "");
+      }
+      this.expenseType_RealAmount = realAmount;
+      // console.log(this.expenseType_RealAmount);
+
+      // put caret back in the right position
+      let updated_len = input_val.length;
+      caret_pos = updated_len - original_len + caret_pos;
+      input.target.setSelectionRange(caret_pos, caret_pos);
+    },
+
+    formatCurrencyTranspo(input, blur) {
+      // appends $ to value, validates decimal side
+      // and puts cursor back in right position.
+
+      // get input value
+      let input_val = this.transpoSetup_Amount;
+
+      // don't validate empty input
+      if (input_val === "") {
+        return;
+      }
+
+      // original length
+      let original_len = input_val.length;
+
+      // initial caret position
+      let caret_pos = input.target.selectionStart;
+
+      // check for decimal
+      if (input_val.indexOf(".") >= 0) {
+        // get position of first decimal
+        // this prevents multiple decimals from
+        // being entered
+        let decimal_pos = input_val.indexOf(".");
+
+        // split number by decimal point
+        let left_side = input_val.substring(0, decimal_pos);
+        let right_side = input_val.substring(decimal_pos);
+
+        // add commas to left side of number
+        left_side = this.formatNumber(left_side);
+
+        // validate right side
+        right_side = this.formatNumber(right_side);
+
+        // On blur make sure 2 numbers after decimal
+        if (blur === "blur") {
+          right_side += "00";
+        }
+
+        // Limit decimal to only 2 digits
+        right_side = right_side.substring(0, 2);
+
+        // join number by .
+        input_val = left_side + "." + right_side;
+      } else {
+        // no decimal entered
+        // add commas to number
+        // remove all non-digits
+        input_val = this.formatNumber(input_val);
+        // input_val = input_val;
+
+        // final formatting
+        if (blur === "blur") {
+          input_val += ".00";
+        }
+      }
+
+      // send updated string to input
+      this.transpoSetup_Amount = input_val;
+      input.target.value = input_val;
+
+      let realAmount = input_val;
+      if (realAmount.indexOf(",") !== -1) {
+        realAmount = realAmount.replace(/,/g, "");
+      }
+      this.transpoSetup_RealAmount = realAmount;
+      // console.log(this.transpoSetup_RealAmount);
+
+      // put caret back in the right position
+      let updated_len = input_val.length;
+      caret_pos = updated_len - original_len + caret_pos;
+      input.target.setSelectionRange(caret_pos, caret_pos);
     },
   },
 };

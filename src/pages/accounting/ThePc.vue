@@ -319,53 +319,44 @@
             <label
               for="assetsFieldHandle"
               style="width: 100%; cursor: pointer"
-              class="block p-5 cursor-pointer"
+              class="block pt-3 cursor-pointer"
             >
               <span class="text-secondary">Click here or drop file(s)</span>
-              <br />
-              <!-- <small
-                class="text-danger p-0 m-0"
-                v-if="missingAttachments && attemptNextTwo"
-                >Attachments is required!</small
-              > -->
-              <ul
-                class="mt-4 text-decoration-none ulUpload"
-                v-if="this.selectedFile.length"
-                v-cloak
+            </label>
+
+            <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
+              <li
+                class="text-sm mt-2"
+                v-for="file in selectedFile"
+                :key="file.name"
               >
-                <li
-                  class="text-sm mt-2"
-                  v-for="file in selectedFile"
-                  :key="file.name"
-                >
-                  <div class="row d-flex justify-content-center">
-                    <div class="col-md-4 d-flex">
-                      <div class="col text-left">
-                        <span>{{ file.name }}</span>
-                      </div>
-                      <div class="co-2">
-                        <button
-                          class="btn btn-danger btn-sm"
-                          type="button"
-                          @click="remove(selectedFile.indexOf(file))"
-                          title="Remove file"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      <div class="col-2">
-                        <button
-                          @click="preview(selectedFile.indexOf(file))"
-                          class="btn btn-secondary btn-sm"
-                        >
-                          Preview
-                        </button>
-                      </div>
+                <div class="row d-flex justify-content-center">
+                  <div class="col-md-4 d-flex">
+                    <div class="col text-left">
+                      <span>{{ file.name }}</span>
+                    </div>
+                    <div class="co-2">
+                      <button
+                        class="btn btn-danger btn-sm"
+                        type="button"
+                        @click="remove(selectedFile.indexOf(file))"
+                        title="Remove file"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div class="col-2">
+                      <button
+                        @click="preview(selectedFile.indexOf(file))"
+                        class="btn btn-secondary btn-sm"
+                      >
+                        Preview
+                      </button>
                     </div>
                   </div>
-                </li>
-              </ul>
-            </label>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
         <!-- / The Attachments -->
@@ -645,7 +636,7 @@ export default {
     },
 
     missingAmount() {
-      if (this.amount.length === 0) {
+      if (this.amount.length === 0 || parseFloat(this.amount) < 1) {
         return true;
       } else {
         return false;

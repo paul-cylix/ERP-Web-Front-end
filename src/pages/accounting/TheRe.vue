@@ -1096,7 +1096,6 @@
                       <input
                         type="text"
                         class="form-control form-control-sm py-3"
-                        id="modalamount"
                         v-model.trim="transpoSetup_to"
                       />
                       <small
@@ -1652,8 +1651,8 @@ export default {
       this.clear_expenseType();
       this.clear_transpo();
       this.resetAlert();
-      this.attemptXpSubmit = false;
-      this.attemptTdSubmit = false;
+      this.attemptXpInsert = false;
+      this.attemptTdInsert = false;
     },
 
     openToast(position, variant, message) {
