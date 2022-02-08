@@ -307,7 +307,13 @@
                 <td>{{ item.CLIENT_NAME }}</td>
                 <td>{{ item.EXPENSE_TYPE }}</td>
                 <td>{{ item.DESCRIPTION }}</td>
-                <td>{{ item.AMOUNT }}</td>
+                <td>
+                  {{
+                    parseFloat(item.AMOUNT).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                    })
+                  }}
+                </td>
               </tr>
 
               <tr>
@@ -353,7 +359,13 @@
                 <td>{{ item.DESTINATION_TO }}</td>
                 <td>{{ item.MOT }}</td>
                 <td>{{ item.DESCRIPTION }}</td>
-                <td>{{ item.AMT_SPENT }}</td>
+                <td>
+                  {{
+                    parseFloat(item.AMT_SPENT).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                    })
+                  }}
+                </td>
               </tr>
 
               <tr>
@@ -380,22 +392,23 @@
           "
           id="app"
         >
-          <div class="p-5 col-md-12 rounded" id="uploadContainer">
-            <label for="assetsFieldHandle" class="block cursor-pointer">
+          <div class="pt-2 col-md-12 rounded" id="uploadContainer">
+            <label
+              for="assetsFieldHandle"
+              style="width: 100%; cursor: pointer"
+              class="block pt-3 cursor-pointer"
+            >
               <span class="text-secondary">List of Attached File</span>
             </label>
-            <!-- <aside class="d-flex align-items-center justify-content-center"> -->
-            <ul class="mt-4 text-decoration-none ulUpload">
+
+            <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
               <li
                 class="text-sm mt-2"
-                v-for="(file, index) in selectedFile"
+                v-for="file in selectedFile"
                 :key="file.id"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 + "." }}</b>
-                    </div>
                     <div class="col text-left">
                       <span>{{ file.filename }}</span>
                     </div>
@@ -559,7 +572,13 @@
                     <td>{{ item.CLIENT_NAME }}</td>
                     <td>{{ item.EXPENSE_TYPE }}</td>
                     <td>{{ item.DESCRIPTION }}</td>
-                    <td>{{ item.AMOUNT }}</td>
+                    <td>
+                      {{
+                        parseFloat(item.AMOUNT).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                        })
+                      }}
+                    </td>
                   </tr>
 
                   <tr>
@@ -617,7 +636,14 @@
                     <td>{{ item.DESTINATION_TO }}</td>
                     <td>{{ item.MOT }}</td>
                     <td>{{ item.DESCRIPTION }}</td>
-                    <td>{{ item.AMT_SPENT }}</td>
+                    <!-- <td>{{ item.AMT_SPENT }}</td> -->
+                    <td>
+                      {{
+                        parseFloat(item.AMT_SPENT).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                        })
+                      }}
+                    </td>
                   </tr>
 
                   <tr>
@@ -655,14 +681,12 @@
               >
                 <thead>
                   <tr>
-                    <th style="width: 5%">#</th>
                     <th style="width: 80%">Filename</th>
-                    <th style="width: 15%">Actions</th>
+                    <th style="width: 20%">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(file, index) in selectedFile" :key="file.id">
-                    <td>{{ index + 1 }}</td>
+                  <tr v-for="file in selectedFile" :key="file.id">
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
@@ -762,7 +786,12 @@
     <!-- /.card -->
 
     <!-- Modal -->
-    <div class="modal fade" id="modal-default">
+    <div
+      class="modal fade"
+      id="modal-default"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <!-- Overlay Loading Spinner -->
@@ -780,11 +809,18 @@
               class="close"
               data-dismiss="modal"
               aria-label="Close"
+              @click="closeDefaultModal()"
             >
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
+            <the-alert
+              v-show="isAlert"
+              v-bind:header="this.header"
+              v-bind:message="this.message"
+              v-bind:type="this.type"
+            ></the-alert>
             <div class="row" v-if="isForClarity">
               <div class="col-md-12">
                 <div class="form-group">
@@ -797,6 +833,11 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalRecipient && attemptClarify"
+                    >Recipient is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -808,7 +849,7 @@
                     class="form-control"
                     id="remarks"
                     rows="5"
-                    v-model="remarks"
+                    v-model.trim="remarks"
                     placeholder="Please input request remarks here!"
                   ></textarea>
                 </div>
@@ -856,26 +897,20 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
-        //Navigate
+    //Navigate
     $route(newRoute) {
-   
       this.counter = 0;
       this.remarks = "";
       console.log(newRoute);
 
       this.todaysDate();
       this.getReInprogress(
-      this.$route.params.id,
-      this.form,
-      this.companyId,
-      this.loggedUserId
-    );
-
+        this.$route.params.id,
+        this.form,
+        this.companyId,
+        this.loggedUserId
+      );
     },
-
-
-
-
   },
   computed: {
     classA() {
@@ -908,9 +943,11 @@ export default {
     expenseType_totalAmount() {
       if (this.expenseType_Data.length > 0) {
         const total = this.expenseType_Data
-          .map((expenseType_Data) => parseInt(expenseType_Data.AMOUNT))
+          .map((expenseType_Data) =>
+            parseFloat(expenseType_Data.AMOUNT.replace(/,/g, ""))
+          )
           .reduce((acc, expenseType_Data) => expenseType_Data + acc);
-        return total;
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
       }
@@ -920,11 +957,21 @@ export default {
     transpoSetup_totalAmount() {
       if (this.transpoSetup_Data.length > 0) {
         const total = this.transpoSetup_Data
-          .map((transpoSetup_Data) => parseInt(transpoSetup_Data.AMT_SPENT))
+          .map((transpoSetup_Data) =>
+            parseFloat(transpoSetup_Data.AMT_SPENT.replace(/,/g, ""))
+          )
           .reduce((acc, transpoSetup_Data) => transpoSetup_Data + acc);
-        return total;
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
+      }
+    },
+
+    missingModalRecipient() {
+      if (this.itemrecipient.code === undefined) {
+        return true;
+      } else {
+        return false;
       }
     },
 
@@ -939,6 +986,7 @@ export default {
   data() {
     return {
       counter: 0,
+      attemptClarify: false,
       // Request Details
       referenceNumber: "",
       requestDate: "",
@@ -1036,6 +1084,12 @@ export default {
 
       isLoading: false,
       isLoadingModal: false,
+
+      // The Alert
+      isAlert: false,
+      header: "", // Syccess or Failed
+      message: "", // added successfully
+      type: "", // true or false
 
       remarks: "",
 
@@ -1143,46 +1197,86 @@ export default {
 
       if (type === "Clarify") {
         // console.log("Clarify");
+        this.attemptClarify = true;
 
-        const fd = new FormData();
+        this.resetAlert();
+        const validated = this.validateModalDefault();
+        if (validated) {
+          // start
+          const fd = new FormData();
+          fd.append("form", this.form);
+          fd.append("processId", this.$route.params.id);
+          fd.append("loggedUserId", this.loggedUserId);
+          fd.append("companyId", this.companyId);
+          fd.append("recipientId", this.itemrecipient.code);
+          fd.append("remarks", this.remarks);
+          fd.append("inprogressId", this.inprogressId);
+          fd.append("loggedUserFullname", this.loggedUserFullName);
 
-        fd.append("form", this.form);
-        fd.append("processId", this.$route.params.id);
-        fd.append("loggedUserId", this.loggedUserId);
-        fd.append("companyId", this.companyId);
-        fd.append("recipientId", this.itemrecipient.code);
-        fd.append("remarks", this.remarks);
-        fd.append("inprogressId", this.inprogressId);
-        fd.append("loggedUserFullname", this.loggedUserFullName);
+          try {
+            const res = await axios.post(
+              "http://127.0.0.1:8000/api/send-clarity",
+              fd
+            );
 
-        try {
-          const res = await axios.post(
-            "http://127.0.0.1:8000/api/send-clarity",
-            fd
-          );
-
-          if (res.status === 200) {
+            if (res.status === 200) {
+              this.isLoadingModal = false;
+              document.getElementById("modalCloseButton").click();
+              this.openToast("top-right", "success", res.data.message);
+              this.$router.replace("/approvals");
+            } else {
+              this.isLoadingModal = false;
+              document.getElementById("modalCloseButton").click();
+              this.openToast("top-right", "error", "Please Try again laer");
+            }
+          } catch (err) {
+            // Handle Error Here
+            // console.error(err);
             this.isLoadingModal = false;
             document.getElementById("modalCloseButton").click();
-            this.openToast("top-right", "success", res.data.message);
-            this.$router.replace("/approvals");
-          } else {
-            this.isLoadingModal = false;
-            document.getElementById("modalCloseButton").click();
-            this.openToast("top-right", "error", 'Please Try again laer');
+            this.openToast("top-right", "error", err);
           }
-        } catch (err) {
-          // Handle Error Here
-          // console.error(err);
+          // end
+        } else {
           this.isLoadingModal = false;
-          document.getElementById("modalCloseButton").click();
-          this.openToast("top-right", "error", err);
+          this.addAlert("Failed", "Please select recipent!", "false");
         }
       }
     },
 
     setTitle(title) {
       this.title = title;
+    },
+
+    resetAlert() {
+      this.isAlert = false;
+      this.header = "";
+      this.message = "";
+      this.type = "";
+    },
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
+    },
+
+    validateModalDefault() {
+      if (!this.missingModalRecipient === true) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    closeDefaultModal() {
+      this.resetModal();
+      this.resetAlert();
+    },
+
+    resetModal() {
+      this.attemptClarify = false;
+      this.remarks = "";
     },
 
     setButton() {
@@ -1202,15 +1296,34 @@ export default {
       });
     },
 
+    // // Request Details
+    // todaysDate() {
+    //   const today = new Date();
+    //   const dd = today.getDate();
+    //   const mm = today.getMonth() + 1;
+    //   const yyyy = today.getFullYear();
+    //   const todaysDate = yyyy + "-" + mm + "-" + dd;
+    //   this.requestDate = todaysDate;
+    //   // return todaysDate;
+    // },
+
     // Request Details
     todaysDate() {
       const today = new Date();
-      const dd = today.getDate();
-      const mm = today.getMonth() + 1;
+      let dd = today.getDate();
+      let mm = today.getMonth() + 1;
       const yyyy = today.getFullYear();
+
+      if (mm < 10) {
+        mm = `0${mm}`;
+      }
+
+      if (dd < 10) {
+        dd = `0${dd}`;
+      }
+
       const todaysDate = yyyy + "-" + mm + "-" + dd;
       this.requestDate = todaysDate;
-      // return todaysDate;
     },
 
     getReInprogress(id, form, companyId, loggedUserId) {
@@ -1268,7 +1381,11 @@ export default {
             this.purpose = responseOne.data.data.DESCRIPTION;
             this.payeeName = responseOne.data.data.PAYEE;
 
-            this.amount = responseOne.data.data.TOTAL_AMT_SPENT;
+            // this.amount = responseOne.data.data.TOTAL_AMT_SPENT;
+            this.amount = parseFloat(
+              responseOne.data.data.TOTAL_AMT_SPENT
+            ).toLocaleString(undefined, { minimumFractionDigits: 2 });
+
             this.uid = responseOne.data.data.UID;
 
             if (responseOne.data.data.UID === this.loggedUserId) {

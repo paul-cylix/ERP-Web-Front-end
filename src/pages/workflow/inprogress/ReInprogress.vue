@@ -307,7 +307,7 @@
                 <td>{{ item.CLIENT_NAME }}</td>
                 <td>{{ item.EXPENSE_TYPE }}</td>
                 <td>{{ item.DESCRIPTION }}</td>
-                <td>{{ item.AMOUNT }}</td>
+                <td>{{ parseFloat(item.AMOUNT).toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</td>
               </tr>
 
               <tr>
@@ -353,7 +353,7 @@
                 <td>{{ item.DESTINATION_TO }}</td>
                 <td>{{ item.MOT }}</td>
                 <td>{{ item.DESCRIPTION }}</td>
-                <td>{{ item.AMT_SPENT }}</td>
+                <td>{{ parseFloat(item.AMT_SPENT).toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</td>
               </tr>
 
               <tr>
@@ -380,22 +380,26 @@
           "
           id="app"
         >
-          <div class="p-5 col-md-12 rounded" id="uploadContainer">
-               <label for="assetsFieldHandle" class="block cursor-pointer">
+          <div class="pt-2 col-md-12 rounded" id="uploadContainer">
+            <label
+              for="assetsFieldHandle"
+              style="width: 100%; cursor: pointer"
+              class="block pt-3 cursor-pointer"
+            >
               <span class="text-secondary">List of Attached File</span>
             </label>
-            <!-- <aside class="d-flex align-items-center justify-content-center"> -->
-            <ul class="mt-4 text-decoration-none ulUpload">
+            
+            
+            
+            <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
               <li
                 class="text-sm mt-2"
-                v-for="(file, index) in selectedFile"
+                v-for="(file) in selectedFile"
                 :key="file.id"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 + "." }}</b>
-                    </div>
+  
                     <div class="col text-left">
                       <span>{{ file.filename }}</span>
                     </div>
@@ -559,7 +563,7 @@
                     <td>{{ item.CLIENT_NAME }}</td>
                     <td>{{ item.EXPENSE_TYPE }}</td>
                     <td>{{ item.DESCRIPTION }}</td>
-                    <td>{{ item.AMOUNT }}</td>
+                    <td>{{ parseFloat(item.AMOUNT).toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</td>
                   </tr>
 
                   <tr>
@@ -617,7 +621,7 @@
                     <td>{{ item.DESTINATION_TO }}</td>
                     <td>{{ item.MOT }}</td>
                     <td>{{ item.DESCRIPTION }}</td>
-                    <td>{{ item.AMT_SPENT }}</td>
+                    <td>{{ parseFloat(item.AMT_SPENT).toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</td>
                   </tr>
 
                   <tr>
@@ -852,9 +856,9 @@ export default {
     expenseType_totalAmount() {
       if (this.expenseType_Data.length > 0) {
         const total = this.expenseType_Data
-          .map((expenseType_Data) => parseInt(expenseType_Data.AMOUNT))
+          .map((expenseType_Data) => parseFloat(expenseType_Data.AMOUNT.replace(/,/g, "")))
           .reduce((acc, expenseType_Data) => expenseType_Data + acc);
-        return total;
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
       }
@@ -864,9 +868,9 @@ export default {
     transpoSetup_totalAmount() {
       if (this.transpoSetup_Data.length > 0) {
         const total = this.transpoSetup_Data
-          .map((transpoSetup_Data) => parseInt(transpoSetup_Data.AMT_SPENT))
+          .map((transpoSetup_Data) => parseFloat(transpoSetup_Data.AMT_SPENT.replace(/,/g, "")))
           .reduce((acc, transpoSetup_Data) => transpoSetup_Data + acc);
-        return total;
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
       }
@@ -1097,7 +1101,7 @@ export default {
             this.purpose = responseOne.data.data.DESCRIPTION;
             this.payeeName = responseOne.data.data.PAYEE;
 
-            this.amount = responseOne.data.data.TOTAL_AMT_SPENT;
+            this.amount = parseFloat(responseOne.data.data.TOTAL_AMT_SPENT).toLocaleString(undefined, { minimumFractionDigits: 2 });
             this.uid = responseOne.data.data.UID;
 
             if (responseOne.data.data.UID === this.loggedUserId) {

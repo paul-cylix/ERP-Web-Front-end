@@ -468,53 +468,49 @@
             <label
               for="assetsFieldHandle"
               style="width: 100%; cursor: pointer"
-              class="block p-5 cursor-pointer"
+              class="block pt-3 cursor-pointer"
             >
               <span class="text-secondary">Click here or drop file(s)</span>
-              <br />
-              <small
-                class="text-danger p-0 m-0"
-                v-if="missingAttachments && attemptNextThree"
-                >Attachments is required!</small
+            </label>
+            <small
+              class="text-danger p-0 m-0"
+              v-if="missingAttachments && attemptNextThree"
+              >Attachments is required!</small
+            >
+
+            <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
+              <li
+                class="text-sm mt-2"
+                v-for="file in selectedFile"
+                :key="file.name"
               >
-              <ul
-                class="mt-4 text-decoration-none ulUpload"
-                v-if="this.selectedFile.length"
-                v-cloak
-              >
-                <li
-                  class="text-sm mt-2"
-                  v-for="file in selectedFile"
-                  :key="file.name"
-                >
-                  <div class="row d-flex justify-content-center">
-                    <div class="col-md-4 d-flex">
-                      <div class="col text-left">
-                        <span>{{ file.name }}</span>
-                      </div>
-                      <div class="co-2">
-                        <button
-                          class="btn btn-danger btn-sm"
-                          type="button"
-                          @click="remove(selectedFile.indexOf(file))"
-                          title="Remove file"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      <div class="col-2">
-                        <button
-                          @click="preview(selectedFile.indexOf(file))"
-                          class="btn btn-secondary btn-sm"
-                        >
-                          Preview
-                        </button>
-                      </div>
+                <div class="row d-flex justify-content-center">
+                  <div class="col-md-4 d-flex">
+                    <div class="col text-left">
+                      <span>{{ file.name }}</span>
+                    </div>
+                    <div class="co-2">
+                      <button
+                        class="btn btn-danger btn-sm"
+                        type="button"
+                        @click="remove(selectedFile.indexOf(file))"
+                        title="Remove file"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div class="col-2">
+                      <button
+                        @click="preview(selectedFile.indexOf(file))"
+                        class="btn btn-secondary btn-sm"
+                      >
+                        Preview
+                      </button>
                     </div>
                   </div>
-                </li>
-              </ul>
-            </label>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
         <!-- / The Attachments -->
@@ -761,7 +757,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(file) in selectedFile" :key="file.name">
+                  <tr v-for="file in selectedFile" :key="file.name">
                     <td>{{ file.name }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
@@ -1302,7 +1298,7 @@ export default {
     },
 
     missingAmount() {
-      if (this.amount.length === 0) {
+      if (this.amount.length === 0 || parseFloat(this.amount) < 1) {
         return true;
       } else {
         return false;
@@ -1334,7 +1330,10 @@ export default {
     },
 
     missingXPAmount() {
-      if (this.expenseType_Amount.length === 0) {
+      if (
+        this.expenseType_Amount.length === 0 ||
+        parseFloat(this.expenseType_Amount) < 1
+      ) {
         return true;
       } else {
         return false;
@@ -1382,7 +1381,10 @@ export default {
     },
 
     missingTDAmount() {
-      if (this.transpoSetup_Amount.length === 0) {
+      if (
+        this.transpoSetup_Amount.length === 0 ||
+        parseFloat(this.transpoSetup_Amount) < 1
+      ) {
         return true;
       } else {
         return false;
@@ -1429,11 +1431,11 @@ export default {
       if (this.expenseType_Data.length > 0) {
         let total = this.expenseType_Data
           .map((expenseType_Data) =>
-          // convert money type string to float
+            // convert money type string to float
             parseFloat(expenseType_Data.AMOUNT.replace(/,/g, ""))
           )
           .reduce((acc, expenseType_Data) => expenseType_Data + acc);
-          // convert to money type
+        // convert to money type
         return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
@@ -1445,11 +1447,11 @@ export default {
       if (this.transpoSetup_Data.length > 0) {
         let total = this.transpoSetup_Data
           .map((transpoSetup_Data) =>
-          // convert money type string to float
+            // convert money type string to float
             parseFloat(transpoSetup_Data.AMT_SPENT.replace(/,/g, ""))
           )
           .reduce((acc, transpoSetup_Data) => transpoSetup_Data + acc);
-          // convert to money type
+        // convert to money type
         return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
@@ -1465,7 +1467,6 @@ export default {
       attemptNextOne: false,
       attemptNextTwo: false,
       attemptNextThree: false,
-
 
       attemptXpSubmit: false,
       attemptTdSubmit: false,
@@ -1633,6 +1634,12 @@ export default {
       } else if (counter === 4) {
         if (!this.missingAttachments) {
           this.counter++;
+        } else {
+          this.openToast(
+            "top-right",
+            "warning",
+            "Please provide an attachments!"
+          );
         }
       }
     },
@@ -1741,7 +1748,11 @@ export default {
           // handle error
           console.log(error.data);
           this.isLoading = false;
-          this.openToast("top-right", "error", 'Please Contact the administrator! and try again later');
+          this.openToast(
+            "top-right",
+            "error",
+            "Please Contact the administrator! and try again later"
+          );
         })
         .then(() => {
           // always executed
@@ -1795,9 +1806,9 @@ export default {
           date_: this.transpoSetup_Date,
         };
 
+        this.transpoSetup_Data.splice(this.setIndex, 1);
         this.transpoSetup_Data.push(addData);
         this.transpoSetup_EditData = "";
-        this.transpoSetup_Data.splice(this.setIndex, 1);
 
         this.transpoSetup_Data.sort(function (a, b) {
           return a.id - b.id;
@@ -1805,8 +1816,11 @@ export default {
         this.clear_expenseType();
         this.clear_transpo();
         this.attemptTdSubmit = false;
-
-        this.addAlert("Success", "Expense details added successfully!", "true");
+        this.addAlert(
+          "Success",
+          "Transportation details added successfully!",
+          "true"
+        );
       } else {
         this.addAlert("Failed", "Please complete required fields!", "false");
       }
@@ -1959,7 +1973,6 @@ export default {
       const expenseType_Data = this.expenseType_Data[index];
       this.expenseType_EditData = expenseType_Data;
       this.setIndex = index;
-      console.log(expenseType_Data);
 
       this.itemclientName = {
         code: expenseType_Data.CLIENT_ID,

@@ -312,16 +312,12 @@
             <label
               for="assetsFieldHandle"
               style="width: 100%; cursor: pointer"
-              class="block p-5 cursor-pointer"
+              class="block pt-3 cursor-pointer"
             >
               <span class="text-secondary">Click here or drop file(s)</span>
-              <br />
+            </label>
 
-              <ul
-                class="mt-4 text-decoration-none ulUpload"
-                v-if="this.selectedFile.length"
-                v-cloak
-              >
+              <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                 <li
                   class="text-sm mt-2"
                   v-for="file in selectedFile"
@@ -354,7 +350,6 @@
                   </div>
                 </li>
               </ul>
-            </label>
           </div>
         </div>
         <!-- / The Attachments -->

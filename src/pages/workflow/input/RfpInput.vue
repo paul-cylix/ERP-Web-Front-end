@@ -235,12 +235,16 @@
           "
           id="app"
         >
-          <div class="p-5 col-md-12 rounded" id="uploadContainer">
-            <label for="assetsFieldHandle" class="block cursor-pointer">
+          <div class="pt-2 col-md-12 rounded" id="uploadContainer">
+              <label
+              for="assetsFieldHandle"
+              style="width: 100%; cursor: pointer"
+              class="block pt-3 cursor-pointer"
+            >
               <span class="text-secondary">List of Attached File</span>
             </label>
-            <!-- <aside class="d-flex align-items-center justify-content-center"> -->
-            <ul class="mt-4 text-decoration-none ulUpload">
+
+            <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
               <li
                 class="text-sm mt-2"
                 v-for="file in selectedFile"
@@ -539,11 +543,18 @@
               class="close"
               data-dismiss="modal"
               aria-label="Close"
+              @click="closeDefaultModal()"
             >
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
+            <the-alert
+              v-show="isAlert"
+              v-bind:header="this.header"
+              v-bind:message="this.message"
+              v-bind:type="this.type"
+            ></the-alert>
             <div class="row" v-if="isForClarity">
               <div class="col-md-12">
                 <div class="form-group">
@@ -556,6 +567,11 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalRecipient && attemptClarify"
+                    >Recipient is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -660,6 +676,14 @@ export default {
       return todaysDate;
     },
 
+    missingModalRecipient() {
+      if (this.itemrecipient.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     // show recipient if button clicked is clarify
     isForClarity() {
       if (this.title === "Clarify") {
@@ -672,6 +696,7 @@ export default {
   data() {
     return {
       counter: 0,
+      attemptClarify: false,
       // Request Details
       referenceNumber: "",
       requestDate: "",
@@ -711,6 +736,12 @@ export default {
       liquidation: [],
       inprogressId: "",
 
+      // The Alert
+      isAlert: false,
+      header: "", // Syccess or Failed
+      message: "", // added successfully
+      type: "", // true or false
+
       // approver 2
       loggedUserId: 12,
       loggedUserFirstName: "Carrie",
@@ -738,6 +769,34 @@ export default {
   },
 
   methods: {
+    closeDefaultModal() {
+      this.attemptClarify = false;
+      this.remarks = "";
+      this.itemrecipient = {};
+      this.resetAlert();
+    },
+
+    resetAlert() {
+      this.isAlert = false;
+      this.header = "";
+      this.message = "";
+      this.type = "";
+    },
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
+    },
+
+    validateModalDefault() {
+      if (!this.missingModalRecipient === true) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     getRfpApproval(id, form, companyId, loggedUserId) {
       this.isLoading = true;
       let showRfpMain = `http://127.0.0.1:8000/api/rfp-main/${id}`;
@@ -905,41 +964,86 @@ export default {
       }
 
       if (type === "Reject") {
-        console.log("Reject");
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/reject-request",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({
+              remarks: this.remarks,
+              processId: this.$route.params.id,
+              companyId: this.companyId,
+              form: this.form,
+              loggedUserId: this.loggedUserId,
+              referenceNumber: this.referenceNumber,
+            }),
+          }
+        );
+
+        const responseData = await response.json();
+        console.log(responseData.message);
+
+        this.isLoadingModal = false;
+        document.getElementById("modalCloseButton").click();
+
+        this.openToast("top-right", "success", responseData.message);
+        this.$router.replace("/approvals");
+
+        if (!response.ok) {
+          const error = new Error(
+            responseData.message ||
+              "Failed to authenticate. Check your login data."
+          );
+          console.log(error.message);
+
+          this.openToast("top-right", "error", error.message);
+          document.getElementById("modalCloseButton").click();
+        }
       }
 
       if (type === "Clarify") {
-        const fd = new FormData();
+        this.attemptClarify = true;
+        this.resetAlert();
+        const validated = this.validateModalDefault();
+        if (validated) {
+          const fd = new FormData();
 
-        fd.append("form", this.form);
-        fd.append("processId", this.$route.params.id);
-        fd.append("loggedUserId", this.loggedUserId);
-        fd.append("companyId", this.companyId);
-        fd.append("recipientId", this.itemrecipient.code);
-        fd.append("remarks", this.remarks);
-        fd.append("inprogressId", this.inprogressId);
-        fd.append("loggedUserFullname", this.loggedUserFullName);
-        fd.append("reference", this.referenceNumber);
+          fd.append("form", this.form);
+          fd.append("processId", this.$route.params.id);
+          fd.append("loggedUserId", this.loggedUserId);
+          fd.append("companyId", this.companyId);
+          fd.append("recipientId", this.itemrecipient.code);
+          fd.append("remarks", this.remarks);
+          fd.append("inprogressId", this.inprogressId);
+          fd.append("loggedUserFullname", this.loggedUserFullName);
+          fd.append("reference", this.referenceNumber);
 
-        axios
-          .post("http://127.0.0.1:8000/api/inputs-clarity", fd)
-          .then((res) => {
-            // handle success
-            document.getElementById("modalCloseButton").click();
-            // console.log(res);
-            this.openToast("top-right", "success", res.data.message);
-            this.$router.replace("/approvals");
-          })
-          .catch((error) => {
-            // handle error
-            console.log(error);
-            document.getElementById("modalCloseButton").click();
-            this.openToast("top-right", "error", error);
-          })
-          .then(() => {
-            // always executed
-            this.isLoadingModal = false;
-          });
+          axios
+            .post("http://127.0.0.1:8000/api/inputs-clarity", fd)
+            .then((res) => {
+              // handle success
+              document.getElementById("modalCloseButton").click();
+              // console.log(res);
+              this.openToast("top-right", "success", res.data.message);
+              this.$router.replace("/approvals");
+            })
+            .catch((error) => {
+              // handle error
+              console.log(error);
+              document.getElementById("modalCloseButton").click();
+              this.openToast("top-right", "error", error);
+            })
+            .then(() => {
+              // always executed
+              this.isLoadingModal = false;
+            });
+        } else {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", "Please select recipent!", "false");
+        }
       }
     },
     close() {

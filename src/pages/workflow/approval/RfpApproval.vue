@@ -378,6 +378,7 @@
 
         <!-- The Attachments -->
         <div
+          v-if="this.counter === setAttach"
           class="
             d-flex
             align-items-center
@@ -387,7 +388,6 @@
             mt-4
           "
           id="app"
-          v-if="this.counter === setAttach"
         >
           <div
             class="pt-2 col-md-12 rounded"
@@ -411,7 +411,7 @@
             <label
               for="assetsFieldHandle"
               style="width: 100%; cursor: pointer"
-              class="block p-5 cursor-pointer"
+              class="block pt-3 cursor-pointer"
             >
               <span class="text-secondary" v-if="isInitiator"
                 >Click here or drop file(s)</span
@@ -419,8 +419,9 @@
               <span class="text-secondary" v-else
                 >List of attached file(s)</span
               >
+            </label>
 
-              <ul class="mt-4 text-decoration-none ulUpload">
+              <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                 <li
                   class="text-sm mt-2"
                   v-for="(file, index) in selectedFile"
@@ -504,7 +505,6 @@
               </ul>
 
               <!-- </aside> -->
-            </label>
           </div>
         </div>
         <!-- / The Attachments -->
@@ -849,7 +849,7 @@
               </button>
             </div>
 
-            <button @click="test()">test</button>
+            <!-- <button @click="test()">test</button> -->
           </aside>
         </div>
         <!-- / Button -->
@@ -1320,25 +1320,25 @@ export default {
       processId: this.$route.params.id,
       form: this.$route.params.frmName,
 
-      // Logged User Data // initiator
-      loggedUserId: 136,
-      loggedUserFirstName: "Rosevir",
-      loggedUserLastName: "Ceballos",
-      loggedUserFullName: "Rosevir Ceballos Jr.",
-      loggedUserDepartment: "Information Technology",
-      loggedUserPosition: "Senior Developer",
-      companyId: 1,
-      companyName: "Cylix Technologies Inc.",
-
-      // // approver
-      // loggedUserId: 11,
-      // loggedUserFirstName: "Konrad",
-      // loggedUserLastName: "Chua",
-      // loggedUserFullName: "Konrad Chua",
-      // loggedUserDepartment: "Management",
-      // loggedUserPosition: "Managing Director",
+      // // Logged User Data // initiator
+      // loggedUserId: 136,
+      // loggedUserFirstName: "Rosevir",
+      // loggedUserLastName: "Ceballos",
+      // loggedUserFullName: "Rosevir Ceballos Jr.",
+      // loggedUserDepartment: "Information Technology",
+      // loggedUserPosition: "Senior Developer",
       // companyId: 1,
       // companyName: "Cylix Technologies Inc.",
+
+      // approver
+      loggedUserId: 11,
+      loggedUserFirstName: "Konrad",
+      loggedUserLastName: "Chua",
+      loggedUserFullName: "Konrad Chua",
+      loggedUserDepartment: "Management",
+      loggedUserPosition: "Managing Director",
+      companyId: 1,
+      companyName: "Cylix Technologies Inc.",
 
       // // approver 2
       // loggedUserId: 12,
@@ -1453,9 +1453,9 @@ export default {
   },
 
   methods: {
-    test(){
-      console.log(this.liquidation)
-    },
+    // test(){
+    //   console.log(this.liquidation)
+    // },
 
     closeDefaultModal() {
       this.attemptClarify = false;

@@ -82,7 +82,7 @@ export default {
   },
   methods: {
     async getApprovals() {
-      const loggedUserId = 136;
+      const loggedUserId = 11;
       const companyId = 1;
 
       const response = await fetch(

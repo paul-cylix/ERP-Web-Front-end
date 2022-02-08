@@ -279,7 +279,13 @@
                 <td>{{ item.expense_type }}</td>
                 <td>{{ item.description }}</td>
                 <td>{{ item.currency }}</td>
-                <td>{{ parseFloat(item.Amount).toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</td>
+                <td>
+                  {{
+                    parseFloat(item.Amount).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                    })
+                  }}
+                </td>
               </tr>
               <tr>
                 <td colspan="6"></td>
@@ -305,22 +311,27 @@
           "
           id="app"
         >
-          <div class="p-5 col-md-12 rounded" id="uploadContainer">
-            <label for="assetsFieldHandle" class="block cursor-pointer">
+          <div class="pt-2 col-md-12 rounded" id="uploadContainer">
+            <label
+              for="assetsFieldHandle"
+              style="width: 100%; cursor: pointer"
+              class="block pt-3 cursor-pointer"
+            >
               <span class="text-secondary">List of Attached File</span>
             </label>
-            <!-- <aside class="d-flex align-items-center justify-content-center"> -->
-            <ul class="mt-4 text-decoration-none ulUpload">
+
+            <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
               <li
                 class="text-sm mt-2"
-                v-for="(file) in selectedFile"
+                v-for="file in selectedFile"
                 :key="file.newFilename"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
-
                     <div class="col text-left">
-                      <span><label>{{ file.filename }}</label></span>
+                      <span
+                        ><label>{{ file.filename }}</label></span
+                      >
                     </div>
                     <div>
                       <button class="btn btn-info btn-sm" type="button">
@@ -350,7 +361,6 @@
                 </div>
               </li>
             </ul>
-        
 
             <!-- </aside> -->
           </div>
@@ -499,7 +509,13 @@
                     <td>{{ item.expense_type }}</td>
                     <td>{{ item.description }}</td>
                     <td>{{ item.currency }}</td>
-                    <td>{{ parseFloat(item.Amount).toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</td>
+                    <td>
+                      {{
+                        parseFloat(item.Amount).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                        })
+                      }}
+                    </td>
                   </tr>
 
                   <tr>
@@ -535,17 +551,12 @@
               >
                 <thead>
                   <tr>
-
                     <th style="width: 80%">Filename</th>
                     <th style="width: 20%">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(file) in selectedFile"
-                    :key="file.filename"
-                  >
-         
+                  <tr v-for="file in selectedFile" :key="file.filename">
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
@@ -905,8 +916,10 @@ export default {
             this.requestDate = responseOne.data.data.DATE;
             this.dateNeeded = responseOne.data.data.Deadline;
             this.reportingManager = responseOne.data.data.REPORTING_MANAGER;
-            this.amount = parseFloat(responseOne.data.data.AMOUNT).toLocaleString(undefined, { minimumFractionDigits: 2 });
-            
+            this.amount = parseFloat(
+              responseOne.data.data.AMOUNT
+            ).toLocaleString(undefined, { minimumFractionDigits: 2 });
+
             this.uid = responseOne.data.data.UID;
 
             if (responseOne.data.data.UID === this.loggedUserId) {
@@ -990,7 +1003,7 @@ export default {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
           body: JSON.stringify({
             withdrawRemarks: this.withdrawRemarks,
@@ -998,7 +1011,6 @@ export default {
             form: this.form,
             companyId: this.companyId,
             loggedUserId: this.loggedUserId,
-
           }),
         }
       );

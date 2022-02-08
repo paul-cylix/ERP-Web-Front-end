@@ -476,7 +476,7 @@
             <label
               for="assetsFieldHandle"
               style="width: 100%; cursor: pointer"
-              class="block p-5 cursor-pointer"
+              class="block pt-3 cursor-pointer"
             >
               <span class="text-secondary" v-if="isInitiator"
                 >Click here or drop file(s)</span
@@ -484,13 +484,13 @@
               <span class="text-secondary" v-else
                 >List of attached file(s)</span
               >
+            </label>
 
-              <!-- <aside class="d-flex align-items-center justify-content-center"> -->
-              <ul class="mt-4 text-decoration-none ulUpload">
+              <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                 <li
                   class="text-sm mt-2"
                   v-for="(file, index) in selectedFile"
-                  :key="file.newFilename"
+                  :key="file.id"
                 >
                   <div class="row d-flex justify-content-center">
                     <div class="col-md-4 d-flex">
@@ -563,7 +563,6 @@
               </ul>
 
               <!-- </aside> -->
-            </label>
           </div>
         </div>
         <!-- / The Attachments -->
@@ -1375,25 +1374,25 @@ export default {
       processId: this.$route.params.id,
       form: "Request for Payment",
 
-      // Logged User Data // initiator
-      loggedUserId: 136,
-      loggedUserFirstName: "Rosevir",
-      loggedUserLastName: "Ceballos",
-      loggedUserFullName: "Rosevir Ceballos Jr.",
-      loggedUserDepartment: "Information Technology",
-      loggedUserPosition: "Senior Developer",
-      companyId: 1,
-      companyName: "Cylix Technologies Inc.",
-
-      // approver
-      // loggedUserId: 11,
-      // loggedUserFirstName: "Konrad",
-      // loggedUserLastName: "Chua",
-      // loggedUserFullName: "Konrad Chua",
-      // loggedUserDepartment: "Management",
-      // loggedUserPosition: "Managing Director",
+      // // Logged User Data // initiator
+      // loggedUserId: 136,
+      // loggedUserFirstName: "Rosevir",
+      // loggedUserLastName: "Ceballos",
+      // loggedUserFullName: "Rosevir Ceballos Jr.",
+      // loggedUserDepartment: "Information Technology",
+      // loggedUserPosition: "Senior Developer",
       // companyId: 1,
       // companyName: "Cylix Technologies Inc.",
+
+      // approver
+      loggedUserId: 11,
+      loggedUserFirstName: "Konrad",
+      loggedUserLastName: "Chua",
+      loggedUserFullName: "Konrad Chua",
+      loggedUserDepartment: "Management",
+      loggedUserPosition: "Managing Director",
+      companyId: 1,
+      companyName: "Cylix Technologies Inc.",
 
       // // approver 2
       // loggedUserId: 12,
