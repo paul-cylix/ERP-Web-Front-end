@@ -760,7 +760,13 @@ export default {
     validateCurrentTab(counter) {
       // Request Details
       if (counter === 0) {
-        if (!this.missingReportingManager) {
+        if (
+          !this.missingReportingManager &&
+          !this.missingEmployee &&
+          !this.missingReport &&
+          !this.missingReportTime &&
+          !this.missingPurpose
+        ) {
           this.counter++;
         }
         // Payment Details
@@ -786,6 +792,7 @@ export default {
       fd.append("reportName", this.reportItem.name);
       fd.append("reportDateTime", this.reportDateTime);
       fd.append("purpose", this.reason);
+      fd.append("reason", this.reason);
 
       fd.append("loggedUserId", this.loggedUserId);
       fd.append("loggedUserFirstName", this.loggedUserFirstName);
@@ -894,7 +901,7 @@ export default {
                 "Leave date added successfully!",
                 "true"
               );
-              this.resetModal()
+              this.resetModal();
             }
           }
         } catch (err) {
@@ -922,7 +929,7 @@ export default {
       const startDate = new Date(from);
       const endDate = new Date(to);
 
-      const check = endDate > startDate ? true : false;
+      const check = endDate >= startDate ? true : false;
       return check;
     },
 

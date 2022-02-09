@@ -24,7 +24,6 @@
           <div class="progressbar" :class="classC">
             <span :class="classC">3</span>
           </div>
-  
         </div>
 
         <div class="d-flex text-center">
@@ -49,7 +48,6 @@
               ></small
             >
           </div>
-
         </div>
         <!-- / Step Numbers -->
 
@@ -400,7 +398,12 @@
         <!-- / Form Review -->
 
         <!-- Modal -->
-        <div class="modal fade" id="modal-default">
+        <div
+          class="modal fade"
+          id="modal-default"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
           <div class="modal-dialog">
             <div class="modal-content">
               <!-- Overlay Loading Spinner -->
@@ -650,6 +653,11 @@
                         type="datetime"
                         style="display: block; width: 100%; line-height: 20px"
                       ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalActualStart && attemptUpdate"
+                        >Actual Start is required!</small
+                      >
                     </div>
                   </div>
 
@@ -669,6 +677,11 @@
                         type="datetime"
                         style="display: block; width: 100%; line-height: 20px"
                       ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalActualEnd && attemptUpdate"
+                        >Actual Start is required!</small
+                      >
                     </div>
                   </div>
 
@@ -753,7 +766,7 @@
               </button>
             </div>
 
-              <div class="col-lg-2">
+            <div class="col-lg-2">
               <button
                 type="button"
                 class="btn btn-block btn-warning btn-sm"
@@ -847,6 +860,21 @@ export default {
       }
     },
 
+    missingModalActualStart() {
+      if (this.actualTimeStart === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalActualEnd() {
+      if (this.actualTimeEnd === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     // Calendaer
     todaysYear() {
       const today = new Date();
@@ -860,6 +888,7 @@ export default {
   data() {
     return {
       counter: 0,
+      attemptUpdate: false,
       // Request Details
       referenceNumber: "",
       requestedDate: "",
@@ -940,8 +969,8 @@ export default {
       authTimeEnd: "",
       authOThrs: "",
       modalPurpose: "",
-      actualTimeStart: "",
-      actualTimeEnd: "",
+      actualTimeStart: null,
+      actualTimeEnd: null,
       actualOthrs: "",
 
       index: "",
@@ -951,64 +980,71 @@ export default {
   methods: {
     async update() {
       this.isLoadingModal = true;
+      this.attemptUpdate = true;
       this.resetAlert();
-
-      const addData = {
-        id: this.id,
-        overtime_date: this.overtimeDate,
-
-        ot_in: this.authTimeStart,
-        ot_out: this.authTimeEnd,
-        ot_totalhrs: this.authOThrs,
-
-        ot_in_actual: this.actualTimeStart,
-        ot_out_actual: this.actualTimeEnd,
-        ot_totalhrs_actual: this.actualOthrs,
-
-        employee_id: this.itemEmployeeName.code,
-        employee_name: this.itemEmployeeName.name,
-        purpose: this.modalPurpose,
-        cust_id: this.itemModalProjectName.code,
-        cust_name: this.itemModalProjectName.name,
-        PRJID: this.clientId,
-        Project_Name: this.clientName,
-      };
-
-      const otData = [];
-      otData.push(addData);
-
-      console.log(otData);
-
-      const fd = new FormData();
-      fd.append("overtimeData", JSON.stringify(otData));
-
-      try {
-        const resp = await axios.post(
-          "http://127.0.0.1:8000/api/validateActualOT",
-          fd
+      const validated = this.validateEmptyFields();
+      const isGreaterThan = this.validateStartEndDate(
+        this.actualTimeStart,
+        this.actualTimeEnd
+      );
+      if (validated && isGreaterThan) {
+        const addData = {
+          id: this.id,
+          overtime_date: this.overtimeDate,
+          ot_in: this.authTimeStart,
+          ot_out: this.authTimeEnd,
+          ot_totalhrs: this.authOThrs,
+          ot_in_actual: this.actualTimeStart,
+          ot_out_actual: this.actualTimeEnd,
+          ot_totalhrs_actual: this.actualOthrs,
+          employee_id: this.itemEmployeeName.code,
+          employee_name: this.itemEmployeeName.name,
+          purpose: this.modalPurpose,
+          cust_id: this.itemModalProjectName.code,
+          cust_name: this.itemModalProjectName.name,
+          PRJID: this.clientId,
+          Project_Name: this.clientName,
+        };
+        const otData = [];
+        otData.push(addData);
+        console.log(otData);
+        const fd = new FormData();
+        fd.append("overtimeData", JSON.stringify(otData));
+        try {
+          const resp = await axios.post(
+            "http://127.0.0.1:8000/api/validateActualOT",
+            fd
+          );
+          if (resp.status === 200) {
+            this.overtime.splice(this.index, 1);
+            this.overtime.push(addData);
+            this.isLoadingModal = false;
+            this.addAlert("Success", resp.data.message, "true");
+            this.overtime.sort(function (a, b) {
+              return a.id - b.id;
+            });
+          }
+          if (resp.status === 202) {
+            this.isLoadingModal = false;
+            this.addAlert("Failed", resp.data.message, "false");
+          }
+          console.log(resp.data);
+        } catch (err) {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", err, "false");
+          // Handle Error Here
+          console.error(err);
+        }
+      } else if (isGreaterThan === false && validated) {
+        this.isLoadingModal = false;
+        this.addAlert(
+          "Failed",
+          "Actual Time End must be greater than Actual Time Start!",
+          "false"
         );
-
-        if (resp.status === 200) {
-          this.overtime.splice(this.index, 1);
-          this.overtime.push(addData);
-          this.isLoadingModal = false;
-
-          this.addAlert("Success", resp.data.message, "true");
-
-          this.overtime.sort(function (a, b) {
-            return a.id - b.id;
-          });
-        }
-
-        if (resp.status === 202) {
-          this.isLoadingModal = false;
-          this.addAlert("Failed", resp.data.message, "false");
-        }
-
-        console.log(resp.data);
-      } catch (err) {
-        // Handle Error Here
-        console.error(err);
+      } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
       }
     },
 
@@ -1045,7 +1081,22 @@ export default {
       this.modalPurpose = selectedOvertime.purpose;
       this.clientName = selectedOvertime.Project_Name;
       this.clientId = selectedOvertime.PRJID;
+    },
 
+    validateEmptyFields() {
+      if (!this.missingModalActualStart && !this.missingModalActualEnd) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    validateStartEndDate(from, to) {
+      const startDate = new Date(from);
+      const endDate = new Date(to);
+
+      const check = endDate > startDate ? true : false;
+      return check;
     },
 
     convertTimeAndDate(datetime) {
@@ -1201,7 +1252,6 @@ export default {
       fd.append("loggedUserDepartment", this.loggedUserDepartment);
       fd.append("overtimeData", JSON.stringify(this.overtime));
 
-
       if (type === "Approve") {
         try {
           const resp = await axios.post(
@@ -1225,7 +1275,6 @@ export default {
           // Handle Error Here
           console.error(err);
           this.openToast("top-right", "error", err);
-
         }
       }
 

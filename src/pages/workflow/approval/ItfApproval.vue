@@ -251,7 +251,12 @@
         <!-- / Main Form -->
 
         <!-- Modal -->
-        <div class="modal fade" id="modal-default">
+        <div
+          class="modal fade"
+          id="modal-default"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
           <div class="modal-dialog">
             <div class="modal-content">
               <!-- Overlay Loading Spinner -->
@@ -485,25 +490,25 @@ export default {
       // companyId: 1,
       // companyName: "Cylix Technologies Inc.",
 
-      // // approver
-      // loggedUserId: 11,
-      // loggedUserFirstName: "Konrad",
-      // loggedUserLastName: "Chua",
-      // loggedUserFullName: "Konrad Chua",
-      // loggedUserDepartment: "Management",
-      // loggedUserPosition: "Managing Director",
-      // companyId: 1,
-      // companyName: "Cylix Technologies Inc.",
-
-      // approver 2
-      loggedUserId: 12,
-      loggedUserFirstName: "Carrie",
-      loggedUserLastName: "Chua Lee",
-      loggedUserFullName: "Carrie Chua Lee",
-      loggedUserDepartment: "Accounting and Finance",
-      loggedUserPosition: "Accounting and Finance Head",
+      // approver
+      loggedUserId: 11,
+      loggedUserFirstName: "Konrad",
+      loggedUserLastName: "Chua",
+      loggedUserFullName: "Konrad Chua",
+      loggedUserDepartment: "Management",
+      loggedUserPosition: "Managing Director",
       companyId: 1,
       companyName: "Cylix Technologies Inc.",
+
+      // // approver 2
+      // loggedUserId: 12,
+      // loggedUserFirstName: "Carrie",
+      // loggedUserLastName: "Chua Lee",
+      // loggedUserFullName: "Carrie Chua Lee",
+      // loggedUserDepartment: "Accounting and Finance",
+      // loggedUserPosition: "Accounting and Finance Head",
+      // companyId: 1,
+      // companyName: "Cylix Technologies Inc.",
 
       itinerary: [],
       editItinerary: "",

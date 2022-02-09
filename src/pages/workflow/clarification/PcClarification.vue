@@ -989,12 +989,12 @@
                         class="form-control"
                         id="remarks"
                         rows="5"
-                        v-model="remarks"
+                        v-model.trim="remarks"
                       ></textarea>
                       <small
                         class="text-danger p-0 m-0"
                         v-if="missingReplyRemarks && attemptReply"
-                        >Transportation remarks is required!</small
+                        >Reply remarks is required!</small
                       >
                     </div>
                   </div>

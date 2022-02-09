@@ -10,7 +10,7 @@
         <loading-spinner></loading-spinner>
       </div>
       <div class="card-header">
-        <h3 class="card-title">Overtime Request {{this.checkLoggedUser}}</h3>
+        <h3 class="card-title">Overtime Request</h3>
       </div>
       <div class="card-body">
         <!-- Step Numbers -->
@@ -108,6 +108,11 @@
                   v-model="reportingManagerItem.name"
                 />
 
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingReportingManager && attemptNext"
+                  >Reporting Manager is required!</small
+                >
               </div>
             </div>
           </div>
@@ -162,7 +167,9 @@
                   Actual OT Hours
                 </th>
                 <th scope="col" style="width: 20%">Purpose</th>
-                <th v-if="checkLoggedUser" scope="col" style="width: 10%">Action</th>
+                <th v-if="checkLoggedUser" scope="col" style="width: 10%">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody style="font-size: 14px">
@@ -289,6 +296,11 @@
                     <th style="width: 15%">Auth. Time Start</th>
                     <th style="width: 15%">Auth. Time End</th>
                     <th style="width: 5%">Auth. OT Hours</th>
+                    <th v-if="isActual" style="width: 15%">
+                      Actual Time Start
+                    </th>
+                    <th v-if="isActual" style="width: 15%">Actual Time End</th>
+                    <th v-if="isActual" style="width: 5%">Actual OT Hours</th>
                     <th style="width: 20%">Purpose</th>
                   </tr>
                 </thead>
@@ -301,18 +313,22 @@
                     <td>{{ item.ot_in }}</td>
                     <td>{{ item.ot_out }}</td>
                     <td>{{ item.ot_totalhrs }}</td>
+                    <td v-if="isActual">{{ item.ot_in_actual }}</td>
+                    <td v-if="isActual">{{ item.ot_out_actual }}</td>
+                    <td v-if="isActual">{{ item.ot_totalhrs_actual }}</td>
                     <td>{{ item.purpose }}</td>
                   </tr>
 
                   <tr>
-                    <td colspan="6"></td>
-                    <b class="px-1">Total OT Hours: {{ this.totalOTHours }}</b>
+                    <td :colspan="numberActual"></td>
+                    <b class="px-1">Total OT Hours: {{ totalOTHours }}</b>
                   </tr>
                 </tbody>
               </table>
             </div>
             <!-- /.card-body -->
           </div>
+          <!-- /.Overtime Details Review -->
 
           <!-- /.Overtime Details Review -->
         </aside>
@@ -321,7 +337,12 @@
         <!-- / Main Form -->
 
         <!-- Modal -->
-        <div class="modal fade" id="modal-default">
+        <div
+          class="modal fade"
+          id="modal-default"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
           <div class="modal-dialog">
             <div class="modal-content">
               <!-- Overlay Loading Spinner -->
@@ -337,11 +358,18 @@
                   id="modalCloseButton"
                   data-dismiss="modal"
                   aria-label="Close"
+                  @click="closeModal()"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
                 <div class="row">
                   <div class="col-md-12">
                     <div class="form-group">
@@ -350,8 +378,13 @@
                         class="form-control"
                         id="remarks"
                         rows="5"
-                        v-model="remarks"
+                        v-model.trim="remarks"
                       ></textarea>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingReplyRemarks && attemptReply"
+                        >Reply remarks is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -385,9 +418,18 @@
                 Previous
               </button>
             </div>
-
+            <!-- <button @click="test()">test</button> -->
             <div class="col-lg-2" v-if="this.counter <= 1">
               <button
+                v-if="this.isInitiator"
+                type="button"
+                @click="next()"
+                class="btn btn-block btn-primary btn-sm"
+              >
+                Next
+              </button>
+              <button
+                v-else
                 type="button"
                 @click="counter++"
                 class="btn btn-block btn-primary btn-sm"
@@ -438,7 +480,6 @@
             <i class="fas fa-2x fa-sync fa-spin"></i>
           </div>
 
-
           <div class="modal-header">
             <h6 class="modal-title">
               <b>Overtime Details</b>
@@ -474,6 +515,11 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalProject && attemptInsert"
+                    >Project Name is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -487,6 +533,11 @@
                     style="display: block; width: 100%; line-height: 20px"
                     v-model="overtimeDate"
                   ></date-picker>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalOTDate && attemptInsert"
+                    >Overtime Date is required!</small
+                  >
                 </div>
               </div>
               <div class="col-md-7">
@@ -501,6 +552,11 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalEmployee && attemptInsert"
+                    >Employee Name is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -523,6 +579,11 @@
                     type="datetime"
                     style="display: block; width: 100%; line-height: 20px"
                   ></date-picker>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalAuthStart && attemptInsert"
+                    >Auth. Start is required!</small
+                  >
                 </div>
               </div>
 
@@ -540,6 +601,11 @@
                     type="datetime"
                     style="display: block; width: 100%; line-height: 20px"
                   ></date-picker>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalAuthEnd && attemptInsert"
+                    >Auth. End is required!</small
+                  >
                 </div>
               </div>
 
@@ -575,6 +641,11 @@
                     type="datetime"
                     style="display: block; width: 100%; line-height: 20px"
                   ></date-picker>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalActualStart && attemptInsert"
+                    >Actual Start is required!</small
+                  >
                 </div>
               </div>
 
@@ -592,6 +663,11 @@
                     type="datetime"
                     style="display: block; width: 100%; line-height: 20px"
                   ></date-picker>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalActualEnd && attemptInsert"
+                    >Actual Start is required!</small
+                  >
                 </div>
               </div>
 
@@ -617,8 +693,13 @@
                     class="form-control"
                     id="purpose"
                     rows="3"
-                    v-model="modalPurpose"
+                    v-model.trim="modalPurpose"
                   ></textarea>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalPurpose && attemptInsert"
+                    >Purpose is required!</small
+                  >
                 </div>
               </div>
             </div>
@@ -697,7 +778,9 @@ export default {
 
     // Request Details
     itemModalProjectName(newValue) {
-      this.getClient(newValue.code);
+      if (newValue.code > 0) {
+        this.getClient(newValue.code);
+      }
     },
   },
   computed: {
@@ -730,11 +813,11 @@ export default {
       }
     },
 
-    checkLoggedUser(){
-      if (this.isActual && this.isInitiator) {
-        return true
+    checkLoggedUser() {
+      if ((this.isActual && this.isInitiator) || this.isInitiator) {
+        return true;
       } else {
-        return false
+        return false;
       }
     },
 
@@ -743,6 +826,90 @@ export default {
         return 11;
       } else {
         return 8;
+      }
+    },
+
+    missingReportingManager() {
+      if (this.reportingManagerItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingOTData() {
+      if (this.overtime.length < 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    // modal
+    missingModalProject() {
+      if (this.itemModalProjectName.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalEmployee() {
+      if (this.itemEmployeeName.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalOTDate() {
+      if (this.overtimeDate === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalAuthStart() {
+      if (this.authTimeStart === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalAuthEnd() {
+      if (this.authTimeEnd === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalActualStart() {
+      if (this.actualTimeStart === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalActualEnd() {
+      if (this.actualTimeEnd === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalPurpose() {
+      if (this.modalPurpose.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingReplyRemarks() {
+      if (this.remarks.length === 0) {
+        return true;
+      } else {
+        return false;
       }
     },
 
@@ -759,6 +926,11 @@ export default {
   data() {
     return {
       counter: 0,
+      attemptReply: false,
+      attemptNext: false,
+      attemptNextOne: false,
+      attemptInsert: false,
+      setIndex: false,
       // Request Details
       referenceNumber: "",
       requestedDate: "",
@@ -766,25 +938,25 @@ export default {
       reportingManagerItem: {},
       // purpose: "",
 
-      // // Logged User Data
-      // loggedUserId: 136,
-      // loggedUserFirstName: "Rosevir",
-      // loggedUserLastName: "Ceballos",
-      // loggedUserFullName: "Rosevir Ceballos Jr.",
-      // loggedUserDepartment: "Information Technology",
-      // loggedUserPosition: "Senior Developer",
-      // companyId: 1,
-      // companyName: "Cylix Technologies Inc.",
-
-      // approver
-      loggedUserId: 11,
-      loggedUserFirstName: "Konrad",
-      loggedUserLastName: "Chua",
-      loggedUserFullName: "Konrad Chua",
-      loggedUserDepartment: "Management",
-      loggedUserPosition: "Managing Director",
+      // Logged User Data
+      loggedUserId: 136,
+      loggedUserFirstName: "Rosevir",
+      loggedUserLastName: "Ceballos",
+      loggedUserFullName: "Rosevir Ceballos Jr.",
+      loggedUserDepartment: "Information Technology",
+      loggedUserPosition: "Senior Developer",
       companyId: 1,
       companyName: "Cylix Technologies Inc.",
+
+      // // approver
+      // loggedUserId: 11,
+      // loggedUserFirstName: "Konrad",
+      // loggedUserLastName: "Chua",
+      // loggedUserFullName: "Konrad Chua",
+      // loggedUserDepartment: "Management",
+      // loggedUserPosition: "Managing Director",
+      // companyId: 1,
+      // companyName: "Cylix Technologies Inc.",
 
       // // approver 2
       // loggedUserId: 12,
@@ -812,13 +984,13 @@ export default {
       clientId: "",
       mainId: "",
 
-      overtimeDate: "",
-      authTimeStart: "",
-      authTimeEnd: "",
+      overtimeDate: null,
+      authTimeStart: null,
+      authTimeEnd: null,
       authOThrs: "",
 
-      actualTimeStart: "",
-      actualTimeEnd: "",
+      actualTimeStart: null,
+      actualTimeEnd: null,
       actualOthrs: "",
 
       modalPurpose: "",
@@ -830,12 +1002,11 @@ export default {
       editOvertime: [],
       i: 0,
 
-
       remarks: "",
 
       // mga need sa request
       isActual: false,
-      guid:'',
+      guid: "",
       processId: this.$route.params.id,
       form: this.$route.params.frmName,
       isInitiator: false,
@@ -844,75 +1015,109 @@ export default {
 
   methods: {
     async reply() {
-      const fd = new FormData();
-      fd.append("reportingManagerId", this.reportingManagerItem.code);
-      fd.append("reportingManagerName", this.reportingManagerItem.name);
+      this.isLoadingModal = true;
+      this.attemptReply = true;
+      this.resetAlert();
+      const validated = this.validate_reply();
 
-      fd.append("form", this.form);
-      fd.append("processId", this.processId);
+      if (validated) {
+        const fd = new FormData();
+        fd.append("reportingManagerId", this.reportingManagerItem.code);
+        fd.append("reportingManagerName", this.reportingManagerItem.name);
 
-      fd.append("remarks", this.remarks);
-   
-      fd.append("class", "OT");
-      fd.append("referenceNumber", this.referenceNumber);
+        fd.append("form", this.form);
+        fd.append("processId", this.processId);
 
-      fd.append("requestedDate", this.requestedDate);
-      fd.append("isActual", this.isActual);
+        fd.append("remarks", this.remarks);
 
-      fd.append("projectId", 0);
-      fd.append("projectName", this.loggedUserDepartment);
-      fd.append("clientId", 0);
-      fd.append("clientName", this.companyName);
-      fd.append("payeeName", 'N/A');
-      fd.append("amount", 0);
+        fd.append("class", "OT");
+        fd.append("referenceNumber", this.referenceNumber);
 
-      fd.append("loggedUserId", this.loggedUserId);
-      fd.append("loggedUserFirstName", this.loggedUserFirstName);
-      fd.append("loggedUserLastName", this.loggedUserLastName);
-      fd.append("loggedUserFullName", this.loggedUserFullName);
-      fd.append("loggedUserDepartment", this.loggedUserDepartment);
-      fd.append("loggedUserPosition", this.loggedUserPosition);
-      fd.append("companyId", this.companyId);
-      fd.append("companyName", this.companyName);
+        fd.append("requestedDate", this.requestedDate);
+        fd.append("isActual", this.isActual);
 
-      fd.append("isInitiator", this.isInitiator);
+        fd.append("projectId", 0);
+        fd.append("projectName", this.loggedUserDepartment);
+        fd.append("clientId", 0);
+        fd.append("clientName", this.companyName);
+        fd.append("payeeName", "N/A");
+        fd.append("amount", 0);
 
+        fd.append("loggedUserId", this.loggedUserId);
+        fd.append("loggedUserFirstName", this.loggedUserFirstName);
+        fd.append("loggedUserLastName", this.loggedUserLastName);
+        fd.append("loggedUserFullName", this.loggedUserFullName);
+        fd.append("loggedUserDepartment", this.loggedUserDepartment);
+        fd.append("loggedUserPosition", this.loggedUserPosition);
+        fd.append("companyId", this.companyId);
+        fd.append("companyName", this.companyName);
 
+        fd.append("isInitiator", this.isInitiator);
 
+        fd.append("guid", this.guid);
 
-      fd.append("guid", this.guid);
+        fd.append("overtimeData", JSON.stringify(this.overtime));
 
-      fd.append("overtimeData", JSON.stringify(this.overtime));
+        try {
+          const res = await axios.post(
+            "http://127.0.0.1:8000/api/reply-request",
+            fd
+          );
 
-      try {
-        const res = await axios.post(
-          "http://127.0.0.1:8000/api/reply-request",
-          fd
-        );
+          console.log(res.data);
+          this.isLoading = false;
+          document.getElementById("modalCloseButton").click();
 
-        console.log(res.data);
-        this.isLoading = false;
-        document.getElementById("modalCloseButton").click();
+          if (res.status === 200) {
+            this.openToast("top-right", "success", res.data.message);
+            this.$router.replace("/approvals");
+          }
 
-        if (res.status === 200) {
-          this.openToast("top-right", "success", res.data.message);
-          this.$router.replace("/approvals");
+          if (res.status === 202) {
+            // console.log(res)
+            this.openToast("top-right", "error", res.data.message);
+          }
+        } catch (err) {
+          // Handle Error Here
+          console.error(err);
         }
-
-        if (res.status === 202) {
-          // console.log(res)
-          this.openToast("top-right", "error", res.data.message);
-        }
-      } catch (err) {
-        // Handle Error Here
-        console.error(err);
+      } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
       }
     },
 
-
-
     close() {
       this.$router.replace("/clarifications");
+    },
+
+    next() {
+      if (this.counter === 0) {
+        this.attemptNext = true;
+        if (!this.missingReportingManager) {
+          this.counter++;
+        }
+      } else if (this.counter === 1) {
+        this.attemptNext = false;
+        this.attemptNextOne = true;
+        if (!this.missingOTData) {
+          this.counter++;
+        } else {
+          this.openToast(
+            "top-right",
+            "warning",
+            "Please add your Overtime data!"
+          );
+        }
+      }
+    },
+
+    validate_reply() {
+      if (!this.missingReplyRemarks) {
+        return true;
+      } else {
+        return false;
+      }
     },
 
     async getActualSign(id, form, companyId) {
@@ -944,14 +1149,12 @@ export default {
           this.referenceNumber = resp.data[0].reference;
           this.requestedDate = resp.data[0].request_date;
           this.guid = resp.data[0].GUID;
-          
 
           if (resp.data[0].UID === this.loggedUserId) {
-            this.isInitiator = true
+            this.isInitiator = true;
           } else {
-            this.isInitiator = false
+            this.isInitiator = false;
           }
-      
 
           this.overtime = resp.data;
 
@@ -999,10 +1202,9 @@ export default {
       }
     },
 
-    setActualTime(){
+    setActualTime() {
       const time_start = new Date(this.actualTimeStart);
       const time_end = new Date(this.actualTimeEnd);
-
 
       let time_total = (time_end - time_start) / 1000 / 60 / 60;
 
@@ -1020,10 +1222,11 @@ export default {
       }
     },
 
-
     closeModal() {
       this.resetAlert();
       this.resetModal();
+      this.remarks = "";
+      this.attemptReply = false;
     },
 
     // Request Details
@@ -1163,19 +1366,86 @@ export default {
 
     async update() {
       this.isLoadingModal = true;
+      this.attemptInsert = true;
       this.resetAlert();
+      const isGreaterThanAuth = this.validateStartEndDate(
+        this.authTimeStart,
+        this.authTimeEnd
+      );
 
+      if (this.isActual === true) {
+        const validated = this.validateActualEmptyFields();
+        const isGreaterThanActual = this.validateStartEndDate(
+          this.actualTimeStart,
+          this.actualTimeEnd
+        );
+
+        if (validated && isGreaterThanAuth && isGreaterThanActual) {
+          // start
+          this.updateOTData();
+          // end
+        } else if (
+          isGreaterThanAuth === false &&
+          isGreaterThanActual === false &&
+          validated
+        ) {
+          this.isLoadingModal = false;
+          this.addAlert(
+            "Failed",
+            "Time End must be greater than Time Start!",
+            "false"
+          );
+        } else if (isGreaterThanAuth === false && validated) {
+          this.isLoadingModal = false;
+          this.addAlert(
+            "Failed",
+            "Authorize Time End must be greater than Authorize Time Start!",
+            "false"
+          );
+        } else if (isGreaterThanActual === false && validated) {
+          this.isLoadingModal = false;
+          this.addAlert(
+            "Failed",
+            "Actual Time End must be greater than Actual Time Start!",
+            "false"
+          );
+        } else {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", "Please complete required fields!", "false");
+        }
+      } else {
+        const validated = this.validateAuthEmptyFields();
+        if (validated && isGreaterThanAuth) {
+          //
+          this.updateOTData();
+          //
+        } else if (isGreaterThanAuth === false && validated) {
+          this.isLoadingModal = false;
+          this.addAlert(
+            "Failed",
+            "Authorize Time End must be greater than Authorize Time Start!",
+            "false"
+          );
+        } else {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", "Please complete required fields!", "false");
+        }
+      }
+    },
+    // test() {
+    //   console.log(this.overtime);
+    // },
+    async updateOTData() {
+      // start
       const addData = {
         id: this.editOvertime.id,
         overtime_date: this.overtimeDate,
         ot_in: this.authTimeStart,
         ot_out: this.authTimeEnd,
         ot_totalhrs: this.authOThrs,
-
         ot_in_actual: this.actualTimeStart,
         ot_out_actual: this.actualTimeEnd,
         ot_totalhrs_actual: this.actualOthrs,
-
         employee_id: this.itemEmployeeName.code,
         employee_name: this.itemEmployeeName.name,
         purpose: this.modalPurpose,
@@ -1186,49 +1456,46 @@ export default {
       };
       // this.overtime.push(addData);
       // this.liquidation.push(this.editliquidation)
-
       const otData = [];
       otData.push(addData);
-
       const fd = new FormData();
       fd.append("isActual", this.isActual);
       fd.append("overtimeData", JSON.stringify(otData));
-
       try {
         const resp = await axios.post(
           "http://127.0.0.1:8000/api/validateOT",
           fd
         );
-
         if (resp.status === 200) {
           this.overtime.push(addData);
           this.isLoadingModal = false;
-
           this.addAlert("Success", resp.data.message, "true");
           this.editOvertime = "";
-
+          this.overtime.splice(this.setIndex, 1);
           this.overtime.sort(function (a, b) {
             return a.id - b.id;
           });
+          this.resetModal();
         }
-
         if (resp.status === 202) {
           this.isLoadingModal = false;
           this.addAlert("Failed", resp.data.message, "false");
         }
-
         console.log(resp.data);
       } catch (err) {
         // Handle Error Here
+        this.addAlert("Failed", err, "false");
         console.error(err);
       }
+      // end
     },
 
     edit(index) {
       this.isButton = false;
+
       const selectedOvertime = this.overtime[index];
       this.editOvertime = selectedOvertime;
-      this.overtime.splice(index, 1);
+      this.setIndex = index;
 
       console.log(this.editOvertime);
 
@@ -1245,12 +1512,15 @@ export default {
       this.authTimeEnd = this.convertTimeAndDate(selectedOvertime.ot_out);
       this.authOThrs = selectedOvertime.ot_totalhrs;
 
-      if(this.isActual === true){
-        this.actualTimeStart = this.convertTimeAndDate(selectedOvertime.ot_in_actual);
-        this.actualTimeEnd = this.convertTimeAndDate(selectedOvertime.ot_out_actual);
+      if (this.isActual === true) {
+        this.actualTimeStart = this.convertTimeAndDate(
+          selectedOvertime.ot_in_actual
+        );
+        this.actualTimeEnd = this.convertTimeAndDate(
+          selectedOvertime.ot_out_actual
+        );
         this.actualOthrs = selectedOvertime.ot_totalhrs_actual;
       }
-
 
       this.modalPurpose = selectedOvertime.purpose;
     },
@@ -1296,13 +1566,15 @@ export default {
     },
 
     resetModal() {
-      this.overtimeDate = "";
-      this.authTimeStart = "";
-      this.authTimeEnd = "";
-      this.authOThrs = "";
+      this.attemptInsert = false;
+      this.overtimeDate = null;
+      this.authTimeStart = null;
+      this.authTimeEnd = null;
+      this.actualTimeStart = null;
+      this.actualTimeEnd = null;
       this.itemEmployeeName = {};
       this.modalPurpose = "";
-      // this.itemModalProjectName = {}
+      this.itemModalProjectName = {};
       // this.clientId = "";
       // this.clientName = "";
       // this.mainId = "";
@@ -1315,10 +1587,75 @@ export default {
       this.type = type;
     },
 
-    async insert() {
+    insert() {
       this.isLoadingModal = true;
+      this.attemptInsert = true;
       this.resetAlert();
+      const isGreaterThanAuth = this.validateStartEndDate(
+        this.authTimeStart,
+        this.authTimeEnd
+      );
 
+      if (this.isActual === true) {
+        const validated = this.validateActualEmptyFields();
+        const isGreaterThanActual = this.validateStartEndDate(
+          this.actualTimeStart,
+          this.actualTimeEnd
+        );
+        if (validated && isGreaterThanAuth && isGreaterThanActual) {
+          //start
+          this.insertOtData();
+          // end
+        } else if (
+          isGreaterThanAuth === false &&
+          isGreaterThanActual === false &&
+          validated
+        ) {
+          this.isLoadingModal = false;
+          this.addAlert(
+            "Failed",
+            "Time End must be greater than Time Start!",
+            "false"
+          );
+        } else if (isGreaterThanAuth === false && validated) {
+          this.isLoadingModal = false;
+          this.addAlert(
+            "Failed",
+            "Authorize Time End must be greater than Authorize Time Start!",
+            "false"
+          );
+        } else if (isGreaterThanActual === false && validated) {
+          this.isLoadingModal = false;
+          this.addAlert(
+            "Failed",
+            "Actual Time End must be greater than Actual Time Start!",
+            "false"
+          );
+        } else {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", "Please complete required fields!", "false");
+        }
+      } else {
+        const validated = this.validateAuthEmptyFields();
+        if (validated && isGreaterThanAuth) {
+          // start
+          this.insertOtData();
+          // end
+        } else if (isGreaterThanAuth === false && validated) {
+          this.isLoadingModal = false;
+          this.addAlert(
+            "Failed",
+            "Authorize Time End must be greater than Authorize Time Start!",
+            "false"
+          );
+        } else {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", "Please complete required fields!", "false");
+        }
+      }
+    },
+
+    async insertOtData() {
       const otData = [];
       const addData = {
         id: this.i++,
@@ -1340,7 +1677,7 @@ export default {
         main_id: this.mainId,
       };
       // this.overtime.push(addData);
-      console.warn(this.isActual)
+      
 
       otData.push(addData);
 
@@ -1360,6 +1697,7 @@ export default {
           // console.log(resp.data.message)
 
           this.addAlert("Success", resp.data.message, "true");
+          this.resetModal();
         }
 
         if (resp.status === 202) {
@@ -1371,7 +1709,48 @@ export default {
       } catch (err) {
         // Handle Error Here
         console.error(err);
+        this.addAlert("Failed", err, "false");
       }
+    },
+
+    validateActualEmptyFields() {
+      if (
+        !this.missingModalProject &&
+        !this.missingModalEmployee &&
+        !this.missingModalOTDate &&
+        !this.missingModalAuthStart &&
+        !this.missingModalAuthEnd &&
+        !this.missingModalActualStart &&
+        !this.missingModalActualEnd &&
+        !this.missingModalPurpose
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    validateAuthEmptyFields() {
+      if (
+        !this.missingModalProject &&
+        !this.missingModalEmployee &&
+        !this.missingModalOTDate &&
+        !this.missingModalAuthStart &&
+        !this.missingModalAuthEnd &&
+        !this.missingModalPurpose
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    validateStartEndDate(from, to) {
+      const startDate = new Date(from);
+      const endDate = new Date(to);
+
+      const check = endDate > startDate ? true : false;
+      return check;
     },
   },
 };

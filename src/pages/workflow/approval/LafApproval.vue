@@ -320,7 +320,12 @@
         <!-- / Main Form -->
 
         <!-- Modal -->
-        <div class="modal fade" id="modal-default">
+        <div
+          class="modal fade"
+          id="modal-default"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
           <div class="modal-dialog">
             <div class="modal-content">
               <!-- Overlay Loading Spinner -->
@@ -338,11 +343,18 @@
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
+                  @click="closeModalDefault()"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
                 <div class="row" v-if="isForClarity">
                   <div class="col-md-12">
                     <div class="form-group">
@@ -355,6 +367,11 @@
                         style="padding: 9px"
                       >
                       </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalRecipient && attemptClarify"
+                        >Recipient is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -366,7 +383,7 @@
                         class="form-control"
                         id="remarks"
                         rows="5"
-                        v-model="remarks"
+                        v-model.trim="remarks"
                         placeholder="Please input request remarks here!"
                       ></textarea>
                     </div>
@@ -518,6 +535,14 @@ export default {
       return { active: this.counter >= 2 };
     },
 
+    missingModalRecipient() {
+      if (this.itemrecipient.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     isForClarity() {
       if (this.title === "Clarify") {
         return true;
@@ -529,6 +554,7 @@ export default {
   data() {
     return {
       counter: 0,
+      attemptClarify: false,
       // Request Details
       referenceNumber: "",
       requestedDate: "",
@@ -555,25 +581,25 @@ export default {
       // companyId: 1,
       // companyName: "Cylix Technologies Inc.",
 
-      // // approver
-      // loggedUserId: 11,
-      // loggedUserFirstName: "Konrad",
-      // loggedUserLastName: "Chua",
-      // loggedUserFullName: "Konrad Chua",
-      // loggedUserDepartment: "Management",
-      // loggedUserPosition: "Managing Director",
-      // companyId: 1,
-      // companyName: "Cylix Technologies Inc.",
-
-      // approver 2
-      loggedUserId: 12,
-      loggedUserFirstName: "Carrie",
-      loggedUserLastName: "Chua Lee",
-      loggedUserFullName: "Carrie Chua Lee",
-      loggedUserDepartment: "Accounting and Finance",
-      loggedUserPosition: "Accounting and Finance Head",
+      // approver
+      loggedUserId: 11,
+      loggedUserFirstName: "Konrad",
+      loggedUserLastName: "Chua",
+      loggedUserFullName: "Konrad Chua",
+      loggedUserDepartment: "Management",
+      loggedUserPosition: "Managing Director",
       companyId: 1,
       companyName: "Cylix Technologies Inc.",
+
+      // // approver 2
+      // loggedUserId: 12,
+      // loggedUserFirstName: "Carrie",
+      // loggedUserLastName: "Chua Lee",
+      // loggedUserFullName: "Carrie Chua Lee",
+      // loggedUserDepartment: "Accounting and Finance",
+      // loggedUserPosition: "Accounting and Finance Head",
+      // companyId: 1,
+      // companyName: "Cylix Technologies Inc.",
 
       leaveData: [],
 
@@ -588,6 +614,12 @@ export default {
       itemrecipient: {},
       remarks: "",
       inprogressId: "",
+
+      // The Alert
+      isAlert: false,
+      header: "", // Syccess or Failed
+      message: "", // added successfully
+      type: "", // true or false
     };
   },
 
@@ -671,27 +703,45 @@ export default {
       }
 
       if (type === "Clarify") {
-        try {
-          const res = await axios.post(
-            "http://127.0.0.1:8000/api/send-clarity",
-            fd
-          );
+        this.attemptClarify = true;
+        this.resetAlert();
+        const validated = this.validateModalDefault();
+        if (validated) {
+          // start
+          try {
+            const res = await axios.post(
+              "http://127.0.0.1:8000/api/send-clarity",
+              fd
+            );
 
-          document.getElementById("modalCloseButton").click();
-          this.openToast("top-right", "success", res.data.message);
-          if (res.status === 200) {
-            this.$router.replace("/approvals");
-          } else {
             document.getElementById("modalCloseButton").click();
-            this.openToast("top-right", "error", "Please Try again laer");
-          }
-        } catch (err) {
-          // Handle Error Here
-          // console.error(err);
+            this.openToast("top-right", "success", res.data.message);
+            if (res.status === 200) {
+              this.$router.replace("/approvals");
+            } else {
+              document.getElementById("modalCloseButton").click();
+              this.openToast("top-right", "error", "Please Try again laer");
+            }
+          } catch (err) {
+            // Handle Error Here
+            // console.error(err);
 
-          document.getElementById("modalCloseButton").click();
-          this.openToast("top-right", "error", err);
+            document.getElementById("modalCloseButton").click();
+            this.openToast("top-right", "error", err);
+          }
+          // end
+        } else {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", "Please select recipent!", "false");
         }
+      }
+    },
+
+    validateModalDefault() {
+      if (!this.missingModalRecipient === true) {
+        return true;
+      } else {
+        return false;
       }
     },
 
@@ -749,6 +799,26 @@ export default {
 
     close() {
       this.$router.replace("/approvals");
+    },
+
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
+    },
+
+    resetAlert() {
+      this.isAlert = false;
+      this.header = "";
+      this.message = "";
+      this.type = "";
+    },
+
+    closeModalDefault() {
+      this.attemptClarify = false;
+      this.itemrecipient = {};
+      this.remarks = "";
     },
 
     openToast(position, variant, message) {

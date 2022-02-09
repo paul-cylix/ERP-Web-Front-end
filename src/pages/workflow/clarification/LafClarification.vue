@@ -108,6 +108,11 @@
                   class="form-control py-3 form-control-sm"
                   v-model="reportingManagerItem.name"
                 />
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingReportingManager && attemptNext"
+                  >Reporting Manager is required!</small
+                >
               </div>
             </div>
           </div>
@@ -135,6 +140,11 @@
                   class="form-control py-3 form-control-sm"
                   v-model="employeeItem.name"
                 />
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingEmployee && attemptNext"
+                  >Employee Name is required!</small
+                >
               </div>
             </div>
             <div class="col-md-3">
@@ -160,6 +170,11 @@
                   class="form-control py-3 form-control-sm"
                   v-model="reportItem.name"
                 />
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingReport && attemptNext"
+                  >Medium of Report is required!</small
+                >
               </div>
             </div>
             <div class="col-md-3">
@@ -185,6 +200,11 @@
                   disabled
                   style="display: block; width: 100%; line-height: 20px"
                 ></date-picker>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingReportTime && attemptNext"
+                  >Report Time is required!</small
+                >
               </div>
             </div>
           </div>
@@ -198,9 +218,14 @@
                   name="purpose"
                   id="purpose"
                   :disabled="isInitiator === false"
-                  v-model="reason"
+                  v-model.trim="reason"
                   rows="5"
                 ></textarea>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingPurpose && attemptNext"
+                  >Reason is required!</small
+                >
               </div>
             </div>
           </div>
@@ -288,8 +313,6 @@
               </tr>
             </tbody>
 
-
-
             <tbody style="font-size: 14px" v-else>
               <tr v-for="(item, index) in leaveData" :key="item.id">
                 <td class="text-center">{{ index + 1 }}.</td>
@@ -303,14 +326,6 @@
                 </td>
               </tr>
             </tbody>
-
-
-
-
-
-
-
-
           </table>
         </div>
 
@@ -463,6 +478,7 @@
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
+                  @click="closeModalLeave()"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -489,6 +505,11 @@
                         style="padding: 9px"
                       >
                       </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalLeaveType && attemptInsert"
+                        >Leave Type is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -505,6 +526,11 @@
                         style="display: block; width: 100%; line-height: 20px"
                         v-model="leaveFrom"
                       ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalDateFrom && attemptInsert"
+                        >Leave Date From is required!</small
+                      >
                     </div>
                   </div>
 
@@ -518,6 +544,11 @@
                         style="display: block; width: 100%; line-height: 20px"
                         v-model="leaveTo"
                       ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalDateTo && attemptInsert"
+                        >Leave Date To is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -535,6 +566,11 @@
                         style="padding: 9px"
                       >
                       </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalPayType && attemptInsert"
+                        >Pay Type is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -557,7 +593,12 @@
         <!-- /. Modal Expense Type -->
 
         <!-- Modal -->
-        <div class="modal fade" id="modal-default">
+        <div
+          class="modal fade"
+          id="modal-default"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
           <div class="modal-dialog">
             <div class="modal-content">
               <!-- Overlay Loading Spinner -->
@@ -573,11 +614,18 @@
                   id="modalCloseButton"
                   data-dismiss="modal"
                   aria-label="Close"
+                  @click="closeModalLeave()"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
                 <div class="row">
                   <div class="col-md-12">
                     <div class="form-group">
@@ -588,6 +636,11 @@
                         rows="5"
                         v-model="remarks"
                       ></textarea>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingReplyRemarks && attemptReply"
+                        >Reply remarks is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -624,6 +677,15 @@
 
             <div class="col-lg-2" v-if="this.counter <= 1">
               <button
+                v-if="this.isInitiator"
+                type="button"
+                @click="next()"
+                class="btn btn-block btn-primary btn-sm"
+              >
+                NextInit
+              </button>
+              <button
+                v-else
                 type="button"
                 @click="counter++"
                 class="btn btn-block btn-primary btn-sm"
@@ -711,6 +773,86 @@ export default {
       return { active: this.counter >= 2 };
     },
 
+    missingReportingManager() {
+      if (this.reportingManagerItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingEmployee() {
+      if (this.employeeItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingReport() {
+      if (this.reportItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingReportTime() {
+      if (this.reportDateTime === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingPurpose() {
+      if (this.reason.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalLeaveType() {
+      if (this.leaveTypeItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalDateFrom() {
+      if (this.leaveFrom === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalDateTo() {
+      if (this.leaveTo === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalPayType() {
+      if (this.payTypeItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingReplyRemarks() {
+      if (this.remarks.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     todaysYear() {
       const today = new Date();
       // const dd = today.getDate();
@@ -723,6 +865,10 @@ export default {
   data() {
     return {
       counter: 0,
+      attemptInsert: false,
+      attemptNext: false,
+      attemptNextOne: false,
+      attemptReply: false,
       // Request Details
       referenceNumber: "",
       requestedDate: "",
@@ -738,8 +884,8 @@ export default {
       // modal
       leaveType: [],
       leaveTypeItem: {},
-      leaveFrom: "",
-      leaveTo: "",
+      leaveFrom: null,
+      leaveTo: null,
       payType: [
         { code: "wp", name: "With Pay" },
         { code: "wop", name: "Without Pay" },
@@ -751,13 +897,13 @@ export default {
 
       // Logged User Data // initiator
       loggedUserId: 136,
-      loggedUserFirstName: 'Rosevir',
-      loggedUserLastName: 'Ceballos',
-      loggedUserFullName: 'Rosevir Ceballos Jr.',
-      loggedUserDepartment: 'Information Technology',
-      loggedUserPosition: 'Senior Developer',
+      loggedUserFirstName: "Rosevir",
+      loggedUserLastName: "Ceballos",
+      loggedUserFullName: "Rosevir Ceballos Jr.",
+      loggedUserDepartment: "Information Technology",
+      loggedUserPosition: "Senior Developer",
       companyId: 1,
-      companyName: 'Cylix Technologies Inc.',
+      companyName: "Cylix Technologies Inc.",
 
       // // approver
       // loggedUserId: 11,
@@ -801,6 +947,17 @@ export default {
   methods: {
     async reply() {
       this.isLoadingModal = true;
+      this.attemptReply = true;
+      this.resetAlert();
+      const validated = this.validate_reply();
+
+      if (validated) {
+      } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
+
+      // start
       const fd = new FormData();
       fd.append("referenceNumber", this.referenceNumber);
       fd.append("requestedDate", this.requestedDate);
@@ -812,7 +969,6 @@ export default {
       fd.append("employeeName", this.employeeItem.name);
       fd.append("purpose", this.reason);
       fd.append("reason", this.reason);
-
 
       fd.append("form", this.form);
       fd.append("processId", this.processId);
@@ -828,9 +984,6 @@ export default {
       fd.append("payeeName", "N/A");
       fd.append("amount", 0);
       fd.append("isInitiator", this.isInitiator);
-
-
-      
 
       fd.append("loggedUserId", this.loggedUserId);
       fd.append("loggedUserFirstName", this.loggedUserFirstName);
@@ -862,6 +1015,7 @@ export default {
         // Handle Error Here
         console.error(err);
       }
+      // end
     },
 
     async getLafMain(id, companyId) {
@@ -910,6 +1064,22 @@ export default {
         console.error(err);
       }
     },
+
+    closeModalLeave() {
+      this.resetAlert();
+      this.resetModalLeave();
+      this.attemptReply = false;
+      this.remarks = "";
+    },
+
+    resetModalLeave() {
+      this.attemptInsert = false;
+      this.leaveTypeItem = {};
+      this.leaveFrom = null;
+      this.leaveTo = null;
+      this.payTypeItem = {};
+    },
+
     convertTimeAndDate(datetime) {
       const date = new Date(datetime);
 
@@ -937,13 +1107,18 @@ export default {
 
     async insert() {
       this.isLoadingModal = true;
+      this.attemptInsert = true;
       this.resetAlert();
 
       // returns true or false
-      const isValidated = this.validateInsert();
+      const validated = this.validateEmptyFields();
+      const isGreaterThan = this.validateStartEndDate(
+        this.leaveFrom,
+        this.leaveTo
+      );
 
       // validation if
-      if (isValidated) {
+      if (validated && isGreaterThan) {
         // start of loop insert
         let start = new Date(this.leaveFrom);
         let end = new Date(this.leaveTo);
@@ -979,8 +1154,6 @@ export default {
             "http://127.0.0.1:8000/api/validate-laf-insert",
             fd
           );
-          console.log(resp.data.length);
-          console.log(resp.data);
 
           if (resp.status === 200) {
             // exist
@@ -1001,6 +1174,7 @@ export default {
             } else {
               this.isLoadingModal = false;
               this.insertLeaveDates();
+              this.resetModalLeave();
               this.addAlert(
                 "Success",
                 "Leave date added successfully!",
@@ -1016,19 +1190,47 @@ export default {
         // End of loop insert
 
         //   validation else
+      } else if (isGreaterThan === false && validated) {
+        this.isLoadingModal = false;
+        this.addAlert(
+          "Failed",
+          "Authorize Time End must be greater than Authorize Time Start!",
+          "false"
+        );
       } else {
         this.isLoadingModal = false;
-        this.addAlert("Failed", "Please Input Required Fields!", "false");
+        this.addAlert("Failed", "Please complete required fields!", "false");
       }
     },
 
-    validateInsert() {
-      const startDate = new Date(this.leaveFrom);
-      const endDate = new Date(this.leaveTo);
+    validateStartEndDate(from, to) {
+      const startDate = new Date(from);
+      const endDate = new Date(to);
 
-      const check = endDate > startDate ? true : false;
-
+      const check = endDate >= startDate ? true : false;
       return check;
+    },
+
+    validateEmptyFields() {
+      if (
+        !this.missingEmployee &&
+        !this.missingModalLeaveType &&
+        !this.missingModalDateFrom &&
+        !this.missingModalDateTo &&
+        !this.missingModalPayType
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    validate_reply() {
+      if (!this.missingReplyRemarks) {
+        return true;
+      } else {
+        return false;
+      }
     },
 
     insertLeaveDates() {
@@ -1064,6 +1266,29 @@ export default {
         this.leaveData.push(addData);
         let newDate = startActual.setDate(startActual.getDate() + 1);
         startActual = new Date(newDate);
+      }
+    },
+
+    next() {
+      if (this.counter === 0) {
+        this.attemptNext = true;
+        if (
+          !this.missingReportingManager &&
+          !this.missingEmployee &&
+          !this.missingReport &&
+          !this.missingReportTime &&
+          !this.missingPurpose
+        ) {
+          this.counter++;
+        }
+      } else if (this.counter === 1) {
+        this.attemptNext = false;
+        this.attemptNextOne = true;
+        if (this.leaveData.length > 0) {
+          this.counter++;
+        } else {
+          this.openToast("top-right", "warning", "Please add your Leave data!");
+        }
       }
     },
 

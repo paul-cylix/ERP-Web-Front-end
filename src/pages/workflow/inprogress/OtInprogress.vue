@@ -48,7 +48,6 @@
               ></small
             >
           </div>
-
         </div>
         <!-- / Step Numbers -->
 
@@ -129,9 +128,15 @@
                 <th scope="col" style="width: 10%">Auth. Time Start</th>
                 <th scope="col" style="width: 10%">Auth. Time End</th>
                 <th scope="col" style="width: 10%">Auth. OT Hours</th>
-                <th v-if="isActual" scope="col" style="width: 10%">Actual Time Start</th>
-                <th v-if="isActual" scope="col" style="width: 10%">Actual Time End</th>
-                <th v-if="isActual" scope="col" style="width: 10%">Actual OT Hours</th>
+                <th v-if="isActual" scope="col" style="width: 10%">
+                  Actual Time Start
+                </th>
+                <th v-if="isActual" scope="col" style="width: 10%">
+                  Actual Time End
+                </th>
+                <th v-if="isActual" scope="col" style="width: 10%">
+                  Actual OT Hours
+                </th>
                 <th scope="col" style="width: 20%">Purpose</th>
               </tr>
             </thead>
@@ -307,7 +312,9 @@
                     <th style="width: 15%">Auth. Time Start</th>
                     <th style="width: 15%">Auth. Time End</th>
                     <th style="width: 5%">Auth. OT Hours</th>
-                    <th v-if="isActual" style="width: 15%">Actual Time Start</th>
+                    <th v-if="isActual" style="width: 15%">
+                      Actual Time Start
+                    </th>
                     <th v-if="isActual" style="width: 15%">Actual Time End</th>
                     <th v-if="isActual" style="width: 5%">Actual OT Hours</th>
                     <th style="width: 20%">Purpose</th>
@@ -389,7 +396,12 @@
         <!-- / Form Review -->
 
         <!-- Modal -->
-        <div class="modal fade" id="modal-default">
+        <div
+          class="modal fade"
+          id="modal-default"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
           <div class="modal-dialog">
             <div class="modal-content">
               <!-- Overlay Loading Spinner -->
@@ -537,19 +549,19 @@ export default {
       return { active: this.counter >= 2 };
     },
 
-    numberActual(){
-      if(this.isActual === true){
-        return 9
+    numberActual() {
+      if (this.isActual === true) {
+        return 9;
       } else {
-        return 6
+        return 6;
       }
     },
 
-    headerActual(){
-      if(this.isActual === true){
-        return 11
-      }else{
-        return 8
+    headerActual() {
+      if (this.isActual === true) {
+        return 11;
+      } else {
+        return 8;
       }
     },
 
@@ -607,14 +619,12 @@ export default {
       selectedFile: [],
 
       isActual: false,
-
     };
   },
 
   methods: {
     async withdrawn() {
-
-      this.isLoadingModal = true
+      this.isLoadingModal = true;
       const fd = new FormData();
 
       fd.append("withdrawRemarks", this.withdrawRemarks);
@@ -623,7 +633,6 @@ export default {
       fd.append("companyId", this.companyId);
       fd.append("loggedUserId", this.loggedUserId);
 
-
       try {
         const resp = await axios.post(
           "http://127.0.0.1:8000/api/withdraw-request",
@@ -631,11 +640,10 @@ export default {
         );
         console.log(resp.data);
 
-        if(resp.status === 200){
+        if (resp.status === 200) {
           document.getElementById("modalCloseButton").click();
           this.openToast("top-right", "success", resp.data.message);
           this.$router.replace("/inprogress");
-
         }
       } catch (err) {
         // Handle Error Here
@@ -680,14 +688,12 @@ export default {
 
           this.overtime = resp.data;
 
-          if(resp.data[0].ot_totalhrs_actual === null){
-            this.isActual = false
+          if (resp.data[0].ot_totalhrs_actual === null) {
+            this.isActual = false;
           } else {
-            this.isActual = true
+            this.isActual = true;
           }
-            // console.log(this.isActual)
-
-          
+          // console.log(this.isActual)
         }
       } catch (err) {
         // Handle Error Here

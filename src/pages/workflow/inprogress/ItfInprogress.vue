@@ -527,6 +527,9 @@ export default {
         this.isLoading = false;
       }
     },
+    close() {
+      this.$router.replace("/inprogress");
+    },
     openToast(position, variant, message) {
       const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
       VsToast.show({

@@ -24,9 +24,6 @@
           <div class="progressbar" :class="classC">
             <span :class="classC">3</span>
           </div>
-          <div class="progressbar" :class="classD">
-            <span :class="classD">4</span>
-          </div>
         </div>
 
         <div class="d-flex text-center">
@@ -47,13 +44,6 @@
           <div class="textbar" :class="classC">
             <small
               ><span :class="classC" class="font-weight-bold"
-                >Attachments</span
-              ></small
-            >
-          </div>
-          <div class="textbar" :class="classD">
-            <small
-              ><span :class="classD" class="font-weight-bold"
                 >Review</span
               ></small
             >
@@ -180,74 +170,8 @@
 
         <!-- /.Overtime Details -->
 
-        <!-- The Attachments -->
-        <div
-          v-else-if="this.counter === 2"
-          class="
-            d-flex
-            align-items-center
-            justify-content-center
-            text-center
-            position-relative
-            mt-4
-          "
-          id="app"
-        >
-          <div class="p-5 col-md-12 rounded" id="uploadContainer">
-            <label for="assetsFieldHandle" class="block cursor-pointer">
-              <span class="text-secondary">List of Attached File</span>
-            </label>
-            <!-- <aside class="d-flex align-items-center justify-content-center"> -->
-            <ul class="mt-4 text-decoration-none ulUpload" v-cloak>
-              <li
-                class="text-sm mt-2"
-                v-for="(file, index) in selectedFile"
-                :key="file.newFilename"
-              >
-                <div class="row d-flex justify-content-center">
-                  <div class="col-md-4 d-flex">
-                    <div class="col-1">
-                      <b>{{ index + 1 + "." }}</b>
-                    </div>
-                    <div class="col text-left">
-                      <span>{{ file.filename }}</span>
-                    </div>
-                    <div>
-                      <button class="btn btn-info btn-sm" type="button">
-                        <a
-                          :download="file.filename"
-                          style="color: white"
-                          :href="
-                            'data:' +
-                            file.mimeType +
-                            ';base64,' +
-                            file.imageBytes
-                          "
-                          target="_blank"
-                          >Download</a
-                        >
-                      </button>
-                    </div>
-                    <div class="col-2">
-                      <button
-                        class="btn btn-secondary btn-sm"
-                        @click="preview(file.mimeType, file.imageBytes)"
-                      >
-                        Preview
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-
-            <!-- </aside> -->
-          </div>
-        </div>
-        <!-- / The Attachments -->
-
         <!--  Form Review -->
-        <aside v-else-if="this.counter === 3">
+        <aside v-else-if="this.counter === 2">
           <!-- Request Details Review -->
           <div class="card card-secondary mt-4">
             <div class="card-header">
@@ -361,58 +285,16 @@
           </div>
 
           <!-- /.Overtime Details Review -->
-
-          <!-- Form Review Attachments -->
-          <div class="card card-secondary">
-            <div class="card-header">
-              <h3 class="card-title">Attachments</h3>
-
-              <div class="card-tools">
-                <button
-                  type="button"
-                  class="btn btn-tool"
-                  data-card-widget="collapse"
-                >
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body p-0">
-              <table
-                class="table table-sm table-bordered table-hover table-striped"
-              >
-                <thead>
-                  <tr>
-                    <th style="width: 5%">#</th>
-                    <th style="width: 80%">Filename</th>
-                    <th style="width: 15%">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(file, index) in selectedFile" :key="file.name">
-                    <td>{{ index + 1 }}</td>
-                    <td>{{ file.filename }}</td>
-                    <td class="pl-2 pr-2 text-center">
-                      <button
-                        @click="preview(file.mimeType, file.imageBytes)"
-                        class="btn btn-secondary btn-sm ml-1"
-                      >
-                        Preview
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <!-- /.card-body -->
-          </div>
-          <!-- /.Form Review Attachments -->
         </aside>
         <!-- / Form Review -->
 
         <!-- Modal -->
-        <div class="modal fade" id="modal-default">
+        <div
+          class="modal fade"
+          id="modal-default"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
           <div class="modal-dialog">
             <div class="modal-content">
               <!-- Overlay Loading Spinner -->
@@ -430,11 +312,18 @@
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
+                  @click="closeModalDefault()"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
                 <div class="row" v-if="isForClarity">
                   <div class="col-md-12">
                     <div class="form-group">
@@ -447,6 +336,11 @@
                         style="padding: 9px"
                       >
                       </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalRecipient && attemptClarify"
+                        >Recipient is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -458,7 +352,7 @@
                         class="form-control"
                         id="remarks"
                         rows="5"
-                        v-model="remarks"
+                        v-model.trim="remarks"
                         placeholder="Please input request remarks here!"
                       ></textarea>
                     </div>
@@ -495,7 +389,7 @@
               </button>
             </div>
 
-            <div class="col-lg-2" v-if="this.counter <= 2">
+            <div class="col-lg-2" v-if="this.counter <= 1">
               <button
                 type="button"
                 @click="counter++"
@@ -614,9 +508,6 @@ export default {
     classC() {
       return { active: this.counter >= 2 };
     },
-    classD() {
-      return { active: this.counter >= 3 };
-    },
 
     totalOTHours() {
       if (this.overtime.length > 0) {
@@ -653,6 +544,14 @@ export default {
       }
     },
 
+    missingModalRecipient() {
+      if (this.itemrecipient.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     // Calendaer
     todaysYear() {
       const today = new Date();
@@ -666,6 +565,7 @@ export default {
   data() {
     return {
       counter: 0,
+      attemptClarify: false,
       // Request Details
       referenceNumber: "",
       requestedDate: "",
@@ -683,25 +583,25 @@ export default {
       // companyId: 1,
       // companyName: "Cylix Technologies Inc.",
 
-      // approver
-      loggedUserId: 11,
-      loggedUserFirstName: "Konrad",
-      loggedUserLastName: "Chua",
-      loggedUserFullName: "Konrad Chua",
-      loggedUserDepartment: "Management",
-      loggedUserPosition: "Managing Director",
-      companyId: 1,
-      companyName: "Cylix Technologies Inc.",
-
-      // // approver 2
-      // loggedUserId: 12,
-      // loggedUserFirstName: "Carrie",
-      // loggedUserLastName: "Chua Lee",
-      // loggedUserFullName: "Carrie Chua Lee",
-      // loggedUserDepartment: "Accounting and Finance",
-      // loggedUserPosition: "Accounting and Finance Head",
+      // // approver
+      // loggedUserId: 11,
+      // loggedUserFirstName: "Konrad",
+      // loggedUserLastName: "Chua",
+      // loggedUserFullName: "Konrad Chua",
+      // loggedUserDepartment: "Management",
+      // loggedUserPosition: "Managing Director",
       // companyId: 1,
       // companyName: "Cylix Technologies Inc.",
+
+      // approver 2
+      loggedUserId: 12,
+      loggedUserFirstName: "Carrie",
+      loggedUserLastName: "Chua Lee",
+      loggedUserFullName: "Carrie Chua Lee",
+      loggedUserDepartment: "Accounting and Finance",
+      loggedUserPosition: "Accounting and Finance Head",
+      companyId: 1,
+      companyName: "Cylix Technologies Inc.",
 
       // totalOT: 0,
       isLoading: false,
@@ -723,6 +623,12 @@ export default {
       inprogressId: "",
 
       isActual: false,
+
+      // The Alert
+      isAlert: false,
+      header: "", // Syccess or Failed
+      message: "", // added successfully
+      type: "", // true or false
     };
   },
 
@@ -806,28 +712,68 @@ export default {
       }
 
       if (type === "Clarify") {
-        try {
-          const res = await axios.post(
-            "http://127.0.0.1:8000/api/send-clarity",
-            fd
-          );
+        this.attemptClarify = true;
+        this.resetAlert();
+        const validated = this.validateModalDefault();
+        if (validated) {
+          // start
+          try {
+            const res = await axios.post(
+              "http://127.0.0.1:8000/api/send-clarity",
+              fd
+            );
 
-          document.getElementById("modalCloseButton").click();
-          this.openToast("top-right", "success", res.data.message);
-          if (res.status === 200) {
-            this.$router.replace("/approvals");
-          } else {
+            if (res.status === 200) {
+              this.isLoadingModal = false;
+              document.getElementById("modalCloseButton").click();
+              this.openToast("top-right", "success", res.data.message);
+              this.resetAlert();
+              this.remarks = "";
+              this.$router.replace("/approvals");
+            } else {
+              this.isLoadingModal = false;
+              document.getElementById("modalCloseButton").click();
+              this.openToast("top-right", "error", "Please Try again laer");
+            }
+          } catch (err) {
+            this.isLoadingModal = false;
             document.getElementById("modalCloseButton").click();
-            this.openToast("top-right", "error", "Please Try again laer");
+            this.openToast("top-right", "error", err);
           }
-        } catch (err) {
-          // Handle Error Here
-          // console.error(err);
-
-          document.getElementById("modalCloseButton").click();
-          this.openToast("top-right", "error", err);
+          // end
+        } else {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", "Please select recipent!", "false");
         }
       }
+    },
+
+    validateModalDefault() {
+      if (!this.missingModalRecipient === true) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
+    },
+
+    resetAlert() {
+      this.isAlert = false;
+      this.header = "";
+      this.message = "";
+      this.type = "";
+    },
+
+    closeModalDefault(){
+      this.resetAlert()
+      this.attemptClarify = false;
+      this.remarks = '';
     },
 
     async getRecipients(id, loggedUserId, companyId, form) {

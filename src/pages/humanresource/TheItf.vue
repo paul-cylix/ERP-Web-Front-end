@@ -64,7 +64,7 @@
                   class="form-control form-control-sm py-3"
                   id="reference"
                   disabled
-                  :value="'OTR-' + todaysYear"
+                  :value="'ITF-' + todaysYear"
                 />
               </div>
             </div>
@@ -205,7 +205,7 @@
                 <tbody>
                   <tr>
                     <td>Reference Number</td>
-                    <td style="width: 80%">{{ "OTR-" + todaysYear }}</td>
+                    <td style="width: 80%">{{ "ITF-" + todaysYear }}</td>
                   </tr>
                   <tr>
                     <td>Requested Date</td>

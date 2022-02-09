@@ -471,7 +471,6 @@
               Submit
             </button>
           </div>
-          
         </div>
         <!-- / Buttons -->
       </div>
@@ -525,7 +524,6 @@
                     option-text="name"
                     placeholder="Select Project Name"
                     style="padding: 9px"
-            
                   >
                   </model-list-select>
                   <small
@@ -539,6 +537,22 @@
 
             <div class="row">
               <div class="col-md-5">
+                <div class="form-group">
+                  <small><label for="overtimeDate">Overtime Date</label></small>
+                  <date-picker
+                    valueType="format"
+                    style="display: block; width: 100%; line-height: 20px"
+                    v-model="overtimeDate"
+                  ></date-picker>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalOTDate && attemptInsert"
+                    >Overtime Date is required!</small
+                  >
+                </div>
+              </div>
+
+              <div class="col-md-7">
                 <div class="form-group">
                   <small><label for="employeeName">Employee Name</label></small>
                   <model-list-select
@@ -554,22 +568,6 @@
                     class="text-danger p-0 m-0"
                     v-if="missingModalEmployee && attemptInsert"
                     >Employee Name is required!</small
-                  >
-                </div>
-              </div>
-
-              <div class="col-md-7">
-                <div class="form-group">
-                  <small><label for="overtimeDate">Overtime Date</label></small>
-                  <date-picker
-                    valueType="format"
-                    style="display: block; width: 100%; line-height: 20px"
-                    v-model="overtimeDate"
-                  ></date-picker>
-                  <small
-                    class="text-danger p-0 m-0"
-                    v-if="missingModalOTDate && attemptInsert"
-                    >Overtime Date is required!</small
                   >
                 </div>
               </div>
@@ -672,7 +670,6 @@
             >
               Update
             </button>
-
           </div>
         </div>
         <!-- /.modal-content -->
@@ -702,8 +699,8 @@ export default {
   },
   watch: {
     itemModalProjectName(newValue) {
-      if(newValue.code > 0){
-      this.getClient(newValue.code);
+      if (newValue.code > 0) {
+        this.getClient(newValue.code);
       }
     },
   },
@@ -1110,7 +1107,6 @@ export default {
       this.clientName = client[0].clientName;
       this.clientId = client[0].clientId;
       this.mainId = client[0].mainId;
-
     },
 
     // Overtime Details
