@@ -264,6 +264,7 @@
         <div
           class="modal fade"
           id="modal-default"
+          @click="closeModalDefault()"
           data-backdrop="static"
           data-keyboard="false"
         >
@@ -292,9 +293,7 @@
                 <div class="row">
                   <div class="col-md-12">
                     <div class="form-group">
-                      <small
-                        ><label for="remarks">Remarks</label></small
-                      >
+                      <small><label for="remarks">Remarks</label></small>
                       <textarea
                         class="form-control"
                         id="remarks"
@@ -307,7 +306,7 @@
               </div>
               <div class="modal-footer justify-content-end">
                 <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-                  <button
+                <button
                   type="button"
                   class="btn btn-primary btn-sm"
                   @click="submit(title)"
@@ -442,6 +441,11 @@
                         type="datetime"
                         style="display: block; width: 100%; line-height: 20px"
                       ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalActualStart && attemptUpdate"
+                        >Actual Start is required!</small
+                      >
                     </div>
                   </div>
 
@@ -457,6 +461,11 @@
                         type="datetime"
                         style="display: block; width: 100%; line-height: 20px"
                       ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalActualEnd && attemptUpdate"
+                        >Actual End is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -595,10 +604,26 @@ export default {
     classC() {
       return { active: this.counter >= 2 };
     },
+
+    missingModalActualStart() {
+      if (this.actualTimeStart === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalActualEnd() {
+      if (this.actualTimeEnd === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   data() {
     return {
       counter: 0,
+      attemptUpdate: false,
       // Request Details
       referenceNumber: "",
       requestedDate: "",
@@ -639,10 +664,10 @@ export default {
       id: "",
       client: [],
       itemModalClient: {},
-      authTimeStart: "",
-      authTimeEnd: "",
-      actualTimeStart: "",
-      actualTimeEnd: "",
+      authTimeStart: null,
+      authTimeEnd: null,
+      actualTimeStart: null,
+      actualTimeEnd: null,
       modalPurpose: "",
     };
   },
@@ -662,9 +687,7 @@ export default {
       fd.append("class", "ITF");
       fd.append("loggedUserDepartment", this.loggedUserDepartment);
       fd.append("itineraryData", JSON.stringify(this.itinerary));
-      fd.append("isActual", 'true');
-
-
+      fd.append("isActual", "true");
 
       if (type === "Approve") {
         try {
@@ -680,12 +703,10 @@ export default {
             this.openToast("top-right", "success", resp.data.message);
             this.$router.replace("/inprogress");
           }
-
         } catch (err) {
           // Handle Error Here
           console.error(err);
           this.openToast("top-right", "error", err);
-
         }
       }
 
@@ -712,33 +733,71 @@ export default {
       }
     },
 
-
-
-
     update() {
       this.isLoadingModal = true;
-      this.resetAlert();
-      const addData = {
-        id: this.id,
-        main_id: this.processId,
-        client_id: this.itemModalClient.code,
-        client_name: this.itemModalClient.name,
-        time_start: this.authTimeStart,
-        time_end: this.authTimeEnd,
-        actual_start: this.actualTimeStart,
-        actual_end: this.actualTimeEnd,
-        purpose: this.modalPurpose,
-      };
+      this.attemptUpdate = true;
+      const validated = this.validateEmptyFields();
+      const isGreaterThan = this.validateStartEndDate(
+        this.actualTimeStart,
+        this.actualTimeEnd
+      );
 
-      this.itinerary.splice(this.index, 1);
-      this.itinerary.push(addData);
+      if (validated && isGreaterThan) {
+        // start
+        this.resetAlert();
+        const addData = {
+          id: this.id,
+          main_id: this.processId,
+          client_id: this.itemModalClient.code,
+          client_name: this.itemModalClient.name,
+          time_start: this.authTimeStart,
+          time_end: this.authTimeEnd,
+          actual_start: this.actualTimeStart,
+          actual_end: this.actualTimeEnd,
+          purpose: this.modalPurpose,
+        };
 
-      this.addAlert("Success", "Record Updated Successfully!", "true");
-      this.isLoadingModal = false;
+        this.itinerary.splice(this.index, 1);
+        this.itinerary.push(addData);
 
-      this.itinerary.sort(function (a, b) {
-        return a.id - b.id;
-      });
+        this.addAlert("Success", "Record Updated Successfully!", "true");
+        this.isLoadingModal = false;
+
+        this.itinerary.sort(function (a, b) {
+          return a.id - b.id;
+        });
+        // end
+      } else if (isGreaterThan === false && validated) {
+        this.isLoadingModal = false;
+        this.addAlert(
+          "Failed",
+          "Authorize Time End must be greater than Authorize Time Start!",
+          "false"
+        );
+      } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
+    },
+
+    validateEmptyFields() {
+      if (
+        !this.missingModalActualStart &&
+        !this.missingModalActualEnd 
+
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    validateStartEndDate(from, to) {
+      const startDate = new Date(from);
+      const endDate = new Date(to);
+
+      const check = endDate > startDate ? true : false;
+      return check;
     },
 
     edit(index) {
@@ -799,6 +858,10 @@ export default {
       this.title = title;
     },
 
+    closeModalDefault() {
+      this.remarks = "";
+    },
+
     convertTimeAndDate(datetime) {
       const date = new Date(datetime);
 
@@ -827,7 +890,6 @@ export default {
     close() {
       this.$router.replace("/inputs");
     },
-
 
     async getItfMain(id) {
       this.isLoading = true;

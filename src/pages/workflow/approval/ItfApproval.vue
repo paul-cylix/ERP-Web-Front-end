@@ -274,11 +274,18 @@
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
+                  @click="closeModalDefault()"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
                 <div class="row" v-if="isForClarity">
                   <div class="col-md-12">
                     <div class="form-group">
@@ -291,6 +298,11 @@
                         style="padding: 9px"
                       >
                       </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalRecipient && attemptClarify"
+                        >Recipient is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -464,6 +476,14 @@ export default {
       }
     },
 
+    missingModalRecipient() {
+      if (this.itemrecipient.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     headerActual() {
       if (this.isActual === true) {
         return 7;
@@ -475,6 +495,7 @@ export default {
   data() {
     return {
       counter: 0,
+      attemptClarify: false,
       // Request Details
       referenceNumber: "",
       requestedDate: "",
@@ -527,6 +548,12 @@ export default {
       title: "",
 
       isActual: false,
+
+      // The Alert
+      isAlert: false,
+      header: "", // Syccess or Failed
+      message: "", // added successfully
+      type: "", // true or false
     };
   },
 
@@ -610,26 +637,35 @@ export default {
       }
 
       if (type === "Clarify") {
-        try {
-          const res = await axios.post(
-            "http://127.0.0.1:8000/api/send-clarity",
-            fd
-          );
+        this.attemptClarify = true;
+        this.resetAlert();
+        const validated = this.validateModalDefault();
+        if (validated) {
+          try {
+            const res = await axios.post(
+              "http://127.0.0.1:8000/api/send-clarity",
+              fd
+            );
 
-          document.getElementById("modalCloseButton").click();
-          this.openToast("top-right", "success", res.data.message);
-          if (res.status === 200) {
-            this.$router.replace("/approvals");
-          } else {
             document.getElementById("modalCloseButton").click();
-            this.openToast("top-right", "error", "Please Try again laer");
-          }
-        } catch (err) {
-          // Handle Error Here
-          // console.error(err);
+            this.openToast("top-right", "success", res.data.message);
+            if (res.status === 200) {
+              this.$router.replace("/approvals");
+            } else {
+              document.getElementById("modalCloseButton").click();
+              this.openToast("top-right", "error", "Please Try again laer");
+            }
+          } catch (err) {
+            // Handle Error Here
+            // console.error(err);
 
-          document.getElementById("modalCloseButton").click();
-          this.openToast("top-right", "error", err);
+            document.getElementById("modalCloseButton").click();
+            this.openToast("top-right", "error", err);
+          }
+          // end
+        } else {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", "Please select recipent!", "false");
         }
       }
     },
@@ -662,8 +698,35 @@ export default {
       this.$router.replace("/approvals");
     },
 
+    closeModalDefault() {
+      this.resetAlert();
+      this.remarks = "";
+      this.attemptClarify = false;
+    },
+
+    validateModalDefault() {
+      if (!this.missingModalRecipient === true) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     setTitle(title) {
       this.title = title;
+    },
+
+    resetAlert() {
+      this.isAlert = false;
+      this.header = "";
+      this.message = "";
+      this.type = "";
+    },
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
     },
 
     async getItfMain(id) {
