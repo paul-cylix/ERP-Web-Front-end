@@ -4,13 +4,13 @@ import VueRouter from "vue-router";
 import UserLogin from "./pages/auth/UserLogin.vue";
 import MainDashboard from "./pages/dashboard/MainDashboard.vue";
 import DashboardContent from "./pages/dashboard/DashboardContent.vue";
-import TheParticipant from "./pages/workflow/TheParticipant.vue";
+import TheParticipant from "./pages/workflow/participant/TheParticipant.vue";
 import TheInput from "./pages/workflow/input/TheInput.vue";
 import TheApproval from "./pages/workflow/approval/TheApproval.vue";
 import TheInprogress from "./pages/workflow/inprogress/TheInprogress.vue";
 import TheClarification from "./pages/workflow/clarification/TheClarification.vue";
-import TheApproved from "./pages/workflow/TheApproved.vue";
-import TheWithdrawn from "./pages/workflow/TheWithdrawn.vue";
+import TheApproved from "./pages/workflow/approved/TheApproved.vue";
+import TheWithdrawn from "./pages/workflow/withdrawn/TheWithdrawn.vue";
 import TheRejected from "./pages/workflow/rejected/TheRejected.vue";
 
 import TheRfp from "./pages/accounting/TheRfp.vue";

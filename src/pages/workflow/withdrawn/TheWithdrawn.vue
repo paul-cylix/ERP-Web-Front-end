@@ -1,18 +1,17 @@
 <template>
-<aside class="col-md-12">
-  <router-view></router-view>
-  <div class="col-md-12 mt-3">
-    <div class="card card-secondary">
-      <div class="card-header">
-        <h3 class="card-title">For Input Requests</h3>
-      </div>
-      <div class="card-body pt-0 pb-3">
-        <data-table v-bind="parametersTable1" />
+  <aside class="col-md-12">
+    <router-view></router-view>
+    <div class="col-md-12 mt-3">
+      <div class="card card-secondary">
+        <div class="card-header">
+          <h3 class="card-title">Withdrawn Requests</h3>
+        </div>
+        <div class="card-body pt-0 pb-3">
+          <data-table v-bind="parametersTable1" />
+        </div>
       </div>
     </div>
-  </div>
-</aside>
-
+  </aside>
 </template>
 <script>
 import ActionButtons from "../ActionButtons.vue";
@@ -24,7 +23,7 @@ export default {
       requestArray: [],
     };
   },
- 
+
   computed: {
     parametersTable1() {
       return {
@@ -73,26 +72,29 @@ export default {
       };
     },
   },
-    watch: {
+
+  watch: {
     //Navigate
     $route(newRoute) {
-      this.getInputs();
+      this.getWithdrawn();
       console.log(newRoute);
     },
   },
   methods: {
-    async getInputs() {
-
+    async getWithdrawn() {
       const loggedUserId = 136;
       const companyId = 1;
 
-      const response = await fetch(`http://127.0.0.1:8000/api/getInputs/${loggedUserId}/${companyId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-      });
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/getWithdrawn/${loggedUserId}/${companyId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+        }
+      );
 
       const responseData = await response.json();
       if (!response.ok) {
@@ -111,7 +113,7 @@ export default {
   },
 
   mounted() {
-    this.getInputs();
+    this.getWithdrawn();
   },
 };
 </script>

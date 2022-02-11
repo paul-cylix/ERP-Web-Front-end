@@ -1,18 +1,20 @@
 <template>
-  <div class="col-md-12 mt-3">
-    <div class="card card-secondary">
-      <div class="card-header">
-        <h3 class="card-title">Withdrawn Requests</h3>
-      </div>
-      <div class="card-body pt-0 pb-3" >
-        <data-table v-bind="parametersTable1"/>
+  <aside class="col-md-12">
+    <router-view></router-view>
+    <div class="col-md-12 mt-3">
+      <div class="card card-secondary">
+        <div class="card-header">
+          <h3 class="card-title">Approved Requests</h3>
+        </div>
+        <div class="card-body pt-0 pb-3">
+          <data-table v-bind="parametersTable1" />
+        </div>
       </div>
     </div>
-  </div>
+  </aside>
 </template>
 <script>
-import ActionButtons from "./ActionButtons.vue";
-// import axios from 'axios';
+import ActionButtons from "../ActionButtons.vue";
 export default {
   name: "App",
 
@@ -26,7 +28,8 @@ export default {
     parametersTable1() {
       return {
         data: this.requestArray,
-        tableClass: 'table table-sm table-striped table-bordered small table-hover',
+        tableClass:
+          "table table-sm table-striped table-bordered small table-hover",
         columns: [
           {
             key: "reference",
@@ -37,7 +40,7 @@ export default {
             title: "Request Type",
           },
           {
-            key: "dueDate",
+            key: "date",
             title: "Request Date",
           },
           {
@@ -68,14 +71,22 @@ export default {
         ],
       };
     },
-
-
-
   },
-  methods:{
-        async getWithdrawn() {
+
+  watch: {
+    //Navigate
+    $route(newRoute) {
+      this.getApproved();
+      console.log(newRoute);
+    },
+  },
+  methods: {
+    async getApproved() {
+      const loggedUserId = 136;
+      const companyId = 1;
+
       const response = await fetch(
-        `http://127.0.0.1:8000/api/getWithdrawn`,
+        `http://127.0.0.1:8000/api/getApproved/${loggedUserId}/${companyId}`,
         {
           method: "GET",
           headers: {
@@ -93,16 +104,16 @@ export default {
         throw error;
       }
 
-      this.requestArray = responseData.data
-  
-
+      this.requestArray = responseData.data;
     },
+
+    // activateAction(button){
+    //   alert(button)
+    // }
   },
 
-  mounted(){
-    this.getWithdrawn();
+  mounted() {
+    this.getApproved();
   },
-
-
 };
 </script>
