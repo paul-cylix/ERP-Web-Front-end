@@ -561,6 +561,7 @@ export default {
   },
   created() {
     // Request Details
+    this.getLoggedUser();
     this.getProjects();
     this.getReportingManager(this.loggedUserId);
     this.todaysDate();
@@ -705,13 +706,13 @@ export default {
       filespreview: [],
 
       // Logged User Data
-      loggedUserId: 136,
-      loggedUserFirstName: "Rosevir",
-      loggedUserLastName: "Ceballos",
-      loggedUserDepartment: "Information Technology",
-      loggedUserPosition: "Senior Developer",
-      companyId: 1,
-      companyName: "Cylix Technologies Inc.",
+      loggedUserId: localStorage.getItem("id"),
+      loggedUserFirstName: localStorage.getItem("fname"),
+      loggedUserLastName: localStorage.getItem("lname"),
+      loggedUserDepartment: localStorage.getItem("department"),
+      loggedUserPosition: localStorage.getItem("positionName"),
+      companyId: localStorage.getItem("companyId"),
+      companyName: localStorage.getItem("companyName"),
 
       // fields: [
       //   "Reference Number",
@@ -726,6 +727,12 @@ export default {
   },
 
   methods: {
+    getLoggedUser(){
+      const loggedUserData = this.$store.getters.userLoggedIn;
+      console.log(loggedUserData)
+      
+    },
+
     // for test purposes
     test() {
       // console.log(this.dateNeeded.length);
