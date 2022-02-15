@@ -26,13 +26,13 @@
                     <input type="checkbox" class="form-check-input" id="exampleCheck1">
                     <label class="form-check-label" for="exampleCheck1">Remember Me</label>
                   </div>
-                    <div class="form-group ">
+                    <!-- <div class="form-group ">
                     <label for="company">Company:</label>
                     <select class="form-control" id="company" name="company" v-model="company">
                       <option value="0">Select</option>
                       <option value="1">Cylix Technologies Inc.</option>
                     </select>
-                    </div>
+                    </div> -->
                     <div class="row ">
                       <div class="col-lg d-flex align-items-center">
                     <button type="submit"  class="btn-sm text-light bg-dark">Sign in</button>
@@ -44,7 +44,7 @@
 
                     </div>
                 </form>
-                    <button @click="getStoreData">Test</button>
+                    <!-- <button @click="getStoreData">Test</button> -->
               </div>
               <div class="card-body" v-else>
               <loading-spinner></loading-spinner>
@@ -79,7 +79,7 @@ export default {
         password: this.password,
         companyId: this.company,
       };
-      console.log(actionPayload)
+      // console.log(actionPayload)
       try {
         await this.$store.dispatch('login', actionPayload);
         this.$router.replace('/dashboard')
@@ -90,8 +90,8 @@ export default {
     },
 
     getStoreData(){
-      // const datas = this.$store.getters.userLoggedIn;
-      console.log(this.company)
+      const datas = this.$store.getters.isAuthenticated;
+      console.log(datas)
       // return datas ;
     },
   }
