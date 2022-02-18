@@ -14,7 +14,7 @@
         <a href="#" class="list-group-item list-group-item-action"
           >Morbi leo risus</a
         > -->
-        <button @click="clear()"  class="py-1 list-group-item list-group-item-action"
+        <button @click="logout()"  class="py-1 list-group-item list-group-item-action"
           >Logout</button
         >
 
@@ -48,9 +48,9 @@ export default {
       this.fullName = data.fullName
     },
 
-    clear(){
+    logout(){
       this.$store.dispatch('logout');
-      this.$router.replace('/')
+      // this.$router.replace('/')
 
     }
   }
