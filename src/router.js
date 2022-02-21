@@ -25,29 +25,42 @@ import RfpApproval from "./pages/workflow/approval/RfpApproval.vue";
 import RfpRejected from "./pages/workflow/rejected/RfpRejected.vue";
 import RfpInput from "./pages/workflow/input/RfpInput.vue";
 import RfpClarification from "./pages/workflow/clarification/RfpClarification.vue";
+import RfpApproved from "./pages/workflow/approved/RfpApproved.vue";
+
+
 
 import ReInprogress from "./pages/workflow/inprogress/ReInprogress.vue";
 import ReApproval from "./pages/workflow/approval/ReApproval.vue";
 import ReInput from "./pages/workflow/input/ReInput.vue";
 import ReClarification from "./pages/workflow/clarification/ReClarification.vue";
+import ReApproved from "./pages/workflow/approved/ReApproved.vue";
+
 
 import PcInprogress from "./pages/workflow/inprogress/PcInprogress.vue";
 import PcApproval from "./pages/workflow/approval/PcApproval.vue";
 import PcClarification from "./pages/workflow/clarification/PcClarification.vue";
+import PcApproved from "./pages/workflow/approved/PcApproved.vue";
+
 
 import OtInprogress from "./pages/workflow/inprogress/OtInprogress.vue";
 import OtApproval from "./pages/workflow/approval/OtApproval.vue";
 import OtInput from "./pages/workflow/input/OtInput.vue";
 import OtClarification from "./pages/workflow/clarification/OtClarification.vue";
+import OtApproved from "./pages/workflow/approved/OtApproved.vue";
+
 
 import ItfInprogress from "./pages/workflow/inprogress/ItfInprogress.vue";
 import ItfApproval from "./pages/workflow/approval/ItfApproval.vue";
 import ItfInput from "./pages/workflow/input/ItfInput.vue";
 import ItfClarification from "./pages/workflow/clarification/ItfClarification.vue";
+import ItfApproved from "./pages/workflow/approved/ItfApproved.vue";
+
 
 import LafInprogress from "./pages/workflow/inprogress/LafInprogress.vue";
 import LafApproval from "./pages/workflow/approval/LafApproval.vue";
 import LafClarification from "./pages/workflow/clarification/LafClarification.vue";
+import LafApproved from "./pages/workflow/approved/LafApproved.vue";
+
 
 import store from "./store/index.js";
 
@@ -60,8 +73,16 @@ const routes = [
     path: "/thedashboard",
     component: MainDashboard,
     children: [
-      { path: "/dashboard", component: DashboardContent, meta: { requiresAuth: true } },
-      { path: "/participants", component: TheParticipant, meta: { requiresAuth: true } },
+      {
+        path: "/dashboard",
+        component: DashboardContent,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: "/participants",
+        component: TheParticipant,
+        meta: { requiresAuth: true },
+      },
       {
         path: "/inputs",
         component: TheInput,
@@ -71,31 +92,31 @@ const routes = [
             name: "Request for Payment-input",
             component: RfpInput,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Reimbursement Request-input",
             component: ReInput,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Overtime Request-input",
             component: OtInput,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Itinerary Request-input",
             component: ItfInput,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
         ],
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true },
       },
       {
         path: "/approvals",
@@ -106,45 +127,45 @@ const routes = [
             name: "Request for Payment-approval",
             component: RfpApproval,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Reimbursement Request-approval",
             component: ReApproval,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Petty Cash Request-approval",
             component: PcApproval,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Overtime Request-approval",
             component: OtApproval,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Itinerary Request-approval",
             component: ItfApproval,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Leave Request-approval",
             component: LafApproval,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
         ],
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true },
       },
       {
         path: "/inprogress",
@@ -154,40 +175,46 @@ const routes = [
             path: ":id",
             name: "Request for Payment-inprogress",
             component: RfpInprogress,
-            props: true,meta: { requiresAuth: true }
+            props: true,
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Reimbursement Request-inprogress",
             component: ReInprogress,
-            props: true,meta: { requiresAuth: true }
+            props: true,
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Petty Cash Request-inprogress",
             component: PcInprogress,
-            props: true,meta: { requiresAuth: true }
+            props: true,
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Overtime Request-inprogress",
             component: OtInprogress,
-            props: true,meta: { requiresAuth: true }
+            props: true,
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Itinerary Request-inprogress",
             component: ItfInprogress,
-            props: true,meta: { requiresAuth: true }
+            props: true,
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Leave Request-inprogress",
             component: LafInprogress,
-            props: true,meta: { requiresAuth: true }
+            props: true,
+            meta: { requiresAuth: true },
           },
         ],
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true },
       },
       {
         path: "/clarifications",
@@ -198,48 +225,100 @@ const routes = [
             name: "Request for Payment-clarification",
             component: RfpClarification,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Reimbursement Request-clarification",
             component: ReClarification,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Petty Cash Request-clarification",
             component: PcClarification,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Overtime Request-clarification",
             component: OtClarification,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Itinerary Request-clarification",
             component: ItfClarification,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
           {
             path: ":id",
             name: "Leave Request-clarification",
             component: LafClarification,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
         ],
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true },
       },
-      { path: "/approved", component: TheApproved ,meta: { requiresAuth: true }},
-      { path: "/withdrawn", component: TheWithdrawn ,meta: { requiresAuth: true }},
+      {
+        path: "/approved",
+        component: TheApproved,
+        children: [
+          {
+            path: ":id",
+            name: "Request for Payment-approved",
+            component: RfpApproved, // paul
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Reimbursement Request-approved",
+            component: ReApproved,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Petty Cash Request-approved",
+            component: PcApproved,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Overtime Request-approved",
+            component: OtApproved,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Itinerary Request-approved",
+            component: ItfApproved,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Leave Request-approved",
+            component: LafApproved,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+        ],
+        meta: { requiresAuth: true },
+      },
+      {
+        path: "/withdrawn",
+        component: TheWithdrawn,
+        meta: { requiresAuth: true },
+      },
       {
         path: "/rejected",
         component: TheRejected,
@@ -249,19 +328,19 @@ const routes = [
             name: "rejectedbyId",
             component: RfpRejected,
             props: true,
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: true },
           },
         ],
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true },
       },
-      { path: "/the-rfp", component: TheRfp ,meta: { requiresAuth: true }},
-      { path: "/the-re", component: TheRe ,meta: { requiresAuth: true }},
-      { path: "/the-pc", component: ThePc ,meta: { requiresAuth: true }},
-      { path: "/the-ot", component: TheOt ,meta: { requiresAuth: true }},
-      { path: "/the-itf", component: TheItf ,meta: { requiresAuth: true }},
-      { path: "/the-laf", component: TheLaf ,meta: { requiresAuth: true }},
+      { path: "/the-rfp", component: TheRfp, meta: { requiresAuth: true } },
+      { path: "/the-re", component: TheRe, meta: { requiresAuth: true } },
+      { path: "/the-pc", component: ThePc, meta: { requiresAuth: true } },
+      { path: "/the-ot", component: TheOt, meta: { requiresAuth: true } },
+      { path: "/the-itf", component: TheItf, meta: { requiresAuth: true } },
+      { path: "/the-laf", component: TheLaf, meta: { requiresAuth: true } },
     ],
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
 ];
 
@@ -278,17 +357,15 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, _, next) => {
-  
   const test = !!localStorage.getItem("token");
 
-
   if (to.meta.requiresAuth && !test) {
-    console.log(store.getters.isAuthenticated)
-    next('/login');
+    console.log(store.getters.isAuthenticated);
+    next("/login");
   } else if (to.meta.requiresUnauth && test) {
-    console.warn(store.getters.isAuthenticated)
+    console.warn(store.getters.isAuthenticated);
 
-    next('/dashboard');
+    next("/dashboard");
   } else {
     next();
   }
