@@ -22,10 +22,12 @@ import TheLaf from "./pages/humanresource/TheLaf.vue";
 
 import RfpInprogress from "./pages/workflow/inprogress/RfpInprogress.vue";
 import RfpApproval from "./pages/workflow/approval/RfpApproval.vue";
-import RfpRejected from "./pages/workflow/rejected/RfpRejected.vue";
 import RfpInput from "./pages/workflow/input/RfpInput.vue";
 import RfpClarification from "./pages/workflow/clarification/RfpClarification.vue";
 import RfpApproved from "./pages/workflow/approved/RfpApproved.vue";
+import RfpRejected from "./pages/workflow/rejected/RfpRejected.vue";
+import RfpWithdrawn from "./pages/workflow/withdrawn/RfpWithdrawn.vue";
+
 
 
 
@@ -34,12 +36,19 @@ import ReApproval from "./pages/workflow/approval/ReApproval.vue";
 import ReInput from "./pages/workflow/input/ReInput.vue";
 import ReClarification from "./pages/workflow/clarification/ReClarification.vue";
 import ReApproved from "./pages/workflow/approved/ReApproved.vue";
+import ReRejected from "./pages/workflow/rejected/ReRejected.vue";
+import ReWithdrawn from "./pages/workflow/withdrawn/ReWithdrawn.vue";
+
+
 
 
 import PcInprogress from "./pages/workflow/inprogress/PcInprogress.vue";
 import PcApproval from "./pages/workflow/approval/PcApproval.vue";
 import PcClarification from "./pages/workflow/clarification/PcClarification.vue";
 import PcApproved from "./pages/workflow/approved/PcApproved.vue";
+import PcRejected from "./pages/workflow/rejected/PcRejected.vue";
+import PcWithdrawn from "./pages/workflow/withdrawn/PcWithdrawn.vue";
+
 
 
 import OtInprogress from "./pages/workflow/inprogress/OtInprogress.vue";
@@ -47,6 +56,10 @@ import OtApproval from "./pages/workflow/approval/OtApproval.vue";
 import OtInput from "./pages/workflow/input/OtInput.vue";
 import OtClarification from "./pages/workflow/clarification/OtClarification.vue";
 import OtApproved from "./pages/workflow/approved/OtApproved.vue";
+import OtRejected from "./pages/workflow/rejected/OtRejected.vue";
+import OtWithdrawn from "./pages/workflow/withdrawn/OtWithdrawn.vue";
+
+
 
 
 import ItfInprogress from "./pages/workflow/inprogress/ItfInprogress.vue";
@@ -54,12 +67,20 @@ import ItfApproval from "./pages/workflow/approval/ItfApproval.vue";
 import ItfInput from "./pages/workflow/input/ItfInput.vue";
 import ItfClarification from "./pages/workflow/clarification/ItfClarification.vue";
 import ItfApproved from "./pages/workflow/approved/ItfApproved.vue";
+import ItfRejected from "./pages/workflow/rejected/ItfRejected.vue";
+import ItfWithdrawn from "./pages/workflow/withdrawn/ItfWithdrawn.vue"
+
+
 
 
 import LafInprogress from "./pages/workflow/inprogress/LafInprogress.vue";
 import LafApproval from "./pages/workflow/approval/LafApproval.vue";
 import LafClarification from "./pages/workflow/clarification/LafClarification.vue";
 import LafApproved from "./pages/workflow/approved/LafApproved.vue";
+import LafRejected from "./pages/workflow/rejected/LafRejected.vue";
+import LafWithdrawn from "./pages/workflow/withdrawn/LafWithdrawn.vue";
+
+
 
 
 import store from "./store/index.js";
@@ -317,6 +338,50 @@ const routes = [
       {
         path: "/withdrawn",
         component: TheWithdrawn,
+        children: [
+          {
+            path: ":id",
+            name: "Request for Payment-withdrawn",
+            component: RfpWithdrawn,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Reimbursement Request-withdrawn",
+            component: ReWithdrawn,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Petty Cash Request-withdrawn",
+            component: PcWithdrawn,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Overtime Request-withdrawn",
+            component: OtWithdrawn,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Itinerary Request-withdrawn",
+            component: ItfWithdrawn,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Leave Request-withdrawn",
+            component: LafWithdrawn,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+        ],
         meta: { requiresAuth: true },
       },
       {
@@ -325,8 +390,43 @@ const routes = [
         children: [
           {
             path: ":id",
-            name: "rejectedbyId",
+            name: "Request for Payment-rejected",
             component: RfpRejected,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Reimbursement Request-rejected",
+            component: ReRejected,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Petty Cash Request-rejected",
+            component: PcRejected,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Overtime Request-rejected",
+            component: OtRejected,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Itinerary Request-rejected",
+            component: ItfRejected,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Leave Request-rejected",
+            component: LafRejected,
             props: true,
             meta: { requiresAuth: true },
           },

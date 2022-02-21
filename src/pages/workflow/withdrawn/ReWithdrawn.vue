@@ -9,8 +9,9 @@
       >
         <loading-spinner></loading-spinner>
       </div>
+
       <div class="card-header">
-        <h3 class="card-title">Request for Payment</h3>
+        <h3 class="card-title">Reimbursement Request</h3>
       </div>
       <div class="card-body">
         <!-- Step Numbers -->
@@ -27,8 +28,11 @@
           <div class="progressbar" :class="classD">
             <span :class="classD">4</span>
           </div>
-          <div class="progressbar" :class="classE" v-if="isLiquidation">
+          <div class="progressbar" :class="classE">
             <span :class="classE">5</span>
+          </div>
+          <div class="progressbar" :class="classF">
+            <span :class="classF">6</span>
           </div>
         </div>
 
@@ -47,39 +51,30 @@
               ></small
             >
           </div>
-
-          <div class="textbar" :class="classC" v-if="!isLiquidation">
+          <div class="textbar" :class="classC">
             <small
               ><span :class="classC" class="font-weight-bold"
-                >Attachments</span
+                >Expense Details</span
               ></small
             >
           </div>
-          <div class="textbar" :class="classD" v-if="!isLiquidation">
+          <div class="textbar" :class="classD">
             <small
               ><span :class="classD" class="font-weight-bold"
-                >Review</span
+                >Transportation Details</span
               ></small
             >
           </div>
-
-          <div class="textbar" :class="classC" v-if="isLiquidation">
-            <small
-              ><span :class="classC" class="font-weight-bold"
-                >Liquidation</span
-              ></small
-            >
-          </div>
-          <div class="textbar" :class="classD" v-if="isLiquidation">
-            <small
-              ><span :class="classD" class="font-weight-bold"
-                >Attachments</span
-              ></small
-            >
-          </div>
-          <div class="textbar" :class="classE" v-if="isLiquidation">
+          <div class="textbar" :class="classE">
             <small
               ><span :class="classE" class="font-weight-bold"
+                >Attachments</span
+              ></small
+            >
+          </div>
+          <div class="textbar" :class="classF">
+            <small
+              ><span :class="classF" class="font-weight-bold"
                 >Review</span
               ></small
             >
@@ -88,7 +83,6 @@
         <!-- / Step Numbers -->
 
         <!-- Main Form -->
-
         <!-- Request Details -->
         <aside v-if="this.counter === 0">
           <div class="row mt-4">
@@ -100,13 +94,15 @@
                   class="form-control form-control-sm py-3"
                   id="reference"
                   disabled
-                  v-model="referenceNumber"
+                  :value="'RE-' + todaysYear"
                 />
               </div>
             </div>
+
             <div class="col-md-3">
               <div class="form-group">
                 <small><label for="requestDate">Request Date</label></small>
+                <!-- <input type="date" class="form-control form-control-sm" id="requestDate"> -->
                 <date-picker
                   disabled
                   valueType="format"
@@ -120,9 +116,9 @@
               <div class="form-group">
                 <small><label for="dateNeeded">Date Needed</label></small>
                 <date-picker
-                  disabled
                   v-model="dateNeeded"
                   valueType="format"
+                  disabled
                   style="display: block; width: 100%; line-height: 20px"
                 ></date-picker>
               </div>
@@ -136,11 +132,20 @@
                 >
                 <input
                   type="text"
-                  class="form-control py-3 form-control-sm"
                   disabled
-                  v-model="reportingManager"
+                  v-model="reportingManagerName"
+                  class="form-control py-3 form-control-sm"
                   id="reportingManager"
                 />
+                <!-- <model-list-select
+                  :list="reportingManager"
+                  v-model="reportingManagerItem"
+                  option-value="code"
+                  option-text="name"
+                  placeholder="select item"
+                  style="padding: 9px"
+                >
+                </model-list-select> -->
               </div>
             </div>
           </div>
@@ -156,9 +161,17 @@
                   v-model="projectName"
                   id="projectName"
                 />
+                <!-- <model-list-select
+                  :list="project"
+                  v-model="projectItem"
+                  option-value="code"
+                  option-text="name"
+                  placeholder="select item"
+                  style="padding: 9px"
+                >
+                </model-list-select> -->
               </div>
             </div>
-
             <div class="col-md-6">
               <div class="form-group">
                 <small><label for="clientName">Client Name</label></small>
@@ -177,7 +190,6 @@
             <div class="col-md-12">
               <div class="form-group">
                 <small><label for="purpose">Purpose</label></small>
-                <!-- <textarea class="form-control" name="purpose" id="purpose" :value="message" @input="updateMessage"  rows="5"></textarea> -->
                 <textarea
                   class="form-control"
                   name="purpose"
@@ -193,7 +205,7 @@
         <!-- / Request Details -->
 
         <!-- Payment Details -->
-        <div class="row mt-4" v-if="this.counter === 1">
+        <div class="row mt-4" v-else-if="this.counter === 1">
           <div class="col-md-3"></div>
           <div class="col-md-6">
             <div class="form-group">
@@ -202,19 +214,28 @@
                 type="text"
                 class="form-control form-control-sm"
                 v-model="payeeName"
-                id="payeeName"
                 disabled
+                id="payeeName"
               />
             </div>
             <div class="form-group">
               <small><label for="modeOfPayment">Mode of Payment</label></small>
               <input
                 type="text"
-                v-model="modeOfPayment"
                 disabled
                 class="form-control form-control-sm"
                 id="modeOfPayment"
               />
+              <!-- <model-list-select
+                :list="modeOfPayment"
+                v-model="modeOfPaymentItem"
+                option-value="code"
+                option-text="name"
+                placeholder="select item"
+                style="padding: 9px"
+                disabled = "true"
+              >
+              </model-list-select> -->
             </div>
 
             <div class="row">
@@ -224,21 +245,31 @@
                   <input
                     type="text"
                     disabled
-                    v-model="currency"
                     class="form-control form-control-sm"
                     id="currency"
                   />
+                  <!-- <model-list-select
+                    :list="currency"
+                    v-model="currencyItem"
+                    option-value="code"
+                    option-text="name"
+                    placeholder="select item"
+                    style="padding: 9px"
+                  >
+                  </model-list-select> -->
                 </div>
               </div>
               <div class="col-md-8">
                 <div class="form-group">
+                  <!-- <label for="amount">Amount</label> -->
+                  <!-- <input type="text" class="form-control" name="amount" id="currency-field" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value="" data-type="currency" placeholder="0.00">  -->
                   <small><label for="amount">Amount</label></small>
                   <input
-                    disabled
                     type="text"
                     class="form-control form-control-sm py-3"
                     id="amount"
                     v-model="amount"
+                    disabled
                   />
                 </div>
               </div>
@@ -248,59 +279,109 @@
         </div>
         <!-- / Payment Details -->
 
-        <!-- Liquidation -->
-        <div class="row mt-4" v-if="this.counter === setLiq">
-          <!-- Read only Liquidation -->
+        <!-- Expense Details -->
+        <div class="row mt-4" v-if="this.counter === 2">
           <table class="table table-sm table-bordered table-striped mx-2">
             <thead>
               <tr>
-                <th colspan="7" scope="col">
+                <th colspan="6" scope="col">
                   <aside class="d-flex align-items-center">
-                    <span class="mb-1 ml-1"> Liquidation Table</span>
+                    <span class="mb-1 ml-1"> Expense Detals</span>
                   </aside>
                 </th>
               </tr>
-
               <tr>
                 <th scope="col" class="text-center">#</th>
                 <th scope="col">Date</th>
                 <th scope="col">Client Name</th>
                 <th scope="col">Expense Type</th>
-                <th scope="col">Description</th>
-                <th scope="col">Currency</th>
+                <th scope="col">Remarks</th>
                 <th scope="col">Amount</th>
               </tr>
             </thead>
+
             <tbody style="font-size: 14px">
-              <tr v-for="(item, index) in liquidation" :key="item.id">
+              <tr v-for="(item, index) in expenseType_Data" :key="item.id">
                 <td class="text-center">{{ index + 1 }}.</td>
-                <td>{{ item.trans_date }}</td>
-                <td>{{ item.client_name }}</td>
-                <td>{{ item.expense_type }}</td>
-                <td>{{ item.description }}</td>
-                <td>{{ item.currency }}</td>
+                <td>{{ item.date_ }}</td>
+                <td>{{ item.CLIENT_NAME }}</td>
+                <td>{{ item.EXPENSE_TYPE }}</td>
+                <td>{{ item.DESCRIPTION }}</td>
                 <td>
                   {{
-                    parseFloat(item.Amount).toLocaleString(undefined, {
+                    parseFloat(item.AMOUNT).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                     })
                   }}
                 </td>
               </tr>
+
               <tr>
-                <td colspan="6"></td>
+                <td colspan="4"></td>
                 <td colspan="2">
-                  <b>Total Amount: {{ this.totalAmount }}</b>
+                  <b>Total Amount: {{ this.expenseType_totalAmount }}</b>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <!-- / Liquidation -->
+        <!-- /. Expense Details -->
+
+        <!-- Transportation Details -->
+        <div class="row mt-4" v-if="this.counter === 3">
+          <table class="table table-sm table-bordered table-striped mx-2">
+            <thead>
+              <tr>
+                <th colspan="8" scope="col">
+                  <aside class="d-flex align-items-center">
+                    <span class="mb-1 ml-1"> Transportation Detals</span>
+                  </aside>
+                </th>
+              </tr>
+              <tr>
+                <th scope="col" class="text-center">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Client Name</th>
+                <th scope="col">Destination From</th>
+                <th scope="col">Destination To</th>
+                <th scope="col">Mode of Transportation</th>
+                <th scope="col">Remarks</th>
+                <th scope="col">Amount</th>
+              </tr>
+            </thead>
+
+            <tbody style="font-size: 14px">
+              <tr v-for="(item, index) in transpoSetup_Data" :key="item.id">
+                <td class="text-center">{{ index + 1 }}.</td>
+                <td>{{ item.date_ }}</td>
+                <td>{{ item.CLIENT_NAME }}</td>
+                <td>{{ item.DESTINATION_FRM }}</td>
+                <td>{{ item.DESTINATION_TO }}</td>
+                <td>{{ item.MOT }}</td>
+                <td>{{ item.DESCRIPTION }}</td>
+                <td>
+                  {{
+                    parseFloat(item.AMT_SPENT).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                    })
+                  }}
+                </td>
+              </tr>
+
+              <tr>
+                <td colspan="6"></td>
+                <td colspan="2">
+                  <b>Total Amount: {{ this.transpoSetup_totalAmount }}</b>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- /. Transportation Details -->
 
         <!-- The Attachments -->
         <div
-          v-if="this.counter === setAttach"
+          v-else-if="this.counter === 4"
           class="
             d-flex
             align-items-center
@@ -324,34 +405,17 @@
               <li
                 class="text-sm mt-2"
                 v-for="file in selectedFile"
-                :key="file.newFilename"
+                :key="file.id"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span
-                        ><label>{{ file.filename }}</label></span
-                      >
+                      <span>{{ file.filename }}</span>
                     </div>
-                    <div>
-                      <button class="btn btn-info btn-sm" type="button">
-                        <a
-                          :download="file.filename"
-                          style="color: white"
-                          :href="
-                            'data:' +
-                            file.mimeType +
-                            ';base64,' +
-                            file.imageBytes
-                          "
-                          target="_blank"
-                          >Download</a
-                        >
-                      </button>
-                    </div>
+
                     <div class="col-2">
                       <button
-                        class="btn btn-secondary btn-sm"
+                        class="btn btn-secondary btn-sm ml-1"
                         @click="preview(file.mimeType, file.imageBytes)"
                       >
                         Preview
@@ -368,8 +432,7 @@
         <!-- / The Attachments -->
 
         <!--  Form Review -->
-        <aside v-if="this.counter >= setReview">
-          <!-- Request Details -->
+        <aside v-else-if="this.counter === 5">
           <div class="card card-secondary mt-4">
             <div class="card-header">
               <h3 class="card-title">Request Details</h3>
@@ -404,7 +467,7 @@
                   </tr>
                   <tr>
                     <td>Reporting Manager</td>
-                    <td>{{ this.reportingManager }}</td>
+                    <td>{{ this.reportingManagerName }}</td>
                   </tr>
                   <tr>
                     <td>Project Name</td>
@@ -423,7 +486,7 @@
             </div>
             <!-- /.card-body -->
           </div>
-          <!-- /.Request Details -->
+          <!-- /.card -->
 
           <!-- Payment Details -->
           <div class="card card-secondary">
@@ -452,11 +515,11 @@
                   </tr>
                   <tr>
                     <td>Mode of Payment</td>
-                    <td>{{ this.modeOfPayment }}</td>
+                    <td></td>
                   </tr>
                   <tr>
                     <td>Currency</td>
-                    <td>{{ this.currency }}</td>
+                    <td></td>
                   </tr>
                   <tr>
                     <td>Amount</td>
@@ -467,12 +530,74 @@
             </div>
             <!-- /.card-body -->
           </div>
+          <!-- /.card -->
           <!-- /.Payment Details -->
 
-          <!-- Liquidation Review -->
-          <div class="card card-secondary" v-if="isLiquidation">
+          <!-- Expense Details Review -->
+          <div class="card card-secondary">
             <div class="card-header">
-              <h3 class="card-title">Liquidation</h3>
+              <h3 class="card-title">Expense Table</h3>
+
+              <div class="card-tools">
+                <button
+                  type="button"
+                  class="btn btn-tool"
+                  data-card-widget="collapse"
+                >
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+              <table
+                class="table table-sm table-bordered table-hover table-striped"
+              >
+                <thead>
+                  <tr>
+                    <th style="width: 5%">#</th>
+                    <th style="width: 10%">Date</th>
+                    <th style="width: 20%">Client Name</th>
+                    <th style="width: 20%">Expense Type</th>
+                    <th style="width: 30%">Remarks</th>
+                    <th style="width: 10%">Amount</th>
+
+                    <!-- <th style="width: 10%">Action</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, index) in expenseType_Data" :key="item.id">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.date_ }}</td>
+                    <td>{{ item.CLIENT_NAME }}</td>
+                    <td>{{ item.EXPENSE_TYPE }}</td>
+                    <td>{{ item.DESCRIPTION }}</td>
+                    <td>
+                      {{
+                        parseFloat(item.AMOUNT).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                        })
+                      }}
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td colspan="5"></td>
+                    <b class="px-1"
+                      >Total: {{ this.expenseType_totalAmount }}</b
+                    >
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.Expense Details Review -->
+
+          <!-- Transportation Details Review -->
+          <div class="card card-secondary">
+            <div class="card-header">
+              <h3 class="card-title">Transporation Expense Table</h3>
 
               <div class="card-tools">
                 <button
@@ -494,24 +619,26 @@
                     <th style="width: 5%">#</th>
                     <th style="width: 10%">Date</th>
                     <th style="width: 15%">Client Name</th>
-                    <th style="width: 15%">Expense Type</th>
-                    <th style="width: 30%">Description</th>
-                    <th style="width: 10%">Currency</th>
-                    <th style="width: 15%">Amount</th>
+                    <th style="width: 10%">Destination From</th>
+                    <th style="width: 10%">Destination To</th>
+                    <th style="width: 20%">Mode of Transportation</th>
+                    <th style="width: 10%">Remarks</th>
+                    <th style="width: 10%">Amount</th>
                     <!-- <th style="width: 10%">Action</th> -->
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(item, index) in liquidation" :key="item.id">
+                  <tr v-for="(item, index) in transpoSetup_Data" :key="item.id">
                     <td>{{ index + 1 }}</td>
-                    <td>{{ item.trans_date }}</td>
-                    <td>{{ item.client_name }}</td>
-                    <td>{{ item.expense_type }}</td>
-                    <td>{{ item.description }}</td>
-                    <td>{{ item.currency }}</td>
+                    <td>{{ item.date_ }}</td>
+                    <td>{{ item.CLIENT_NAME }}</td>
+                    <td>{{ item.DESTINATION_FRM }}</td>
+                    <td>{{ item.DESTINATION_TO }}</td>
+                    <td>{{ item.MOT }}</td>
+                    <td>{{ item.DESCRIPTION }}</td>
                     <td>
                       {{
-                        parseFloat(item.Amount).toLocaleString(undefined, {
+                        parseFloat(item.AMT_SPENT).toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                         })
                       }}
@@ -519,15 +646,17 @@
                   </tr>
 
                   <tr>
-                    <td colspan="6"></td>
-                    <b class="px-1">Total: {{ this.totalAmount }}</b>
+                    <td colspan="7"></td>
+                    <b class="px-1"
+                      >Total: {{ this.transpoSetup_totalAmount }}</b
+                    >
                   </tr>
                 </tbody>
               </table>
             </div>
             <!-- /.card-body -->
           </div>
-          <!-- /.Liquidation Review -->
+          <!-- /.Transportation Details Review -->
 
           <!-- Attachments Review -->
           <div class="card card-secondary">
@@ -556,12 +685,12 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="file in selectedFile" :key="file.filename">
+                  <tr v-for="file in selectedFile" :key="file.id">
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center">
                       <button
-                        class="btn btn-secondary btn-sm ml-1"
                         @click="preview(file.mimeType, file.imageBytes)"
+                        class="btn btn-secondary btn-sm ml-1"
                       >
                         Preview
                       </button>
@@ -572,12 +701,10 @@
             </div>
             <!-- /.card-body -->
           </div>
-          <!-- /.Attachments Review -->
-
           <!-- /.card -->
         </aside>
+        <!-- ./Attachments Review -->
         <!-- / Form Review -->
-
         <!-- / Main Form -->
 
         <!-- Buttons -->
@@ -593,25 +720,7 @@
               </button>
             </div>
 
-            <div
-              class="col-lg-2"
-              v-show="!isLiquidation"
-              v-if="this.counter <= 2"
-            >
-              <button
-                type="button"
-                @click="counter++"
-                class="btn btn-block btn-primary btn-sm"
-              >
-                Next
-              </button>
-            </div>
-
-            <div
-              class="col-lg-2"
-              v-show="isLiquidation"
-              v-if="this.counter <= 3"
-            >
+            <div class="col-lg-2" v-if="this.counter <= 4">
               <button
                 type="button"
                 @click="counter++"
@@ -623,16 +732,16 @@
           </aside>
 
           <aside class="col-lg-6 d-flex justify-content-end">
-            <!-- <div class="col-lg-2">
-              <button
+            <div class="col-lg-2">
+              <!-- <button
                 type="button"
                 class="btn btn-block btn-warning btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
               >
                 Withdrawn
-              </button>
-            </div> -->
+              </button> -->
+            </div>
 
             <div class="col-lg-2">
               <button
@@ -707,13 +816,20 @@
       <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
+
+    <!-- End -->
   </div>
 </template>
 
 <script>
+// import { ModelListSelect } from "vue-search-select";
 import axios from "axios";
 import VsToast from "@vuesimple/vs-toast";
 export default {
+  // components: {
+  //   ModelListSelect,
+  // },
+
   watch: {
     // Request Details
     projectItem(newValue) {
@@ -723,16 +839,6 @@ export default {
     counter() {
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
-    },
-
-    //Navigate
-    $route(newRoute) {
-      this.showRfpMain(this.$route.params.id);
-      this.showRfpDetail(this.$route.params.id);
-      this.showRfpAttachments(this.$route.params.id, "Request for Payment");
-      this.counter = 0;
-      this.withdrawRemarks = "";
-      console.log(newRoute);
     },
   },
   computed: {
@@ -751,29 +857,8 @@ export default {
     classE() {
       return { active: this.counter >= 4 };
     },
-
-    setLiq() {
-      if (this.isLiquidation === true) {
-        return 2;
-      } else {
-        return false;
-      }
-    },
-
-    setAttach() {
-      if (this.isLiquidation === true) {
-        return 3;
-      } else {
-        return 2;
-      }
-    },
-
-    setReview() {
-      if (this.isLiquidation === true) {
-        return 4;
-      } else {
-        return 3;
-      }
+    classF() {
+      return { active: this.counter >= 5 };
     },
 
     // Calendaer
@@ -783,22 +868,28 @@ export default {
       return yyyy;
     },
 
-    todaysDate() {
-      const today = new Date();
-      const dd = today.getDate();
-      const mm = today.getMonth() + 1;
-      const yyyy = today.getFullYear();
-      const todaysDate = yyyy + "-" + mm + "-" + dd;
-      return todaysDate;
+    // Sum of all amount spend in liquidation
+    expenseType_totalAmount() {
+      if (this.expenseType_Data.length > 0) {
+        const total = this.expenseType_Data
+          .map((expenseType_Data) =>
+            parseFloat(expenseType_Data.AMOUNT.replace(/,/g, ""))
+          )
+          .reduce((acc, expenseType_Data) => expenseType_Data + acc);
+        return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
+      } else {
+        return 0;
+      }
     },
 
-    totalAmount() {
-      if (this.liquidation.length > 0) {
-        const total = this.liquidation
-          .map((liquidation) =>
-            parseFloat(liquidation.Amount.replace(/,/g, ""))
+    // sum of all amount spend in transportation
+    transpoSetup_totalAmount() {
+      if (this.transpoSetup_Data.length > 0) {
+        const total = this.transpoSetup_Data
+          .map((transpoSetup_Data) =>
+            parseFloat(transpoSetup_Data.AMT_SPENT.replace(/,/g, ""))
           )
-          .reduce((acc, liquidation) => liquidation + acc);
+          .reduce((acc, transpoSetup_Data) => transpoSetup_Data + acc);
         return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
@@ -812,63 +903,87 @@ export default {
       referenceNumber: "",
       requestDate: "",
       dateNeeded: "",
-      reportingManager: "",
+      reportingManagerName: "",
+      reportingManagerId: "",
       projectName: "",
+      projectId: "",
       clientName: "",
+      clientId: "",
+      mainId: "",
       purpose: "",
 
-      // Payee Details
+      // Payment Details
+      modeOfPayment: [
+        { code: "Cash", name: "Cash" },
+        { code: "Check", name: "Check" },
+        { code: "Credit to Account", name: "Credit to Account" },
+      ],
+      modeOfPaymentItem: {},
+      currency: [
+        { code: "PHP", name: "PHP" },
+        { code: "AUD", name: "AUD" },
+        { code: "CAD", name: "CAD" },
+        { code: "EUR", name: "EUR" },
+        { code: "USD", name: "USD" },
+      ],
+      currencyItem: {},
       payeeName: "",
-      modeOfPayment: "",
-      currency: "",
       amount: "",
+
+      modalclient: [],
+      itemclientName: {},
+
+      modalExpenseType: [],
+      itemmodalExpenseType: {},
+
+      expenseType_Date: "",
+      expenseType_Amount: "",
+      expenseType_Remarks: "",
 
       // The Attachments
       selectedFile: [],
-      // filespreview: "",
+      filespreview: [],
 
-      // Withdrawn Modal
-      withdrawRemarks: "",
-      processId: this.$route.params.id,
+      isButton: true,
 
-      isLoading: false,
-      isLoadingModal: false,
-      form: "Request for Payment",
+      // data for expense type
+      expenseType_Data: [],
+      expenseType_EditData: [],
+      i: 0,
 
-      // Logged User Data // initiator
+      // data for transportation
+      transpoSetup: [],
+      itemtranspoSetup: {},
+      transpoSetup_Date: "",
+      transpoSetup_Amount: "",
+      transpoSetup_From: "",
+      transpoSetup_to: "",
+      transpoSetup_Remarks: "",
+
+      transpoSetup_Data: [],
+      transpoSetup_EditData: [],
+      form: this.$route.params.frmName,
+
+      // Logged User Data
       loggedUserId: 136,
       loggedUserFirstName: "Rosevir",
       loggedUserLastName: "Ceballos",
-      loggedUserFullName: "Rosevir Ceballos Jr.",
       loggedUserDepartment: "Information Technology",
       loggedUserPosition: "Senior Developer",
       companyId: 1,
       companyName: "Cylix Technologies Inc.",
 
-      // Check if its for liquidation
-      isInitiator: false,
-      isLiquidation: false,
+      isLoading: false,
 
-      // responseSeven
-      inprogressId: "",
+      withdrawRemarks: "",
 
-      // recipient use to clarify a user
-      recipent: [],
-
-      // liquidation data
-      liquidation: [],
-
-      // liquidation total amount
+      processId: this.$route.params.id,
     };
   },
 
   created() {
-    // console.log(this.$route.params.id);
-    // this.showRfpMain(this.$route.params.id);
-    // this.showRfpDetail(this.$route.params.id);
-    // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
-
-    this.getRfpApproval(
+    this.todaysDate();
+    this.getReInprogress(
       this.$route.params.id,
       this.form,
       this.companyId,
@@ -877,127 +992,6 @@ export default {
   },
 
   methods: {
-    getRfpApproval(id, form, companyId, loggedUserId) {
-      this.isLoading = true;
-      let showRfpMain = `http://127.0.0.1:8000/api/rfp-main/${id}`;
-      let showRfpDetail = `http://127.0.0.1:8000/api/rfp-main-detail/${id}`;
-      let showRfpAttachments = `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`;
-      let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`;
-      // let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/1`;
-      let showLiquidation = `http://127.0.0.1:8000/api/rfp-main-liquidation/${id}`;
-      let showRecipient = `http://127.0.0.1:8000/api/getRecipient/${id}/${loggedUserId}/${companyId}/${form}`;
-      let showInprogressId = `http://127.0.0.1:8000/api/get-Inprogress/${id}/${companyId}/${form}`;
-
-      const requestOne = axios.get(showRfpMain);
-      const requestTwo = axios.get(showRfpDetail);
-      const requestThree = axios.get(showRfpAttachments);
-      const requestFour = axios.get(showActualSign);
-      const requestFive = axios.get(showLiquidation);
-      const requestSix = axios.get(showRecipient);
-      const requestSeven = axios.get(showInprogressId);
-
-      axios
-        .all([
-          requestOne,
-          requestTwo,
-          requestThree.catch(() => null),
-          requestFour,
-          requestFive.catch(() => null),
-          requestSix,
-          requestSeven.catch(() => null),
-        ])
-        .then(
-          axios.spread((...responses) => {
-            const responseOne = responses[0];
-            const responseTwo = responses[1];
-            const responesThree = responses[2];
-            const responesFour = responses[3];
-            const responesFive = responses[4];
-            const responesSix = responses[5];
-            const responesSeven = responses[6];
-
-            // showRfpMain - responseOne
-            this.referenceNumber = responseOne.data.data.REQREF;
-            this.requestDate = responseOne.data.data.DATE;
-            this.dateNeeded = responseOne.data.data.Deadline;
-            this.reportingManager = responseOne.data.data.REPORTING_MANAGER;
-            this.amount = parseFloat(
-              responseOne.data.data.AMOUNT
-            ).toLocaleString(undefined, { minimumFractionDigits: 2 });
-
-            this.uid = responseOne.data.data.UID;
-
-            if (responseOne.data.data.UID === this.loggedUserId) {
-              this.isInitiator = true;
-              this.counter = 0;
-            } else {
-              this.isInitiator = false;
-            }
-
-            // showRfpDetail - responseTwo
-            this.projectName = responseTwo.data.data.PROJECT;
-            this.clientName = responseTwo.data.data.CLIENTNAME;
-            this.purpose = responseTwo.data.data.PURPOSED;
-            this.payeeName = responseTwo.data.data.PAYEE;
-            this.currency = responseTwo.data.data.CURRENCY;
-            this.modeOfPayment = responseTwo.data.data.MOP;
-
-            // showRfpAttachments - responesThree
-            this.selectedFile = responesThree.data.data;
-            // console.log(this.selectedFile);
-
-            //showActualSign - responesFour
-            if (responesFour.data[2].STATUS === "Completed") {
-              console.log("liquidation is true");
-              // console.log(responesFour.data)
-              this.isLiquidation = true;
-            } else {
-              // alert('false')
-              console.log("liquidation is false");
-              this.isLiquidation = false;
-            }
-            // showLiquidation - responesFive
-            console.log(responesFive.data);
-            this.liquidation = responesFive.data;
-
-            // showRecipient - responseSix
-            const recipient = [];
-            for (const key in responesSix.data) {
-              const request = {
-                code: responesSix.data[key].uid,
-                name: responesSix.data[key].name,
-              };
-
-              recipient.push(request);
-            }
-
-            this.recipent = recipient;
-            console.log(this.recipent);
-
-            // showInprogressId - responesSeven
-            this.inprogressId = responesSeven.data[0].inpId;
-            // console.log(this.inprogressId)
-          })
-        )
-        .catch((errors) => {
-          // react on errors.
-          console.log(errors);
-        })
-        .then(() => {
-          this.isLoading = false;
-        });
-    },
-
-    openToast(position, variant, message) {
-      const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
-      VsToast.show({
-        title: `${toastTitle}`,
-        message: `${message}`,
-        variant,
-        position,
-      });
-    },
-
     async withdrawn() {
       this.isLoading = true;
       console.log(this.withdrawRemarks);
@@ -1044,74 +1038,125 @@ export default {
         // }
 
         console.log(error.message);
-        // throw error;
       }
     },
-    close() {
-      this.$router.replace("/rejected");
+
+    setButton() {
+      this.isButton = true;
     },
+    close() {
+      this.$router.replace("/withdrawn");
+    },
+
+    openToast(position, variant, message) {
+      const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
+      VsToast.show({
+        title: `${toastTitle}`,
+        message: `${message}`,
+        variant,
+        position,
+      });
+    },
+
+    // Request Details
+    todaysDate() {
+      const today = new Date();
+      const dd = today.getDate();
+      const mm = today.getMonth() + 1;
+      const yyyy = today.getFullYear();
+      const todaysDate = yyyy + "-" + mm + "-" + dd;
+      this.requestDate = todaysDate;
+      // return todaysDate;
+    },
+
+    getReInprogress(id, form, companyId, loggedUserId) {
+      this.isLoading = true;
+      console.log(loggedUserId);
+      console.log(companyId);
+      let showMain = `http://127.0.0.1:8000/api/getRE/${id}`;
+      let showExpense = `http://127.0.0.1:8000/api/get-ReExpense/${id}`;
+      let showTranspo = `http://127.0.0.1:8000/api/get-ReTranspo/${id}`;
+      let showAttachments = `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`;
+      // let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`;
+
+      const requestOne = axios.get(showMain);
+      const requestTwo = axios.get(showExpense);
+      const requestThree = axios.get(showTranspo);
+      const requestFour = axios.get(showAttachments);
+      // const requestFive = axios.get(showActualSign);
+
+      axios
+        .all([
+          requestOne.catch(() => null),
+          requestTwo.catch(() => null),
+          requestThree.catch(() => null),
+          requestFour.catch(() => null),
+          // requestFive.catch(() => null),
+        ])
+        .then(
+          axios.spread((...responses) => {
+            const responseOne = responses[0];
+            const responseTwo = responses[1];
+            const responesThree = responses[2];
+            const responesFour = responses[3];
+            // const responesFive = responses[4];
+
+            // showMain - responseOne
+            this.referenceNumber = responseOne.data.data.REQREF;
+            this.requestDate = responseOne.data.data.REQUESTED_DATE;
+            this.dateNeeded = responseOne.data.data.TRANS_DATE;
+            this.reportingManagerName = responseOne.data.data.REPORTING_MANAGER;
+            this.reportingManagerId = responseOne.data.data.REPORTING_MANAGER; // wala pa
+            this.projectName = responseOne.data.data.PROJECT;
+            this.projectId = responseOne.data.data.PRJID;
+            this.clientName = responseOne.data.data.CLIENT_NAME;
+            this.clientId = responseOne.data.data.CLIENTID;
+            this.mainId = responseOne.data.data.MAINID;
+            this.purpose = responseOne.data.data.DESCRIPTION;
+            this.payeeName = responseOne.data.data.PAYEE;
+
+            this.amount = parseFloat(
+              responseOne.data.data.TOTAL_AMT_SPENT
+            ).toLocaleString(undefined, { minimumFractionDigits: 2 });
+            this.uid = responseOne.data.data.UID;
+
+            if (responseOne.data.data.UID === this.loggedUserId) {
+              this.isInitiator = true;
+              this.counter = 0;
+            } else {
+              this.isInitiator = false;
+            }
+
+            // showExpense - responseTwo
+            this.expenseType_Data = responseTwo.data;
+
+            // showTranspo - responesThree
+            this.transpoSetup_Data = responesThree.data;
+
+            // showAttachments - responesThree
+            this.selectedFile = responesFour.data.data;
+
+            // typeof(responesFour.data.data)
+            // console.warn(this.selectedFile)
+            // console.log(responesFour.data.data[0].filename)
+
+            // showLiquidation - responesFive
+            // console.log(responesFive);
+          })
+        )
+        .catch((errors) => {
+          // react on errors.
+          console.log(errors);
+        })
+        .then(() => {
+          this.isLoading = false;
+        });
+    },
+
     preview(mimeType, imageBytes) {
       var newTab = window.open();
       newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
     },
-
-    // showRfpMain(id) {
-    //   axios
-    //     .get(`http://127.0.0.1:8000/api/rfp-main/${id}`)
-    //     .then((response) => {
-    //       // handle success
-    //       this.referenceNumber = response.data.data.REQREF;
-    //       this.requestDate = response.data.data.DATE;
-    //       this.dateNeeded = response.data.data.Deadline;
-    //       this.reportingManager = response.data.data.REPORTING_MANAGER;
-    //       this.amount = response.data.data.AMOUNT;
-    //     })
-    //     .catch((error) => {
-    //       // handle error
-    //       console.log(error);
-    //     })
-    //     .then(() => {
-    //       // always executed
-    //     });
-    // },
-    // showRfpDetail(id) {
-    //   axios
-    //     .get(`http://127.0.0.1:8000/api/rfp-main-detail/${id}`)
-    //     .then((response) => {
-    //       // handle success
-    //       this.projectName = response.data.data.PROJECT;
-    //       this.clientName = response.data.data.CLIENTNAME;
-    //       this.purpose = response.data.data.PURPOSED;
-    //       this.payeeName = response.data.data.PAYEE;
-    //       this.currency = response.data.data.CURRENCY;
-    //       this.modeOfPayment = response.data.data.MOP;
-    //     })
-    //     .catch((error) => {
-    //       // handle error
-    //       console.log(error);
-    //     })
-    //     .then(() => {
-    //       // always executed
-    //     });
-    // },
-
-    // showRfpAttachments(id, form) {
-    //   axios
-    //     .get(`http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`)
-    //     .then((response) => {
-    //       // handle success
-    //       this.selectedFile = response.data.data;
-
-    //       console.log(this.selectedFile.length);
-    //     })
-    //     .catch((error) => {
-    //       // handle error
-    //       console.log(error);
-    //     })
-    //     .then(() => {
-    //       // always executed
-    //     });
-    // },
   },
 };
 </script>

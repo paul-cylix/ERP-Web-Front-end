@@ -1048,7 +1048,7 @@ export default {
       }
     },
     close() {
-      this.$router.replace("/rejected");
+      this.$router.replace("/withdrawn");
     },
     preview(mimeType, imageBytes) {
       var newTab = window.open();
