@@ -12,6 +12,8 @@ import TheClarification from "./pages/workflow/clarification/TheClarification.vu
 import TheApproved from "./pages/workflow/approved/TheApproved.vue";
 import TheWithdrawn from "./pages/workflow/withdrawn/TheWithdrawn.vue";
 import TheRejected from "./pages/workflow/rejected/TheRejected.vue";
+import NotFound from './pages/NotFound.vue';
+
 
 import TheRfp from "./pages/accounting/TheRfp.vue";
 import TheRe from "./pages/accounting/TheRe.vue";
@@ -442,6 +444,8 @@ const routes = [
     ],
     meta: { requiresAuth: true },
   },
+  { path: '/:notFound(.*)', component: NotFound }
+
 ];
 
 const router = new VueRouter({
