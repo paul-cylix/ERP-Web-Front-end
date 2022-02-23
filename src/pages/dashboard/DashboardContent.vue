@@ -127,6 +127,14 @@
               </h6>
             </div>
 
+            <div class="card-header accordionheaderOne">
+              <h6 class="mb-0">
+                <a class="collapsed text-white"   @click="redirect('/the-dtr')" role="button" data-toggle="collapse" aria-expanded="false">
+                  Attendance Approval
+                </a>
+              </h6>
+            </div>
+
           </div>
 
         </div>  
