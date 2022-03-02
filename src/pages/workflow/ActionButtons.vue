@@ -1,5 +1,5 @@
 <template>
-    <div class="action-buttons d-flex">
+    <div class="action-buttons d-flex justify-content-center">
         <button class="btn btn-outline-success btn-sm" @click="handleAction('open')">
             <i class="fas fa-folder-open"></i>
         </button>
@@ -9,6 +9,7 @@
         <button class="btn btn-outline-dark ml-1 btn-sm" @click="handleAction('status')">
             <i class="fas fa-book-reader"></i>
         </button>
+        
         
         
     </div>

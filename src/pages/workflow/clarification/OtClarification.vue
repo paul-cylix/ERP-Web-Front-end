@@ -364,6 +364,7 @@
                 </button>
               </div>
               <div class="modal-body">
+
                 <the-alert
                   v-show="isAlert"
                   v-bind:header="this.header"
@@ -388,6 +389,7 @@
                     </div>
                   </div>
                 </div>
+                
               </div>
               <div class="modal-footer justify-content-end">
                 <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->

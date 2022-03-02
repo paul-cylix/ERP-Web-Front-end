@@ -7,7 +7,7 @@
           <h3 class="card-title">In Progress Requests</h3>
         </div>
         <div class="card-body pt-0 pb-3">
-          <data-table v-bind="parametersTable1" />
+          <data-table v-bind="parametersTable1" @toggle-details="toggleDetailsStatus" />
         </div>
       </div>
     </div>
@@ -28,6 +28,7 @@ export default {
     parametersTable1() {
       return {
         data: this.requestArray,
+        
         tableClass:
           "table table-sm table-striped table-bordered small table-hover",
         columns: [
