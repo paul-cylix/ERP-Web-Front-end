@@ -295,6 +295,7 @@ export default {
     //Navigate
     $route(newRoute) {
       this.getDtr();
+
       console.log(newRoute);
     },
 
@@ -375,7 +376,8 @@ export default {
     },
 
     async getDtr() {
-      await this.$store.dispatch("dtr/getDtr");
+      const id = localStorage.getItem("id");
+      await this.$store.dispatch("dtr/getDtr",id);
     },
 
     async deleteSelectedDtr(rowData) {

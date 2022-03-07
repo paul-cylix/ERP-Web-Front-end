@@ -16,7 +16,9 @@ export default {
         companyName: null,
         token: null,
         expiresAt: null,
+        isManager: null,
         // didAutoLogout: false
+        company: [],
       },
     };
   },
@@ -35,6 +37,7 @@ export default {
       state.user.companyName = payload.companyName;
       state.user.token = payload.token;
       state.user.expiresAt = payload.expiresAt;
+      state.user.company = payload.company;
       // state.user.didAutoLogout = false;
     },
 
@@ -52,11 +55,18 @@ export default {
       state.user.companyName = payload.companyName;
       state.user.token = payload.token;
       state.user.expiresAt = payload.expiresAt;
+      state.user.company = payload.companies;
     },
 
     // setAutoLogout(state) {
     //   state.didAutoLogout = true;
     // }
+
+    switchCompany(state, payload){
+      state.user.companyId = payload.companyId;
+      state.user.companyName = payload.companyName;
+    },
+
 
  
   },
@@ -117,6 +127,12 @@ export default {
       localStorage.setItem("companyName", responseData.user.companyName);
       localStorage.setItem("token", responseData.Personal_Access_Token);
       localStorage.setItem("expiresAt", responseData.expires_at);
+      localStorage.setItem("isManager", responseData.isManager);
+      localStorage.setItem("company", JSON.stringify(responseData.company));
+
+
+
+      
       // localStorage.setItem("tokenExpiration", expirationDate);
 
       // timer = setTimeout(function() {
@@ -138,6 +154,9 @@ export default {
         companyName: responseData.user.companyName,
         token: responseData.Personal_Access_Token,
         expiresAt: responseData.expires_at,
+        isManager: responseData.isManager,
+        company: responseData.company,
+        
       });
     },
 
@@ -158,6 +177,11 @@ export default {
       const companyName = localStorage.getItem("companyName");
       const token = localStorage.getItem("token");
       const expiresAt = localStorage.getItem("expiresAt");
+      const isManager = localStorage.getItem("isManager");
+      let company = localStorage.getItem("company");
+
+      company = JSON.parse(company);
+
       // const tokenExpiration = localStorage.getItem("tokenExpiration");
 
       // const expiresIn = +tokenExpiration - new Date().getTime();
@@ -186,6 +210,8 @@ export default {
           companyName: companyName,
           token: token,
           expiresAt: expiresAt,
+          isManager: isManager,
+          company: company,
         });
       }
     },
@@ -204,6 +230,10 @@ export default {
       localStorage.removeItem('companyName')
       localStorage.removeItem('token')
       localStorage.removeItem('expiresAt')
+      localStorage.removeItem('isManager')
+      localStorage.removeItem('company')
+
+
       // localStorage.removeItem('tokenExpiration')
 
       // clearTimeout(timer);
@@ -222,10 +252,18 @@ export default {
         companyName: null,
         token: null,
         expiresAt: null,
+        isManager: null,
+        company: null,
+
         
       });
     },
 
+    switchCompany(context, payload){
+      localStorage.setItem("companyId", payload.companyId);
+      localStorage.setItem("companyName", payload.companyName);
+      context.commit("switchCompany",payload)
+    },
 
 
     // autoLogout(context){
@@ -239,6 +277,9 @@ export default {
     },
     isAuthenticated(state) {
       return !!state.user.token;
+    },
+    listCompanies(state) {
+      return state.user.companies;
     },
 
     // auto logout remove for now

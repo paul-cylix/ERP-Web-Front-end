@@ -83,3 +83,10 @@
     <!-- /.sidebar -->
   </aside>
 </template>
+
+<style scoped>
+a.router-link-active{
+  background: #494e53;
+  color: #fff;
+}
+</style>

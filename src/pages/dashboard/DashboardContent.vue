@@ -127,7 +127,7 @@
               </h6>
             </div>
 
-            <div class="card-header accordionheaderOne">
+            <div class="card-header accordionheaderOne" v-if="isManager">
               <h6 class="mb-0">
                 <a class="collapsed text-white"   @click="redirect('/the-dtr')" role="button" data-toggle="collapse" aria-expanded="false">
                   Attendance Approval
@@ -160,6 +160,14 @@
 
 <script>
 export default {
+  computed:{
+    isManager(){
+      const isManager = localStorage.getItem("isManager");
+      return (isManager === '1') ? true : false;
+       
+    }
+  },
+
   methods: {
     redirect(route){
       document.getElementById("modalCloseButton").click();

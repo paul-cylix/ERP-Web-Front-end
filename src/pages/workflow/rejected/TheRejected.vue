@@ -11,6 +11,8 @@
         </div>
       </div>
     </div>
+    <modal-remarks :remarks="remarks"></modal-remarks>
+    <modal-status :status="status"></modal-status>
   </aside>
 </template>
 <script>
@@ -21,6 +23,8 @@ export default {
   data() {
     return {
       requestArray: [],
+      remarks: [],
+      status: [],
     };
   },
 
@@ -71,6 +75,13 @@ export default {
         ],
       };
     },
+    getRemarks() {
+      return this.$store.getters["remarks/getRemarks"];
+    },
+
+    getStatus() {
+      return this.$store.getters["status/getStatus"];
+    },
   },
 
   watch: {
@@ -78,6 +89,14 @@ export default {
     $route(newRoute) {
       this.getRejected();
       console.log(newRoute);
+    },
+
+    getRemarks(newValue) {
+      this.remarks = newValue;
+    },
+
+    getStatus(newValue) {
+      this.status = newValue;
     },
   },
   methods: {

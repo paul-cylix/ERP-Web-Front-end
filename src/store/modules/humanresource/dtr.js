@@ -124,10 +124,12 @@ export default {
       });
     },
 
-    async getDtr(context) {
+    async getDtr(context,payload) {
+      
+      const id = payload
       try {
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/get-hr-emp"
+          `http://127.0.0.1:8000/api/get-hr-emp/${id}`
         );
         // console.log(response);
 

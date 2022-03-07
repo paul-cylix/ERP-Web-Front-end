@@ -11,6 +11,8 @@
         </div>
       </div>
     </div>
+    <modal-remarks :remarks="remarks"></modal-remarks>
+    <modal-status :status="status"></modal-status>
   </aside>
 </template>
 <script>
@@ -21,6 +23,8 @@ export default {
   data() {
     return {
       requestArray: [],
+      remarks: [],
+      status: [],
     };
   },
 
@@ -71,6 +75,14 @@ export default {
         ],
       };
     },
+
+    getRemarks(){
+      return this.$store.getters["remarks/getRemarks"];
+    },
+
+    getStatus(){
+      return this.$store.getters["status/getStatus"];
+    }
   },
 
   watch: {
@@ -79,11 +91,20 @@ export default {
       this.getApprovals();
       console.log(newRoute);
     },
+
+    getRemarks(newValue) {
+      this.remarks = newValue
+    },
+
+    getStatus(newValue) {
+      this.status = newValue
+    },
   },
   methods: {
     async getApprovals() {
       const loggedUserId = 11;
-      const companyId = 1;
+      // const companyId = 1;
+      const companyId = localStorage.getItem("companyId");
 
       const response = await fetch(
         `http://127.0.0.1:8000/api/getApprovals/${loggedUserId}/${companyId}`,
