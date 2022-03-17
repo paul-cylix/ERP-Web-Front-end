@@ -1025,6 +1025,16 @@ export default {
       form: this.$route.params.frmName,
 
       // Logged User Data
+      loggedUserId: localStorage.getItem("id"),
+      loggedUserFirstName: localStorage.getItem("fname"),
+      loggedUserLastName: localStorage.getItem("lname"),
+      loggedUserFullName: localStorage.getItem("fullName"),
+      loggedUserDepartment: localStorage.getItem("department"),
+      loggedUserPosition: localStorage.getItem("positionName"),
+      companyId: localStorage.getItem("companyId"),
+      companyName: localStorage.getItem("companyName"),
+
+      // Logged User Data
       // loggedUserId: 136,
       // loggedUserFirstName: "Rosevir",
       // loggedUserLastName: "Ceballos",
@@ -1043,15 +1053,15 @@ export default {
       // companyId: 1,
       // companyName: 'Cylix Technologies Inc.',
 
-      // approver 2
-      loggedUserId: 12,
-      loggedUserFirstName: "Carrie",
-      loggedUserLastName: "Chua Lee",
-      loggedUserFullName: "Carrie Chua Lee",
-      loggedUserDepartment: "Accounting and Finance",
-      loggedUserPosition: "Accounting and Finance Head",
-      companyId: 1,
-      companyName: "Cylix Technologies Inc.",
+      // // approver 2
+      // loggedUserId: 12,
+      // loggedUserFirstName: "Carrie",
+      // loggedUserLastName: "Chua Lee",
+      // loggedUserFullName: "Carrie Chua Lee",
+      // loggedUserDepartment: "Accounting and Finance",
+      // loggedUserPosition: "Accounting and Finance Head",
+      // companyId: 1,
+      // companyName: "Cylix Technologies Inc.",
 
       isLoading: false,
       isLoadingModal: false,

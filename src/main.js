@@ -10,6 +10,7 @@ import TheAlert from '@/components/ui/TheAlert.vue';
 import ValidationAlert from './components/ui/ValidationAlert.vue';
 import ModalRemarks from './components/forms/ModalRemarks.vue';
 import ModalStatus from './components/forms/ModalStatus.vue';
+import CardSpinner from './components/ui/CardSpinner.vue';
 
 
 import DataTable from "@andresouzaabreu/vue-data-table";
@@ -24,6 +25,8 @@ Vue.component('date-picker', DatePicker)
 Vue.component('validation-alert', ValidationAlert)
 Vue.component('modal-remarks', ModalRemarks)
 Vue.component('modal-status', ModalStatus)
+Vue.component('card-spinner', CardSpinner)
+
 
 
 

@@ -103,8 +103,14 @@ export default {
   },
   methods: {
     async getApproved() {
-      const loggedUserId = 136;
-      const companyId = 1;
+      const loggedUserId = localStorage.getItem("id");
+      const companyId = localStorage.getItem("companyId");
+
+
+
+
+
+
 
       const response = await fetch(
         `http://127.0.0.1:8000/api/getApproved/${loggedUserId}/${companyId}`,

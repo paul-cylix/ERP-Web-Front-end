@@ -142,6 +142,28 @@
       </div>
     </div>
   </div>
+
+
+  <!-- Sales Order -->
+
+  <div class="card m-0 p-0">
+    <div class="card-header accordionheader" id="heading-3">
+      <h6 class="mb-0">
+        <a role="button" class="text-white"   @click="redirect('/the-sof')"  data-toggle="collapse" href="#collapse-3" aria-expanded="true" aria-controls="collapse-3">
+          Sales Order
+        </a>
+      </h6>
+    </div>
+  </div>
+
+
+
+
+
+
+<!-- /. Sales Order -->
+
+
 </div>
           <!-- end -->
 

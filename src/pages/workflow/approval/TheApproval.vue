@@ -102,8 +102,14 @@ export default {
   },
   methods: {
     async getApprovals() {
-      const loggedUserId = 11;
+      const loggedUserId = localStorage.getItem("id");
       // const companyId = 1;
+
+
+
+
+
+
       const companyId = localStorage.getItem("companyId");
 
       const response = await fetch(

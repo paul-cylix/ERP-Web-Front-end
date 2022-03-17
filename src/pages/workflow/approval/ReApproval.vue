@@ -1052,6 +1052,18 @@ export default {
       transpoSetup_EditData: [],
       form: this.$route.params.frmName,
 
+
+      // Logged User Data
+      loggedUserId: localStorage.getItem("id"),
+      loggedUserFirstName: localStorage.getItem("fname"),
+      loggedUserLastName: localStorage.getItem("lname"),
+      loggedUserFullName: localStorage.getItem("fullName"),
+      loggedUserDepartment: localStorage.getItem("department"),
+      loggedUserPosition: localStorage.getItem("positionName"),
+      companyId: localStorage.getItem("companyId"),
+      companyName: localStorage.getItem("companyName"),
+
+
       // // Logged User Data // initiator
       // loggedUserId: 136,
       // loggedUserFirstName: 'Rosevir',
@@ -1062,15 +1074,15 @@ export default {
       // companyId: 1,
       // companyName: 'Cylix Technologies Inc.',
 
-      // approver
-      loggedUserId: 11,
-      loggedUserFirstName: "Konrad",
-      loggedUserLastName: "Chua",
-      loggedUserFullName: "Konrad Chua",
-      loggedUserDepartment: "Management",
-      loggedUserPosition: "Managing Director",
-      companyId: 1,
-      companyName: "Cylix Technologies Inc.",
+      // // approver
+      // loggedUserId: 11,
+      // loggedUserFirstName: "Konrad",
+      // loggedUserLastName: "Chua",
+      // loggedUserFullName: "Konrad Chua",
+      // loggedUserDepartment: "Management",
+      // loggedUserPosition: "Managing Director",
+      // companyId: 1,
+      // companyName: "Cylix Technologies Inc.",
 
       // // approver 2
       // loggedUserId: 12,

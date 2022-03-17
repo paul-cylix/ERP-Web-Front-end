@@ -144,7 +144,7 @@
 export default {
   data() {
     return {
-      loggedUserId: 136,
+      loggedUserId: localStorage.getItem("id"),
       isItLoading: true,
     }
   },

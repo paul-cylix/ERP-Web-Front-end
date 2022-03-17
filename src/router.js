@@ -22,6 +22,8 @@ import TheOt from "./pages/humanresource/TheOt.vue";
 import TheItf from "./pages/humanresource/TheItf.vue";
 import TheLaf from "./pages/humanresource/TheLaf.vue";
 import TheDtr from "./pages/humanresource/TheDtr.vue";
+import TheSof from "./pages/salesorder/TheSof.vue";
+
 
 import RfpInprogress from "./pages/workflow/inprogress/RfpInprogress.vue";
 import RfpApproval from "./pages/workflow/approval/RfpApproval.vue";
@@ -443,6 +445,8 @@ const routes = [
       { path: "/the-itf", component: TheItf, meta: { requiresAuth: true } },
       { path: "/the-laf", component: TheLaf, meta: { requiresAuth: true } },
       { path: "/the-dtr", component: TheDtr, meta: { requiresAuth: true } },
+      { path: "/the-sof", component: TheSof, meta: { requiresAuth: true } },
+      
 
     ],
     meta: { requiresAuth: true },

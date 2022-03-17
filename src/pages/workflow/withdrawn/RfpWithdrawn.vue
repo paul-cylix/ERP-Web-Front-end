@@ -835,15 +835,15 @@ export default {
       isLoadingModal: false,
       form: "Request for Payment",
 
-      // Logged User Data // initiator
-      loggedUserId: 136,
-      loggedUserFirstName: "Rosevir",
-      loggedUserLastName: "Ceballos",
-      loggedUserFullName: "Rosevir Ceballos Jr.",
-      loggedUserDepartment: "Information Technology",
-      loggedUserPosition: "Senior Developer",
-      companyId: 1,
-      companyName: "Cylix Technologies Inc.",
+      // Logged User Data
+      loggedUserId: localStorage.getItem("id"),
+      loggedUserFirstName: localStorage.getItem("fname"),
+      loggedUserLastName: localStorage.getItem("lname"),
+      loggedUserFullName: localStorage.getItem("fullName"),
+      loggedUserDepartment: localStorage.getItem("department"),
+      loggedUserPosition: localStorage.getItem("positionName"),
+      companyId: localStorage.getItem("companyId"),
+      companyName: localStorage.getItem("companyName"),
 
       // Check if its for liquidation
       isInitiator: false,

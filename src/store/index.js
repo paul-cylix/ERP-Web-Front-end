@@ -8,6 +8,8 @@ import createRfpModule from './modules/accounting/rfp/createRfp.js';
 import dtrModule from './modules/humanresource/dtr.js';
 import remarksModule from './modules/general/workflow/remarks.js';
 import statusModule from './modules/general/workflow/status.js';
+import SalesOrderModule from './modules/salesorder/sof.js';
+
 
 
 
@@ -20,6 +22,7 @@ const store = new Vuex.Store({
     dtr: dtrModule,
     remarks: remarksModule,
     status: statusModule,
+    sof: SalesOrderModule,
   },
 
 })
