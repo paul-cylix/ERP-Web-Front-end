@@ -9,6 +9,9 @@ import dtrModule from './modules/humanresource/dtr.js';
 import remarksModule from './modules/general/workflow/remarks.js';
 import statusModule from './modules/general/workflow/status.js';
 import SalesOrderModule from './modules/salesorder/sof.js';
+import actualSign from './modules/general/workflow/actualsign.js';
+
+
 
 
 
@@ -23,6 +26,8 @@ const store = new Vuex.Store({
     remarks: remarksModule,
     status: statusModule,
     sof: SalesOrderModule,
+    actualSign: actualSign,
+
   },
 
 })

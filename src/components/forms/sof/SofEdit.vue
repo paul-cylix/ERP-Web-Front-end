@@ -3,7 +3,7 @@
     <!-- Form Element sizes -->
     <div class="card card-secondary">
       <div class="card-header">
-        <h3 class="card-title">Sales Order</h3>
+        <h3 class="card-title">{{this.paymentTerms}}</h3>
       </div>
       <div class="card-body">
         <card-spinner :show="isLoadingSpinner"></card-spinner>
@@ -249,7 +249,7 @@
               <div class="form-group">
                 <small><label for="softype">Delegates</label></small>
                 <input
-                  type="text"
+                  type="number"
                   disabled
                   v-model.trim="delegates"
                   class="form-control py-3 form-control-sm"
@@ -398,7 +398,7 @@
                   option-text="name"
                   placeholder="select item"
                   style="padding: 9px; background-color: #e9ecef"
-              
+                  disabled="true"
                   :isDisabled="true"
                 >
                 </model-list-select>
@@ -1316,6 +1316,8 @@
             >
               Next
             </button>
+            <button @click="test()">test</button>
+
           </div>
 
           <div class="col-md-1" v-else>
@@ -1326,6 +1328,7 @@
             >
               Submit
             </button>
+
           </div>
         </div>
         <!-- / Buttons -->
@@ -1346,37 +1349,48 @@ export default {
     ModelListSelect,
   },
   async created() {
-    this.isLoadingSpinner = true
+    this.isLoadingSpinner = true;
+    await this.querySof();
     await this.queryCompany();
     await this.queryCompanySystemDetails();
     await this.queryCompanyDocumentDetails();
     await this.queryCurrency();
-    
-    this.isLoadingSpinner = false
-
+    this.isLoadingSpinner = false;
   },
   watch: {
-    counter() {
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
-    },
-
     async customerNameItem(newValue) {
       if (this.customerNameItem) {
         this.isLoadingSpinner = true;
         const customerId = newValue.code;
-        // console.log(customerId)
+        // console.log(newValue)
         await this.queryCompanyAddress(customerId);
         await this.queryCompanyContacts(customerId);
         await this.queryCompanyCode(customerId);
-        await this.queryDelegates(customerId);
 
         // if condition will clear the payment terms if its dmo or prj
         if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-          this.paymentTerms =
-            this.customerNameItem.term === undefined
-              ? null
-              : this.customerNameItem.term;
+          // this.paymentTerms =
+          //   this.customerNameItem.term === undefined
+          //     ? null
+          //     : this.customerNameItem.term;
+
+            if(this.customerNameItem.term === undefined){
+              this.paymentTerms = null
+            } else if (this.customerNameItem.term === undefined && this.paymentTerms.length === 0) {
+              this.paymentTerms = null
+            } else if (this.customerNameItem.term && this.paymentTerms.length === 0) {
+              this.paymentTerms = this.customerNameItem.term
+            } else if (this.customerNameItem.term && this.paymentTerms) {
+              this.paymentTerms
+            }
+
+            
+
+
+
+
+
+
         }
 
         this.accountManager =
@@ -1459,11 +1473,11 @@ export default {
     },
 
     projectNameFormula() {
-      const today = new Date();
+      const today = new Date(this.soDate);
       // let dd = today.getDate();
       let mm = today.getMonth() + 1;
       let yyyy = today.getFullYear();
-      let m = new Date().toLocaleString("en-us", { month: "short" });
+      let m = new Date(this.soDate).toLocaleString("en-us", { month: "short" });
 
       if (mm < 10) {
         mm = `0${mm}`;
@@ -1682,9 +1696,10 @@ export default {
       billingAddress: [],
       billingAddressItem: {},
       accountManager: null,
-      delegates: '',
+      delegates: null,
 
       // Project Details
+      soDate: null,
       poNumber: "",
       poDate: null,
       projectStart: null,
@@ -1747,6 +1762,127 @@ export default {
   },
 
   methods: {
+
+    test(){
+      console.log(this.contactNumberItem.code)
+    },
+
+    async querySof() {
+      try {
+        await this.$store.dispatch("sof/querySof",{
+        processId: this.$route.params.id,
+        frmName: this.$route.params.frmName,
+        companyId: this.companyId,
+      });
+
+      const data = this.$store.getters['sof/getSofData'];
+
+      console.warn(data)
+
+      // data[0] - setup prj
+      // data[1] - sales order
+      // data[2] - systm
+      // data[3] - docus
+      // data[4] - actual sign
+      // data[5] - attachments
+
+      const frmClass = data[4]['actual_sign'][0]['FRM_NAME'];
+      if(frmClass === 'Sales Order - Delivery'){
+        this.sofType = { code: "DLV", name: "Delivery" }
+      } else if (frmClass === 'Sales Order - Project'){
+        this.sofType = { code: "PRJ", name: "Project" }
+      } else if (frmClass === 'Sales Order - Demo'){
+        this.sofType = { code: "DMO", name: "Demo" }
+      } else if (frmClass === 'Sales Order - POC'){
+        this.sofType = { code: "POC", name: "POC" }
+      }
+
+      // console.log(data[0]['setup_project'][0]['Business_Number'])
+      // console.log(data[0]['setup_project'][0]['business_fullname'])
+      // console.log(data[0]['setup_project'][0]['CLIENTCODE'])
+      // console.log(data[0]['setup_project'][0]['term_type'])
+      // console.log(data[0]['setup_project'][0]['PMName'])
+
+
+      // Customer Details
+      const selectedCustomerNameItem = {
+        code: data[0]['setup_project'][0]['Business_Number'],
+        name: data[0]['setup_project'][0]['business_fullname'],
+        desc: data[0]['setup_project'][0]['CLIENTCODE'],
+        term: data[0]['setup_project'][0]['term_type'],
+        amgr: data[0]['setup_project'][0]['PMName'],
+      }
+
+      this.customerNameItem = selectedCustomerNameItem;
+
+      const selectedContactPersonItem = {
+        code: data[1]['sales_orders'][0]['Contactid'],
+        name: data[1]['sales_orders'][0]['Contact'],
+      }
+
+      this.contactPersonItem = selectedContactPersonItem
+
+      const selectedContactNumberItem = {
+        code: data[1]['sales_orders'][0]['ContactNum'],
+        name: data[1]['sales_orders'][0]['ContactNum'],
+      }
+
+      this.contactNumberItem = selectedContactNumberItem;
+
+      
+
+      const selectedBillingAddressItem = {
+        code: data[1]['sales_orders'][0]['BillTo'],
+        name: data[1]['sales_orders'][0]['BillTo'],
+      }
+
+      this.billingAddressItem = selectedBillingAddressItem;
+
+
+      const selectedDeliveryAddressItem = {
+        code: data[1]['sales_orders'][0]['DeliveryAddress'],
+        name: data[1]['sales_orders'][0]['DeliveryAddress'],
+      }
+
+      this.deliveryAddressItem = selectedDeliveryAddressItem;
+
+
+      // Project Details
+      this.poNumber = data[1]['sales_orders'][0]['poNum']
+      this.poDate = data[1]['sales_orders'][0]['podate']
+      this.projectStart = data[0]['setup_project'][0]['project_effectivity']
+      this.projectEnd = data[0]['setup_project'][0]['project_expiry']
+      this.projectShortText = data[0]['setup_project'][0]['project_shorttext']
+      this.soDate = data[1]['sales_orders'][0]['sodate']
+      this.projectCode = data[0]['setup_project'][0]['project_no']
+      this.scopeOfWork = data[0]['setup_project'][0]['project_remarks']
+
+      // Payment & Delivery Details
+      this.paymentTerms = data[1]['sales_orders'][0]['Terms']
+
+        
+        
+
+        
+        
+        
+        
+
+
+      } catch (error) {
+
+        this.openToast(
+          "top-right",
+          "error",
+          "Internal Server Error! Please inform the administrator!"
+        );
+      
+        console.error(error);
+      }
+
+
+    },
+
     async submit() {
       this.isLoadingSpinner = true;
 
@@ -1800,30 +1936,32 @@ export default {
           selectedFile: this.selectedFile,
         };
 
-
-
         const response = await this.$store.dispatch("sof/createSOF", payload);
 
-
         if (response.status === 201) {
-          this.openToast("top-right", "success", "Your Sales Order Request was successfully submitted.");
+          this.openToast(
+            "top-right",
+            "success",
+            "Your Sales Order Request was successfully submitted."
+          );
         }
 
         this.isLoadingSpinner = false;
         this.$router.replace("/inprogress");
-  
       } catch (error) {
         this.isLoadingSpinner = false;
 
         if (error.response.status === 422) {
           this.openToast("top-right", "error", error.response.data);
         } else {
-          this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+          this.openToast(
+            "top-right",
+            "error",
+            "Internal Server Error! Please inform the administrator!"
+          );
         }
 
-
-        console.info(error)
-
+        console.info(error);
       }
     },
 
@@ -1947,8 +2085,6 @@ export default {
       );
       this.deliveryAddress = responseData;
       this.billingAddress = responseData;
-
-      
     },
 
     async queryCompanyContacts(customerId) {
@@ -1958,6 +2094,7 @@ export default {
       );
       this.contactPerson = responseData.contact;
       this.contactNumber = responseData.number;
+
     },
 
     async queryCompanyCode(customerId) {
@@ -1966,19 +2103,6 @@ export default {
         customerId
       );
       this.projectCodeDataList = responseData;
-    },
-
-    async queryDelegates(customerId) {
-      const responseData = await this.$store.dispatch(
-        "sof/queryDelegates",
-        customerId
-      );
-      // this.delegates = responseData;
-      if(responseData.length > 0){
-        this.delegates = responseData[0]['DelegatesName']
-      } else {
-        this.delegates = '';
-      }
     },
 
     async queryCompanySystemDetails() {

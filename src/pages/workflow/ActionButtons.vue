@@ -36,12 +36,20 @@ export default {
             const frmName = this.data.requestType // Request for Payment
             const name = frmName+'-'+this.data.workflow; // inprogressbyId
 
+            // this is use exclusively for sales order request
+            const name2 = frmclass+'-'+this.data.workflow; // inprogressbyId
+
+
             const companyId = this.companyId;
         
 
             if(actionName === 'open'){
-                this.$router.push({name: name, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
-                // console.log(this.data);
+                
+                if (frmclass === 'sales_order_frm') {                    
+                    this.$router.push({name: name2, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
+                } else {
+                    this.$router.push({name: name, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
+                }
             }
 
             if(actionName === 'remarks'){

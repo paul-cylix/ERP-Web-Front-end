@@ -103,7 +103,8 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
                 <small
@@ -398,7 +399,6 @@
                   option-text="name"
                   placeholder="select item"
                   style="padding: 9px; background-color: #e9ecef"
-              
                   :isDisabled="true"
                 >
                 </model-list-select>
@@ -761,7 +761,7 @@
                             type="checkbox"
                             :value="item"
                             class="ml-3 mr-0"
-                            v-model="systemDetailsSelected"
+                            v-model="item.selected"
                           />
                         </td>
                         <td style="width: 80%">{{ item.type_name }}</td>
@@ -800,13 +800,13 @@
                       </tr>
                     </thead>
                     <tbody style="font-size: 14px">
-                      <tr v-for="item in documentDetailsList" :key="item.id">
+                      <tr v-for="item in documentDetailsList" :key="item.DocID">
                         <td style="width: 10%">
                           <input
                             type="checkbox"
                             :value="item"
                             class="ml-3 mr-0"
-                            v-model="documentDetailsSelected"
+                            v-model="item.selected"
                           />
                         </td>
                         <td style="width: 80%">{{ item.DocumentName }}</td>
@@ -938,7 +938,7 @@
                   </tr>
                   <tr class="d-flex">
                     <td class="col-3">Request Date</td>
-                    <td class="col-9">{{ this.todaysDate }}</td>
+                    <td class="col-9">{{ this.requestDate }}</td>
                   </tr>
                   <tr class="d-flex">
                     <td class="col-3">Customer Name</td>
@@ -1147,12 +1147,14 @@
                     <td class="col-3">System Details</td>
                     <td class="col-9">
                       <ul>
-                        <li
-                          v-for="item in systemDetailsSelected"
-                          :key="item.id"
+                        <aside
+                          v-for="item in systemDetailsList"
+                          :key="item.sysID"
                         >
-                          {{ item.type_name }}
-                        </li>
+                          <li v-if="item.selected">
+                            {{ item.type_name }}
+                          </li>
+                        </aside>
                       </ul>
                     </td>
                   </tr>
@@ -1160,12 +1162,14 @@
                     <td class="col-3">Document Details</td>
                     <td class="col-9">
                       <ul>
-                        <li
-                          v-for="item in documentDetailsSelected"
-                          :key="item.ID"
+                        <aside
+                          v-for="item in documentDetailsList"
+                          :key="item.DocID"
                         >
-                          {{ item.DocumentName }}
-                        </li>
+                          <li v-if="item.selected">
+                            {{ item.DocumentName }}
+                          </li>
+                        </aside>
                       </ul>
                     </td>
                   </tr>
@@ -1179,7 +1183,7 @@
           <!-- Attachements Review -->
           <div class="card card-secondary">
             <div class="card-header">
-              <h3 class="card-title">System & Document Details</h3>
+              <h3 class="card-title">Attachments</h3>
               <div class="card-tools">
                 <button
                   type="button"
@@ -1327,6 +1331,8 @@
               Submit
             </button>
           </div>
+
+          <button @click="test()">test</button>
         </div>
         <!-- / Buttons -->
       </div>
@@ -1346,14 +1352,14 @@ export default {
     ModelListSelect,
   },
   async created() {
-    this.isLoadingSpinner = true
+    this.isLoadingSpinner = true;
+    await this.querySof();
     await this.queryCompany();
     await this.queryCompanySystemDetails();
     await this.queryCompanyDocumentDetails();
     await this.queryCurrency();
-    
-    this.isLoadingSpinner = false
 
+    this.isLoadingSpinner = false;
   },
   watch: {
     counter() {
@@ -1361,8 +1367,8 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
-    async customerNameItem(newValue) {
-      if (this.customerNameItem) {
+    async customerNameItem(newValue, oldValue) {
+      if (this.customerNameItem.code) {
         this.isLoadingSpinner = true;
         const customerId = newValue.code;
         // console.log(customerId)
@@ -1383,6 +1389,14 @@ export default {
           this.customerNameItem.amgr === undefined
             ? null
             : this.customerNameItem.amgr;
+
+        // this.customerNameItem = {}
+        if (oldValue["code"]) {
+          this.contactPersonItem = {};
+          this.contactNumberItem = {};
+          this.deliveryAddressItem = {};
+          this.billingAddressItem = {};
+        }
 
         this.isLoadingSpinner = false;
       }
@@ -1459,11 +1473,14 @@ export default {
     },
 
     projectNameFormula() {
-      const today = new Date();
+      const requestedDate = this.requestDate;
+      const today = new Date(requestedDate);
       // let dd = today.getDate();
       let mm = today.getMonth() + 1;
       let yyyy = today.getFullYear();
-      let m = new Date().toLocaleString("en-us", { month: "short" });
+      let m = new Date(requestedDate).toLocaleString("en-us", {
+        month: "short",
+      });
 
       if (mm < 10) {
         mm = `0${mm}`;
@@ -1621,11 +1638,24 @@ export default {
     // System & Document Details
 
     missingSystemDetails() {
-      return this.systemDetailsSelected.length < 1 ? true : false;
+      let systems = this.systemDetailsList
+      var isSystemSelected = systems.filter(function (system) {
+        return system.selected === true
+      });
+      return (isSystemSelected.length) ? false : true;
+
+
+
+
+
     },
 
     missingDocumentDetails() {
-      return this.documentDetailsSelected.length < 1 ? true : false;
+      const documents = this.documentDetailsList
+      var isDocumentSelected = documents.filter(function (document) {
+        return document.selected === true
+      });
+      return (isDocumentSelected.length) ? false : true;
     },
 
     // Attachments
@@ -1682,7 +1712,7 @@ export default {
       billingAddress: [],
       billingAddressItem: {},
       accountManager: null,
-      delegates: '',
+      delegates: "",
 
       // Project Details
       poNumber: "",
@@ -1747,6 +1777,169 @@ export default {
   },
 
   methods: {
+    test() {
+      console.log(this.systemDetailsList);
+    },
+    async querySof() {
+      try {
+        await this.$store.dispatch("sof/querySof", {
+          processId: this.$route.params.id,
+          frmName: this.$route.params.frmName,
+          companyId: this.companyId,
+        });
+
+        const data = this.$store.getters["sof/getSofData"];
+
+        // console.warn(data);
+
+        // data[0] - setup prj
+        // data[1] - sales order
+        // data[2] - systm
+        // data[3] - docus
+        // data[4] - actual sign
+        // data[5] - attachments
+
+        const frmName = data[4]["actual_sign"][0]["FRM_NAME"];
+        if (frmName === "Sales Order - Delivery") {
+          this.sofType = { code: "DLV", name: "Delivery" };
+        } else if (frmName === "Sales Order - Project") {
+          this.sofType = { code: "PRJ", name: "Project" };
+        } else if (frmName === "Sales Order - Demo") {
+          this.sofType = { code: "DMO", name: "Demo" };
+        } else if (frmName === "Sales Order - POC") {
+          this.sofType = { code: "POC", name: "POC" };
+        }
+
+        // console.log(data[0]['setup_project'][0]['Business_Number'])
+        // console.log(data[0]['setup_project'][0]['business_fullname'])
+        // console.log(data[0]['setup_project'][0]['CLIENTCODE'])
+        // console.log(data[0]['setup_project'][0]['term_type'])
+        // console.log(data[0]['setup_project'][0]['PMName'])
+
+        // Customer Details
+
+        const selectedCustomerNameItem = {
+          code: data[0]["setup_project"][0]["Business_Number"],
+          name: data[0]["setup_project"][0]["business_fullname"],
+          desc: data[0]["setup_project"][0]["CLIENTCODE"],
+          term: data[0]["setup_project"][0]["term_type"],
+          amgr: data[0]["setup_project"][0]["PMName"],
+        };
+
+        this.customerNameItem = selectedCustomerNameItem;
+
+        const selectedContactPersonItem = {
+          code: data[1]["sales_orders"][0]["Contactid"],
+          name: data[1]["sales_orders"][0]["Contact"],
+        };
+
+        this.contactPersonItem = selectedContactPersonItem;
+
+        const contactPerson = [];
+        contactPerson.push(selectedContactPersonItem);
+        this.contactPerson = contactPerson;
+
+        const selectedContactNumberItem = {
+          code: data[1]["sales_orders"][0]["ContactNum"],
+          name: data[1]["sales_orders"][0]["ContactNum"],
+        };
+
+        this.contactNumberItem = selectedContactNumberItem;
+
+        const contactNumber = [];
+        contactNumber.push(selectedContactNumberItem);
+        this.contactNumber = contactNumber;
+
+        const selectedBillingAddressItem = {
+          code: data[1]["sales_orders"][0]["BillTo"],
+          name: data[1]["sales_orders"][0]["BillTo"],
+        };
+
+        this.billingAddressItem = selectedBillingAddressItem;
+
+        const billingAddress = [];
+        billingAddress.push(selectedBillingAddressItem);
+        this.billingAddress = billingAddress;
+
+        const selectedDeliveryAddressItem = {
+          code: data[1]["sales_orders"][0]["DeliveryAddress"],
+          name: data[1]["sales_orders"][0]["DeliveryAddress"],
+        };
+
+        this.referenceNumber = data[1]["sales_orders"][0]["soNum"];
+        this.requestDate = data[1]["sales_orders"][0]["sodate"];
+
+        this.deliveryAddressItem = selectedDeliveryAddressItem;
+
+        const deliveryAddress = [];
+        deliveryAddress.push(selectedDeliveryAddressItem);
+        this.deliveryAddress = deliveryAddress;
+
+        // Project Details
+        this.poNumber = data[1]["sales_orders"][0]["poNum"];
+        this.poDate = data[1]["sales_orders"][0]["podate"];
+        this.projectStart = data[0]["setup_project"][0]["project_effectivity"];
+        this.projectEnd = data[0]["setup_project"][0]["project_expiry"];
+        this.projectShortText =
+          data[0]["setup_project"][0]["project_shorttext"];
+        this.soDate = data[1]["sales_orders"][0]["sodate"];
+        this.projectCode = data[0]["setup_project"][0]["project_no"];
+        this.scopeOfWork = data[0]["setup_project"][0]["project_remarks"];
+
+        // Payment & Delivery Details
+        this.paymentTerms = data[1]["sales_orders"][0]["Terms"];
+        this.warranty = data[1]["sales_orders"][0]["warranty"];
+
+        const selectedCurrencyItem = {
+          code: data[1]["sales_orders"][0]["currency"],
+          name: data[1]["sales_orders"][0]["currency"],
+        };
+        this.currencyItem = selectedCurrencyItem;
+
+        const currency = [];
+        currency.push(selectedCurrencyItem);
+        this.currency = currency;
+
+        this.projectCostReal = data[1]["sales_orders"][0]["amount"];
+
+        this.projectCost = parseFloat(
+          data[1]["sales_orders"][0]["amount"]
+        ).toLocaleString(undefined, { minimumFractionDigits: 2 });
+
+        if (data[1]["sales_orders"][0]["dp_required"]) {
+          this.downPaymentRequiredItem = { code: true, name: "Yes" };
+          this.downPaymentPercentage =
+            data[1]["sales_orders"][0]["dp_percentage"];
+        }
+
+        if (data[1]["sales_orders"][0]["IsInvoiceRequired"]) {
+          this.invoiceRequiredItem = { code: true, name: "Yes" };
+          this.invoiceDateNeeded = data[1]["sales_orders"][0]["invDate"];
+        }
+
+        if (data[1]["sales_orders"][0]["IsInvoiceReleased"]) {
+          this.salesInvoiceReleasedItem = { code: true, name: "Yes" };
+          this.dateOfInvoice = data[1]["sales_orders"][0]["InvoiceDate"];
+        }
+
+        this.invoiceNumber = data[1]["sales_orders"][0]["InvoiceNumber"];
+        this.accountingRemarks = data[1]["sales_orders"][0]["Remarks2"];
+
+
+        // Attachments
+        this.selectedFile = data[5]["attachments"]["data"];
+
+      } catch (error) {
+        this.openToast(
+          "top-right",
+          "error",
+          "Internal Server Error! Please inform the administrator!"
+        );
+
+        console.error(error);
+      }
+    },
+
     async submit() {
       this.isLoadingSpinner = true;
 
@@ -1800,30 +1993,32 @@ export default {
           selectedFile: this.selectedFile,
         };
 
-
-
         const response = await this.$store.dispatch("sof/createSOF", payload);
 
-
         if (response.status === 201) {
-          this.openToast("top-right", "success", "Your Sales Order Request was successfully submitted.");
+          this.openToast(
+            "top-right",
+            "success",
+            "Your Sales Order Request was successfully submitted."
+          );
         }
 
         this.isLoadingSpinner = false;
         this.$router.replace("/inprogress");
-  
       } catch (error) {
         this.isLoadingSpinner = false;
 
         if (error.response.status === 422) {
           this.openToast("top-right", "error", error.response.data);
         } else {
-          this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+          this.openToast(
+            "top-right",
+            "error",
+            "Internal Server Error! Please inform the administrator!"
+          );
         }
 
-
-        console.info(error)
-
+        console.info(error);
       }
     },
 
@@ -1860,8 +2055,11 @@ export default {
         try {
           this.isLoadingSpinner = true;
           const isExist = await this.$store.dispatch(
-            "sof/checkIfProjectCodeExist",
-            this.projectCode
+            "sof/checkIfProjectCodeExistSoid",
+            {
+              projCode: this.projectCode,
+              processId: this.$route.params.id,
+            }
           );
 
           if (
@@ -1947,8 +2145,6 @@ export default {
       );
       this.deliveryAddress = responseData;
       this.billingAddress = responseData;
-
-      
     },
 
     async queryCompanyContacts(customerId) {
@@ -1974,22 +2170,24 @@ export default {
         customerId
       );
       // this.delegates = responseData;
-      if(responseData.length > 0){
-        this.delegates = responseData[0]['DelegatesName']
+      if (responseData.length > 0) {
+        this.delegates = responseData[0]["DelegatesName"];
       } else {
-        this.delegates = '';
+        this.delegates = "";
       }
     },
 
     async queryCompanySystemDetails() {
       const responseData = await this.$store.dispatch(
-        "sof/queryCompanySystemDetails"
+        "sof/queryCompanySelectedSystemDetails",
+        this.$route.params.id
       );
       this.systemDetailsList = responseData;
     },
     async queryCompanyDocumentDetails() {
       const responseData = await this.$store.dispatch(
-        "sof/queryCompanyDocumentDetails"
+        "sof/queryCompanySelectedDocumentDetails",
+        this.$route.params.id
       );
       this.documentDetailsList = responseData;
     },

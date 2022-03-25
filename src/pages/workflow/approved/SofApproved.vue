@@ -2,12 +2,18 @@
   <div class="col-md-12 mt-3">
     <!-- Form Element sizes -->
     <div class="card card-secondary">
+      <div
+        class="overlay"
+        style="background-color: white !important"
+        v-show="isLoadingSpinner"
+      >
+        <loading-spinner></loading-spinner>
+      </div>
       <div class="card-header">
         <h3 class="card-title">Sales Order</h3>
       </div>
       <div class="card-body">
-        <card-spinner :show="isLoadingSpinner"></card-spinner>
-
+        <!-- <card-spinner :show="isLoadingSpinner"></card-spinner> -->
         <!-- Step Numbers -->
         <div class="d-flex progressBarWrapper text-center">
           <div class="progressbar" :class="classA">
@@ -103,14 +109,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="missingSOFType && attemptNext"
-                  >SOF Type is required!</small
-                >
+
               </div>
             </div>
 
@@ -131,14 +134,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="missingCustomerName && attemptNextOne"
-                  >Customer Name is required!</small
-                >
+
               </div>
             </div>
             <div class="col-md-3">
@@ -150,14 +150,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="missingContactPerson && attemptNextOne"
-                  >Contact Person is required!</small
-                >
+
               </div>
             </div>
             <div class="col-md-3">
@@ -171,14 +168,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="missingContactNumber && attemptNextOne"
-                  >Contact Number is required!</small
-                >
+
               </div>
             </div>
           </div>
@@ -195,14 +189,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="missingDeliveryAddress && attemptNextOne"
-                  >Delivery Address is required!</small
-                >
+
               </div>
             </div>
 
@@ -217,14 +208,10 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="missingBillingAddress && attemptNextOne"
-                  >Billing Address is required!</small
-                >
               </div>
             </div>
           </div>
@@ -240,9 +227,7 @@
                   v-model.trim="accountManager"
                   class="form-control py-3 form-control-sm"
                 />
-                <!-- <small class="text-danger p-0 m-0" v-show="true"
-                  >Account Manager is required!</small
-                > -->
+ 
               </div>
             </div>
             <div class="col-md-6">
@@ -254,9 +239,7 @@
                   v-model.trim="delegates"
                   class="form-control py-3 form-control-sm"
                 />
-                <!-- <small class="text-danger p-0 m-0" v-show="true"
-                  >Delegates is required!</small
-                > -->
+
               </div>
             </div>
           </div>
@@ -273,12 +256,9 @@
                   type="text"
                   class="form-control form-control-sm py-3"
                   v-model.trim="poNumber"
+                  :disabled="true"
                 />
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextTwo && missingPONumber"
-                  >Customer PO Number is required!</small
-                >
+
               </div>
             </div>
 
@@ -289,12 +269,9 @@
                   v-model="poDate"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
+                  :disabled="true"
                 ></date-picker>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextTwo && missingPODate"
-                  >Customer PO Date is required!</small
-                >
+
               </div>
             </div>
             <div class="col-md-3">
@@ -313,14 +290,11 @@
                 <date-picker
                   v-else
                   v-model="projectStart"
+                  :disabled="true"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextTwo && missingProjectStart"
-                  >Project Start is required!</small
-                >
+
               </div>
             </div>
 
@@ -341,13 +315,10 @@
                   v-else
                   v-model="projectEnd"
                   valueType="format"
+                  disabled
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextTwo && missingProjectEnd"
-                  >Project End is required!</small
-                >
+
               </div>
             </div>
           </div>
@@ -361,15 +332,12 @@
                   ></small
                 >
                 <input
+                  disabled
                   type="text"
                   v-model.trim="projectShortText"
                   class="form-control py-3 form-control-sm"
                 />
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextTwo && missingProjectShortText"
-                  >Project Short Text is required!</small
-                >
+
               </div>
             </div>
 
@@ -378,7 +346,7 @@
                 <small><label for="projectname">Project Name</label></small>
                 <input
                   type="text"
-                  v-model.trim="projectNameFormula"
+                  v-model.trim="projectName"
                   disabled
                   class="form-control py-3 form-control-sm"
                 />
@@ -398,14 +366,11 @@
                   option-text="name"
                   placeholder="select item"
                   style="padding: 9px; background-color: #e9ecef"
-              
                   :isDisabled="true"
                 >
                 </model-list-select>
 
-                <!-- <small class="text-danger p-0 m-0" v-show="true"
-                  >Coordinator is required!</small
-                > -->
+
               </div>
             </div>
 
@@ -413,25 +378,12 @@
               <div class="form-group">
                 <small><label for="projectcode">Project Code</label></small>
                 <input
-                  list="suggestions"
+                  disabled
                   type="text"
                   v-model.trim="projectCode"
                   class="form-control py-3 form-control-sm"
                 />
-                <datalist id="suggestions">
-                  <option
-                    v-for="item in projectCodeDataList"
-                    :key="item.project_no"
-                  >
-                    {{ item.project_no }}
-                  </option>
-                </datalist>
 
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextTwo && missingProjectCode"
-                  >Project Code is required!</small
-                >
               </div>
             </div>
           </div>
@@ -445,12 +397,9 @@
                   name="scopeofwork"
                   v-model.trim="scopeOfWork"
                   rows="5"
+                  disabled
                 ></textarea>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextTwo && missingScopeOfWork"
-                  >Scope of Work is required!</small
-                >
+
               </div>
             </div>
           </div>
@@ -467,15 +416,9 @@
                   v-model.trim="paymentTerms"
                   type="text"
                   class="form-control py-3 form-control-sm"
-                  :disabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  disabled
                 />
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextThree && missingPaymentTerms"
-                  >Payment Terms is required!</small
-                >
+
               </div>
             </div>
 
@@ -486,16 +429,10 @@
                   type="text"
                   class="form-control py-3 form-control-sm"
                   v-model.trim="warranty"
-                  :disabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  disabled
                 />
 
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextThree && missingWarranty"
-                  >Warranty is required!</small
-                >
+
               </div>
             </div>
 
@@ -508,17 +445,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="isDropdownRequired"
-                  :isDisabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextThree && missingCurrency"
-                  >Currency is required!</small
-                >
+    
               </div>
             </div>
 
@@ -533,15 +464,9 @@
                   class="form-control form-control-sm py-3"
                   id="projectCost"
                   v-model="projectCost"
-                  :disabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  :disabled="true"
                 />
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextThree && missingProjectCost"
-                  >Project Cost is required!</small
-                >
+
               </div>
             </div>
           </div>
@@ -558,17 +483,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="isDropdownRequired"
-                  :isDisabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextThree && missingDownPaymentRequired"
-                  >Down Payment is required!</small
-                >
+
               </div>
             </div>
 
@@ -578,22 +497,10 @@
                 <input
                   type="number"
                   v-model.trim="downPaymentPercentage"
-                  :disabled="this.downPaymentRequiredItem.code === false"
+                  :disabled="true"
                   class="form-control py-3 form-control-sm"
                 />
-                <div class="d-flex flex-column">
-                  <small
-                    class="text-danger p-0 m-0"
-                    v-show="attemptNextThree && missingDownPaymentPercentage"
-                    >Down Payment Percentage is required!
-                  </small>
 
-                  <small
-                    class="text-danger p-0 m-0"
-                    v-show="attemptNextThree && dpValitade"
-                    >Down Payment Percentage must be 1% - 100%
-                  </small>
-                </div>
               </div>
             </div>
 
@@ -606,9 +513,7 @@
                   :disabled="true"
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
-                <!-- <small class="text-danger p-0 m-0" v-show="attemptNextThree && "
-                  >Down Payment Date Received is required!</small
-                > -->
+
               </div>
             </div>
 
@@ -617,13 +522,11 @@
                 <small><label for="softype">Invoice Number</label></small>
                 <input
                   type="text"
-                  v-model="invoiceNumber"
                   disabled
+                  v-model="invoiceNumber"
                   class="form-control py-3 form-control-sm"
                 />
-                <!-- <small class="text-danger p-0 m-0" v-show="attemptNextThree && "
-                  >Invouce Number is required!</small
-                > -->
+
               </div>
             </div>
           </div>
@@ -637,17 +540,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="isDropdownRequired"
-                  :isDisabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextThree && missingInvoiceRequired"
-                  >Invoice Required is required!</small
-                >
+
               </div>
             </div>
 
@@ -656,15 +553,11 @@
                 <small><label for="softype">Invoice Date Needed</label></small>
                 <date-picker
                   v-model="invoiceDateNeeded"
-                  :disabled="this.invoiceRequiredItem.code === false"
+                  :disabled="true"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextThree && missingInvoiceDateNeeded"
-                  >Invoice Date Needed is required!</small
-                >
+
               </div>
             </div>
 
@@ -676,17 +569,15 @@
                 <model-list-select
                   :list="salesInvoiceReleased"
                   v-model="salesInvoiceReleasedItem"
+                  :isDisabled="true"
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
                   style="padding: 9px; background-color: #e9ecef"
-                  disabled="true"
-                  :isDisabled="true"
+                
                 >
                 </model-list-select>
-                <!-- <small class="text-danger p-0 m-0" v-show="true"
-                  >Sales Invoice Released is required!</small
-                > -->
+
               </div>
             </div>
 
@@ -699,9 +590,7 @@
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
-                <!-- <small class="text-danger p-0 m-0" v-show="true"
-                  >Date of Invoice is required!</small
-                > -->
+
               </div>
             </div>
           </div>
@@ -718,11 +607,10 @@
                   class="form-control"
                   name="accountingremarks"
                   v-model.trim="accountingRemarks"
+                  disabled
                   rows="5"
                 ></textarea>
-                <!-- <small class="text-danger p-0 m-0" v-show="true"
-                  >Accounting Remarks is required!</small
-                > -->
+  
               </div>
             </div>
           </div>
@@ -742,37 +630,18 @@
                       <tr>
                         <th style="width: 10%"></th>
                         <th style="width: 80%">System Details</th>
-                        <th style="width: 10%" class="text-right">
-                          <button
-                            class="btn btn-success btn-sm"
-                            data-toggle="modal"
-                            data-target="#modal-default"
-                            @click="setModalTitle('System')"
-                          >
-                            <i class="fas fa-plus"></i>
-                          </button>
-                        </th>
+                        <th style="width: 10%" class="text-right"></th>
                       </tr>
                     </thead>
                     <tbody style="font-size: 14px">
-                      <tr v-for="item in systemDetailsList" :key="item.id">
-                        <td style="width: 10%">
-                          <input
-                            type="checkbox"
-                            :value="item"
-                            class="ml-3 mr-0"
-                            v-model="systemDetailsSelected"
-                          />
-                        </td>
-                        <td style="width: 80%">{{ item.type_name }}</td>
+                      <tr v-for="item in systemDetailsSelected" :key="item.id">
+                        <td style="width: 10%"></td>
+                        <td style="width: 80%">{{ item.systemType }}</td>
                       </tr>
                     </tbody>
                   </table>
-                  <small
-                    class="text-danger p-0 m-0"
-                    v-show="attemptNextFour && missingSystemDetails"
-                    >System Details is required!</small
-                  >
+
+
                 </div>
               </div>
             </div>
@@ -787,37 +656,20 @@
                       <tr>
                         <th style="width: 10%"></th>
                         <th style="width: 80%">Document Details</th>
-                        <th style="width: 10%" class="text-right">
-                          <button
-                            class="btn btn-success btn-sm"
-                            data-toggle="modal"
-                            data-target="#modal-default"
-                            @click="setModalTitle('Document')"
-                          >
-                            <i class="fas fa-plus"></i>
-                          </button>
-                        </th>
+                        <th style="width: 10%" class="text-right"></th>
                       </tr>
                     </thead>
                     <tbody style="font-size: 14px">
-                      <tr v-for="item in documentDetailsList" :key="item.id">
-                        <td style="width: 10%">
-                          <input
-                            type="checkbox"
-                            :value="item"
-                            class="ml-3 mr-0"
-                            v-model="documentDetailsSelected"
-                          />
-                        </td>
-                        <td style="width: 80%">{{ item.DocumentName }}</td>
+                      <tr
+                        v-for="item in documentDetailsSelected"
+                        :key="item.ID"
+                      >
+                        <td style="width: 10%"></td>
+                        <td style="width: 80%">{{ item.DocName }}</td>
                       </tr>
                     </tbody>
                   </table>
-                  <small
-                    class="text-danger p-0 m-0"
-                    v-show="attemptNextFour && missingDocumentDetails"
-                    >Document Details is required!</small
-                  >
+    
                 </div>
               </div>
             </div>
@@ -838,62 +690,48 @@
           "
           id="app"
         >
-          <div
-            class="pt-2 col-md-12 rounded"
-            @dragover="dragover"
-            @dragleave="dragleave"
-            @drop="drop"
-            id="uploadContainer"
-          >
-            <input
-              type="file"
-              multiple
-              name="fields[assetsFieldHandle][]"
-              id="assetsFieldHandle"
-              class="w-25 h-25 overflow-hidden"
-              @change="onFileSelected"
-              ref="file"
-              accept=".pdf,.jpg,.jpeg,.png"
-            />
-
+          <div class="pt-2 col-md-12 rounded" id="uploadContainer">
             <label
               for="assetsFieldHandle"
               style="width: 100%; cursor: pointer"
               class="block pt-3 cursor-pointer"
             >
-              <span class="text-secondary">Click here or drop file(s)</span>
+              <span class="text-secondary">List of Attached File</span>
             </label>
-            <small
-              class="text-danger p-0 m-0"
-              v-show="missingAttachments && attemptNextFive"
-              >Attachments is required!</small
-            >
 
             <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
               <li
                 class="text-sm mt-2"
                 v-for="file in selectedFile"
-                :key="file.name"
+                :key="file.id"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.name }}</span>
-                    </div>
-                    <div class="co-2">
-                      <button
-                        class="btn btn-danger btn-sm"
-                        type="button"
-                        @click="remove(selectedFile.indexOf(file))"
-                        title="Remove file"
+                      <span
+                        ><label>{{ file.filename }}</label></span
                       >
-                        Remove
+                    </div>
+                    <div>
+                      <button class="btn btn-info btn-sm" type="button">
+                        <a
+                          :download="file.filename"
+                          style="color: white"
+                          :href="
+                            'data:' +
+                            file.mimeType +
+                            ';base64,' +
+                            file.imageBytes
+                          "
+                          target="_blank"
+                          >Download</a
+                        >
                       </button>
                     </div>
                     <div class="col-2">
                       <button
-                        @click="preview(selectedFile.indexOf(file))"
                         class="btn btn-secondary btn-sm"
+                        @click="preview(file.mimeType, file.imageBytes)"
                       >
                         Preview
                       </button>
@@ -902,6 +740,8 @@
                 </div>
               </li>
             </ul>
+
+            <!-- </aside> -->
           </div>
         </aside>
         <!-- /.Attachments -->
@@ -934,11 +774,11 @@
                   </tr>
                   <tr class="d-flex">
                     <td class="col-3">Reference Number</td>
-                    <td class="col-9">{{ `SOF-${this.todaysYear}` }}</td>
+                    <td class="col-9">{{ this.referenceNumber }}</td>
                   </tr>
                   <tr class="d-flex">
                     <td class="col-3">Request Date</td>
-                    <td class="col-9">{{ this.todaysDate }}</td>
+                    <td class="col-9">{{ this.soDate }}</td>
                   </tr>
                   <tr class="d-flex">
                     <td class="col-3">Customer Name</td>
@@ -1017,7 +857,7 @@
                   </tr>
                   <tr class="d-flex">
                     <td class="col-3">Project Name</td>
-                    <td class="col-9">{{ this.projectNameFormula }}</td>
+                    <td class="col-9">{{ this.projectName }}</td>
                   </tr>
 
                   <tr class="d-flex">
@@ -1151,7 +991,7 @@
                           v-for="item in systemDetailsSelected"
                           :key="item.id"
                         >
-                          {{ item.type_name }}
+                          {{ item.systemType }}
                         </li>
                       </ul>
                     </td>
@@ -1164,7 +1004,7 @@
                           v-for="item in documentDetailsSelected"
                           :key="item.ID"
                         >
-                          {{ item.DocumentName }}
+                          {{ item.DocName }}
                         </li>
                       </ul>
                     </td>
@@ -1179,7 +1019,7 @@
           <!-- Attachements Review -->
           <div class="card card-secondary">
             <div class="card-header">
-              <h3 class="card-title">System & Document Details</h3>
+              <h3 class="card-title">Attachments</h3>
               <div class="card-tools">
                 <button
                   type="button"
@@ -1203,19 +1043,13 @@
                   <tr
                     class="d-flex"
                     v-for="file in selectedFile"
-                    :key="file.name"
+                    :key="file.id"
                   >
-                    <td class="col-9">{{ file.name }}</td>
+                    <td class="col-9">{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center col-3">
                       <button
-                        @click="remove(selectedFile.indexOf(file))"
-                        class="btn btn-danger btn-sm"
-                      >
-                        Remove
-                      </button>
-                      <button
-                        @click="preview(selectedFile.indexOf(file))"
                         class="btn btn-secondary btn-sm ml-1"
+                        @click="preview(file.mimeType, file.imageBytes)"
                       >
                         Preview
                       </button>
@@ -1231,7 +1065,7 @@
 
         <!-- / Main Form -->
 
-        <!-- Modal default-->
+        <!-- Modal -->
         <div
           class="modal fade"
           id="modal-default"
@@ -1240,12 +1074,14 @@
         >
           <div class="modal-dialog">
             <div class="modal-content">
+              <!-- Overlay Loading Spinner -->
               <div class="overlay" v-show="isLoadingModal">
                 <i class="fas fa-2x fa-sync fa-spin"></i>
               </div>
+
               <div class="modal-header">
                 <h6 class="modal-title">
-                  <b>Add {{ this.modalTitle }} Details</b>
+                  <b>{{ this.title }} Request</b>
                 </h6>
                 <button
                   type="button"
@@ -1253,39 +1089,60 @@
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
-                  @click="clearModal()"
+                  @click="closeDefaultModal()"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
-                <!-- Start -->
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
 
-                <div class="form-group">
-                  <small
-                    ><label for="accountingremarks"
-                      >{{ this.modalTitle }} Name</label
-                    ></small
-                  >
-                  <input
-                    type="text"
-                    class="form-control form-control-sm py-3"
-                    v-model.trim="modalInputform"
-                  />
+                <!-- <div class="row" v-if="isForClarity">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <model-list-select
+                        :list="recipent"
+                        v-model="itemrecipient"
+                        option-value="code"
+                        option-text="name"
+                        placeholder="Select Recipient"
+                        style="padding: 9px"
+                      >
+                      </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalRecipient && attemptClarify"
+                        >Recipient is required!</small
+                      >
+                    </div>
+                  </div>
+                </div> -->
 
-                  <small
-                    class="text-danger p-0 m-0"
-                    v-show="attemptModalSubmit && missingModalInputform"
-                    >{{ this.modalTitle }} Name is required!</small
-                  >
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <textarea
+                        class="form-control"
+                        id="remarks"
+                        rows="5"
+                        v-model.trim="remarks"
+                        placeholder="Please input request remarks here!"
+                      ></textarea>
+                    </div>
+                  </div>
                 </div>
-                <!-- End -->
               </div>
               <div class="modal-footer justify-content-end">
+                <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
                 <button
                   type="button"
-                  class="btn btn-success btn-sm"
-                  @click="validateModal()"
+                  class="btn btn-primary btn-sm"
+                  @click="submit(title)"
                 >
                   Submit
                 </button>
@@ -1295,38 +1152,46 @@
           </div>
           <!-- /.modal-dialog -->
         </div>
-        <!-- /.modal default -->
+        <!-- /.modal -->
 
-        <!-- Button -->
-        <div class="row d-flex justify-content-end mt-3">
-          <div class="col-md-1" v-show="counter">
-            <button
-              type="button"
-              @click="counter--"
-              class="btn btn-block btn-secondary btn-sm"
-            >
-              Previous
-            </button>
-          </div>
-          <div class="col-md-1" v-if="this.counter > -1 && this.counter < 6">
-            <button
-              type="button"
-              @click="next()"
-              class="btn btn-block btn-primary btn-sm"
-            >
-              Next
-            </button>
-          </div>
+        <!-- Buttons -->
+        <div class="row d-flex justify-content-between mt-3">
+          <aside class="col-lg-6 d-flex justify-content-start">
+            <div class="col-lg-2" v-show="counter">
+              <button
+                type="button"
+                @click="counter--"
+                class="btn btn-block btn-secondary btn-sm"
+              >
+                Previous
+              </button>
+            </div>
 
-          <div class="col-md-1" v-else>
-            <button
-              type="button"
-              @click="submit()"
-              class="btn btn-block btn-success btn-sm"
+            <div
+              class="col-lg-2"
+              v-show="this.counter > -1 && this.counter < 6"
             >
-              Submit
-            </button>
-          </div>
+              <button
+                type="button"
+                @click="counter++"
+                class="btn btn-block btn-primary btn-sm"
+              >
+                Next
+              </button>
+            </div>
+          </aside>
+
+          <aside class="col-lg-6 d-flex justify-content-end">
+            <div class="col-lg-2">
+              <button
+                type="button"
+                class="btn btn-block btn-danger btn-sm"
+                @click="close()"
+              >
+                Close
+              </button>
+            </div>
+          </aside>
         </div>
         <!-- / Buttons -->
       </div>
@@ -1346,14 +1211,12 @@ export default {
     ModelListSelect,
   },
   async created() {
-    this.isLoadingSpinner = true
+    this.isLoadingSpinner = true;
+    await this.querySof();
     await this.queryCompany();
-    await this.queryCompanySystemDetails();
-    await this.queryCompanyDocumentDetails();
-    await this.queryCurrency();
-    
-    this.isLoadingSpinner = false
-
+    await this.queryCoordinators();
+    await this.querySelectedCoordinator();
+    this.isLoadingSpinner = false;
   },
   watch: {
     counter() {
@@ -1365,18 +1228,27 @@ export default {
       if (this.customerNameItem) {
         this.isLoadingSpinner = true;
         const customerId = newValue.code;
-        // console.log(customerId)
-        await this.queryCompanyAddress(customerId);
-        await this.queryCompanyContacts(customerId);
-        await this.queryCompanyCode(customerId);
+        // console.log(newValue)
         await this.queryDelegates(customerId);
 
         // if condition will clear the payment terms if its dmo or prj
         if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-          this.paymentTerms =
-            this.customerNameItem.term === undefined
-              ? null
-              : this.customerNameItem.term;
+
+          if (this.customerNameItem.term === undefined) {
+            this.paymentTerms = null;
+          } else if (
+            this.customerNameItem.term === undefined &&
+            this.paymentTerms.length === 0
+          ) {
+            this.paymentTerms = null;
+          } else if (
+            this.customerNameItem.term &&
+            this.paymentTerms.length === 0
+          ) {
+            this.paymentTerms = this.customerNameItem.term;
+          } else if (this.customerNameItem.term && this.paymentTerms) {
+            this.paymentTerms;
+          }
         }
 
         this.accountManager =
@@ -1388,13 +1260,7 @@ export default {
       }
     },
 
-    downPaymentRequiredItem(newValue) {
-      this.downPaymentPercentage = "";
-      // (this.downPaymentRequiredItem) ? this.downPaymentDateReceived = null : this.downPaymentDateReceived = null;
-    },
-    invoiceRequiredItem(newValue) {
-      this.invoiceDateNeeded = null;
-    },
+
 
     sofType(newValue) {
       if (newValue.code === "DMO" || newValue.code === "POC") {
@@ -1434,36 +1300,16 @@ export default {
       return { active: this.counter >= 6 };
     },
 
-    todaysYear() {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      return yyyy;
-    },
+ 
 
-    todaysDate() {
-      const today = new Date();
-      let dd = today.getDate();
-      let mm = today.getMonth() + 1;
-      const yyyy = today.getFullYear();
 
-      if (mm < 10) {
-        mm = `0${mm}`;
-      }
-
-      if (dd < 10) {
-        dd = `0${dd}`;
-      }
-
-      const todaysDate = yyyy + "-" + mm + "-" + dd;
-      return todaysDate;
-    },
 
     projectNameFormula() {
-      const today = new Date();
+      const today = new Date(this.soDate);
       // let dd = today.getDate();
       let mm = today.getMonth() + 1;
       let yyyy = today.getFullYear();
-      let m = new Date().toLocaleString("en-us", { month: "short" });
+      let m = new Date(this.soDate).toLocaleString("en-us", { month: "short" });
 
       if (mm < 10) {
         mm = `0${mm}`;
@@ -1484,167 +1330,19 @@ export default {
       return projectName;
     },
 
-    isDropdownRequired() {
-      if (this.sofType.code === "DMO" || this.sofType.code === "POC") {
-        return "padding: 9px; background-color: #e9ecef";
-      } else {
-        return "padding: 9px";
-      }
-    },
-
-    missingSOFType() {
-      return this.sofType.code === undefined ? true : false;
-    },
-
-    // Customer Details
-
-    missingCustomerName() {
-      return this.customerNameItem.code === undefined ? true : false;
-    },
-
-    missingContactPerson() {
-      return this.contactPersonItem.code === undefined ? true : false;
-    },
-
-    missingContactNumber() {
-      return this.contactNumberItem.code === undefined ? true : false;
-    },
-
-    missingDeliveryAddress() {
-      return this.deliveryAddressItem.code === undefined ? true : false;
-    },
-
-    missingBillingAddress() {
-      return this.billingAddressItem.code === undefined ? true : false;
-    },
-
-    // Project Details
-
-    missingPONumber() {
-      return this.poNumber.length === 0 ? true : false;
-    },
-
-    missingPODate() {
-      return this.poDate === null ? true : false;
-    },
-
-    missingProjectStart() {
-      if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-        return this.projectStart === null ? true : false;
-      } else {
-        return false;
-      }
-    },
-
-    missingProjectEnd() {
-      if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-        return this.projectEnd === null ? true : false;
-      }
-    },
-
-    missingProjectShortText() {
-      return this.projectShortText.length === 0 ? true : false;
-    },
-
-    missingProjectCode() {
-      return this.projectCode.length === 0 ? true : false;
-    },
-
-    missingScopeOfWork() {
-      return this.scopeOfWork.length === 0 ? true : false;
-    },
-
-    // Payment & Delivery Details
-
-    missingPaymentTerms() {
-      if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-        return this.paymentTerms.length === 0 ? true : false;
-      }
-    },
-
-    missingWarranty() {
-      if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-        return this.warranty.length === 0 ? true : false;
-      }
-    },
-
-    missingCurrency() {
-      if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-        return this.currencyItem.code === undefined ? true : false;
-      }
-    },
-
-    missingProjectCost() {
-      if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-        return this.projectCost.length === 0 || parseFloat(this.projectCost) < 1
-          ? true
-          : false;
-      }
-    },
-
-    missingDownPaymentRequired() {
-      return this.downPaymentRequiredItem.code === undefined ? true : false;
-    },
-
-    missingDownPaymentPercentage() {
-      if (this.downPaymentRequiredItem.code === true) {
-        return this.downPaymentPercentage.length < 1 ||
-          parseFloat(this.downPaymentPercentage) < 1
-          ? true
-          : false;
-      } else {
-        return false;
-      }
-    },
-    dpValitade() {
-      if (this.downPaymentRequiredItem.code === true) {
-        return parseInt(this.downPaymentPercentage) >= 1 &&
-          parseInt(this.downPaymentPercentage) <= 100
-          ? false
-          : true;
-      } else {
-        return false;
-      }
-    },
-    missingInvoiceRequired() {
-      return this.invoiceRequiredItem.code === undefined ? true : false;
-    },
-
-    missingInvoiceDateNeeded() {
-      if (this.invoiceRequiredItem.code === true) {
-        return this.invoiceDateNeeded === null ? true : false;
-      } else {
-        return false;
-      }
-    },
-
-    // System & Document Details
-
-    missingSystemDetails() {
-      return this.systemDetailsSelected.length < 1 ? true : false;
-    },
-
-    missingDocumentDetails() {
-      return this.documentDetailsSelected.length < 1 ? true : false;
-    },
-
-    // Attachments
-    missingAttachments() {
-      return this.selectedFile.length === 0 ? true : false;
-    },
-
     missingModalInputform() {
       return this.modalInputform.length === 0 ? true : false;
     },
+
+    missingCoordinator() {
+      return this.coordinatorItem.code === undefined ? true : false;
+    }
+
+
   },
   data() {
     return {
-      attemptNext: false,
-      attemptNextOne: false,
-      attemptNextTwo: false,
-      attemptNextThree: false,
-      attemptNextFour: false,
-      attemptNextFive: false,
+      todaysDate: null,
       attemptModalSubmit: false,
 
       isLoadingSpinner: false,
@@ -1682,24 +1380,19 @@ export default {
       billingAddress: [],
       billingAddressItem: {},
       accountManager: null,
-      delegates: '',
+      delegates: null,
 
       // Project Details
+      soDate: null,
       poNumber: "",
       poDate: null,
       projectStart: null,
       projectEnd: null,
       projectShortText: "",
       projectName: null,
-      coordinator: [
-        { code: "PRJ", name: "Project" },
-        { code: "DLV", name: "Delivery" },
-        { code: "DMO", name: "Demo" },
-        { code: "POC", name: "POC" },
-      ],
+      coordinator: [],
       coordinatorItem: {},
       projectCode: "",
-      projectCodeDataList: [],
       scopeOfWork: "",
 
       // Payment & Delivery Details
@@ -1732,6 +1425,7 @@ export default {
       accountingRemarks: "",
 
       // System & Document Details
+
       systemDetailsList: [],
       systemDetailsSelected: [],
       documentDetailsList: [],
@@ -1741,90 +1435,372 @@ export default {
       selectedFile: [],
       filespreview: [],
 
-      modalTitle: null,
-      modalInputform: "",
+
+
+      isLoading: false,
+      title: "",
+      remarks: "",
+
+      // The Alert
+      isAlert: false,
+      header: "", // Syccess or Failed
+      message: "", // added successfully
+      type: "", // true or false
+
+      referenceNumber: '',
+      requestDate: null,
+
+      isCoordinatorRequired: false,
+      isDmoPocComplete: false,
+      isSiConfirmation: false,
+
     };
   },
 
   methods: {
-    async submit() {
-      this.isLoadingSpinner = true;
+    // important methods in approval modal
+    setTitle(title) {
+      this.title = title;
+    },
 
+    closeDefaultModal() {
+      this.resetModal();
+      this.resetAlert();
+    },
+
+    resetAlert() {
+      this.isAlert = false;
+      this.header = "";
+      this.message = "";
+      this.type = "";
+    },
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
+    },
+    resetModal() {
+      this.attemptClarify = false;
+      this.remarks = "";
+    },
+
+    //
+
+
+
+    close() {
+      this.$router.replace("/approved");
+    },
+
+    async querySof() {
       try {
-        const payload = {
-          // So CLassification
-          sofType: this.sofType,
 
-          // Customer Details
-          customerNameItem: this.customerNameItem,
-          contactPersonItem: this.contactPersonItem,
-          contactNumberItem: this.contactNumberItem,
-          deliveryAddressItem: this.deliveryAddressItem,
-          billingAddressItem: this.billingAddressItem,
+        await this.$store.dispatch("sof/querySof", {
+          processId: this.$route.params.id,
+          frmName: this.$route.params.frmName,
+          companyId: this.companyId,
+        });
 
-          // Project Details
-          poNumber: this.poNumber,
-          poDate: this.poDate,
-          projectStart: this.projectStart,
-          projectEnd: this.projectEnd,
-          projectShortText: this.projectShortText,
-          projectName: this.projectNameFormula,
-          coordinatorItem: this.coordinatorItem.code,
-          projectCode: this.projectCode,
-          scopeOfWork: this.scopeOfWork,
+        const data = this.$store.getters["sof/getSofData"];
 
-          // Payment & Delivery Details
-          paymentTerms: this.paymentTerms,
-          warranty: this.warranty,
-          currencyItem: this.currencyItem.name,
-          projectCost: this.projectCost,
-          downPaymentRequiredItem: this.downPaymentRequiredItem.code,
-          downPaymentPercentage: this.downPaymentPercentage,
-          downPaymentDateReceived: this.downPaymentDateReceived,
-          invoiceNumber: this.invoiceNumber,
+        // console.warn(data);
 
-          invoiceRequiredItem: this.invoiceRequiredItem.code,
-          invoiceDateNeeded: this.invoiceDateNeeded,
-          salesInvoiceReleasedItem: this.salesInvoiceReleasedItem.code,
-          dateOfInvoice: this.dateOfInvoice,
+        // data[0] - setup prj
+        // data[1] - sales order
+        // data[2] - systm
+        // data[3] - docus
+        // data[4] - actual sign
+        // data[5] - attachments
 
-          accountingRemarks: this.accountingRemarks,
+        const frmName = data[4]["actual_sign"][0]["FRM_NAME"];
+        if (frmName === "Sales Order - Delivery") {
+          this.sofType = { code: "DLV", name: "Delivery" };
+        } else if (frmName === "Sales Order - Project") {
+          this.sofType = { code: "PRJ", name: "Project" };
+        } else if (frmName === "Sales Order - Demo") {
+          this.sofType = { code: "DMO", name: "Demo" };
+        } else if (frmName === "Sales Order - POC") {
+          this.sofType = { code: "POC", name: "POC" };
+        }
 
-          // System & Document Details
-          systemDetailsSelected: this.systemDetailsSelected,
-          documentDetailsSelected: this.documentDetailsSelected,
+        // console.log(data[0]['setup_project'][0]['Business_Number'])
+        // console.log(data[0]['setup_project'][0]['business_fullname'])
+        // console.log(data[0]['setup_project'][0]['CLIENTCODE'])
+        // console.log(data[0]['setup_project'][0]['term_type'])
+        // console.log(data[0]['setup_project'][0]['PMName'])
 
-          accountManager: this.accountManager,
+        // Customer Details
+        
+        this.projectName = data[1]["sales_orders"][0]["project"];
 
-          // The Attachments
-          selectedFile: this.selectedFile,
+
+        const selectedCustomerNameItem = {
+          code: data[0]["setup_project"][0]["Business_Number"],
+          name: data[0]["setup_project"][0]["business_fullname"],
+          desc: data[0]["setup_project"][0]["CLIENTCODE"],
+          term: data[0]["setup_project"][0]["term_type"],
+          amgr: data[0]["setup_project"][0]["PMName"],
         };
 
+        this.customerNameItem = selectedCustomerNameItem;
 
+        const selectedContactPersonItem = {
+          code: data[1]["sales_orders"][0]["Contactid"],
+          name: data[1]["sales_orders"][0]["Contact"],
+        };
 
-        const response = await this.$store.dispatch("sof/createSOF", payload);
+        this.contactPersonItem = selectedContactPersonItem;
 
+        const contactPerson = [];
+        contactPerson.push(selectedContactPersonItem);
+        this.contactPerson = contactPerson;
 
-        if (response.status === 201) {
-          this.openToast("top-right", "success", "Your Sales Order Request was successfully submitted.");
+        const selectedContactNumberItem = {
+          code: data[1]["sales_orders"][0]["ContactNum"],
+          name: data[1]["sales_orders"][0]["ContactNum"],
+        };
+
+        this.contactNumberItem = selectedContactNumberItem;
+
+        const contactNumber = [];
+        contactNumber.push(selectedContactNumberItem);
+        this.contactNumber = contactNumber;
+
+        const selectedBillingAddressItem = {
+          code: data[1]["sales_orders"][0]["BillTo"],
+          name: data[1]["sales_orders"][0]["BillTo"],
+        };
+
+        this.billingAddressItem = selectedBillingAddressItem;
+
+        const billingAddress = [];
+        billingAddress.push(selectedBillingAddressItem);
+        this.billingAddress = billingAddress;
+
+        const selectedDeliveryAddressItem = {
+          code: data[1]["sales_orders"][0]["DeliveryAddress"],
+          name: data[1]["sales_orders"][0]["DeliveryAddress"],
+        };
+
+        this.referenceNumber = data[1]["sales_orders"][0]["soNum"]
+        this.requestDate = data[1]["sales_orders"][0]["sodate"]
+
+        this.deliveryAddressItem = selectedDeliveryAddressItem;
+
+        const deliveryAddress = [];
+        deliveryAddress.push(selectedDeliveryAddressItem);
+        this.deliveryAddress = deliveryAddress;
+
+        // Project Details
+        this.poNumber = data[1]["sales_orders"][0]["poNum"];
+        this.poDate = data[1]["sales_orders"][0]["podate"];
+        this.projectStart = data[0]["setup_project"][0]["project_effectivity"];
+        this.projectEnd = data[0]["setup_project"][0]["project_expiry"];
+        this.projectShortText =
+          data[0]["setup_project"][0]["project_shorttext"];
+        this.soDate = data[1]["sales_orders"][0]["sodate"];
+        this.projectCode = data[0]["setup_project"][0]["project_no"];
+        this.scopeOfWork = data[0]["setup_project"][0]["project_remarks"];
+
+        // Payment & Delivery Details
+        this.paymentTerms = data[1]["sales_orders"][0]["Terms"];
+        this.warranty = data[1]["sales_orders"][0]["warranty"];
+
+        const selectedCurrencyItem = {
+          code: data[1]["sales_orders"][0]["currency"],
+          name: data[1]["sales_orders"][0]["currency"],
+        };
+        this.currencyItem = selectedCurrencyItem;
+
+        const currency = [];
+        currency.push(selectedCurrencyItem);
+        this.currency = currency;
+
+        this.projectCostReal = data[1]["sales_orders"][0]["amount"];
+
+        this.projectCost = parseFloat(
+          data[1]["sales_orders"][0]["amount"]
+        ).toLocaleString(undefined, { minimumFractionDigits: 2 });
+
+        if (data[1]["sales_orders"][0]["dp_required"]) {
+          this.downPaymentRequiredItem = { code: true, name: "Yes" };
+          this.downPaymentPercentage =
+            data[1]["sales_orders"][0]["dp_percentage"];
         }
 
-        this.isLoadingSpinner = false;
-        this.$router.replace("/inprogress");
-  
-      } catch (error) {
-        this.isLoadingSpinner = false;
-
-        if (error.response.status === 422) {
-          this.openToast("top-right", "error", error.response.data);
-        } else {
-          this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+        if (data[1]["sales_orders"][0]["IsInvoiceRequired"]) {
+          this.invoiceRequiredItem = { code: true, name: "Yes" };
+          this.invoiceDateNeeded = data[1]["sales_orders"][0]["invDate"];
         }
 
+        if (data[1]["sales_orders"][0]["IsInvoiceReleased"]) {
+          this.salesInvoiceReleasedItem = { code: true, name: "Yes" };
+          this.dateOfInvoice = data[1]["sales_orders"][0]["InvoiceDate"];
+        }
+    
+        this.invoiceNumber = data[1]["sales_orders"][0]["InvoiceNumber"];
+        this.accountingRemarks = data[1]["sales_orders"][0]["Remarks2"];
 
-        console.info(error)
+        // sales order docs
 
+        const systemDetails = data[2]["sales_order_system"];
+        const systemDetailsSelected = [];
+
+        systemDetails.forEach((element) => {
+          const data = {
+            id: element["id"],
+            imported_from_excel: element["imported_from_excel"],
+            soid: element["soid"],
+            sysID: element["sysID"],
+            systemType: element["systemType"],
+          };
+          systemDetailsSelected.push(data);
+        });
+
+        this.systemDetailsSelected = systemDetailsSelected;
+
+        const documentDetails = data[3]["sales_order_docs"];
+        const documentDetailsSelected = [];
+
+        documentDetails.forEach((element) => {
+          const data = {
+            DocID: element["DocID"],
+            DocName: element["DocName"],
+            ID: element["ID"],
+            SOID: element["SOID"],
+            imported_from_excel: element["imported_from_excel"],
+          };
+          documentDetailsSelected.push(data);
+        });
+
+        this.documentDetailsSelected = documentDetailsSelected;
+
+        this.selectedFile = data[5]["attachments"]["data"];
+
+
+      
+      
+      
+      
+      
+      // select Coordinator -> check if its required
+      // console.log(this.$route.params.frmName)
+      if(frmName === 'Sales Order - Project') {
+        if(data[4]["actual_sign"][7]['USER_GRP_IND'] === 'SI Confirmation' && data[4]["actual_sign"][7]['STATUS'] === 'In Progress') {
+          this.isSiConfirmation = true
+        }
+      } else if (frmName === 'Sales Order - Delivery') {
+        if(data[4]["actual_sign"][5]['USER_GRP_IND'] === 'SI Confirmation' && data[4]["actual_sign"][5]['STATUS'] === 'In Progress') {
+          this.isSiConfirmation = true
+        }
       }
+
+      
+      } catch (error) {
+        this.openToast(
+          "top-right",
+          "error",
+          "Internal Server Error! Please inform the administrator!"
+        );
+
+        console.error(error);
+      }
+    },
+
+    submit(type){
+      this.attemptNext = true;
+      const apptype = type;
+      if(this.isSiConfirmation){
+        if(this.missingSalesInvoiceReleased || this.missingDateOfInvoice){
+          this.openToast(
+                "top-right",
+                "error",
+                "Sales Invoice Realeased & Date of Invoice is Required! Please Select in Step 4!"
+              );
+        } else {
+          this.submitTwo(apptype)
+        }
+      } else {
+        this.submitTwo(apptype)
+      }
+    },
+    
+
+    async submitTwo(type) {
+      const fd = new FormData();
+
+      fd.append("form", this.$route.params.frmName);
+      fd.append("processId", this.$route.params.id);
+      fd.append("frmClass",this.$route.params.frmClass)
+      fd.append("remarks", this.remarks);
+      fd.append("referenceNumber", this.referenceNumber);
+      fd.append("class", "SOF");
+      // fd.append("recipientId", this.itemrecipient.code);
+      // fd.append("inprogressId", this.inprogressId);
+      fd.append("isCoordinatorRequired", this.isCoordinatorRequired);
+      fd.append("isDmoPocComplete", this.isDmoPocComplete);
+      fd.append("isSiConfirmation", this.isSiConfirmation);
+      fd.append("invoiceNumber", this.invoiceNumber);
+      fd.append("dateOfInvoice", this.dateOfInvoice);
+      fd.append("salesInvoiceReleased", this.salesInvoiceReleasedItem.code);
+
+
+
+
+      if(this.isCoordinatorRequired){
+        fd.append("coordinatorID", this.coordinatorItem.code);
+        fd.append("coordinatorName", this.coordinatorItem.name);
+      }
+
+
+      fd.append("loggedUserId",this.loggedUserId);
+      fd.append("loggedUserFirstName",this.loggedUserFirstName);
+      fd.append("loggedUserLastName",this.loggedUserLastName);
+      fd.append("loggedUserDepartment",this.loggedUserDepartment);
+      fd.append("loggedUserPosition",this.loggedUserPosition);
+      fd.append("companyId",this.companyId);
+      fd.append("companyName",this.companyName);
+
+
+
+
+
+      if (type === "Approve") {
+        this.isLoadingModal = true;
+
+        try {
+          const resp = await axios.post(
+            "http://127.0.0.1:8000/api/approve-request",
+            fd
+          );
+
+          this.isLoadingModal = false;
+          document.getElementById("modalCloseButton").click();
+          if (resp.status === 200) {
+            // console.log(resp.data);
+            this.openToast("top-right", "success", resp.data.message);
+            this.$router.replace("/inputs");
+          }
+
+    
+        } catch (err) {
+          this.isLoadingModal = false;
+          if (err.response.status === 422) {
+            this.openToast("top-right", "error", err.response.data);
+          } else {
+            this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+          }
+        }
+
+
+      } else if (type === "Reject") {
+        console.log("Reject");
+      } else if (type === "Clarify") {
+        console.log("Clarify");
+      }
+
+      
     },
 
     openToast(position, variant, message) {
@@ -1837,100 +1813,7 @@ export default {
       });
     },
 
-    async next() {
-      if (this.counter === 0) {
-        this.attemptNext = true;
-        if (!this.missingSOFType) {
-          this.counter++;
-        }
-      } else if (this.counter === 1) {
-        this.attemptNextOne = true;
-        if (
-          !this.missingCustomerName &&
-          !this.missingContactPerson &&
-          !this.missingContactNumber &&
-          !this.missingDeliveryAddress &&
-          !this.missingBillingAddress
-        ) {
-          this.counter++;
-        }
-      } else if (this.counter === 2) {
-        this.attemptNextTwo = true;
 
-        try {
-          this.isLoadingSpinner = true;
-          const isExist = await this.$store.dispatch(
-            "sof/checkIfProjectCodeExist",
-            this.projectCode
-          );
-
-          if (
-            !this.missingPONumber &&
-            !this.missingPODate &&
-            !this.missingProjectStart &&
-            !this.missingProjectEnd &&
-            !this.missingProjectShortText &&
-            !this.missingProjectCode &&
-            !this.missingScopeOfWork &&
-            isExist === 0
-          ) {
-            this.counter++;
-          } else if (
-            !this.missingPONumber &&
-            !this.missingPODate &&
-            !this.missingProjectStart &&
-            !this.missingProjectEnd &&
-            !this.missingProjectShortText &&
-            !this.missingProjectCode &&
-            !this.missingScopeOfWork &&
-            isExist === 1
-          ) {
-            this.openToast(
-              "top-right",
-              "error",
-              "Project Code must be unique!"
-            );
-          } else if (isExist === 1) {
-            this.openToast(
-              "top-right",
-              "error",
-              "Project Code must be unique!"
-            );
-          }
-          this.isLoadingSpinner = false;
-        } catch (error) {
-          // Handle Error Here
-          alert("error");
-          console.log(error.status);
-        }
-      } else if (this.counter === 3) {
-        this.attemptNextThree = true;
-
-        if (
-          !this.missingPaymentTerms &&
-          !this.missingWarranty &&
-          !this.missingCurrency &&
-          !this.missingProjectCost &&
-          !this.missingDownPaymentRequired &&
-          !this.missingDownPaymentPercentage &&
-          !this.missingInvoiceRequired &&
-          !this.missingInvoiceDateNeeded &&
-          !this.dpValitade
-        ) {
-          this.counter++;
-        }
-      } else if (this.counter === 4) {
-        this.attemptNextFour = true;
-        if (!this.missingSystemDetails && !this.missingDocumentDetails) {
-          this.counter++;
-        }
-      } else if (this.counter === 5) {
-        this.attemptNextFive = true;
-        if (!this.missingAttachments) {
-          this.counter++;
-        }
-      }
-    },
 
     async queryCompany() {
       const responseData = await this.$store.dispatch(
@@ -1940,32 +1823,20 @@ export default {
       this.customerName = responseData;
     },
 
-    async queryCompanyAddress(customerId) {
-      const responseData = await this.$store.dispatch(
-        "sof/queryCompanyAddress",
-        customerId
-      );
-      this.deliveryAddress = responseData;
-      this.billingAddress = responseData;
+    async queryCoordinators() {
+      const responseData = await this.$store.dispatch("sof/queryCoordinators");
+      this.coordinator = responseData
 
-      
     },
 
-    async queryCompanyContacts(customerId) {
-      const responseData = await this.$store.dispatch(
-        "sof/queryCompanyContacts",
-        customerId
-      );
-      this.contactPerson = responseData.contact;
-      this.contactNumber = responseData.number;
-    },
+    async querySelectedCoordinator() {
+      const responseData = await this.$store.dispatch("sof/querySelectedCoordinator",this.$route.params.id);
 
-    async queryCompanyCode(customerId) {
-      const responseData = await this.$store.dispatch(
-        "sof/queryCompanyCode",
-        customerId
-      );
-      this.projectCodeDataList = responseData;
+      if(responseData[0]){
+        this.coordinatorItem = responseData[0]
+      }else{
+        this.coordinatorItem = {};
+      }
     },
 
     async queryDelegates(customerId) {
@@ -1974,29 +1845,11 @@ export default {
         customerId
       );
       // this.delegates = responseData;
-      if(responseData.length > 0){
-        this.delegates = responseData[0]['DelegatesName']
+      if (responseData.length > 0) {
+        this.delegates = responseData[0]["DelegatesName"];
       } else {
-        this.delegates = '';
+        this.delegates = "";
       }
-    },
-
-    async queryCompanySystemDetails() {
-      const responseData = await this.$store.dispatch(
-        "sof/queryCompanySystemDetails"
-      );
-      this.systemDetailsList = responseData;
-    },
-    async queryCompanyDocumentDetails() {
-      const responseData = await this.$store.dispatch(
-        "sof/queryCompanyDocumentDetails"
-      );
-      this.documentDetailsList = responseData;
-    },
-
-    async queryCurrency() {
-      const responseData = await this.$store.dispatch("sof/queryCurrency");
-      this.currency = responseData;
     },
 
     setModalTitle(title) {
@@ -2008,102 +1861,15 @@ export default {
       this.modalInputform = "";
     },
 
-    validateModal() {
-      this.attemptModalSubmit = true;
-      if (!this.missingModalInputform) {
-        this.insertSystemAndDocumentName();
-      }
-    },
 
-    async insertSystemAndDocumentName() {
-      this.isLoadingModal = true;
-      try {
-        const response = await this.$store.dispatch(
-          "sof/insertSystemAndDocumentName",
-          {
-            id: this.loggedUserId,
-            modalTitle: this.modalTitle,
-            modalInputform: this.modalInputform,
-          }
-        );
-        await this.queryCompanySystemDetails();
-        await this.queryCompanyDocumentDetails();
-        this.isLoadingModal = false;
-        this.clearModal();
-        // Open Toast
-        if (response.status === 201) {
-          this.openToast("top-right", "success", "Added Successfully!");
-        }
-      } catch (error) {
-        this.isLoadingModal = false;
 
-        // console.warn(error.response.status)
-        if (error.response.status === 422) {
-          this.openToast("top-right", "error", error.response.data);
-        } else {
-          this.openToast("top-right", "error", "Please inform the admin!");
-        }
-      }
-    },
+
 
     // The Attachments
-    onFileSelected(event) {
-      let selectedFiles = event.target.files;
-      for (let i = 0; i < selectedFiles.length; i++) {
-        this.selectedFile.push(selectedFiles[i]);
-      }
-      this.filePreview();
-    },
-    onInputChange(event) {
-      let selectedFiles = event.dataTransfer.files;
-      for (let i = 0; i < selectedFiles.length; i++) {
-        this.selectedFile.push(selectedFiles[i]);
-      }
-      this.filePreview();
-    },
-    remove(i) {
-      this.selectedFile.splice(i, 1);
-      this.filePreview();
-    },
-    preview(i) {
-      // console.log(i)
-      const url = this.filespreview[i].link;
-      window.open(url, "_blank", "resizable=yes");
-    },
 
-    dragover(event) {
-      event.preventDefault();
-      // Add some visual fluff to show the user can drop its files
-      if (!event.currentTarget.classList.contains("bg-white")) {
-        event.currentTarget.classList.remove("bg-light");
-        event.currentTarget.classList.add("bg-white");
-      }
-    },
-    dragleave(event) {
-      // Clean up
-      event.currentTarget.classList.add("bg-light");
-      event.currentTarget.classList.remove("bg-white");
-    },
-    drop(event) {
-      event.preventDefault();
-      this.onInputChange(event); // Trigger the onChange event manually
-
-      // Clean up
-      event.currentTarget.classList.add("bg-light");
-      event.currentTarget.classList.remove("bg-white");
-    },
-
-    filePreview() {
-      let files = this.selectedFile;
-      const fileContainer = [];
-      for (let i = 0; i < files.length; i++) {
-        let tmppath = URL.createObjectURL(files[i]);
-        const thisFiles = {
-          link: tmppath,
-        };
-        fileContainer.push(thisFiles);
-      }
-      this.filespreview = fileContainer;
+    preview(mimeType, imageBytes) {
+      var newTab = window.open();
+      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
     },
 
     formatNumber(n) {

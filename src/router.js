@@ -88,6 +88,17 @@ import LafWithdrawn from "./pages/workflow/withdrawn/LafWithdrawn.vue";
 
 
 
+import SofInprogress from "./pages/workflow/inprogress/SofInprogress.vue";
+import SofApproval from "./pages/workflow/approval/SofApproval.vue";
+import SofInput from "./pages/workflow/input/SofInput.vue";
+import SofApproved from "./pages/workflow/approved/SofApproved.vue";
+import SofClarification from "./pages/workflow/clarification/SofClarification.vue";
+
+
+
+
+
+
 import store from "./store/index.js";
 
 Vue.use(VueRouter);
@@ -141,6 +152,13 @@ const routes = [
             props: true,
             meta: { requiresAuth: true },
           },
+          {
+            path: ":id",
+            name: "sales_order_frm-input",
+            component: SofInput,
+            props: true,
+            meta: { requiresAuth: true },
+          },
         ],
         meta: { requiresAuth: true },
       },
@@ -190,6 +208,14 @@ const routes = [
             props: true,
             meta: { requiresAuth: true },
           },
+          {
+            path: ":id",
+            name: "sales_order_frm-approval",
+            component: SofApproval,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+
         ],
         meta: { requiresAuth: true },
       },
@@ -239,6 +265,17 @@ const routes = [
             props: true,
             meta: { requiresAuth: true },
           },
+          {
+            path: ":id",
+            name: "sales_order_frm-inprogress",
+            component: SofInprogress,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+
+
+
+
         ],
         meta: { requiresAuth: true },
       },
@@ -288,6 +325,13 @@ const routes = [
             props: true,
             meta: { requiresAuth: true },
           },
+          {
+            path: ":id",
+            name: "sales_order_frm-clarification",
+            component: SofClarification,
+            props: true,
+            meta: { requiresAuth: true },
+          },
         ],
         meta: { requiresAuth: true },
       },
@@ -334,6 +378,13 @@ const routes = [
             path: ":id",
             name: "Leave Request-approved",
             component: LafApproved,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "sales_order_frm-approved",
+            component: SofApproved,
             props: true,
             meta: { requiresAuth: true },
           },

@@ -11,6 +11,8 @@ import ValidationAlert from './components/ui/ValidationAlert.vue';
 import ModalRemarks from './components/forms/ModalRemarks.vue';
 import ModalStatus from './components/forms/ModalStatus.vue';
 import CardSpinner from './components/ui/CardSpinner.vue';
+import SofEdit from './components/forms/sof/SofEdit.vue';
+import SofRead from './components/forms/sof/SofRead.vue';
 
 
 import DataTable from "@andresouzaabreu/vue-data-table";
@@ -26,6 +28,9 @@ Vue.component('validation-alert', ValidationAlert)
 Vue.component('modal-remarks', ModalRemarks)
 Vue.component('modal-status', ModalStatus)
 Vue.component('card-spinner', CardSpinner)
+Vue.component('sof-edit', SofEdit)
+Vue.component('sof-read', SofRead)
+
 
 
 

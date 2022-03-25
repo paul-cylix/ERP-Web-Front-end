@@ -7,6 +7,7 @@
           <h3 class="card-title">Clarification Requests</h3>
         </div>
         <div class="card-body pt-0 pb-3">
+          <card-spinner :show="isLoadingSpinner"></card-spinner>
           <data-table v-bind="parametersTable1" />
         </div>
       </div>
@@ -22,7 +23,7 @@ export default {
 
   data() {
     return {
-      
+      isLoadingSpinner: false,
       requestArray: [],
       remarks: [],
       status: [],
@@ -135,8 +136,11 @@ export default {
     },
   },
 
-  mounted() {
-    this.getClarification();
+  async created() {
+    this.isLoadingSpinner = true
+    await this.getClarification();
+    this.isLoadingSpinner = false
+
   },
 };
 </script>

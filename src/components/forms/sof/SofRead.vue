@@ -2,12 +2,18 @@
   <div class="col-md-12 mt-3">
     <!-- Form Element sizes -->
     <div class="card card-secondary">
+      <div
+        class="overlay"
+        style="background-color: white !important"
+        v-show="isLoadingSpinner"
+      >
+        <loading-spinner></loading-spinner>
+      </div>
       <div class="card-header">
         <h3 class="card-title">Sales Order</h3>
       </div>
       <div class="card-body">
-        <card-spinner :show="isLoadingSpinner"></card-spinner>
-
+        <!-- <card-spinner :show="isLoadingSpinner"></card-spinner> -->
         <!-- Step Numbers -->
         <div class="d-flex progressBarWrapper text-center">
           <div class="progressbar" :class="classA">
@@ -103,7 +109,8 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
                 <small
@@ -131,7 +138,8 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
                 <small
@@ -150,7 +158,8 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
                 <small
@@ -171,7 +180,8 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
                 <small
@@ -195,7 +205,8 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
                 <small
@@ -217,7 +228,8 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
                 <small
@@ -273,6 +285,7 @@
                   type="text"
                   class="form-control form-control-sm py-3"
                   v-model.trim="poNumber"
+                  :disabled="true"
                 />
                 <small
                   class="text-danger p-0 m-0"
@@ -289,6 +302,7 @@
                   v-model="poDate"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
+                  :disabled="true"
                 ></date-picker>
                 <small
                   class="text-danger p-0 m-0"
@@ -313,6 +327,7 @@
                 <date-picker
                   v-else
                   v-model="projectStart"
+                  :disabled="true"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
@@ -341,6 +356,7 @@
                   v-else
                   v-model="projectEnd"
                   valueType="format"
+                  disabled
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
                 <small
@@ -361,6 +377,7 @@
                   ></small
                 >
                 <input
+                  disabled
                   type="text"
                   v-model.trim="projectShortText"
                   class="form-control py-3 form-control-sm"
@@ -398,7 +415,7 @@
                   option-text="name"
                   placeholder="select item"
                   style="padding: 9px; background-color: #e9ecef"
-              
+                  disabled="true"
                   :isDisabled="true"
                 >
                 </model-list-select>
@@ -413,6 +430,7 @@
               <div class="form-group">
                 <small><label for="projectcode">Project Code</label></small>
                 <input
+                  disabled
                   list="suggestions"
                   type="text"
                   v-model.trim="projectCode"
@@ -445,6 +463,7 @@
                   name="scopeofwork"
                   v-model.trim="scopeOfWork"
                   rows="5"
+                  disabled
                 ></textarea>
                 <small
                   class="text-danger p-0 m-0"
@@ -467,9 +486,7 @@
                   v-model.trim="paymentTerms"
                   type="text"
                   class="form-control py-3 form-control-sm"
-                  :disabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  disabled
                 />
                 <small
                   class="text-danger p-0 m-0"
@@ -486,9 +503,7 @@
                   type="text"
                   class="form-control py-3 form-control-sm"
                   v-model.trim="warranty"
-                  :disabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  disabled
                 />
 
                 <small
@@ -508,10 +523,8 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="isDropdownRequired"
-                  :isDisabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
                 <small
@@ -533,9 +546,7 @@
                   class="form-control form-control-sm py-3"
                   id="projectCost"
                   v-model="projectCost"
-                  :disabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  :disabled="true"
                 />
                 <small
                   class="text-danger p-0 m-0"
@@ -558,10 +569,8 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="isDropdownRequired"
-                  :isDisabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
                 <small
@@ -578,7 +587,7 @@
                 <input
                   type="number"
                   v-model.trim="downPaymentPercentage"
-                  :disabled="this.downPaymentRequiredItem.code === false"
+                  :disabled="true"
                   class="form-control py-3 form-control-sm"
                 />
                 <div class="d-flex flex-column">
@@ -637,10 +646,8 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="isDropdownRequired"
-                  :isDisabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
                 <small
@@ -656,7 +663,7 @@
                 <small><label for="softype">Invoice Date Needed</label></small>
                 <date-picker
                   v-model="invoiceDateNeeded"
-                  :disabled="this.invoiceRequiredItem.code === false"
+                  :disabled="true"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
@@ -718,6 +725,7 @@
                   class="form-control"
                   name="accountingremarks"
                   v-model.trim="accountingRemarks"
+                  disabled
                   rows="5"
                 ></textarea>
                 <!-- <small class="text-danger p-0 m-0" v-show="true"
@@ -742,32 +750,17 @@
                       <tr>
                         <th style="width: 10%"></th>
                         <th style="width: 80%">System Details</th>
-                        <th style="width: 10%" class="text-right">
-                          <button
-                            class="btn btn-success btn-sm"
-                            data-toggle="modal"
-                            data-target="#modal-default"
-                            @click="setModalTitle('System')"
-                          >
-                            <i class="fas fa-plus"></i>
-                          </button>
-                        </th>
+                        <th style="width: 10%" class="text-right"></th>
                       </tr>
                     </thead>
                     <tbody style="font-size: 14px">
-                      <tr v-for="item in systemDetailsList" :key="item.id">
-                        <td style="width: 10%">
-                          <input
-                            type="checkbox"
-                            :value="item"
-                            class="ml-3 mr-0"
-                            v-model="systemDetailsSelected"
-                          />
-                        </td>
-                        <td style="width: 80%">{{ item.type_name }}</td>
+                      <tr v-for="item in systemDetailsSelected" :key="item.id">
+                        <td style="width: 10%"></td>
+                        <td style="width: 80%">{{ item.systemType }}</td>
                       </tr>
                     </tbody>
                   </table>
+
                   <small
                     class="text-danger p-0 m-0"
                     v-show="attemptNextFour && missingSystemDetails"
@@ -787,29 +780,16 @@
                       <tr>
                         <th style="width: 10%"></th>
                         <th style="width: 80%">Document Details</th>
-                        <th style="width: 10%" class="text-right">
-                          <button
-                            class="btn btn-success btn-sm"
-                            data-toggle="modal"
-                            data-target="#modal-default"
-                            @click="setModalTitle('Document')"
-                          >
-                            <i class="fas fa-plus"></i>
-                          </button>
-                        </th>
+                        <th style="width: 10%" class="text-right"></th>
                       </tr>
                     </thead>
                     <tbody style="font-size: 14px">
-                      <tr v-for="item in documentDetailsList" :key="item.id">
-                        <td style="width: 10%">
-                          <input
-                            type="checkbox"
-                            :value="item"
-                            class="ml-3 mr-0"
-                            v-model="documentDetailsSelected"
-                          />
-                        </td>
-                        <td style="width: 80%">{{ item.DocumentName }}</td>
+                      <tr
+                        v-for="item in documentDetailsSelected"
+                        :key="item.ID"
+                      >
+                        <td style="width: 10%"></td>
+                        <td style="width: 80%">{{ item.DocName }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -838,62 +818,48 @@
           "
           id="app"
         >
-          <div
-            class="pt-2 col-md-12 rounded"
-            @dragover="dragover"
-            @dragleave="dragleave"
-            @drop="drop"
-            id="uploadContainer"
-          >
-            <input
-              type="file"
-              multiple
-              name="fields[assetsFieldHandle][]"
-              id="assetsFieldHandle"
-              class="w-25 h-25 overflow-hidden"
-              @change="onFileSelected"
-              ref="file"
-              accept=".pdf,.jpg,.jpeg,.png"
-            />
-
+          <div class="pt-2 col-md-12 rounded" id="uploadContainer">
             <label
               for="assetsFieldHandle"
               style="width: 100%; cursor: pointer"
               class="block pt-3 cursor-pointer"
             >
-              <span class="text-secondary">Click here or drop file(s)</span>
+              <span class="text-secondary">List of Attached File</span>
             </label>
-            <small
-              class="text-danger p-0 m-0"
-              v-show="missingAttachments && attemptNextFive"
-              >Attachments is required!</small
-            >
 
             <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
               <li
                 class="text-sm mt-2"
                 v-for="file in selectedFile"
-                :key="file.name"
+                :key="file.id"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.name }}</span>
-                    </div>
-                    <div class="co-2">
-                      <button
-                        class="btn btn-danger btn-sm"
-                        type="button"
-                        @click="remove(selectedFile.indexOf(file))"
-                        title="Remove file"
+                      <span
+                        ><label>{{ file.filename }}</label></span
                       >
-                        Remove
+                    </div>
+                    <div>
+                      <button class="btn btn-info btn-sm" type="button">
+                        <a
+                          :download="file.filename"
+                          style="color: white"
+                          :href="
+                            'data:' +
+                            file.mimeType +
+                            ';base64,' +
+                            file.imageBytes
+                          "
+                          target="_blank"
+                          >Download</a
+                        >
                       </button>
                     </div>
                     <div class="col-2">
                       <button
-                        @click="preview(selectedFile.indexOf(file))"
                         class="btn btn-secondary btn-sm"
+                        @click="preview(file.mimeType, file.imageBytes)"
                       >
                         Preview
                       </button>
@@ -902,6 +868,8 @@
                 </div>
               </li>
             </ul>
+
+            <!-- </aside> -->
           </div>
         </aside>
         <!-- /.Attachments -->
@@ -1151,7 +1119,7 @@
                           v-for="item in systemDetailsSelected"
                           :key="item.id"
                         >
-                          {{ item.type_name }}
+                          {{ item.systemType }}
                         </li>
                       </ul>
                     </td>
@@ -1164,7 +1132,7 @@
                           v-for="item in documentDetailsSelected"
                           :key="item.ID"
                         >
-                          {{ item.DocumentName }}
+                          {{ item.DocName }}
                         </li>
                       </ul>
                     </td>
@@ -1179,7 +1147,7 @@
           <!-- Attachements Review -->
           <div class="card card-secondary">
             <div class="card-header">
-              <h3 class="card-title">System & Document Details</h3>
+              <h3 class="card-title">Attachments</h3>
               <div class="card-tools">
                 <button
                   type="button"
@@ -1203,19 +1171,13 @@
                   <tr
                     class="d-flex"
                     v-for="file in selectedFile"
-                    :key="file.name"
+                    :key="file.id"
                   >
-                    <td class="col-9">{{ file.name }}</td>
+                    <td class="col-9">{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center col-3">
                       <button
-                        @click="remove(selectedFile.indexOf(file))"
-                        class="btn btn-danger btn-sm"
-                      >
-                        Remove
-                      </button>
-                      <button
-                        @click="preview(selectedFile.indexOf(file))"
                         class="btn btn-secondary btn-sm ml-1"
+                        @click="preview(file.mimeType, file.imageBytes)"
                       >
                         Preview
                       </button>
@@ -1249,7 +1211,6 @@
                 </h6>
                 <button
                   type="button"
-                  id="modalCloseButton"
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
@@ -1297,36 +1258,115 @@
         </div>
         <!-- /.modal default -->
 
-        <!-- Button -->
-        <div class="row d-flex justify-content-end mt-3">
-          <div class="col-md-1" v-show="counter">
-            <button
-              type="button"
-              @click="counter--"
-              class="btn btn-block btn-secondary btn-sm"
-            >
-              Previous
-            </button>
-          </div>
-          <div class="col-md-1" v-if="this.counter > -1 && this.counter < 6">
-            <button
-              type="button"
-              @click="next()"
-              class="btn btn-block btn-primary btn-sm"
-            >
-              Next
-            </button>
-          </div>
+        <!-- Modal withdrawn-->
+        <div
+          class="modal fade"
+          id="modal-withdrawn"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <!-- Overlay Loading Spinner -->
+              <div class="overlay" v-show="isLoading">
+                <i class="fas fa-2x fa-sync fa-spin"></i>
+              </div>
 
-          <div class="col-md-1" v-else>
-            <button
-              type="button"
-              @click="submit()"
-              class="btn btn-block btn-success btn-sm"
-            >
-              Submit
-            </button>
+              <div class="modal-header">
+                <h6 class="modal-title"><b>Withdraw Request</b></h6>
+                <button
+                  type="button"
+                  id="modalCloseButton"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <small
+                        ><label for="withdrawRemarks">Remarks</label></small
+                      >
+                      <textarea
+                        class="form-control"
+                        id="withdrawRemarks"
+                        rows="5"
+                        v-model.trim="withdrawRemarks"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer justify-content-end">
+                <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  @click="withdrawn()"
+                >
+                  Withdrawn
+                </button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
           </div>
+          <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal withdrawn-->
+
+        <!-- Buttons -->
+        <div class="row d-flex justify-content-between mt-3">
+          <aside class="col-lg-6 d-flex justify-content-start">
+            <div class="col-lg-2" v-show="counter">
+              <button
+                type="button"
+                @click="counter--"
+                class="btn btn-block btn-secondary btn-sm"
+              >
+                Previous
+              </button>
+            </div>
+
+            <div
+              class="col-lg-2"
+              v-show="this.counter > -1 && this.counter < 6"
+            >
+              <button
+                type="button"
+                @click="counter++"
+                class="btn btn-block btn-primary btn-sm"
+              >
+                Next
+              </button>
+            </div>
+          </aside>
+
+          <aside class="col-lg-6 d-flex justify-content-end">
+            <div class="col-lg-2">
+              <button
+                type="button"
+                class="btn btn-block btn-warning btn-sm"
+                data-toggle="modal"
+                data-target="#modal-withdrawn"
+              >
+                Withdrawn
+              </button>
+            </div>
+
+            <div class="col-lg-2">
+              <button
+                @click="close()"
+                type="button"
+                class="btn btn-block btn-danger btn-sm"
+              >
+                Close
+              </button>
+            </div>
+          </aside>
         </div>
         <!-- / Buttons -->
       </div>
@@ -1346,14 +1386,14 @@ export default {
     ModelListSelect,
   },
   async created() {
-    this.isLoadingSpinner = true
+    this.isLoadingSpinner = true;
+    await this.querySof();
     await this.queryCompany();
     await this.queryCompanySystemDetails();
     await this.queryCompanyDocumentDetails();
     await this.queryCurrency();
-    
-    this.isLoadingSpinner = false
-
+    // await this.queryDelegates();
+    this.isLoadingSpinner = false;
   },
   watch: {
     counter() {
@@ -1365,18 +1405,35 @@ export default {
       if (this.customerNameItem) {
         this.isLoadingSpinner = true;
         const customerId = newValue.code;
-        // console.log(customerId)
+        // console.log(newValue)
         await this.queryCompanyAddress(customerId);
         await this.queryCompanyContacts(customerId);
         await this.queryCompanyCode(customerId);
         await this.queryDelegates(customerId);
 
+
         // if condition will clear the payment terms if its dmo or prj
         if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-          this.paymentTerms =
-            this.customerNameItem.term === undefined
-              ? null
-              : this.customerNameItem.term;
+          // this.paymentTerms =
+          //   this.customerNameItem.term === undefined
+          //     ? null
+          //     : this.customerNameItem.term;
+
+          if (this.customerNameItem.term === undefined) {
+            this.paymentTerms = null;
+          } else if (
+            this.customerNameItem.term === undefined &&
+            this.paymentTerms.length === 0
+          ) {
+            this.paymentTerms = null;
+          } else if (
+            this.customerNameItem.term &&
+            this.paymentTerms.length === 0
+          ) {
+            this.paymentTerms = this.customerNameItem.term;
+          } else if (this.customerNameItem.term && this.paymentTerms) {
+            this.paymentTerms;
+          }
         }
 
         this.accountManager =
@@ -1388,13 +1445,15 @@ export default {
       }
     },
 
-    downPaymentRequiredItem(newValue) {
-      this.downPaymentPercentage = "";
-      // (this.downPaymentRequiredItem) ? this.downPaymentDateReceived = null : this.downPaymentDateReceived = null;
-    },
-    invoiceRequiredItem(newValue) {
-      this.invoiceDateNeeded = null;
-    },
+    // every time down payment required changes it will clear it
+    // downPaymentRequiredItem(newValue) {
+    //   // this.downPaymentPercentage = "";
+    // },
+
+    // every time down Invoice required changes it will clear it
+    // invoiceRequiredItem(newValue) {
+    //   this.invoiceDateNeeded = null;
+    // },
 
     sofType(newValue) {
       if (newValue.code === "DMO" || newValue.code === "POC") {
@@ -1459,11 +1518,11 @@ export default {
     },
 
     projectNameFormula() {
-      const today = new Date();
+      const today = new Date(this.soDate);
       // let dd = today.getDate();
       let mm = today.getMonth() + 1;
       let yyyy = today.getFullYear();
-      let m = new Date().toLocaleString("en-us", { month: "short" });
+      let m = new Date(this.soDate).toLocaleString("en-us", { month: "short" });
 
       if (mm < 10) {
         mm = `0${mm}`;
@@ -1682,9 +1741,10 @@ export default {
       billingAddress: [],
       billingAddressItem: {},
       accountManager: null,
-      delegates: '',
+      delegates: null,
 
       // Project Details
+      soDate: null,
       poNumber: "",
       poDate: null,
       projectStart: null,
@@ -1732,6 +1792,7 @@ export default {
       accountingRemarks: "",
 
       // System & Document Details
+
       systemDetailsList: [],
       systemDetailsSelected: [],
       documentDetailsList: [],
@@ -1743,10 +1804,231 @@ export default {
 
       modalTitle: null,
       modalInputform: "",
+
+      isLoading: false,
+      withdrawRemarks: "",
     };
   },
 
   methods: {
+     async withdrawn() {
+      this.isLoading = true;
+
+      const fd = new FormData();
+
+      const frmClass = this.$route.params.frmClass;
+      const reqId = this.$route.params.id;
+      const form = this.$route.params.frmName;
+
+
+      fd.append("loggedUserId", localStorage.getItem("id"))
+      fd.append("loggedUserFirstName", localStorage.getItem("fname"))
+      fd.append("loggedUserLastName", localStorage.getItem("lname"))
+      fd.append("loggedUserDepartment", localStorage.getItem("department"))
+      fd.append("loggedUserPosition", localStorage.getItem("positionName"))
+      fd.append("companyId", localStorage.getItem("companyId"))
+      fd.append("companyName", localStorage.getItem("companyName"))
+
+      fd.append("frmClass",frmClass)
+      fd.append("reqId",reqId)
+      fd.append("form",form)
+      fd.append("withdrawRemarks",this.withdrawRemarks)
+
+
+
+      try {
+        const resp = await axios.post(
+          "http://127.0.0.1:8000/api/withdraw-request",
+          fd
+        );
+
+        if(resp.status) {
+          this.isLoading = false;
+          this.openToast("top-right", "success", resp.data.message);
+          document.getElementById("modalCloseButton").click();
+          this.$router.replace("/inprogress");
+        }
+
+
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+        this.isLoading = false;
+
+        if (err.response.status >= 400 && err.response.status <= 499) {
+          this.openToast("top-right", "error", err.response.data);
+        } else {
+          this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+        }
+      }
+    },
+
+
+    close() {
+      this.$router.replace("/inprogress");
+    },
+
+    async querySof() {
+      try {
+        await this.$store.dispatch("sof/querySof", {
+          processId: this.$route.params.id,
+          frmName: this.$route.params.frmName,
+          companyId: this.companyId,
+        });
+
+        const data = this.$store.getters["sof/getSofData"];
+
+        // console.warn(data);
+
+        // data[0] - setup prj
+        // data[1] - sales order
+        // data[2] - systm
+        // data[3] - docus
+        // data[4] - actual sign
+        // data[5] - attachments
+
+        const frmClass = data[4]["actual_sign"][0]["FRM_NAME"];
+        if (frmClass === "Sales Order - Delivery") {
+          this.sofType = { code: "DLV", name: "Delivery" };
+        } else if (frmClass === "Sales Order - Project") {
+          this.sofType = { code: "PRJ", name: "Project" };
+        } else if (frmClass === "Sales Order - Demo") {
+          this.sofType = { code: "DMO", name: "Demo" };
+        } else if (frmClass === "Sales Order - POC") {
+          this.sofType = { code: "POC", name: "POC" };
+        }
+
+        // console.log(data[0]['setup_project'][0]['Business_Number'])
+        // console.log(data[0]['setup_project'][0]['business_fullname'])
+        // console.log(data[0]['setup_project'][0]['CLIENTCODE'])
+        // console.log(data[0]['setup_project'][0]['term_type'])
+        // console.log(data[0]['setup_project'][0]['PMName'])
+
+        // Customer Details
+        const selectedCustomerNameItem = {
+          code: data[0]["setup_project"][0]["Business_Number"],
+          name: data[0]["setup_project"][0]["business_fullname"],
+          desc: data[0]["setup_project"][0]["CLIENTCODE"],
+          term: data[0]["setup_project"][0]["term_type"],
+          amgr: data[0]["setup_project"][0]["PMName"],
+        };
+
+        this.customerNameItem = selectedCustomerNameItem;
+
+        const selectedContactPersonItem = {
+          code: data[1]["sales_orders"][0]["Contactid"],
+          name: data[1]["sales_orders"][0]["Contact"],
+        };
+
+        this.contactPersonItem = selectedContactPersonItem;
+
+        const selectedContactNumberItem = {
+          code: data[1]["sales_orders"][0]["ContactNum"],
+          name: data[1]["sales_orders"][0]["ContactNum"],
+        };
+
+        this.contactNumberItem = selectedContactNumberItem;
+
+        const selectedBillingAddressItem = {
+          code: data[1]["sales_orders"][0]["BillTo"],
+          name: data[1]["sales_orders"][0]["BillTo"],
+        };
+
+        this.billingAddressItem = selectedBillingAddressItem;
+
+        const selectedDeliveryAddressItem = {
+          code: data[1]["sales_orders"][0]["DeliveryAddress"],
+          name: data[1]["sales_orders"][0]["DeliveryAddress"],
+        };
+
+        this.deliveryAddressItem = selectedDeliveryAddressItem;
+
+        // Project Details
+        this.poNumber = data[1]["sales_orders"][0]["poNum"];
+        this.poDate = data[1]["sales_orders"][0]["podate"];
+        this.projectStart = data[0]["setup_project"][0]["project_effectivity"];
+        this.projectEnd = data[0]["setup_project"][0]["project_expiry"];
+        this.projectShortText =
+          data[0]["setup_project"][0]["project_shorttext"];
+        this.soDate = data[1]["sales_orders"][0]["sodate"];
+        this.projectCode = data[0]["setup_project"][0]["project_no"];
+        this.scopeOfWork = data[0]["setup_project"][0]["project_remarks"];
+
+        // Payment & Delivery Details
+        this.paymentTerms = data[1]["sales_orders"][0]["Terms"];
+        this.warranty = data[1]["sales_orders"][0]["warranty"];
+
+        const selectedCurrencyItem = {
+          code: data[1]["sales_orders"][0]["currency"],
+          name: data[1]["sales_orders"][0]["currency"],
+        };
+        this.currencyItem = selectedCurrencyItem;
+
+        this.projectCostReal = data[1]["sales_orders"][0]["amount"];
+
+        this.projectCost = parseFloat(
+          data[1]["sales_orders"][0]["amount"]
+        ).toLocaleString(undefined, { minimumFractionDigits: 2 });
+
+        if (data[1]["sales_orders"][0]["dp_required"]) {
+          this.downPaymentRequiredItem = { code: true, name: "Yes" };
+          this.downPaymentPercentage =
+            data[1]["sales_orders"][0]["dp_percentage"];
+        }
+
+        if (data[1]["sales_orders"][0]["IsInvoiceRequired"]) {
+          this.invoiceRequiredItem = { code: true, name: "Yes" };
+          this.invoiceDateNeeded = data[1]["sales_orders"][0]["invDate"];
+        }
+
+        this.accountingRemarks = data[1]["sales_orders"][0]["Remarks2"];
+
+        // sales order docs
+
+        const systemDetails = data[2]["sales_order_system"];
+        const systemDetailsSelected = [];
+
+        systemDetails.forEach((element) => {
+          const data = {
+            id: element["id"],
+            imported_from_excel: element["imported_from_excel"],
+            soid: element["soid"],
+            sysID: element["sysID"],
+            systemType: element["systemType"],
+          };
+          systemDetailsSelected.push(data);
+        });
+
+        this.systemDetailsSelected = systemDetailsSelected;
+
+        const documentDetails = data[3]["sales_order_docs"];
+        const documentDetailsSelected = [];
+
+        documentDetails.forEach((element) => {
+          const data = {
+            DocID: element["DocID"],
+            DocName: element["DocName"],
+            ID: element["ID"],
+            SOID: element["SOID"],
+            imported_from_excel: element["imported_from_excel"],
+          };
+          documentDetailsSelected.push(data);
+        });
+
+        this.documentDetailsSelected = documentDetailsSelected;
+
+        this.selectedFile = data[5]["attachments"]["data"];
+      } catch (error) {
+        this.openToast(
+          "top-right",
+          "error",
+          "Internal Server Error! Please inform the administrator!"
+        );
+
+        console.error(error);
+      }
+    },
+
     async submit() {
       this.isLoadingSpinner = true;
 
@@ -1800,30 +2082,32 @@ export default {
           selectedFile: this.selectedFile,
         };
 
-
-
         const response = await this.$store.dispatch("sof/createSOF", payload);
 
-
         if (response.status === 201) {
-          this.openToast("top-right", "success", "Your Sales Order Request was successfully submitted.");
+          this.openToast(
+            "top-right",
+            "success",
+            "Your Sales Order Request was successfully submitted."
+          );
         }
 
         this.isLoadingSpinner = false;
         this.$router.replace("/inprogress");
-  
       } catch (error) {
         this.isLoadingSpinner = false;
 
         if (error.response.status === 422) {
           this.openToast("top-right", "error", error.response.data);
         } else {
-          this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+          this.openToast(
+            "top-right",
+            "error",
+            "Internal Server Error! Please inform the administrator!"
+          );
         }
 
-
-        console.info(error)
-
+        console.info(error);
       }
     },
 
@@ -1859,10 +2143,11 @@ export default {
 
         try {
           this.isLoadingSpinner = true;
-          const isExist = await this.$store.dispatch(
-            "sof/checkIfProjectCodeExist",
-            this.projectCode
-          );
+          const isExist = 1;
+          // const isExist = await this.$store.dispatch(
+          //   "sof/checkIfProjectCodeExist",
+          //   this.projectCode
+          // );
 
           if (
             !this.missingPONumber &&
@@ -1885,17 +2170,19 @@ export default {
             !this.missingScopeOfWork &&
             isExist === 1
           ) {
-            this.openToast(
-              "top-right",
-              "error",
-              "Project Code must be unique!"
-            );
+            // this.openToast(
+            //   "top-right",
+            //   "error",
+            //   "Project Code must be unique!"
+            // );
+            this.counter++;
           } else if (isExist === 1) {
-            this.openToast(
-              "top-right",
-              "error",
-              "Project Code must be unique!"
-            );
+            // this.openToast(
+            //   "top-right",
+            //   "error",
+            //   "Project Code must be unique!"
+            // );
+            this.counter++;
           }
           this.isLoadingSpinner = false;
         } catch (error) {
@@ -1947,8 +2234,6 @@ export default {
       );
       this.deliveryAddress = responseData;
       this.billingAddress = responseData;
-
-      
     },
 
     async queryCompanyContacts(customerId) {
@@ -1998,6 +2283,7 @@ export default {
       const responseData = await this.$store.dispatch("sof/queryCurrency");
       this.currency = responseData;
     },
+
 
     setModalTitle(title) {
       this.modalTitle = title;
@@ -2104,6 +2390,11 @@ export default {
         fileContainer.push(thisFiles);
       }
       this.filespreview = fileContainer;
+    },
+
+    preview(mimeType, imageBytes) {
+      var newTab = window.open();
+      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
     },
 
     formatNumber(n) {
