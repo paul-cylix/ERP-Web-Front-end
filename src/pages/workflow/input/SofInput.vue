@@ -419,7 +419,9 @@
                 >
                 </model-list-select>
 
-                <small class="text-danger p-0 m-0" v-show="this.isCoordinatorRequired && this.missingCoordinator"
+                <small
+                  class="text-danger p-0 m-0"
+                  v-show="this.isCoordinatorRequired && this.missingCoordinator"
                   >Coordinator is required!</small
                 >
               </div>
@@ -684,12 +686,12 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px;"
-                  
-                
+                  style="padding: 9px"
                 >
                 </model-list-select>
-                <small class="text-danger p-0 m-0" v-show="attemptNext && missingSalesInvoiceReleased"
+                <small
+                  class="text-danger p-0 m-0"
+                  v-show="attemptNext && missingSalesInvoiceReleased"
                   >Sales Invoice Released is required!</small
                 >
               </div>
@@ -704,7 +706,9 @@
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
-                <small class="text-danger p-0 m-0" v-show="attemptNext && missingDateOfInvoice"
+                <small
+                  class="text-danger p-0 m-0"
+                  v-show="attemptNext && missingDateOfInvoice"
                   >Date of Invoice is required!</small
                 >
               </div>
@@ -1228,7 +1232,7 @@
                   v-bind:type="this.type"
                 ></the-alert>
 
-                <!-- <div class="row" v-if="isForClarity">
+                <div class="row" v-if="this.title === 'Clarify'">
                   <div class="col-md-12">
                     <div class="form-group">
                       <model-list-select
@@ -1247,7 +1251,7 @@
                       >
                     </div>
                   </div>
-                </div> -->
+                </div>
 
                 <div class="row">
                   <div class="col-md-12">
@@ -1378,6 +1382,8 @@ export default {
     await this.queryCompany();
     await this.queryCoordinators();
     await this.querySelectedCoordinator();
+    await this.queryRecipients();
+    await this.getInprogressId();
     this.isLoadingSpinner = false;
   },
   watch: {
@@ -1426,8 +1432,8 @@ export default {
       }
     },
 
-    salesInvoiceReleasedItem(){
-      this.dateOfInvoice = null
+    salesInvoiceReleasedItem() {
+      this.dateOfInvoice = null;
     },
 
     sofType(newValue) {
@@ -1560,11 +1566,11 @@ export default {
       return this.billingAddressItem.code === undefined ? true : false;
     },
 
-    missingSalesInvoiceReleased(){
+    missingSalesInvoiceReleased() {
       return this.salesInvoiceReleasedItem.code === false ? true : false;
     },
 
-    missingDateOfInvoice(){
+    missingDateOfInvoice() {
       return this.dateOfInvoice === null ? true : false;
     },
 
@@ -1689,9 +1695,15 @@ export default {
 
     missingCoordinator() {
       return this.coordinatorItem.code === undefined ? true : false;
-    }
+    },
 
-
+    missingModalRecipient() {
+      if (this.itemrecipient.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   data() {
     return {
@@ -1704,8 +1716,6 @@ export default {
       attemptModalSubmit: false,
 
       attemptNextCoordi: false,
-
-
 
       isLoadingSpinner: false,
       isLoadingModal: false,
@@ -1812,17 +1822,53 @@ export default {
       message: "", // added successfully
       type: "", // true or false
 
-      referenceNumber: '',
+      referenceNumber: "",
       requestDate: null,
 
       isCoordinatorRequired: false,
       isDmoPocComplete: false,
       isSiConfirmation: false,
 
+      // clarification
+      recipent: [],
+      itemrecipient: {},
+      attemptClarify: false,
+      inprogressId: "",
     };
   },
 
   methods: {
+    async getInprogressId() {
+      const data = {
+        form: this.$route.params.frmName,
+        processId: this.$route.params.id,
+        companyId: this.companyId,
+      };
+      const responseData = await this.$store.dispatch(
+        "sof/getInprogressId",
+        data
+      );
+
+      this.inprogressId = responseData;
+    },
+
+    async queryRecipients() {
+      const data = {
+        form: this.$route.params.frmName,
+        processId: this.$route.params.id,
+        frmClass: this.$route.params.frmClass,
+        loggedUserId: this.loggedUserId,
+        companyId: this.companyId,
+      };
+
+      const responseData = await this.$store.dispatch(
+        "sof/queryRecipients",
+        data
+      );
+
+      this.recipent = responseData;
+    },
+
     // important methods in approval modal
     setTitle(title) {
       this.title = title;
@@ -1852,15 +1898,12 @@ export default {
 
     //
 
-
-
     close() {
       this.$router.replace("/inputs");
     },
 
     async querySof() {
       try {
-
         await this.$store.dispatch("sof/querySof", {
           processId: this.$route.params.id,
           frmName: this.$route.params.frmName,
@@ -1944,8 +1987,8 @@ export default {
           name: data[1]["sales_orders"][0]["DeliveryAddress"],
         };
 
-        this.referenceNumber = data[1]["sales_orders"][0]["soNum"]
-        this.requestDate = data[1]["sales_orders"][0]["sodate"]
+        this.referenceNumber = data[1]["sales_orders"][0]["soNum"];
+        this.requestDate = data[1]["sales_orders"][0]["sodate"];
 
         this.deliveryAddressItem = selectedDeliveryAddressItem;
 
@@ -2032,24 +2075,24 @@ export default {
         this.documentDetailsSelected = documentDetailsSelected;
 
         this.selectedFile = data[5]["attachments"]["data"];
-      
-      
-      
-      
-      
-      // select Coordinator -> check if its required
-      // console.log(this.$route.params.frmName)
-      if(frmName === 'Sales Order - Project') {
-        if(data[4]["actual_sign"][7]['USER_GRP_IND'] === 'SI Confirmation' && data[4]["actual_sign"][7]['STATUS'] === 'In Progress') {
-          this.isSiConfirmation = true
-        }
-      } else if (frmName === 'Sales Order - Delivery') {
-        if(data[4]["actual_sign"][5]['USER_GRP_IND'] === 'SI Confirmation' && data[4]["actual_sign"][5]['STATUS'] === 'In Progress') {
-          this.isSiConfirmation = true
-        }
-      }
 
-      
+        // select Coordinator -> check if its required
+        // console.log(this.$route.params.frmName)
+        if (frmName === "Sales Order - Project") {
+          if (
+            data[4]["actual_sign"][7]["USER_GRP_IND"] === "SI Confirmation" &&
+            data[4]["actual_sign"][7]["STATUS"] === "In Progress"
+          ) {
+            this.isSiConfirmation = true;
+          }
+        } else if (frmName === "Sales Order - Delivery") {
+          if (
+            data[4]["actual_sign"][5]["USER_GRP_IND"] === "SI Confirmation" &&
+            data[4]["actual_sign"][5]["STATUS"] === "In Progress"
+          ) {
+            this.isSiConfirmation = true;
+          }
+        }
       } catch (error) {
         this.openToast(
           "top-right",
@@ -2061,34 +2104,39 @@ export default {
       }
     },
 
-    submit(type){
+    submit(type) {
       this.attemptNext = true;
       const apptype = type;
-      if(this.isSiConfirmation){
-        if(this.missingSalesInvoiceReleased || this.missingDateOfInvoice){
-          this.openToast(
-                "top-right",
-                "error",
-                "Sales Invoice Realeased & Date of Invoice is Required! Please Select in Step 4!"
-              );
+
+      if (apptype === "Approve") {
+        if (this.isSiConfirmation) {
+          if (this.missingSalesInvoiceReleased || this.missingDateOfInvoice) {
+            this.openToast(
+              "top-right",
+              "error",
+              "Sales Invoice Realeased & Date of Invoice is Required! Please Select in Step 4!"
+            );
+          } else {
+            this.submitTwo(apptype);
+          }
         } else {
-          this.submitTwo(apptype)
+          this.submitTwo(apptype);
         }
       } else {
-        this.submitTwo(apptype)
+        this.submitTwo(apptype);
       }
     },
-    
 
     async submitTwo(type) {
       const fd = new FormData();
 
       fd.append("form", this.$route.params.frmName);
       fd.append("processId", this.$route.params.id);
-      fd.append("frmClass",this.$route.params.frmClass)
+      fd.append("frmClass", this.$route.params.frmClass);
       fd.append("remarks", this.remarks);
       fd.append("referenceNumber", this.referenceNumber);
       fd.append("class", "SOF");
+      fd.append("inprogressId", this.inprogressId);
       // fd.append("recipientId", this.itemrecipient.code);
       // fd.append("inprogressId", this.inprogressId);
       fd.append("isCoordinatorRequired", this.isCoordinatorRequired);
@@ -2098,26 +2146,19 @@ export default {
       fd.append("dateOfInvoice", this.dateOfInvoice);
       fd.append("salesInvoiceReleased", this.salesInvoiceReleasedItem.code);
 
-
-
-
-      if(this.isCoordinatorRequired){
+      if (this.isCoordinatorRequired) {
         fd.append("coordinatorID", this.coordinatorItem.code);
         fd.append("coordinatorName", this.coordinatorItem.name);
       }
 
-
-      fd.append("loggedUserId",this.loggedUserId);
-      fd.append("loggedUserFirstName",this.loggedUserFirstName);
-      fd.append("loggedUserLastName",this.loggedUserLastName);
-      fd.append("loggedUserDepartment",this.loggedUserDepartment);
-      fd.append("loggedUserPosition",this.loggedUserPosition);
-      fd.append("companyId",this.companyId);
-      fd.append("companyName",this.companyName);
-
-
-
-
+      fd.append("loggedUserId", this.loggedUserId);
+      fd.append("loggedUserFirstName", this.loggedUserFirstName);
+      fd.append("loggedUserLastName", this.loggedUserLastName);
+      fd.append("loggedUserFullName", this.loggedUserFullName);
+      fd.append("loggedUserDepartment", this.loggedUserDepartment);
+      fd.append("loggedUserPosition", this.loggedUserPosition);
+      fd.append("companyId", this.companyId);
+      fd.append("companyName", this.companyName);
 
       if (type === "Approve") {
         this.isLoadingModal = true;
@@ -2135,25 +2176,79 @@ export default {
             this.openToast("top-right", "success", resp.data.message);
             this.$router.replace("/inputs");
           }
-
-    
         } catch (err) {
           this.isLoadingModal = false;
           if (err.response.status === 422) {
             this.openToast("top-right", "error", err.response.data);
           } else {
-            this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+            this.openToast(
+              "top-right",
+              "error",
+              "Internal Server Error! Please inform the administrator!"
+            );
           }
         }
-
-
       } else if (type === "Reject") {
-        console.log("Reject");
-      } else if (type === "Clarify") {
-        console.log("Clarify");
-      }
+        this.isLoadingModal = true;
+        try {
+          const resp = await axios.post(
+            "http://127.0.0.1:8000/api/reject-request",
+            fd
+          );
 
-      
+          this.isLoadingModal = false;
+          document.getElementById("modalCloseButton").click();
+          if (resp.status === 200) {
+            // console.log(resp.data);
+            this.openToast("top-right", "success", resp.data.message);
+            this.$router.replace("/inputs");
+          }
+        } catch (err) {
+          // Handle Error Here
+          console.error(err);
+          this.isLoadingModal = false;
+          if (err.response.status === 422) {
+            this.openToast("top-right", "error", err.response.data);
+          } else {
+            this.openToast(
+              "top-right",
+              "error",
+              "Internal Server Error! Please inform the administrator!"
+            );
+          }
+        }
+      } else if (type === "Clarify") {
+        this.isLoadingModal = true;
+        this.attemptClarify = true;
+        this.resetAlert();
+        fd.append("recipientId", this.itemrecipient.code);
+
+        if (!this.missingModalRecipient === true) {
+          // start
+          try {
+            const res = await axios.post(
+              "http://127.0.0.1:8000/api/send-clarity",
+              fd
+            );
+
+            if (res.status) {
+              this.isLoadingModal = false;
+              document.getElementById("modalCloseButton").click();
+              this.openToast("top-right", "success", res.data.message);
+              this.closeDefaultModal();
+              this.$router.replace("/inputs");
+            }
+          } catch (err) {
+            this.isLoadingModal = false;
+            document.getElementById("modalCloseButton").click();
+            this.openToast("top-right", "error", err);
+          }
+          // end
+        } else {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", "Please select recipent!", "false");
+        }
+      }
     },
 
     openToast(position, variant, message) {
@@ -2166,33 +2261,25 @@ export default {
       });
     },
 
-     next() {
-      if(this.isSiConfirmation === true){
+    next() {
+      if (this.isSiConfirmation === true) {
         if (this.counter === 3) {
           this.attemptNext = true;
-            if(!this.missingSalesInvoiceReleased && !this.missingDateOfInvoice){
-              this.counter++;
-            } else {
-              this.openToast(
-                "top-right",
-                "error",
-                "Sales Invoice Realeased & Date of Invoice is Required! Please Select in Step 4!"
-              );
-            }
+          if (!this.missingSalesInvoiceReleased && !this.missingDateOfInvoice) {
+            this.counter++;
+          } else {
+            this.openToast(
+              "top-right",
+              "error",
+              "Sales Invoice Realeased & Date of Invoice is Required! Please Select in Step 4!"
+            );
+          }
         } else {
           this.counter++;
         }
       } else {
         this.counter++;
       }
-
-
-
-
-
-
-
-
     },
 
     async queryCompany() {
@@ -2205,16 +2292,18 @@ export default {
 
     async queryCoordinators() {
       const responseData = await this.$store.dispatch("sof/queryCoordinators");
-      this.coordinator = responseData
-
+      this.coordinator = responseData;
     },
 
     async querySelectedCoordinator() {
-      const responseData = await this.$store.dispatch("sof/querySelectedCoordinator",this.$route.params.id);
+      const responseData = await this.$store.dispatch(
+        "sof/querySelectedCoordinator",
+        this.$route.params.id
+      );
 
-      if(responseData[0]){
-        this.coordinatorItem = responseData[0]
-      }else{
+      if (responseData[0]) {
+        this.coordinatorItem = responseData[0];
+      } else {
         this.coordinatorItem = {};
       }
     },

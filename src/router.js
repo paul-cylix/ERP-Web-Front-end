@@ -93,6 +93,9 @@ import SofApproval from "./pages/workflow/approval/SofApproval.vue";
 import SofInput from "./pages/workflow/input/SofInput.vue";
 import SofApproved from "./pages/workflow/approved/SofApproved.vue";
 import SofClarification from "./pages/workflow/clarification/SofClarification.vue";
+import SofWithdrawn from "./pages/workflow/withdrawn/SofWithdrawn.vue";
+import SofRejected from "./pages/workflow/rejected/SofRejected.vue";
+
 
 
 
@@ -437,6 +440,13 @@ const routes = [
             props: true,
             meta: { requiresAuth: true },
           },
+          {
+            path: ":id",
+            name: "sales_order_frm-withdrawn",
+            component: SofWithdrawn,
+            props: true,
+            meta: { requiresAuth: true },
+          },
         ],
         meta: { requiresAuth: true },
       },
@@ -483,6 +493,13 @@ const routes = [
             path: ":id",
             name: "Leave Request-rejected",
             component: LafRejected,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "sales_order_frm-rejected",
+            component: SofRejected,
             props: true,
             meta: { requiresAuth: true },
           },

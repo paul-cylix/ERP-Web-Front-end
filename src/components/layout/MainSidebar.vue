@@ -28,7 +28,9 @@
           <li class="nav-item">
             <router-link to="/participants" class="nav-link">
               <i class="nav-icon far fa-circle text-light"></i>
-              <p class="text">Participants</p>
+              <p class="text">Participants
+                <!-- <span class="badge badge-info right">2</span> -->
+              </p>
             </router-link>
           </li>
           <li class="nav-item">
@@ -49,7 +51,8 @@
           <li class="nav-item">
             <router-link to="/inprogress" class="nav-link">
               <i class="nav-icon far fa-circle text-primary"></i>
-              <p>In Progress</p>
+              <p>In Progress
+              </p>
             </router-link>
           </li>
           <li class="nav-item">
@@ -84,9 +87,35 @@
   </aside>
 </template>
 
+<script>
+export default {
+  // data(){
+  //   return {
+  //     inprogressC: 0,
+  //   }
+  // },
+
+  // computed: {
+  //   getInprogressCount() {
+  //     return this.$store.getters["status/getInprogressCount"];
+  //   },
+  // },
+
+  // watch: {
+  //   getInprogressCount(newValue){
+  //     this.inprogressC = newValue
+  //   }
+  // },
+
+
+}
+</script>
+
 <style scoped>
 a.router-link-active{
   background: #494e53;
   color: #fff;
 }
 </style>
+
+

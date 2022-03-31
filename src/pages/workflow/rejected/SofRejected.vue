@@ -778,7 +778,7 @@
                   </tr>
                   <tr class="d-flex">
                     <td class="col-3">Request Date</td>
-                    <td class="col-9">{{ this.requestDate }}</td>
+                    <td class="col-9">{{ this.soDate }}</td>
                   </tr>
                   <tr class="d-flex">
                     <td class="col-3">Customer Name</td>
@@ -1065,45 +1065,73 @@
 
         <!-- / Main Form -->
 
-
-        <!-- Modal withdrawn-->
+        <!-- Modal -->
         <div
           class="modal fade"
-          id="modal-withdrawn"
+          id="modal-default"
           data-backdrop="static"
           data-keyboard="false"
         >
           <div class="modal-dialog">
             <div class="modal-content">
               <!-- Overlay Loading Spinner -->
-              <div class="overlay" v-show="isLoading">
+              <div class="overlay" v-show="isLoadingModal">
                 <i class="fas fa-2x fa-sync fa-spin"></i>
               </div>
 
               <div class="modal-header">
-                <h6 class="modal-title"><b>Withdraw Request</b></h6>
+                <h6 class="modal-title">
+                  <b>{{ this.title }} Request</b>
+                </h6>
                 <button
                   type="button"
                   id="modalCloseButton"
                   class="close"
                   data-dismiss="modal"
                   aria-label="Close"
+                  @click="closeDefaultModal()"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
+
+                <!-- <div class="row" v-if="isForClarity">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <model-list-select
+                        :list="recipent"
+                        v-model="itemrecipient"
+                        option-value="code"
+                        option-text="name"
+                        placeholder="Select Recipient"
+                        style="padding: 9px"
+                      >
+                      </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalRecipient && attemptClarify"
+                        >Recipient is required!</small
+                      >
+                    </div>
+                  </div>
+                </div> -->
+
                 <div class="row">
                   <div class="col-md-12">
                     <div class="form-group">
-                      <small
-                        ><label for="withdrawRemarks">Remarks</label></small
-                      >
                       <textarea
                         class="form-control"
-                        id="withdrawRemarks"
+                        id="remarks"
                         rows="5"
-                        v-model.trim="withdrawRemarks"
+                        v-model.trim="remarks"
+                        placeholder="Please input request remarks here!"
                       ></textarea>
                     </div>
                   </div>
@@ -1114,9 +1142,9 @@
                 <button
                   type="button"
                   class="btn btn-primary btn-sm"
-                  @click="withdrawn()"
+                  @click="submit(title)"
                 >
-                  Withdrawn
+                  Submit
                 </button>
               </div>
             </div>
@@ -1124,8 +1152,7 @@
           </div>
           <!-- /.modal-dialog -->
         </div>
-        <!-- /.modal withdrawn-->
-
+        <!-- /.modal -->
 
         <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
@@ -1155,19 +1182,6 @@
           </aside>
 
           <aside class="col-lg-6 d-flex justify-content-end">
-            <div class="col-lg-2">
-              <button
-                type="button"
-                class="btn btn-block btn-warning btn-sm"
-                data-toggle="modal"
-                data-target="#modal-withdrawn"
-              >
-                Withdrawn
-              </button>
-            </div>
-            
-            
-            
             <div class="col-lg-2">
               <button
                 type="button"
@@ -1440,67 +1454,10 @@ export default {
       isDmoPocComplete: false,
       isSiConfirmation: false,
 
-      withdrawRemarks: '',
-
     };
   },
 
   methods: {
-     async withdrawn() {
-      this.isLoading = true;
-
-      const fd = new FormData();
-
-      const frmClass = this.$route.params.frmClass;
-      const reqId = this.$route.params.id;
-      const form = this.$route.params.frmName;
-
-
-      fd.append("loggedUserId", localStorage.getItem("id"))
-      fd.append("loggedUserFirstName", localStorage.getItem("fname"))
-      fd.append("loggedUserLastName", localStorage.getItem("lname"))
-      fd.append("loggedUserDepartment", localStorage.getItem("department"))
-      fd.append("loggedUserPosition", localStorage.getItem("positionName"))
-      fd.append("companyId", localStorage.getItem("companyId"))
-      fd.append("companyName", localStorage.getItem("companyName"))
-
-      fd.append("frmClass",frmClass)
-      fd.append("reqId",reqId)
-      fd.append("form",form)
-      fd.append("withdrawRemarks",this.withdrawRemarks)
-
-
-
-      try {
-        const resp = await axios.post(
-          "http://127.0.0.1:8000/api/withdraw-request",
-          fd
-        );
-
-        if(resp.status) {
-          this.isLoading = false;
-          this.openToast("top-right", "success", resp.data.message);
-          document.getElementById("modalCloseButton").click();
-          this.$router.replace("/inprogress");
-        }
-
-
-      } catch (err) {
-        // Handle Error Here
-        console.error(err);
-        this.isLoading = false;
-
-        if (err.response.status >= 400 && err.response.status <= 499) {
-          this.openToast("top-right", "error", err.response.data);
-        } else {
-          this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
-        }
-      }
-    },
-
-
-
-
     // important methods in approval modal
     setTitle(title) {
       this.title = title;
@@ -1533,7 +1490,7 @@ export default {
 
 
     close() {
-      this.$router.replace("/inprogress");
+      this.$router.replace("/rejected");
     },
 
     async querySof() {
@@ -1574,6 +1531,7 @@ export default {
         // console.log(data[0]['setup_project'][0]['PMName'])
 
         // Customer Details
+        
         this.projectName = data[1]["sales_orders"][0]["project"];
 
 
@@ -1750,10 +1708,100 @@ export default {
       }
     },
 
-
+    submit(type){
+      this.attemptNext = true;
+      const apptype = type;
+      if(this.isSiConfirmation){
+        if(this.missingSalesInvoiceReleased || this.missingDateOfInvoice){
+          this.openToast(
+                "top-right",
+                "error",
+                "Sales Invoice Realeased & Date of Invoice is Required! Please Select in Step 4!"
+              );
+        } else {
+          this.submitTwo(apptype)
+        }
+      } else {
+        this.submitTwo(apptype)
+      }
+    },
     
 
+    async submitTwo(type) {
+      const fd = new FormData();
 
+      fd.append("form", this.$route.params.frmName);
+      fd.append("processId", this.$route.params.id);
+      fd.append("frmClass",this.$route.params.frmClass)
+      fd.append("remarks", this.remarks);
+      fd.append("referenceNumber", this.referenceNumber);
+      fd.append("class", "SOF");
+      // fd.append("recipientId", this.itemrecipient.code);
+      // fd.append("inprogressId", this.inprogressId);
+      fd.append("isCoordinatorRequired", this.isCoordinatorRequired);
+      fd.append("isDmoPocComplete", this.isDmoPocComplete);
+      fd.append("isSiConfirmation", this.isSiConfirmation);
+      fd.append("invoiceNumber", this.invoiceNumber);
+      fd.append("dateOfInvoice", this.dateOfInvoice);
+      fd.append("salesInvoiceReleased", this.salesInvoiceReleasedItem.code);
+
+
+
+
+      if(this.isCoordinatorRequired){
+        fd.append("coordinatorID", this.coordinatorItem.code);
+        fd.append("coordinatorName", this.coordinatorItem.name);
+      }
+
+
+      fd.append("loggedUserId",this.loggedUserId);
+      fd.append("loggedUserFirstName",this.loggedUserFirstName);
+      fd.append("loggedUserLastName",this.loggedUserLastName);
+      fd.append("loggedUserDepartment",this.loggedUserDepartment);
+      fd.append("loggedUserPosition",this.loggedUserPosition);
+      fd.append("companyId",this.companyId);
+      fd.append("companyName",this.companyName);
+
+
+
+
+
+      if (type === "Approve") {
+        this.isLoadingModal = true;
+
+        try {
+          const resp = await axios.post(
+            "http://127.0.0.1:8000/api/approve-request",
+            fd
+          );
+
+          this.isLoadingModal = false;
+          document.getElementById("modalCloseButton").click();
+          if (resp.status === 200) {
+            // console.log(resp.data);
+            this.openToast("top-right", "success", resp.data.message);
+            this.$router.replace("/inputs");
+          }
+
+    
+        } catch (err) {
+          this.isLoadingModal = false;
+          if (err.response.status === 422) {
+            this.openToast("top-right", "error", err.response.data);
+          } else {
+            this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+          }
+        }
+
+
+      } else if (type === "Reject") {
+        console.log("Reject");
+      } else if (type === "Clarify") {
+        console.log("Clarify");
+      }
+
+      
+    },
 
     openToast(position, variant, message) {
       const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);

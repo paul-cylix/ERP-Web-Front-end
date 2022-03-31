@@ -466,7 +466,6 @@ export default {
       }
  
       const response = await axios.post("http://127.0.0.1:8000/api/save-sof", fd);
-
       // console.warn(response)
       return response
            
@@ -475,6 +474,123 @@ export default {
         console.error(err);
         throw err;
       }
+    },
+
+    async replySof(_, payload){
+      const fd = new FormData();
+
+      // Logged User Credentials
+      fd.append("loggedUserId",payload.loggedUserId)
+      fd.append("loggedUserFirstName",payload.loggedUserFirstName)
+      fd.append("loggedUserLastName",payload.loggedUserLastName)
+      fd.append("loggedUserFullName",payload.loggedUserFullName)
+      fd.append("loggedUserDepartment",payload.loggedUserDepartment)
+      fd.append("loggedUserPosition",payload.loggedUserPosition)
+      fd.append("companyId",payload.companyId)
+      fd.append("companyName",payload.companyName)
+
+      // SO Classification
+      fd.append("class",payload.sofType.code)
+      fd.append("referenceNumber",payload.referenceNumber)
+      
+      // // Customer Details
+      fd.append("clientId",payload.customerNameItem.code ) 
+      fd.append("clientName",payload.customerNameItem.name )
+      fd.append("contactPerson",payload.contactPersonItem.code ) // contact id
+      fd.append("contactPersonName",payload.contactPersonItem.name ) // contact id
+      fd.append("contactNumber",payload.contactNumberItem.code)
+      fd.append("deliveryAddress",payload.deliveryAddressItem.name)
+      fd.append("billingAddress",payload.billingAddressItem.name)
+
+      // Project Details
+      fd.append("poNumber",payload.poNumber)
+      fd.append("poDate",payload.poDate)
+      fd.append("projectStart",payload.projectStart)
+      fd.append("projectEnd",payload.projectEnd)
+      fd.append("projectShortText",payload.projectShortText)
+      
+      fd.append("projectId",payload.projectId)
+      fd.append("projectName",payload.projectName)
+
+      // boolean
+      fd.append("isCoordinatorRequired",payload.isCoordinatorRequired)
+      if(payload.isCoordinatorRequired){
+        fd.append("coordinatorId",payload.coordinator.code)
+        fd.append("coordinatorName",payload.coordinator.name)
+      }
+      fd.append("projectCode",payload.projectCode)
+      fd.append("scopeOfWork",payload.scopeOfWork)
+
+      // // Payment & Delivery Details
+      fd.append("paymentTerms",payload.paymentTerms)
+      fd.append("warranty",payload.warranty)
+      fd.append("currency",payload.currencyItem) // PHP
+      fd.append("projectCost",payload.projectCost)
+      fd.append("downpaymentrequired",payload.downPaymentRequiredItem)
+      fd.append("downPaymentPercentage",payload.downPaymentPercentage)
+      fd.append("downPaymentDateReceived",payload.downPaymentDateReceived)
+      fd.append("invoiceNumber",payload.invoiceNumber)
+      fd.append("invoicerequired",payload.invoiceRequiredItem)
+      fd.append("invoiceDateNeeded",payload.invoiceDateNeeded)
+      fd.append("salesInvoiceReleased",payload.salesInvoiceReleasedItem)
+      fd.append("dateOfInvoice",payload.dateOfInvoice)
+      fd.append("accountingRemarks",payload.accountingRemarks)
+
+
+      // System & Document Details
+      const systemDetails = payload.systemDetailsSelected;
+      let systemDetailsSelected = systemDetails.filter(function (system) {
+        return system.selected === true;
+      });
+
+      const documentDetails = payload.documentDetailsSelected;
+      let documentDetailsSelected = documentDetails.filter(function (document) {
+        return document.selected === true;
+      });
+
+      fd.append("systemname", JSON.stringify(systemDetailsSelected));
+      fd.append("documentname", JSON.stringify(documentDetailsSelected));
+
+      // Attachments
+      for (let i = 0; i < payload.selectedFileNew.length; i++) {
+        fd.append("file[]", payload.selectedFileNew[i]);
+      }
+      fd.append("removedFiles", JSON.stringify(payload.removedAttachedFilesId));
+
+
+
+      // Mod
+      fd.append("isInitiator",payload.isInitiator)
+      fd.append("remarks",payload.remarks)
+      fd.append("processId",payload.processId)
+      fd.append("frmClass",payload.frmClass)
+      fd.append("form",payload.form)
+      fd.append("isCoordinatorRequired",payload.isCoordinatorRequired)
+
+
+
+
+      try {
+        const res = await axios.post(
+          "http://127.0.0.1:8000/api/reply-request",
+          fd
+        );
+          console.log(res)
+
+          return res;
+
+
+      } catch (err) {
+        this.isLoadingModal = false;
+        // Handle Error Here
+        console.error(err);
+        throw err;
+      }
+
+
+
+
+ 
     },
 
     async querySof(context, payload){

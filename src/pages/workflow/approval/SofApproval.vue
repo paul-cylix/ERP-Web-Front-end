@@ -1323,6 +1323,7 @@
 
             <div class="col-lg-2">
               <button
+                :disabled="isInitiator"
                 type="button"
                 class="btn btn-block btn-danger btn-sm"
                 data-toggle="modal"
@@ -1335,6 +1336,7 @@
 
             <div class="col-lg-2">
               <button
+                :disabled="isInitiator"
                 type="button"
                 class="btn btn-block btn-warning btn-sm"
                 data-toggle="modal"
@@ -1825,7 +1827,7 @@ export default {
       attemptClarify: false,
       inprogressId: '',
 
-
+      isInitiator: false,
 
     };
   },
@@ -2097,7 +2099,12 @@ export default {
       }
 
       
-      
+        const queryuserId = data[1]["sales_orders"][0]["UID"];
+        const userId = parseInt(this.loggedUserId);
+
+        if (queryuserId === userId) {
+          this.isInitiator = true;
+        }
       
       
       
@@ -2115,7 +2122,8 @@ export default {
 
     submit(type){
       const apptype = type;
-      if(this.isCoordinatorRequired){
+      // console.log(apptype)
+      if(this.isCoordinatorRequired && apptype === 'Approve'){
         if(this.missingCoordinator){
               this.openToast(
                 "top-right",
@@ -2160,6 +2168,7 @@ export default {
       fd.append("loggedUserId",this.loggedUserId);
       fd.append("loggedUserFirstName",this.loggedUserFirstName);
       fd.append("loggedUserLastName",this.loggedUserLastName);
+      fd.append("loggedUserFullName",this.loggedUserFullName);
       fd.append("loggedUserDepartment",this.loggedUserDepartment);
       fd.append("loggedUserPosition",this.loggedUserPosition);
       fd.append("companyId",this.companyId);

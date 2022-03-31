@@ -3,6 +3,14 @@
     <router-view></router-view>
     <div class="col-md-12 mt-3">
       <div class="card card-secondary">
+        <div
+        class="overlay"
+        style="background-color: white !important"
+        v-show="isLoadingSpinner"
+      >
+        <loading-spinner></loading-spinner>
+      </div>
+
         <div class="card-header">
           <h3 class="card-title">For Approval Requests</h3>
         </div>
@@ -22,6 +30,7 @@ export default {
 
   data() {
     return {
+      isLoadingSpinner: false,
       requestArray: [],
       remarks: [],
       status: [],
@@ -139,8 +148,10 @@ export default {
     // }
   },
 
-  mounted() {
-    this.getApprovals();
+  async mounted() {
+    this.isLoadingSpinner = true    
+    await this.getApprovals();
+    this.isLoadingSpinner = false   
   },
 };
 </script>

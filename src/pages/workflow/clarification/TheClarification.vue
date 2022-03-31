@@ -3,11 +3,21 @@
     <router-view></router-view>
     <div class="col-md-12 mt-3">
       <div class="card card-secondary">
+        
+        <div
+        class="overlay"
+        style="background-color: white !important"
+        v-show="isLoadingSpinner"
+      >
+        <loading-spinner></loading-spinner>
+      </div>
+
+
         <div class="card-header">
           <h3 class="card-title">Clarification Requests</h3>
         </div>
         <div class="card-body pt-0 pb-3">
-          <card-spinner :show="isLoadingSpinner"></card-spinner>
+          <!-- <card-spinner :show="isLoadingSpinner"></card-spinner> -->
           <data-table v-bind="parametersTable1" />
         </div>
       </div>
@@ -126,10 +136,19 @@ export default {
 
       const responseData = await response.json();
       if (!response.ok) {
-        const error = new Error(
-          responseData.message || "Failed to fetch Clarification Requests."
-        );
-        throw error;
+        // const error = new Error(
+        //   responseData.message || "Failed to fetch Clarification Requests."
+        // );
+        // throw error;
+      if(response.status >= 400 && response.status <= 428) {
+        alert('Bad Request, URL not Found!')
+      } else if (response.status >= 429 && response.status <= 499) {
+        alert('Too many request, Please try again later!')
+      } else {
+        alert('Server Error, Please inform the administrator!')
+      }
+
+        
       }
 
       this.requestArray = responseData.data;

@@ -3,6 +3,13 @@
     <router-view></router-view>
     <div class="col-md-12 mt-3">
       <div class="card card-secondary">
+                      <div
+        class="overlay"
+        style="background-color: white !important"
+        v-show="isLoadingSpinner"
+      >
+        <loading-spinner></loading-spinner>
+      </div>
         <div class="card-header">
           <h3 class="card-title">In Progress Requests</h3>
         </div>
@@ -28,6 +35,7 @@ export default {
 
   data() {
     return {
+      isLoadingSpinner: false,
       requestArray: [],
       remarks: [],
       status: [],
@@ -137,6 +145,17 @@ export default {
       }
 
       this.requestArray = responseData.data;
+
+      // const wfCount = responseData.data.length
+      // const wfName = 'inprogress'
+      
+      // const wfData = {
+      //   wfCount: responseData.data.length,
+      //   wfName: 'inprogress'
+      // }
+
+      // await this.$store.dispatch('status/setWorkflowCount', wfData);
+
     },
 
     // activateAction(button){
@@ -144,8 +163,11 @@ export default {
     // }
   },
 
-  mounted() {
-    this.getInProgress();
+  async mounted() {
+    this.isLoadingSpinner = true    
+    await this.getInProgress();
+    this.isLoadingSpinner = false   
+
   },
 };
 </script>

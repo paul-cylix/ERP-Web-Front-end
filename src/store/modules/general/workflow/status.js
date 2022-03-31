@@ -5,13 +5,35 @@ export default {
     return {
       status: [],
       isItLoading: false,
+      // wf: {
+      //   participants: 0,
+      //   inputs: 0,
+      //   approval: 0,
+      //   inprogress: 0,
+      //   clarification: 0,
+      //   approved: 0,
+      //   withdrawn: 0,
+      //   rejected: 0,
+      // },
     };
   },
 
   mutations: {
     queryStatus(state, payload){
       state.status = payload
-    }
+    },
+
+    // setWorkflowCount(state, payload){
+    //   console.log(payload)
+    //   console.log(payload.wfCount)
+    //   console.log(payload.wfName)
+
+    //   if (payload.wfName === 'inprogress') {
+    //       state.wf.inprogress = payload.wfCount;
+    //   }
+
+
+    // },
   },
 
   actions: {
@@ -35,11 +57,20 @@ export default {
         return error
       }
     },
+
+    // setWorkflowCount(context, payload){
+    //   context.commit("setWorkflowCount", payload);
+
+    // }
   },
 
   getters: {
     getStatus(state){
       return state.status;
-    }
+    },
+
+    // getInprogressCount(state){
+    //   return state.wf.inprogress;
+    // },
   },
 };

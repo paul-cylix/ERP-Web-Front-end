@@ -2,8 +2,15 @@
   <div class="col-md-12 mt-3">
     <!-- Form Element sizes -->
     <div class="card card-secondary">
+      <div
+        class="overlay"
+        style="background-color: white !important"
+        v-show="isLoading"
+      >
+        <loading-spinner></loading-spinner>
+      </div>
       <div class="card-header">
-        <h3 class="card-title">Sales Order</h3>
+        <h3 class="card-title">{{this.isCoordinatorRequired}}</h3>
       </div>
       <div class="card-body">
         <card-spinner :show="isLoadingSpinner"></card-spinner>
@@ -132,7 +139,10 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  :style="this.disableStyle"
+                  :isDisabled="
+                    this.isInitiator === false
+                  "
                 >
                 </model-list-select>
                 <small
@@ -151,7 +161,10 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  :style="this.disableStyle"
+                  :isDisabled="
+                    this.isInitiator === false
+                  "
                 >
                 </model-list-select>
                 <small
@@ -172,7 +185,10 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  :style="this.disableStyle"
+                  :isDisabled="
+                    this.isInitiator === false
+                  "
                 >
                 </model-list-select>
                 <small
@@ -196,7 +212,10 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  :style="this.disableStyle"
+                  :isDisabled="
+                    this.isInitiator === false
+                  "
                 >
                 </model-list-select>
                 <small
@@ -218,7 +237,10 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px"
+                  :style="this.disableStyle"
+                  :isDisabled="
+                    this.isInitiator === false
+                  "
                 >
                 </model-list-select>
                 <small
@@ -274,6 +296,7 @@
                   type="text"
                   class="form-control form-control-sm py-3"
                   v-model.trim="poNumber"
+                  :disabled="this.isInitiator === false"
                 />
                 <small
                   class="text-danger p-0 m-0"
@@ -287,10 +310,16 @@
               <div class="form-group">
                 <small><label for="podate">Customer PO Date</label></small>
                 <date-picker
+                :disabled="this.isInitiator === false"
                   v-model="poDate"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
+
+
+
+
+
                 <small
                   class="text-danger p-0 m-0"
                   v-show="attemptNextTwo && missingPODate"
@@ -302,21 +331,12 @@
               <div class="form-group">
                 <small><label for="projectstart">Project Start</label></small>
                 <date-picker
-                  v-if="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
                   v-model="projectStart"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
-                  disabled
+                  :disabled="this.isInitiator === false || this.sofType.code === 'DMO' || this.sofType.code === 'POC'"
                 ></date-picker>
 
-                <date-picker
-                  v-else
-                  v-model="projectStart"
-                  valueType="format"
-                  style="display: block; width: 100%; line-height: 20px border:red;"
-                ></date-picker>
                 <small
                   class="text-danger p-0 m-0"
                   v-show="attemptNextTwo && missingProjectStart"
@@ -329,19 +349,10 @@
               <div class="form-group">
                 <small><label for="projectend"> Project End</label></small>
                 <date-picker
-                  v-if="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  :disabled="this.isInitiator === false || this.sofType.code === 'DMO' || this.sofType.code === 'POC'"
                   v-model="projectEnd"
                   valueType="format"
-                  disabled
-                  style="display: block; width: 100%; line-height: 20px border:red;"
-                ></date-picker>
-
-                <date-picker
-                  v-else
-                  v-model="projectEnd"
-                  valueType="format"
+                  
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
                 <small
@@ -365,6 +376,8 @@
                   type="text"
                   v-model.trim="projectShortText"
                   class="form-control py-3 form-control-sm"
+                  :disabled="this.isInitiator === false"
+
                 />
                 <small
                   class="text-danger p-0 m-0"
@@ -398,14 +411,16 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  style="padding: 9px; background-color: #e9ecef"
-                  :isDisabled="true"
+                  :style="isDDCoordinatorRequired"
+                  :isDisabled="isCoordinatorRequired === false || isInitiator === false"
                 >
                 </model-list-select>
 
-                <!-- <small class="text-danger p-0 m-0" v-show="true"
+                <small
+                  class="text-danger p-0 m-0"
+                  v-show="this.isCoordinatorRequired && this.missingCoordinator"
                   >Coordinator is required!</small
-                > -->
+                >
               </div>
             </div>
 
@@ -417,6 +432,8 @@
                   type="text"
                   v-model.trim="projectCode"
                   class="form-control py-3 form-control-sm"
+                  :disabled="this.isInitiator === false"
+
                 />
                 <datalist id="suggestions">
                   <option
@@ -445,6 +462,8 @@
                   name="scopeofwork"
                   v-model.trim="scopeOfWork"
                   rows="5"
+                  :disabled="this.isInitiator === false"
+
                 ></textarea>
                 <small
                   class="text-danger p-0 m-0"
@@ -467,9 +486,7 @@
                   v-model.trim="paymentTerms"
                   type="text"
                   class="form-control py-3 form-control-sm"
-                  :disabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  :disabled="this.isInitiator === false || this.sofType.code === 'DMO' || this.sofType.code === 'POC'"
                 />
                 <small
                   class="text-danger p-0 m-0"
@@ -486,9 +503,7 @@
                   type="text"
                   class="form-control py-3 form-control-sm"
                   v-model.trim="warranty"
-                  :disabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  :disabled="this.isInitiator === false || this.sofType.code === 'DMO' || this.sofType.code === 'POC'"
                 />
 
                 <small
@@ -508,7 +523,7 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="isDropdownRequired"
+                  :style="isDropdownRequiredTwo"
                   :isDisabled="
                     this.sofType.code === 'DMO' || this.sofType.code === 'POC'
                   "
@@ -533,9 +548,7 @@
                   class="form-control form-control-sm py-3"
                   id="projectCost"
                   v-model="projectCost"
-                  :disabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  :disabled="this.isInitiator === false || this.sofType.code === 'DMO' || this.sofType.code === 'POC'"
                 />
                 <small
                   class="text-danger p-0 m-0"
@@ -558,9 +571,9 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="isDropdownRequired"
+                  :style="isDropdownRequiredTwo"
                   :isDisabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
+                    this.isInitiator === false || this.sofType.code === 'DMO' || this.sofType.code === 'POC'
                   "
                 >
                 </model-list-select>
@@ -578,7 +591,7 @@
                 <input
                   type="number"
                   v-model.trim="downPaymentPercentage"
-                  :disabled="this.downPaymentRequiredItem.code === false"
+                  :disabled="this.downPaymentRequiredItem.code === false || this.isInitiator === false"
                   class="form-control py-3 form-control-sm"
                 />
                 <div class="d-flex flex-column">
@@ -637,9 +650,9 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="isDropdownRequired"
+                  :style="isDropdownRequiredTwo"
                   :isDisabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
+                    this.isInitiator === false || this.sofType.code === 'DMO' || this.sofType.code === 'POC'
                   "
                 >
                 </model-list-select>
@@ -656,7 +669,7 @@
                 <small><label for="softype">Invoice Date Needed</label></small>
                 <date-picker
                   v-model="invoiceDateNeeded"
-                  :disabled="this.invoiceRequiredItem.code === false"
+                  :disabled="this.invoiceRequiredItem.code === false || this.isInitiator === false"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
@@ -719,6 +732,7 @@
                   name="accountingremarks"
                   v-model.trim="accountingRemarks"
                   rows="5"
+                  :disabled="this.isInitiator === false"
                 ></textarea>
                 <!-- <small class="text-danger p-0 m-0" v-show="true"
                   >Accounting Remarks is required!</small
@@ -744,9 +758,10 @@
                         <th style="width: 80%">System Details</th>
                         <th style="width: 10%" class="text-right">
                           <button
+                            v-show="isInitiator"
                             class="btn btn-success btn-sm"
                             data-toggle="modal"
-                            data-target="#modal-default"
+                            data-target="#modal-details"
                             @click="setModalTitle('System')"
                           >
                             <i class="fas fa-plus"></i>
@@ -754,9 +769,10 @@
                         </th>
                       </tr>
                     </thead>
-                    <tbody style="font-size: 14px">
+
+                    <tbody style="font-size: 14px" v-if="isInitiator">
                       <tr v-for="item in systemDetailsList" :key="item.id">
-                        <td style="width: 10%">
+                        <td style="width: 10%" >
                           <input
                             type="checkbox"
                             :value="item"
@@ -764,9 +780,26 @@
                             v-model="item.selected"
                           />
                         </td>
-                        <td style="width: 80%">{{ item.type_name }}</td>
+                        <td style="width: 80%" >{{ item.type_name }}</td>
                       </tr>
                     </tbody>
+
+                    <tbody style="font-size: 14px" v-else>
+                      <tr v-for="item in systemDetailsList" :key="item.id">
+                        <td style="width: 10%" v-if="item.selected === true" >
+                          <input
+                            v-if="isInitiator"
+                            type="checkbox"
+                            :value="item"
+                            class="ml-3 mr-0"
+                            v-model="item.selected"
+                          />
+                        </td>
+                        <td style="width: 80%" v-if="item.selected === true" >{{ item.type_name }}</td>
+                      </tr>
+                    </tbody>
+
+
                   </table>
                   <small
                     class="text-danger p-0 m-0"
@@ -780,6 +813,8 @@
             <div class="col-md-6">
               <div class="d-flex">
                 <div class="bg-white">
+                  
+
                   <table
                     class="table table-fixed table-striped table-hover table-sm"
                   >
@@ -789,9 +824,10 @@
                         <th style="width: 80%">Document Details</th>
                         <th style="width: 10%" class="text-right">
                           <button
+                          v-show="isInitiator"
                             class="btn btn-success btn-sm"
                             data-toggle="modal"
-                            data-target="#modal-default"
+                            data-target="#modal-details"
                             @click="setModalTitle('Document')"
                           >
                             <i class="fas fa-plus"></i>
@@ -799,19 +835,39 @@
                         </th>
                       </tr>
                     </thead>
-                    <tbody style="font-size: 14px">
+
+                    <!-- Editable Docs -->
+                    <tbody style="font-size: 14px" v-if="isInitiator">
                       <tr v-for="item in documentDetailsList" :key="item.DocID">
-                        <td style="width: 10%">
+                        <td style="width: 10%"  >
                           <input
+                          
                             type="checkbox"
                             :value="item"
                             class="ml-3 mr-0"
                             v-model="item.selected"
                           />
                         </td>
-                        <td style="width: 80%">{{ item.DocumentName }}</td>
+                        <td style="width: 80%"  >{{ item.DocumentName }}</td>
                       </tr>
                     </tbody>
+
+                    <!-- Read Only Docs -->
+                    <tbody style="font-size: 14px" v-else>
+                      <tr v-for="item in documentDetailsList" :key="item.DocID">
+                        <td style="width: 10%" v-if="item.selected === true" >
+                          <input
+                            v-if="isInitiator"
+                            type="checkbox"
+                            :value="item"
+                            class="ml-3 mr-0"
+                            v-model="item.selected"
+                          />
+                        </td>
+                        <td style="width: 80%" v-if="item.selected === true" >{{ item.DocumentName }}</td>
+                      </tr>
+                    </tbody>
+
                   </table>
                   <small
                     class="text-danger p-0 m-0"
@@ -846,6 +902,7 @@
             id="uploadContainer"
           >
             <input
+              v-if="this.isInitiator"
               type="file"
               multiple
               name="fields[assetsFieldHandle][]"
@@ -861,7 +918,12 @@
               style="width: 100%; cursor: pointer"
               class="block pt-3 cursor-pointer"
             >
-              <span class="text-secondary">Click here or drop file(s)</span>
+                 <span class="text-secondary" v-if="isInitiator"
+                >Click here or drop file(s)</span
+              >
+              <span class="text-secondary" v-else
+                >List of attached file(s)</span
+              >
             </label>
             <small
               class="text-danger p-0 m-0"
@@ -870,10 +932,52 @@
             >
 
             <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
+              <!-- Already attached files -->
               <li
                 class="text-sm mt-2"
-                v-for="file in selectedFile"
-                :key="file.name"
+                v-for="(file, index) in selectedFile"
+                :key="file.id"
+              >
+                <div class="row d-flex justify-content-center">
+                  <div class="col-md-4 d-flex">
+                    <div class="col text-left">
+                      <span>{{ file.filename }}</span>
+                    </div>
+                    <div class="co-2" v-if="isInitiator" >
+                      <button
+                        class="btn btn-danger btn-sm"
+                        @click="
+                          removeAttachedFile(
+                            index,
+                            file.id,
+                            file.filename,
+                            file.filepath
+                          )
+                        "
+                        title="Remove file"
+                      >
+                        Remove
+                      </button>
+                    </div>
+
+                    <div class="col-2">
+                      <button
+                        class="btn btn-secondary btn-sm"
+                        @click="preview(file.mimeType, file.imageBytes)"
+                      >
+                        Preview
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <!-- /.Already attached files -->
+
+              <!-- Newly added files -->
+              <li
+                class="text-sm mt-2"
+                v-for="file in selectedFileNew"
+                :key="file.id"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
@@ -884,7 +988,7 @@
                       <button
                         class="btn btn-danger btn-sm"
                         type="button"
-                        @click="remove(selectedFile.indexOf(file))"
+                        @click="removeNew(selectedFileNew.indexOf(file))"
                         title="Remove file"
                       >
                         Remove
@@ -892,7 +996,7 @@
                     </div>
                     <div class="col-2">
                       <button
-                        @click="preview(selectedFile.indexOf(file))"
+                        @click="previewNew(selectedFileNew.indexOf(file))"
                         class="btn btn-secondary btn-sm"
                       >
                         Preview
@@ -901,6 +1005,7 @@
                   </div>
                 </div>
               </li>
+              <!-- /.Newly added files -->
             </ul>
           </div>
         </aside>
@@ -1204,21 +1309,53 @@
                     <td class="col-9"><b>Filename</b></td>
                     <td class="col-3"><b>Actions</b></td>
                   </tr>
+
                   <tr
                     class="d-flex"
-                    v-for="file in selectedFile"
-                    :key="file.name"
+                    v-for="(file, index) in selectedFile"
+                    :key="file.id"
                   >
-                    <td class="col-9">{{ file.name }}</td>
+                    <td class="col-9">{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center col-3">
                       <button
-                        @click="remove(selectedFile.indexOf(file))"
+                      v-if="isInitiator"
+                        @click="
+                          removeAttachedFile(
+                            index,
+                            file.id,
+                            file.filename,
+                            file.filepath
+                          )
+                        "
                         class="btn btn-danger btn-sm"
                       >
                         Remove
                       </button>
                       <button
-                        @click="preview(selectedFile.indexOf(file))"
+                        @click="preview(file.mimeType, file.imageBytes)"
+                        class="btn btn-secondary btn-sm ml-1"
+                      >
+                        Preview
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr
+                    class="d-flex"
+                    v-for="file in selectedFileNew"
+                    :key="file.name"
+                  >
+                    <td class="col-9">{{ file.name }}</td>
+                    <td class="pl-2 pr-2 text-center col-3">
+                      <button
+                        @click="removeNew(selectedFileNew.indexOf(file))"
+                        class="btn btn-danger btn-sm"
+                        
+                      >
+                        Remove
+                      </button>
+                      <button
+                        @click="previewNew(selectedFileNew.indexOf(file))"
                         class="btn btn-secondary btn-sm ml-1"
                       >
                         Preview
@@ -1235,10 +1372,84 @@
 
         <!-- / Main Form -->
 
-        <!-- Modal default-->
+        <!-- Modal -->
         <div
           class="modal fade"
           id="modal-default"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <!-- Overlay Loading Spinner -->
+              <div class="overlay" v-show="isLoadingModal">
+                <i class="fas fa-2x fa-sync fa-spin"></i>
+              </div>
+
+              <div class="modal-header">
+                <h6 class="modal-title"><b>Reply Request</b></h6>
+                <button
+                  type="button"
+                  class="close"
+                  id="modalCloseButton"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                  @click="closeModal()"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <small><label for="remarks">Remarks</label></small>
+                      <textarea
+                        class="form-control"
+                        id="remarks"
+                        rows="5"
+                        v-model.trim="remarks"
+                      ></textarea>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingReplyRemarks && attemptReply"
+                        >Remarks is required!</small
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer justify-content-end">
+                <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  @click="reply()"
+                >
+                  Reply
+                </button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
+
+
+
+
+        <!-- Modal documents-->
+        <div
+          class="modal fade"
+          id="modal-details"
           data-backdrop="static"
           data-keyboard="false"
         >
@@ -1299,10 +1510,19 @@
           </div>
           <!-- /.modal-dialog -->
         </div>
-        <!-- /.modal default -->
+        <!-- /.modal documents -->
 
-        <!-- Button -->
-        <div class="row d-flex justify-content-end mt-3">
+
+
+
+
+
+
+
+
+        
+
+        <!-- <div class="row d-flex justify-content-end mt-3">
           <div class="col-md-1" v-show="counter">
             <button
               type="button"
@@ -1333,6 +1553,65 @@
           </div>
 
           <button @click="test()">test</button>
+        </div> -->
+
+        <!-- Buttons -->
+        <div class="row d-flex justify-content-between mt-3">
+          <aside class="col-lg-6 d-flex justify-content-start">
+            <div class="col-lg-2" v-show="counter">
+              <button
+                type="button"
+                @click="counter--"
+                class="btn btn-block btn-secondary btn-sm"
+              >
+                Previous
+              </button>
+            </div>
+
+            <div class="col-lg-2" v-if="this.counter > -1 && this.counter < 6">
+              <!-- button for initiator -->
+              <button
+                v-if="isInitiator"
+                type="button"
+                @click="next()"
+                class="btn btn-block btn-primary btn-sm"
+              >
+                Next
+              </button>
+              <!-- button for approver -->
+              <button
+                v-else
+                type="button"
+                @click="counter++"
+                class="btn btn-block btn-primary btn-sm"
+              >
+                Next
+              </button>
+            </div>
+          </aside>
+
+          <aside class="col-lg-6 d-flex justify-content-end">
+            <div class="col-lg-2">
+              <button
+                type="button"
+                class="btn btn-block btn-warning btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+              >
+                Reply
+              </button>
+            </div>
+
+            <div class="col-lg-2">
+              <button
+                type="button"
+                class="btn btn-block btn-danger btn-sm"
+                @click="close()"
+              >
+                Close
+              </button>
+            </div>
+          </aside>
         </div>
         <!-- / Buttons -->
       </div>
@@ -1352,14 +1631,16 @@ export default {
     ModelListSelect,
   },
   async created() {
-    this.isLoadingSpinner = true;
+    this.isLoading = true;
     await this.querySof();
     await this.queryCompany();
+    await this.queryCoordinators();
+    await this.querySelectedCoordinator();
     await this.queryCompanySystemDetails();
     await this.queryCompanyDocumentDetails();
     await this.queryCurrency();
 
-    this.isLoadingSpinner = false;
+    this.isLoading = false;
   },
   watch: {
     counter() {
@@ -1402,12 +1683,18 @@ export default {
       }
     },
 
-    downPaymentRequiredItem(newValue) {
-      this.downPaymentPercentage = "";
+    // remova dp percentage if dropdown dp required is no
+    downPaymentRequiredItem(newValue, oldValue) {
+      if (oldValue.code === true && newValue.code === false) {
+        this.downPaymentPercentage = "";
+      }
       // (this.downPaymentRequiredItem) ? this.downPaymentDateReceived = null : this.downPaymentDateReceived = null;
     },
-    invoiceRequiredItem(newValue) {
-      this.invoiceDateNeeded = null;
+
+    invoiceRequiredItem(newValue, oldValue) {
+      if (oldValue.code === true && newValue.code === false) {
+        this.invoiceDateNeeded = null;
+      }
     },
 
     sofType(newValue) {
@@ -1503,6 +1790,24 @@ export default {
 
     isDropdownRequired() {
       if (this.sofType.code === "DMO" || this.sofType.code === "POC") {
+        return "padding: 9px; background-color: #e9ecef";
+      } else {
+        return "padding: 9px";
+      }
+    },
+
+    isDropdownRequiredTwo() {
+      if (this.isInitiator === false || this.sofType.code === "DMO" || this.sofType.code === "POC") {
+        return "padding: 9px; background-color: #e9ecef";
+      } else {
+        return "padding: 9px";
+      }
+    },
+
+
+
+    disableStyle(){
+      if (this.isInitiator === false) {
         return "padding: 9px; background-color: #e9ecef";
       } else {
         return "padding: 9px";
@@ -1613,6 +1918,7 @@ export default {
         return false;
       }
     },
+
     dpValitade() {
       if (this.downPaymentRequiredItem.code === true) {
         return parseInt(this.downPaymentPercentage) >= 1 &&
@@ -1638,33 +1944,50 @@ export default {
     // System & Document Details
 
     missingSystemDetails() {
-      let systems = this.systemDetailsList
+      let systems = this.systemDetailsList;
       var isSystemSelected = systems.filter(function (system) {
-        return system.selected === true
+        return system.selected === true;
       });
-      return (isSystemSelected.length) ? false : true;
-
-
-
-
-
+      return isSystemSelected.length ? false : true;
     },
 
     missingDocumentDetails() {
-      const documents = this.documentDetailsList
+      const documents = this.documentDetailsList;
       var isDocumentSelected = documents.filter(function (document) {
-        return document.selected === true
+        return document.selected === true;
       });
-      return (isDocumentSelected.length) ? false : true;
+      return isDocumentSelected.length ? false : true;
     },
 
     // Attachments
     missingAttachments() {
-      return this.selectedFile.length === 0 ? true : false;
+      return this.selectedFile.length === 0 && this.selectedFileNew.length === 0
+        ? true
+        : false;
     },
 
     missingModalInputform() {
       return this.modalInputform.length === 0 ? true : false;
+    },
+
+    isDDCoordinatorRequired() {
+      if (this.isCoordinatorRequired === false || this.isInitiator === false) {
+        return "padding: 9px; background-color: #e9ecef";
+      } else {
+        return "padding: 9px";
+      }
+    },
+
+    missingCoordinator() {
+      return this.coordinatorItem.code === undefined ? true : false;
+    },
+
+        missingReplyRemarks() {
+      if (this.remarks.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
     },
   },
   data() {
@@ -1677,8 +2000,11 @@ export default {
       attemptNextFive: false,
       attemptModalSubmit: false,
 
+      attemptReply: false,
+
       isLoadingSpinner: false,
       isLoadingModal: false,
+      isLoading: false,
       // need sa query
       // Logged User Data
       loggedUserId: localStorage.getItem("id"),
@@ -1721,12 +2047,7 @@ export default {
       projectEnd: null,
       projectShortText: "",
       projectName: null,
-      coordinator: [
-        { code: "PRJ", name: "Project" },
-        { code: "DLV", name: "Delivery" },
-        { code: "DMO", name: "Demo" },
-        { code: "POC", name: "POC" },
-      ],
+      coordinator: [],
       coordinatorItem: {},
       projectCode: "",
       projectCodeDataList: [],
@@ -1767,19 +2088,76 @@ export default {
       documentDetailsList: [],
       documentDetailsSelected: [],
 
-      // The Attachments
+      // The Attachments already listed
       selectedFile: [],
       filespreview: [],
 
+      // Attachments that are newly added
+      selectedFileNew: [],
+      filespreviewNew: [],
+
+      // filtes to remove in existing attachments
+      removedAttachedFilesId: [],
+
       modalTitle: null,
       modalInputform: "",
+
+      isCoordinatorRequired: false,
+      isInitiator: false,
+
+      // The Alert
+      isAlert: false,
+      header: "", // Syccess or Failed
+      message: "", // added successfully
+      type: "", // true or false
+
+      remarks: '',
+
+      projectId: null,
+      
     };
   },
 
   methods: {
-    test() {
-      console.log(this.systemDetailsList);
+    closeModal() {
+      this.resetAlert();
+      this.remarks = '';
+      this.attemptReply = false;
     },
+
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
+    },
+
+    resetAlert() {
+      this.isAlert = false;
+      this.header = "";
+      this.message = "";
+      this.type = "";
+    },
+
+    close() {
+      this.$router.replace("/clarifications");
+    },
+
+    async queryCoordinators() {
+      const responseData = await this.$store.dispatch("sof/queryCoordinators");
+      this.coordinator = responseData;
+    },
+
+    async querySelectedCoordinator() {
+      const responseData = await this.$store.dispatch("sof/querySelectedCoordinator",this.$route.params.id);
+
+      if(responseData[0]){
+        this.coordinatorItem = responseData[0]
+      }else{
+        this.coordinatorItem = {};
+      }
+    },
+    
     async querySof() {
       try {
         await this.$store.dispatch("sof/querySof", {
@@ -1787,7 +2165,7 @@ export default {
           frmName: this.$route.params.frmName,
           companyId: this.companyId,
         });
-
+        // sof data
         const data = this.$store.getters["sof/getSofData"];
 
         // console.warn(data);
@@ -1815,6 +2193,8 @@ export default {
         // console.log(data[0]['setup_project'][0]['CLIENTCODE'])
         // console.log(data[0]['setup_project'][0]['term_type'])
         // console.log(data[0]['setup_project'][0]['PMName'])
+
+        this.projectId = data[0]["setup_project"][0]["project_id"];
 
         // Customer Details
 
@@ -1912,6 +2292,8 @@ export default {
             data[1]["sales_orders"][0]["dp_percentage"];
         }
 
+        // console.log(data[1]["sales_orders"][0]["dp_percentage"])
+
         if (data[1]["sales_orders"][0]["IsInvoiceRequired"]) {
           this.invoiceRequiredItem = { code: true, name: "Yes" };
           this.invoiceDateNeeded = data[1]["sales_orders"][0]["invDate"];
@@ -1925,10 +2307,32 @@ export default {
         this.invoiceNumber = data[1]["sales_orders"][0]["InvoiceNumber"];
         this.accountingRemarks = data[1]["sales_orders"][0]["Remarks2"];
 
-
         // Attachments
         this.selectedFile = data[5]["attachments"]["data"];
 
+        // console.log(data[4]["actual_sign"][3])
+        if (this.$route.params.frmName === "Sales Order - Project") {
+          if (
+            data[4]["actual_sign"][3]["USER_GRP_IND"] ===
+              "Approval of Project Head" &&
+            data[4]["actual_sign"][3]["STATUS"] === "Completed"
+          ) {
+            this.isCoordinatorRequired = true;
+          }
+        }
+
+        // if(this.$route.params.frmName === 'Sales Order - Project') {
+        //   if(data[4]["actual_sign"][3]["STATUS"] === 'In Progress') {
+        //     this.isCoordinatorRequired = true;
+        //   }
+        // }
+
+        const queryuserId = data[1]["sales_orders"][0]["UID"];
+        const userId = parseInt(this.loggedUserId);
+
+        if (queryuserId === userId) {
+          this.isInitiator = true;
+        }
       } catch (error) {
         this.openToast(
           "top-right",
@@ -1940,11 +2344,56 @@ export default {
       }
     },
 
-    async submit() {
-      this.isLoadingSpinner = true;
+    reply(){
+      this.attemptReply = true
+      this.resetAlert();
+
+      // if coordinator is required this is the validation
+      if (this.isCoordinatorRequired) {
+        if(!this.missingReplyRemarks && !this.missingCoordinator){
+          // console.log('run reply')
+          this.replyTwo();
+        } else if (this.missingReplyRemarks && !this.missingCoordinator ) {
+          // console.log('missing reply')
+          this.addAlert("Failed", "Remarks is required!", "false");
+        } else if (!this.missingReplyRemarks && this.missingCoordinator ) {
+          // console.log('missing coordinator')
+          this.addAlert("Failed", "Coordinator is required!  Proceed to Step 3!", "false");
+        } else {
+          // console.log('missing all')
+          this.addAlert("Failed", "Please complete required fields!", "false");
+
+        }
+      } else {
+        // if coordinator is not required this is the validation
+        if (!this.missingReplyRemarks) {
+          this.replyTwo();
+        } else {
+          this.addAlert("Failed", "Please complete required fields!", "false");
+        }
+      }
+
+
+
+
+    },
+
+    async replyTwo() {
+      this.isLoadingModal = true;
+      
 
       try {
         const payload = {
+          // Logged User Credentials
+          loggedUserId: this.loggedUserId,
+          loggedUserFirstName: this.loggedUserFirstName,
+          loggedUserLastName: this.loggedUserLastName,
+          loggedUserFullName: this.loggedUserFullName,
+          loggedUserDepartment: this.loggedUserDepartment,
+          loggedUserPosition: this.loggedUserPosition,
+          companyId: this.companyId,
+          companyName: this.companyName,
+
           // So CLassification
           sofType: this.sofType,
 
@@ -1961,8 +2410,9 @@ export default {
           projectStart: this.projectStart,
           projectEnd: this.projectEnd,
           projectShortText: this.projectShortText,
+          projectId: this.projectId,
           projectName: this.projectNameFormula,
-          coordinatorItem: this.coordinatorItem.code,
+          coordinator: this.coordinatorItem,
           projectCode: this.projectCode,
           scopeOfWork: this.scopeOfWork,
 
@@ -1975,38 +2425,54 @@ export default {
           downPaymentPercentage: this.downPaymentPercentage,
           downPaymentDateReceived: this.downPaymentDateReceived,
           invoiceNumber: this.invoiceNumber,
-
           invoiceRequiredItem: this.invoiceRequiredItem.code,
           invoiceDateNeeded: this.invoiceDateNeeded,
           salesInvoiceReleasedItem: this.salesInvoiceReleasedItem.code,
           dateOfInvoice: this.dateOfInvoice,
-
           accountingRemarks: this.accountingRemarks,
 
+
+
           // System & Document Details
-          systemDetailsSelected: this.systemDetailsSelected,
-          documentDetailsSelected: this.documentDetailsSelected,
+          systemDetailsSelected: this.systemDetailsList,
+          documentDetailsSelected: this.documentDetailsList,
 
           accountManager: this.accountManager,
 
           // The Attachments
-          selectedFile: this.selectedFile,
+          selectedFileNew: this.selectedFileNew,
+          removedAttachedFilesId: this.removedAttachedFilesId,
+
+          // Mods
+          isInitiator: this.isInitiator,
+          remarks: this.remarks,
+          processId: this.$route.params.id,
+          frmClass: this.$route.params.frmClass,
+          form: this.$route.params.frmName,
+          isCoordinatorRequired: this.isCoordinatorRequired,
+          referenceNumber: this.referenceNumber,
         };
 
-        const response = await this.$store.dispatch("sof/createSOF", payload);
 
-        if (response.status === 201) {
+
+        // console.log(payload)
+        const response = await this.$store.dispatch("sof/replySof", payload);
+        console.log(response)
+
+        if (response.status >= 200 && response.status <= 399) {
           this.openToast(
             "top-right",
             "success",
             "Your Sales Order Request was successfully submitted."
           );
         }
+        document.getElementById("modalCloseButton").click();
+        this.isLoadingModal = true;
+        this.$router.replace("/clarifications");
 
-        this.isLoadingSpinner = false;
-        this.$router.replace("/inprogress");
+
       } catch (error) {
-        this.isLoadingSpinner = false;
+        this.isLoadingModal = false;
 
         if (error.response.status === 422) {
           this.openToast("top-right", "error", error.response.data);
@@ -2062,7 +2528,53 @@ export default {
             }
           );
 
+
+
+
+          // check if this request requires a coordinator
+          if (this.isCoordinatorRequired && this.isInitiator) {
+            // if coordinator is required the computed of missingcoordinator will be addd
           if (
+            !this.missingPONumber &&
+            !this.missingPODate &&
+            !this.missingProjectStart &&
+            !this.missingProjectEnd &&
+            !this.missingProjectShortText &&
+            !this.missingProjectCode &&
+            !this.missingScopeOfWork &&
+            !this.missingCoordinator &&
+            isExist === 0
+          ) {
+            this.counter++;
+          } else if (
+            !this.missingPONumber &&
+            !this.missingPODate &&
+            !this.missingProjectStart &&
+            !this.missingProjectEnd &&
+            !this.missingProjectShortText &&
+            !this.missingProjectCode &&
+            !this.missingScopeOfWork &&
+            !this.missingCoordinator &&
+            isExist === 1
+          ) {
+            this.openToast(
+              "top-right",
+              "error",
+              "Project Code must be unique!"
+            );
+          } else if (isExist === 1) {
+            this.openToast(
+              "top-right",
+              "error",
+              "Project Code must be unique!"
+            );
+          }
+
+
+
+          } else {
+            // if the validation doesnt require coordinator it will be the old validation
+                      if (
             !this.missingPONumber &&
             !this.missingPODate &&
             !this.missingProjectStart &&
@@ -2095,12 +2607,21 @@ export default {
               "Project Code must be unique!"
             );
           }
+            
+          }
+
+
+
+
+
           this.isLoadingSpinner = false;
         } catch (error) {
           // Handle Error Here
           alert("error");
           console.log(error.status);
         }
+
+        
       } else if (this.counter === 3) {
         this.attemptNextThree = true;
 
@@ -2245,28 +2766,57 @@ export default {
     },
 
     // The Attachments
+
+    // The Attachments
+    preview(mimeType, imageBytes) {
+      var newTab = window.open();
+      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+    },
+
     onFileSelected(event) {
-      let selectedFiles = event.target.files;
-      for (let i = 0; i < selectedFiles.length; i++) {
-        this.selectedFile.push(selectedFiles[i]);
+      let selectedFilesNew = event.target.files;
+      for (let i = 0; i < selectedFilesNew.length; i++) {
+        this.selectedFileNew.push(selectedFilesNew[i]);
       }
-      this.filePreview();
+      this.filePreviewNew();
     },
+
     onInputChange(event) {
-      let selectedFiles = event.dataTransfer.files;
-      for (let i = 0; i < selectedFiles.length; i++) {
-        this.selectedFile.push(selectedFiles[i]);
+      let selectedFilesNew = event.dataTransfer.files;
+      for (let i = 0; i < selectedFilesNew.length; i++) {
+        this.selectedFileNew.push(selectedFilesNew[i]);
       }
-      this.filePreview();
+      this.filePreviewNew();
     },
-    remove(i) {
-      this.selectedFile.splice(i, 1);
-      this.filePreview();
-    },
-    preview(i) {
+
+    previewNew(i) {
       // console.log(i)
-      const url = this.filespreview[i].link;
+      const url = this.filespreviewNew[i].link;
       window.open(url, "_blank", "resizable=yes");
+    },
+
+    filePreviewNew() {
+      let files = this.selectedFileNew;
+      const fileContainer = [];
+      for (let i = 0; i < files.length; i++) {
+        let tmppath = URL.createObjectURL(files[i]);
+        const thisFiles = {
+          link: tmppath,
+        };
+        fileContainer.push(thisFiles);
+      }
+      this.filespreviewNew = fileContainer;
+    },
+
+    removeNew(i) {
+      this.selectedFileNew.splice(i, 1);
+      this.filePreviewNew();
+    },
+
+    removeAttachedFile(index, id, filename, filepath) {
+      const attachmentId = { id: id, filename: filename, filepath: filepath };
+      this.removedAttachedFilesId.push(attachmentId);
+      this.selectedFile.splice(index, 1);
     },
 
     dragover(event) {
