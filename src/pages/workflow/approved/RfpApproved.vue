@@ -927,7 +927,7 @@ export default {
 
             this.uid = responseOne.data.data.UID;
 
-            if (responseOne.data.data.UID === this.loggedUserId) {
+            if (responseOne.data.data.UID === parseInt(this.loggedUserId)) {
               this.isInitiator = true;
               this.counter = 0;
             } else {

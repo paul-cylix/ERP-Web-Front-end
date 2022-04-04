@@ -1162,7 +1162,7 @@ export default {
           this.requestedDate = resp.data[0].request_date;
           this.guid = resp.data[0].GUID;
 
-          if (resp.data[0].UID === this.loggedUserId) {
+          if (resp.data[0].UID === parseInt(this.loggedUserId)) {
             this.isInitiator = true;
           } else {
             this.isInitiator = false;

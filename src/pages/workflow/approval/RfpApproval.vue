@@ -1835,7 +1835,7 @@ export default {
           );
           this.uid = resp.data.data.UID;
 
-          if (resp.data.data.UID === this.loggedUserId) {
+          if (resp.data.data.UID === parseInt(this.loggedUserId)) {
             this.isInitiator = true;
             this.counter = 2;
           }

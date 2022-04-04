@@ -931,7 +931,7 @@ export default {
           this.referenceNumber = resp.data.data.reference;
           this.requestedDate = resp.data.data.date_needed;
 
-          if (resp.data.data.UID === this.loggedUserId) {
+          if (resp.data.data.UID === parseInt(this.loggedUserId)) {
             this.isInitiator = true;
           } else {
             this.isInitiator = false;

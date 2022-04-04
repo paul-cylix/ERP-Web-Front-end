@@ -1065,7 +1065,7 @@ export default {
           };
           this.reportItem = reportItem;
 
-          if (resp.data[0].UID === this.loggedUserId) {
+          if (resp.data[0].UID === parseInt(this.loggedUserId)) {
             this.isInitiator = true;
           }
         }

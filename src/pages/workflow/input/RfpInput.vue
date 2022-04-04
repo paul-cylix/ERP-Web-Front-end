@@ -856,7 +856,7 @@ export default {
             ).toLocaleString(undefined, { minimumFractionDigits: 2 });
             this.uid = responseOne.data.data.UID;
 
-            if (responseOne.data.data.UID === this.loggedUserId) {
+            if (responseOne.data.data.UID === parseInt(this.loggedUserId)) {
               this.isInitiator = true;
               this.counter = 2;
             } else {

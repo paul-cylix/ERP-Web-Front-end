@@ -266,12 +266,13 @@
                     class="form-control form-control-sm py-3"
                     id="amount"
                     v-model="amount"
+                    :disabled="true"
                   />
-                  <small
+                  <!-- <small
                     class="text-danger p-0 m-0"
                     v-if="this.missingAmount && attemptNextOne"
                     >Amount is required!</small
-                  >
+                  > -->
                 </div>
               </div>
             </div>
@@ -1456,6 +1457,21 @@ export default {
         return 0;
       }
     },
+
+    re_totalAmount() {
+      const xp_totalAmt = parseFloat(this.expenseType_totalAmount)
+      const td_totalAmt = parseFloat(this.transpoSetup_totalAmount)
+      const float_total = xp_totalAmt + td_totalAmt
+
+      const string_total = float_total.toLocaleString(undefined, { minimumFractionDigits: 2 })
+ 
+
+      this.changeAmount(string_total, float_total);
+      return string_total;
+
+    }
+
+
   },
   data() {
     return {
@@ -1556,6 +1572,11 @@ export default {
   },
 
   methods: {
+    changeAmount(amount, realAmount){
+      this.amount = amount
+      this.realAmount = realAmount
+    },
+
     test() {
       console.log(this.missingExpenses);
     },
@@ -1611,8 +1632,8 @@ export default {
         if (
           !this.missingPayeeName &&
           !this.missingModeOfPayment &&
-          !this.missingCurrency &&
-          !this.missingAmount
+          !this.missingCurrency 
+          // !this.missingAmount
         ) {
           this.counter++;
         }

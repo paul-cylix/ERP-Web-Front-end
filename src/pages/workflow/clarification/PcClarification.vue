@@ -1634,7 +1634,7 @@ export default {
             { minimumFractionDigits: 2 }
           );
 
-          if (resp.data.data.UID === this.loggedUserId) {
+          if (resp.data.data.UID === parseInt(this.loggedUserId)) {
             this.isInitiator = true;
           }
         }

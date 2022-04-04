@@ -11,7 +11,7 @@
       </div>
 
       <div class="card-header">
-        <h3 class="card-title">Reimbursement Request</h3>
+        <h3 class="card-title">Reimbursement {{this.re_totalAmount}}</h3>
       </div>
       <div class="card-body">
         <!-- Step Numbers -->
@@ -315,7 +315,7 @@
                     class="form-control form-control-sm py-3"
                     id="amount"
                     v-model="amount"
-                    :disabled="isEdit === false"
+                    :disabled="true"
                   />
 
                   <small
@@ -1519,6 +1519,20 @@ export default {
       }
     },
 
+    re_totalAmount() {
+      const xp_totalAmt = parseFloat(this.expenseType_totalAmount)
+      const td_totalAmt = parseFloat(this.transpoSetup_totalAmount)
+      const float_total = xp_totalAmt + td_totalAmt
+
+      const string_total = float_total.toLocaleString(undefined, { minimumFractionDigits: 2 })
+ 
+
+      this.changeAmount(string_total, float_total);
+      return string_total;
+
+    },
+
+
     isEdit() {
       const x = this.isInitiator === true;
       const y = this.forEdit === true;
@@ -1706,6 +1720,8 @@ export default {
         return false;
       }
     },
+
+
   },
   data() {
     return {
@@ -1856,6 +1872,11 @@ export default {
   },
 
   methods: {
+    changeAmount(amount, realAmount){
+      this.amount = amount
+      this.realAmount = realAmount
+    },
+
     async reply() {
       this.isLoadingModal = true;
       this.attemptReply = true;
@@ -1997,11 +2018,14 @@ export default {
 
             this.uid = responseOne.data.data.UID;
 
-            if (responseOne.data.data.UID === this.loggedUserId) {
+            if (responseOne.data.data.UID == parseInt(this.loggedUserId)) {
               this.isInitiator = true;
               // this.counter = 0;
+
             } else {
               this.isInitiator = false;
+
+
             }
 
             // showExpense - responseTwo
@@ -2146,8 +2170,7 @@ export default {
         if (
           !this.missingPayeeName &&
           !this.missingModeOfPayment &&
-          !this.missingCurrency &&
-          !this.missingAmount
+          !this.missingCurrency 
         ) {
           this.counter++;
         }
