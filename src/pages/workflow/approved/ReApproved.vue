@@ -220,43 +220,33 @@
             </div>
             <div class="form-group">
               <small><label for="modeOfPayment">Mode of Payment</label></small>
-              <input
-                type="text"
-                disabled
-                class="form-control form-control-sm"
-                id="modeOfPayment"
-              />
-              <!-- <model-list-select
+                <model-list-select
                 :list="modeOfPayment"
                 v-model="modeOfPaymentItem"
                 option-value="code"
                 option-text="name"
                 placeholder="select item"
-                style="padding: 9px"
-                disabled = "true"
+                style="padding: 9px; background-color: #e9ecef"
+                :isDisabled="true"
               >
-              </model-list-select> -->
+              </model-list-select>
             </div>
 
             <div class="row">
               <div class="col-md-4">
                 <div class="form-group">
                   <small><label for="currency">Currency</label></small>
-                  <input
-                    type="text"
-                    disabled
-                    class="form-control form-control-sm"
-                    id="currency"
-                  />
-                  <!-- <model-list-select
+                  <model-list-select
+          
                     :list="currency"
                     v-model="currencyItem"
                     option-value="code"
                     option-text="name"
                     placeholder="select item"
-                    style="padding: 9px"
+                    style="padding: 9px; background-color: #e9ecef"
+                    :isDisabled="true"
                   >
-                  </model-list-select> -->
+                  </model-list-select>
                 </div>
               </div>
               <div class="col-md-8">
@@ -515,11 +505,11 @@
                   </tr>
                   <tr>
                     <td>Mode of Payment</td>
-                    <td></td>
+                    <td>{{ this.modeOfPaymentItem.name }}</td>
                   </tr>
                   <tr>
                     <td>Currency</td>
-                    <td></td>
+                    <td>{{ this.currencyItem.name }}</td>
                   </tr>
                   <tr>
                     <td>Amount</td>
@@ -822,13 +812,13 @@
 </template>
 
 <script>
-// import { ModelListSelect } from "vue-search-select";
+import { ModelListSelect } from "vue-search-select";
 import axios from "axios";
 import VsToast from "@vuesimple/vs-toast";
 export default {
-  // components: {
-  //   ModelListSelect,
-  // },
+  components: {
+    ModelListSelect,
+  },
 
   watch: {
     // Request Details
@@ -918,7 +908,7 @@ export default {
         { code: "Check", name: "Check" },
         { code: "Credit to Account", name: "Credit to Account" },
       ],
-      modeOfPaymentItem: {},
+      modeOfPaymentItem: {code: "Cash", name: "Cash"},
       currency: [
         { code: "PHP", name: "PHP" },
         { code: "AUD", name: "AUD" },
@@ -926,7 +916,7 @@ export default {
         { code: "EUR", name: "EUR" },
         { code: "USD", name: "USD" },
       ],
-      currencyItem: {},
+      currencyItem: { code: "PHP", name: "PHP" },
       payeeName: "",
       amount: "",
 

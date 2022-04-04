@@ -232,12 +232,17 @@
             <div class="form-group">
               <small><label for="modeOfPayment">Mode of Payment</label></small>
               <!-- <input type="text" class="form-control form-control-sm" id="modeOfPayment"> -->
-              <input
-                type="text"
-                disabled
-                class="form-control form-control-sm"
-                id="modeOfPayment"
-              />
+
+              <model-list-select
+                :list="modeOfPayment"
+                v-model="modeOfPaymentItem"
+                option-value="code"
+                option-text="name"
+                placeholder="select item"
+                style="padding: 9px; background-color: #e9ecef"
+                :isDisabled="true"
+              >
+              </model-list-select>
             </div>
 
             <div class="row">
@@ -245,12 +250,17 @@
                 <div class="form-group">
                   <small><label for="currency">Currency</label></small>
                   <!-- <input type="text" class="form-control form-control-sm" id="currency"> -->
-                  <input
-                    type="text"
-                    disabled
-                    class="form-control form-control-sm"
-                    id="currency"
-                  />
+
+                  <model-list-select
+                    :list="currency"
+                    v-model="currencyItem"
+                    option-value="code"
+                    option-text="name"
+                    placeholder="select item"
+                    style="padding: 9px; background-color: #e9ecef"
+                    :isDisabled="true"
+                  >
+                  </model-list-select>
                 </div>
               </div>
               <div class="col-md-8">
@@ -1225,6 +1235,13 @@ export default {
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
     },
+
+    expenseType_totalAmount() {
+      this.re_totalAmount();
+    },
+    transpoSetup_totalAmount() {
+      this.re_totalAmount();
+    },
   },
   computed: {
     classA() {
@@ -1457,21 +1474,6 @@ export default {
         return 0;
       }
     },
-
-    re_totalAmount() {
-      const xp_totalAmt = parseFloat(this.expenseType_totalAmount)
-      const td_totalAmt = parseFloat(this.transpoSetup_totalAmount)
-      const float_total = xp_totalAmt + td_totalAmt
-
-      const string_total = float_total.toLocaleString(undefined, { minimumFractionDigits: 2 })
- 
-
-      this.changeAmount(string_total, float_total);
-      return string_total;
-
-    }
-
-
   },
   data() {
     return {
@@ -1505,7 +1507,7 @@ export default {
         { code: "Check", name: "Check" },
         { code: "Credit to Account", name: "Credit to Account" },
       ],
-      modeOfPaymentItem: {},
+      modeOfPaymentItem: {code: "Cash", name: "Cash"},
       currency: [
         { code: "PHP", name: "PHP" },
         { code: "AUD", name: "AUD" },
@@ -1513,7 +1515,7 @@ export default {
         { code: "EUR", name: "EUR" },
         { code: "USD", name: "USD" },
       ],
-      currencyItem: {},
+      currencyItem: { code: "PHP", name: "PHP" },
       payeeName: "",
       amount: "",
       realAmount: "",
@@ -1568,13 +1570,41 @@ export default {
       companyName: localStorage.getItem("companyName"),
 
       isLoading: false,
+
+      
+
     };
   },
 
   methods: {
-    changeAmount(amount, realAmount){
-      this.amount = amount
-      this.realAmount = realAmount
+    re_totalAmount() {
+      let xp_totalAmt = 0;
+      let td_totalAmt = 0;
+
+      if (this.expenseType_totalAmount === 0) {
+        xp_totalAmt = 0;
+      } else {
+        xp_totalAmt = parseFloat(this.expenseType_totalAmount.replace(/,/g, ""))
+      }
+
+      if (this.transpoSetup_totalAmount === 0) {
+        td_totalAmt = 0;
+      } else {
+        td_totalAmt = parseFloat(this.transpoSetup_totalAmount.replace(/,/g, ""))
+      }
+
+      const float_total = xp_totalAmt + td_totalAmt;
+
+      const string_total = float_total.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+      });
+
+      this.changeAmount(string_total, float_total);
+    },
+
+    changeAmount(amount, realAmount) {
+      this.amount = amount;
+      this.realAmount = realAmount;
     },
 
     test() {
@@ -1632,7 +1662,7 @@ export default {
         if (
           !this.missingPayeeName &&
           !this.missingModeOfPayment &&
-          !this.missingCurrency 
+          !this.missingCurrency
           // !this.missingAmount
         ) {
           this.counter++;
