@@ -4,12 +4,12 @@
     <div class="col-md-12 mt-3">
       <div class="card card-secondary">
         <div
-        class="overlay"
-        style="background-color: white !important"
-        v-show="isLoadingSpinner"
-      >
-        <loading-spinner></loading-spinner>
-      </div>
+          class="overlay"
+          style="background-color: white !important"
+          v-show="isLoadingSpinner"
+        >
+          <loading-spinner></loading-spinner>
+        </div>
 
         <div class="card-header">
           <h3 class="card-title">For Approval Requests</h3>
@@ -85,40 +85,35 @@ export default {
       };
     },
 
-    getRemarks(){
+    getRemarks() {
       return this.$store.getters["remarks/getRemarks"];
     },
 
-    getStatus(){
+    getStatus() {
       return this.$store.getters["status/getStatus"];
-    }
+    },
   },
 
   watch: {
-    //Navigate
     $route(newRoute) {
       this.getApprovals();
-      console.log(newRoute);
+      console.warn(newRoute);
     },
 
+
     getRemarks(newValue) {
-      this.remarks = newValue
+      this.remarks = newValue;
     },
 
     getStatus(newValue) {
-      this.status = newValue
+      this.status = newValue;
     },
   },
   methods: {
     async getApprovals() {
+
+      this.isLoadingSpinner = true;
       const loggedUserId = localStorage.getItem("id");
-      // const companyId = 1;
-
-
-
-
-
-
       const companyId = localStorage.getItem("companyId");
 
       const response = await fetch(
@@ -127,7 +122,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
@@ -141,17 +136,12 @@ export default {
       }
 
       this.requestArray = responseData.data;
+      this.isLoadingSpinner = false;
     },
-
-    // activateAction(button){
-    //   alert(button)
-    // }
   },
 
-  async mounted() {
-    this.isLoadingSpinner = true    
-    await this.getApprovals();
-    this.isLoadingSpinner = false   
+   mounted() {
+     this.getApprovals();
   },
 };
 </script>

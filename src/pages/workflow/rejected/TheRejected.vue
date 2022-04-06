@@ -3,13 +3,13 @@
     <router-view></router-view>
     <div class="col-md-12 mt-3">
       <div class="card card-secondary">
-                      <div
-        class="overlay"
-        style="background-color: white !important"
-        v-show="isLoadingSpinner"
-      >
-        <loading-spinner></loading-spinner>
-      </div>
+        <div
+          class="overlay"
+          style="background-color: white !important"
+          v-show="isLoadingSpinner"
+        >
+          <loading-spinner></loading-spinner>
+        </div>
         <div class="card-header">
           <h3 class="card-title">Rejected Requests</h3>
         </div>
@@ -95,8 +95,10 @@ export default {
   watch: {
     //Navigate
     $route(newRoute) {
+      if(newRoute.name === undefined) {
       this.getRejected();
       console.log(newRoute);
+      }
     },
 
     getRemarks(newValue) {
@@ -109,10 +111,10 @@ export default {
   },
   methods: {
     async getRejected() {
+      this.isLoadingSpinner = true;
+
       const loggedUserId = localStorage.getItem("id");
       const companyId = localStorage.getItem("companyId");
-
-
 
       const response = await fetch(
         `http://127.0.0.1:8000/api/getRejected/${loggedUserId}/${companyId}`,
@@ -134,6 +136,7 @@ export default {
       }
 
       this.requestArray = responseData.data;
+      this.isLoadingSpinner = false;
     },
 
     // activateAction(button){
@@ -141,11 +144,8 @@ export default {
     // }
   },
 
- async mounted() {
-    this.isLoadingSpinner = true    
+  async mounted() {
     await this.getRejected();
-    this.isLoadingSpinner = false   
-
   },
 };
 </script>

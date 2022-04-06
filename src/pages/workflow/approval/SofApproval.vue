@@ -1283,79 +1283,78 @@
 
         <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start">
-            <div class="col-lg-2" v-show="counter">
+          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
+            
               <button
+                v-show="counter"
                 type="button"
                 @click="counter--"
-                class="btn btn-block btn-secondary btn-sm"
+                class="btn mr-2 btn-secondary btn-sm"
               >
                 Previous
               </button>
-            </div>
+            
 
-            <div
-              class="col-lg-2"
-              v-show="this.counter > -1 && this.counter < 6"
-            >
+          
               <button
+                v-show="this.counter > -1 && this.counter < 6"
                 type="button"
                 @click="next()"
-                class="btn btn-block btn-primary btn-sm"
+                class="btn mr-2 btn-primary btn-sm"
               >
                 Next
               </button>
-            </div>
+          
           </aside>
 
-          <aside class="col-lg-6 d-flex justify-content-end">
-            <div class="col-lg-2">
+          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
+            
               <button
                 type="button"
-                class="btn btn-block btn-success btn-sm"
+                class="btn ml-2 btn-success btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Approve')"
               >
                 Approve
               </button>
-            </div>
+            
 
-            <div class="col-lg-2">
+            
               <button
                 :disabled="isInitiator"
                 type="button"
-                class="btn btn-block btn-danger btn-sm"
+                class="btn ml-2 btn-danger btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Reject')"
               >
                 Reject
               </button>
-            </div>
+            
 
-            <div class="col-lg-2">
+            
               <button
                 :disabled="isInitiator"
                 type="button"
-                class="btn btn-block btn-warning btn-sm"
+                class="btn ml-2 btn-warning btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Clarify')"
               >
                 Clarify
               </button>
-            </div>
+            
 
-            <div class="col-lg-2">
+            
               <button
                 type="button"
-                class="btn btn-block btn-danger btn-sm"
+                class="btn ml-2 btn-danger btn-sm"
                 @click="close()"
               >
                 Close
               </button>
-            </div>
+            
           </aside>
         </div>
         <!-- / Buttons -->
@@ -2104,6 +2103,8 @@ export default {
 
         if (queryuserId === userId) {
           this.isInitiator = true;
+        } else {
+          this.counter = 6
         }
       
       

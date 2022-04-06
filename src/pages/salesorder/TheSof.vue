@@ -1297,36 +1297,36 @@
         </div>
         <!-- /.modal default -->
 
-        <!-- Button -->
-        <div class="row d-flex justify-content-end mt-3">
-          <div class="col-md-1" v-show="counter">
+        <!-- Buttons -->
+        <div class="row d-flex justify-content-end mt-3 align-items-center flex-nowrap m-1">
+       
             <button
+              v-show="counter"
               type="button"
               @click="counter--"
-              class="btn btn-block btn-secondary btn-sm"
+              class="btn  btn-secondary btn-sm"
             >
               Previous
             </button>
-          </div>
-          <div class="col-md-1" v-if="this.counter > -1 && this.counter < 6">
+
             <button
+              v-if="this.counter > -1 && this.counter < 6"
               type="button"
               @click="next()"
-              class="btn btn-block btn-primary btn-sm"
+              class="btn ml-1 btn-primary btn-sm"
             >
               Next
             </button>
-          </div>
-
-          <div class="col-md-1" v-else>
+  
             <button
+              v-else
               type="button"
               @click="submit()"
-              class="btn btn-block btn-success btn-sm"
+              class="btn ml-1 btn-success btn-sm"
             >
               Submit
             </button>
-          </div>
+         
         </div>
         <!-- / Buttons -->
       </div>

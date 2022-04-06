@@ -3,13 +3,13 @@
     <router-view></router-view>
     <div class="col-md-12 mt-3">
       <div class="card card-secondary">
-                      <div
-        class="overlay"
-        style="background-color: white !important"
-        v-show="isLoadingSpinner"
-      >
-        <loading-spinner></loading-spinner>
-      </div>
+        <div
+          class="overlay"
+          style="background-color: white !important"
+          v-show="isLoadingSpinner"
+        >
+          <loading-spinner></loading-spinner>
+        </div>
         <div class="card-header">
           <h3 class="card-title">Withdrawn Requests</h3>
         </div>
@@ -19,10 +19,8 @@
       </div>
     </div>
     <modal-remarks :remarks="remarks"></modal-remarks>
-  <modal-status :status="status"></modal-status>
-
+    <modal-status :status="status"></modal-status>
   </aside>
-  
 </template>
 <script>
 import ActionButtons from "../ActionButtons.vue";
@@ -86,11 +84,11 @@ export default {
       };
     },
 
-    getRemarks(){
+    getRemarks() {
       return this.$store.getters["remarks/getRemarks"];
     },
 
-    getStatus(){
+    getStatus() {
       return this.$store.getters["status/getStatus"];
     },
   },
@@ -98,26 +96,25 @@ export default {
   watch: {
     //Navigate
     $route(newRoute) {
+      if(newRoute.name === undefined) {
       this.getWithdrawn();
-      console.log(newRoute);
+      console.error(newRoute);
+      }
     },
 
     getRemarks(newValue) {
-      this.remarks = newValue
+      this.remarks = newValue;
     },
 
     getStatus(newValue) {
-      this.status = newValue
+      this.status = newValue;
     },
-
-    
   },
   methods: {
     async getWithdrawn() {
       const loggedUserId = localStorage.getItem("id");
       const companyId = localStorage.getItem("companyId");
-
-
+      this.isLoadingSpinner = true;
 
       const response = await fetch(
         `http://127.0.0.1:8000/api/getWithdrawn/${loggedUserId}/${companyId}`,
@@ -125,7 +122,7 @@ export default {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
@@ -139,18 +136,13 @@ export default {
       }
 
       this.requestArray = responseData.data;
+      this.isLoadingSpinner = false;
     },
 
-    // activateAction(button){
-    //   alert(button)
-    // }
   },
 
   async mounted() {
-    this.isLoadingSpinner = true    
     await this.getWithdrawn();
-    this.isLoadingSpinner = false   
-
   },
 };
 </script>

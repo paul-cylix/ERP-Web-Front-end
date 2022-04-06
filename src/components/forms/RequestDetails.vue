@@ -179,6 +179,16 @@ export default {
       clientName: "",
       clientId: "",
       mainId: "",
+
+      // Logged User Data
+      loggedUserId: localStorage.getItem("id"),
+      loggedUserFirstName: localStorage.getItem("fname"),
+      loggedUserLastName: localStorage.getItem("lname"),
+      loggedUserFullName: localStorage.getItem("fullName"),
+      loggedUserDepartment: localStorage.getItem("department"),
+      loggedUserPosition: localStorage.getItem("positionName"),
+      companyId: localStorage.getItem("companyId"),
+      companyName: localStorage.getItem("companyName"),
     };
   },
 
@@ -256,7 +266,7 @@ export default {
 
     async getReportingManager() {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/reporting-manager/136",
+        `http://127.0.0.1:8000/api/reporting-manager/${this.loggedUserId}`,
         {
           method: "GET",
           headers: {

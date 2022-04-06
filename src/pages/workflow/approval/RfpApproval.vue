@@ -759,100 +759,102 @@
 
         <!-- / Main Form -->
 
-        <!-- Button -->
+        <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start">
-            <div class="col-lg-2" v-show="counter">
+          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap ">
+
+        
               <button
+              v-show="counter"
                 type="button"
                 @click="counter--"
-                class="btn btn-block btn-secondary btn-sm"
+                class="btn mr-2 btn-secondary btn-sm"
               >
                 Previous
               </button>
-            </div>
+
             <!-- liquidation is false -->
-            <div
-              class="col-lg-2"
-              v-show="!isLiquidation"
-              v-if="this.counter <= 2"
-            >
+  
               <button
+                      v-show="!isLiquidation"
+              v-if="this.counter <= 2"
                 type="button"
                 @click="counter++"
-                class="btn btn-block btn-primary btn-sm"
+                class="btn mr-2 btn-primary btn-sm"
               >
                 Next
               </button>
-            </div>
+        
 
             <!-- liquidation is true -->
-            <div
-              class="col-lg-2"
-              v-show="isLiquidation"
-              v-if="this.counter <= 3"
-            >
+   
               <button
+                     v-show="isLiquidation"
+              v-if="this.counter <= 3"
                 type="button"
                 @click="next()"
-                class="btn btn-block btn-primary btn-sm"
+                class="btn mr-2 btn-primary btn-sm"
               >
                 Next
               </button>
-            </div>
+
+
+
           </aside>
 
-          <aside class="col-lg-6 d-flex justify-content-end">
-            <div class="col-lg-2">
+          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
+         
               <button
                 type="button"
-                class="btn btn-block btn-success btn-sm"
+                class="btn btn-success ml-2 btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Approve')"
               >
                 Approve
               </button>
-            </div>
+    
 
-            <div class="col-lg-2" v-if="!isInitiator">
+      
               <button
+              v-if="!isInitiator"
                 type="button"
-                class="btn btn-block btn-danger btn-sm"
+                class="btn  btn-danger ml-2 btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Reject')"
               >
                 Reject
               </button>
-            </div>
+  
 
-            <div class="col-lg-2" v-if="!isInitiator">
+         
               <button
+              v-if="!isInitiator"
                 type="button"
-                class="btn btn-block btn-warning btn-sm"
+                class="btn  btn-warning ml-2 btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Clarify')"
               >
                 Clarify
               </button>
-            </div>
+       
 
-            <div class="col-lg-2">
+
               <button
                 type="button"
-                class="btn btn-block btn-danger btn-sm"
+                class="btn  btn-danger ml-2 btn-sm"
                 @click="close()"
               >
                 Close
               </button>
-            </div>
+     
 
             <!-- <button @click="test()">test</button> -->
           </aside>
         </div>
-        <!-- / Button -->
+        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->
@@ -1403,21 +1405,24 @@ export default {
     };
   },
 
-  created() {
-    this.getActualSign(this.processId, this.form, this.companyId);
-    this.getRfpMain(this.processId);
-    this.getRfpDetails(this.processId);
-    this.getAttachments(this.processId, this.form);
-    this.getRecipient(
+  async created() {
+    this.isLoading = true
+    await this.getActualSign(this.processId, this.form, this.companyId);
+    await this.getRfpMain(this.processId);
+    await this.getRfpDetails(this.processId);
+    await this.getAttachments(this.processId, this.form);
+    await this.getRecipient(
       this.processId,
       this.loggedUserId,
       this.companyId,
       this.form
     );
-    this.getInprogressId(this.processId, this.companyId, this.form);
-    this.getBusinesses(this.companyId);
-    this.getcurrencyName();
-    this.getexpenseType();
+    await this.getInprogressId(this.processId, this.companyId, this.form);
+    await this.getBusinesses(this.companyId);
+    await this.getcurrencyName();
+    await this.getexpenseType();
+    this.isLoading = false
+
   },
 
   watch: {
@@ -1934,6 +1939,9 @@ export default {
             // alert('false')
             console.log("liquidation is false");
             this.isLiquidation = false;
+
+            // when not yet liquidated form review will show
+            this.counter = 3
           }
         }
       } catch (err) {

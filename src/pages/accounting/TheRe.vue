@@ -1170,36 +1170,39 @@
         <!-- / Main Form -->
 
         <!-- Buttons -->
-        <div class="row d-flex justify-content-end mt-3">
-          <div class="col-md-1" v-show="counter">
+        <div class="row d-flex justify-content-end mt-3 align-items-center flex-nowrap m-1">
+          
             <button
+              v-show="counter"
               type="button"
               @click="counter--"
-              class="btn btn-block btn-secondary btn-sm"
+              class="btn btn-secondary btn-sm"
             >
               Previous
             </button>
-          </div>
-          <!-- <button @click="test()">test</button> -->
-          <div class="col-md-1" v-if="this.counter <= 4">
+         
+       
+       
             <button
+              v-if="this.counter <= 4"
               type="button"
               @click="next()"
-              class="btn btn-block btn-primary btn-sm"
+              class="btn ml-1 btn-primary btn-sm"
             >
               Next
             </button>
-          </div>
+        
 
-          <div class="col-md-1" v-else>
+         
             <button
+              v-else
               type="button"
-              class="btn btn-block btn-success btn-sm"
+              class="btn ml-1 btn-success btn-sm"
               @click="submit()"
             >
               Submit
             </button>
-          </div>
+         
         </div>
         <!-- / Buttons -->
       </div>
@@ -2226,7 +2229,7 @@ export default {
 
     async getReportingManager() {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/reporting-manager/136",
+        `http://127.0.0.1:8000/api/reporting-manager/${this.loggedUserId}`,
         {
           method: "GET",
           headers: {

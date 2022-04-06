@@ -98,8 +98,10 @@ export default {
     watch: {
     //Navigate
     $route(newRoute) {
-      this.getInputs();
-      console.log(newRoute);
+      if(newRoute.name === undefined) {
+        this.getInputs();
+        console.log(newRoute)
+      }
     },
 
     getRemarks(newValue) {
@@ -112,6 +114,8 @@ export default {
   },
   methods: {
     async getInputs() {
+          this.isLoadingSpinner = true    
+
 
       const loggedUserId = localStorage.getItem("id");
       const companyId = localStorage.getItem("companyId");
@@ -135,6 +139,8 @@ export default {
       }
 
       this.requestArray = responseData.data;
+    this.isLoadingSpinner = false   
+
     },
 
     // activateAction(button){
@@ -143,9 +149,7 @@ export default {
   },
 
   async mounted() {
-    this.isLoadingSpinner = true    
     await this.getInputs();
-    this.isLoadingSpinner = false   
 
   },
 };

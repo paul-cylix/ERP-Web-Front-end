@@ -104,8 +104,10 @@ export default {
   watch: {
     //Navigate
     $route(newRoute) {
+      if(newRoute.name === undefined) {
       this.getInProgress();
       console.log(newRoute);
+      }
     },
 
     getRemarks(newValue) {
@@ -120,6 +122,8 @@ export default {
   },
   methods: {
     async getInProgress() {
+          this.isLoadingSpinner = true    
+
       const loggedUserId = localStorage.getItem("id");
       const companyId = localStorage.getItem("companyId");
 
@@ -145,6 +149,7 @@ export default {
       }
 
       this.requestArray = responseData.data;
+    this.isLoadingSpinner = false   
 
       // const wfCount = responseData.data.length
       // const wfName = 'inprogress'
@@ -163,10 +168,8 @@ export default {
     // }
   },
 
-  async mounted() {
-    this.isLoadingSpinner = true    
-    await this.getInProgress();
-    this.isLoadingSpinner = false   
+  created() {
+   this.getInProgress();
 
   },
 };

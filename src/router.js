@@ -6,7 +6,10 @@ import MainDashboard from "./pages/dashboard/MainDashboard.vue";
 import DashboardContent from "./pages/dashboard/DashboardContent.vue";
 import TheParticipant from "./pages/workflow/participant/TheParticipant.vue";
 import TheInput from "./pages/workflow/input/TheInput.vue";
-import TheApproval from "./pages/workflow/approval/TheApproval.vue";
+// import TheApproval from "./pages/workflow/approval/TheApproval.vue";
+
+import TheApprovals from "./pages/workflow/approval/TheApprovals.vue"
+
 import TheInprogress from "./pages/workflow/inprogress/TheInprogress.vue";
 import TheClarification from "./pages/workflow/clarification/TheClarification.vue";
 import TheApproved from "./pages/workflow/approved/TheApproved.vue";
@@ -165,9 +168,14 @@ const routes = [
         ],
         meta: { requiresAuth: true },
       },
+
+
+
+
+
       {
         path: "/approvals",
-        component: TheApproval,
+        component: TheApprovals,
         children: [
           {
             path: ":id",
@@ -222,6 +230,77 @@ const routes = [
         ],
         meta: { requiresAuth: true },
       },
+
+
+
+
+
+
+
+
+
+      // {
+      //   path: "/approvals",
+      //   component: TheApproval,
+      //   children: [
+      //     {
+      //       path: ":id",
+      //       name: "Request for Payment-approval",
+      //       component: RfpApproval,
+      //       props: true,
+      //       meta: { requiresAuth: true },
+      //     },
+      //     {
+      //       path: ":id",
+      //       name: "Reimbursement Request-approval",
+      //       component: ReApproval,
+      //       props: true,
+      //       meta: { requiresAuth: true },
+      //     },
+      //     {
+      //       path: ":id",
+      //       name: "Petty Cash Request-approval",
+      //       component: PcApproval,
+      //       props: true,
+      //       meta: { requiresAuth: true },
+      //     },
+      //     {
+      //       path: ":id",
+      //       name: "Overtime Request-approval",
+      //       component: OtApproval,
+      //       props: true,
+      //       meta: { requiresAuth: true },
+      //     },
+      //     {
+      //       path: ":id",
+      //       name: "Itinerary Request-approval",
+      //       component: ItfApproval,
+      //       props: true,
+      //       meta: { requiresAuth: true },
+      //     },
+      //     {
+      //       path: ":id",
+      //       name: "Leave Request-approval",
+      //       component: LafApproval,
+      //       props: true,
+      //       meta: { requiresAuth: true },
+      //     },
+      //     {
+      //       path: ":id",
+      //       name: "sales_order_frm-approval",
+      //       component: SofApproval,
+      //       props: true,
+      //       meta: { requiresAuth: true },
+      //     },
+
+      //   ],
+      //   meta: { requiresAuth: true },
+      // },
+
+
+
+
+
       {
         path: "/inprogress",
         component: TheInprogress,
@@ -275,10 +354,6 @@ const routes = [
             props: true,
             meta: { requiresAuth: true },
           },
-
-
-
-
         ],
         meta: { requiresAuth: true },
       },

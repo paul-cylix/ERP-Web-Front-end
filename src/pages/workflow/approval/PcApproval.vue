@@ -1336,23 +1336,24 @@
 
         <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start">
-            <div class="col-lg-2" v-show="counter">
+          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
+        
               <button
+                v-show="counter"
                 type="button"
                 @click="previous()"
-                class="btn btn-block btn-secondary btn-sm"
+                class="btn btn-secondary mr-2 btn-sm"
               >
                 Previous
               </button>
-            </div>
+       
 
-            <div class="col-lg-2" v-if="this.counter <= isAttachments">
+            <aside  v-if="this.counter <= isAttachments">
               <button
                 v-if="this.isLiquidation"
                 type="button"
                 @click="next()"
-                class="btn btn-block btn-primary btn-sm"
+                class="btn btn-primary btn-sm mr-2"
               >
                 Next
               </button>
@@ -1361,59 +1362,59 @@
                 v-else
                 type="button"
                 @click="counter++"
-                class="btn btn-block btn-primary btn-sm"
+                class="btn btn-primary btn-sm mr-2"
               >
                 Next
               </button>
-            </div>
+            </aside>
           </aside>
 
-          <aside class="col-lg-6 d-flex justify-content-end">
-            <div class="col-lg-2">
+          <aside class="col-lg-6 d-flex align-items-center justify-content-end flex-nowrap">
+ 
               <button
                 type="button"
-                class="btn btn-block btn-success btn-sm"
+                class="btn btn-success ml-2 btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Approve')"
               >
                 Approve
               </button>
-            </div>
+            
 
-            <div class="col-lg-2">
+ 
               <button
                 type="button"
-                class="btn btn-block btn-danger btn-sm"
+                class="btn btn-danger ml-2 btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Reject')"
               >
                 Reject
               </button>
-            </div>
+            
 
-            <div class="col-lg-2">
+ 
               <button
                 type="button"
-                class="btn btn-block btn-warning btn-sm"
+                class="btn btn-warning ml-2 btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Clarify')"
               >
                 Clarify
               </button>
-            </div>
+            
 
-            <div class="col-lg-2">
+ 
               <button
                 type="button"
-                class="btn btn-block btn-danger btn-sm"
+                class="btn btn-danger ml-2 btn-sm"
                 @click="close()"
               >
                 Close
               </button>
-            </div>
+            
           </aside>
         </div>
         <!-- / Buttons -->
@@ -1432,23 +1433,27 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
+  async created() {
+          this.isLoading = true;
+
     // Request Details
-    this.getPcMain(this.processId);
-    this.getInprogressId(this.processId, this.companyId, this.form);
-    this.getActualSign(this.processId, this.form, this.companyId);
-    this.getAttachments(this.processId, this.form);
-    this.getBusinesses(this.companyId);
-    this.getPcExpense(this.processId);
-    this.getPcTranspo(this.processId);
-    this.getexpenseType();
-    this.gettranspoSetup();
-    this.getRecipients(
+    await this.getPcMain(this.processId);
+    await this.getInprogressId(this.processId, this.companyId, this.form);
+    await this.getActualSign(this.processId, this.form, this.companyId);
+    await this.getAttachments(this.processId, this.form);
+    await this.getBusinesses(this.companyId);
+    await this.getPcExpense(this.processId);
+    await this.getPcTranspo(this.processId);
+    await this.getexpenseType();
+    await this.gettranspoSetup();
+    await this.getRecipients(
       this.processId,
       this.loggedUserId,
       this.companyId,
       this.form
     );
+          this.isLoading = false;
+
   },
   watch: {
     //Navigate
@@ -2297,7 +2302,6 @@ export default {
     },
 
     async getActualSign(id, form, companyId) {
-      this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`
@@ -2305,16 +2309,26 @@ export default {
 
         // console.log(resp.status);
         if (resp.status === 200) {
-          this.isLoading = false;
           this.payeeName = resp.data[0].Payee;
 
           if (resp.data[1].STATUS === "Completed") {
             this.isLiquidation = true;
+            console.log(this.isLiquidation)
           }
 
           if (resp.data[2].STATUS === "In Progress") {
             this.isApproval = true;
+            console.log(this.isApproval)
           }
+
+
+          
+          // if (resp.data[1].STATUS === "Completed" && resp.data[2].STATUS === "In Progress") {
+          //   this.counter = 2
+          // } else {
+          //   this.counter = 3
+          // }
+
         }
       } catch (err) {
         // Handle Error Here

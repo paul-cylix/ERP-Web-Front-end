@@ -1,12 +1,12 @@
 <template>
     <div class="action-buttons d-flex justify-content-center">
-        <button class="btn btn-outline-success btn-sm" @click="handleAction('open')">
+        <button class="btn btn-outline-success btn-sm"  title='Open Request' @click="handleAction('open')">
             <i class="fas fa-folder-open"></i>
         </button>
-        <button class="btn btn-outline-primary ml-1 btn-sm" data-toggle="modal" data-target="#modal-message"  @click="handleAction('remarks')">
+        <button class="btn btn-outline-primary ml-1 btn-sm" title='Open Request Messages' data-toggle="modal" data-target="#modal-message"  @click="handleAction('remarks')">
             <i class="fas fa-envelope"></i>
         </button>
-        <button class="btn btn-outline-dark ml-1 btn-sm" data-toggle="modal" data-target="#modal-status" @click="handleAction('status')">
+        <button class="btn btn-outline-dark ml-1 btn-sm" title='Open Request Status' data-toggle="modal" data-target="#modal-status" @click="handleAction('status')">
             <i class="fas fa-book-reader"></i>
         </button>
         

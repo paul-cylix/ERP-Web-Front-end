@@ -99,8 +99,10 @@ export default {
   watch: {
     //Navigate
     $route(newRoute) {
+      if(newRoute.name === undefined) {
       this.getApproved();
       console.log(newRoute);
+      }
     },
 
     getRemarks(newValue) {
@@ -117,6 +119,7 @@ export default {
       const companyId = localStorage.getItem("companyId");
 
 
+    this.isLoadingSpinner = true    
 
 
 
@@ -142,6 +145,8 @@ export default {
       }
 
       this.requestArray = responseData.data;
+    this.isLoadingSpinner = false   
+
     },
 
     // activateAction(button){
@@ -150,9 +155,7 @@ export default {
   },
 
   async mounted() {
-    this.isLoadingSpinner = true    
     await this.getApproved();
-    this.isLoadingSpinner = false   
 
   },
 };

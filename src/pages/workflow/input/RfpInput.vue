@@ -443,78 +443,80 @@
 
         <!-- / Main Form -->
 
-        <!-- Button -->
+        <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start">
-            <div class="col-lg-2" v-show="counter">
+          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
+            
               <button
+                v-show="counter"
                 type="button"
                 @click="counter--"
-                class="btn btn-block btn-secondary btn-sm"
+                class="mr-1 btn-secondary btn-sm"
               >
                 Previous
               </button>
-            </div>
-            <div class="col-lg-2" v-if="this.counter <= 2">
+           
+            
               <button
+                v-if="this.counter <= 2"
                 type="button"
                 @click="counter++"
-                class="btn btn-block btn-primary btn-sm"
+                class="mr-1 btn-primary btn-sm"
               >
                 Next
               </button>
-            </div>
+            
           </aside>
 
-          <aside class="col-lg-6 d-flex justify-content-end">
-            <div class="col-lg-2">
+          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
+            
               <button
                 type="button"
-                class="btn btn-block btn-success btn-sm"
+                class="btn ml-1 btn-success btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Approve')"
               >
                 Approve
               </button>
-            </div>
+            
 
-            <div class="col-lg-2">
+            
               <button
                 type="button"
-                class="btn btn-block btn-danger btn-sm"
+                class="btn ml-1 btn-danger btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Reject')"
               >
                 Reject
               </button>
-            </div>
+            
 
-            <div class="col-lg-2">
+            
               <button
                 type="button"
-                class="btn btn-block btn-warning btn-sm"
+                class="btn ml-1 btn-warning btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
                 @click="setTitle('Clarify')"
               >
                 Clarify
               </button>
-            </div>
+            
 
-            <div class="col-lg-2">
+            
               <button
                 type="button"
-                class="btn btn-block btn-danger btn-sm"
+                class="btn ml-1 btn-danger btn-sm"
                 @click="close()"
               >
                 Close
               </button>
-            </div>
+            
           </aside>
         </div>
-        <!-- / Button -->
+        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->
