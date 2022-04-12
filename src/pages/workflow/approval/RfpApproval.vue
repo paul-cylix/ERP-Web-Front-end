@@ -697,7 +697,18 @@
                 <tbody>
                   <tr v-for="(file, index) in selectedFile" :key="file.id">
                     <td>{{ file.filename }}</td>
-                    <td class="pl-2 pr-2 text-center">
+                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                      <a
+                        class="btn btn-info btn-sm mr-1"
+                        :download="file.filename"
+                        :href="
+                          'data:' + file.mimeType + ';base64,' + file.imageBytes
+                        "
+                        target="_blank"
+                      >
+                        Download
+                      </a>
+
                       <button
                         @click="
                           removeAttachedFile(
@@ -725,6 +736,7 @@
                   <tr v-for="file in selectedFileLiquidation" :key="file.index">
                     <td>{{ file.name }}</td>
                     <td class="pl-2 pr-2 text-center">
+                      
                       <button
                         @click="
                           removeFileLiquidation(
@@ -2238,8 +2250,18 @@ export default {
 
     // The Attachments
     preview(mimeType, imageBytes) {
-      var newTab = window.open();
-      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
+      {
+        var newTab = window.open();
+        newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      }
+
+      else if (mimeType === 'application/pdf')
+      {
+        let pdfWindow = window.open('#')
+        pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
+      }
+    
     },
 
     onFileSelected(event) {

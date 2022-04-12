@@ -1283,6 +1283,20 @@ export default {
       this.itemModalProjectName = {};
     },
 
+    // Retain Project Name and Employee Name
+    resetModalTwo() {
+      this.overtimeDate = null;
+      this.authTimeStart = null;
+      this.authTimeEnd = null;
+      this.authOThrs = "";
+      // this.itemEmployeeName = {};
+      this.modalPurpose = "";
+      this.attemptInsert = false;
+      // this.itemModalProjectName = {};
+    },
+
+
+
     addAlert(header, message, type) {
       this.isAlert = true;
       this.header = header;
@@ -1333,7 +1347,8 @@ export default {
             this.isLoadingModal = false;
 
             this.addAlert("Success", resp.data.message, "true");
-            this.resetModal();
+            this.resetModalTwo();
+            
           }
 
           if (resp.status === 202) {

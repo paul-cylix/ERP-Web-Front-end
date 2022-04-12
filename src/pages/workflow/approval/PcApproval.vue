@@ -31,7 +31,7 @@
             <span :class="classE">5</span>
           </div>
           <div class="progressbar" :class="classF" v-if="isLiquidation">
-            <span :class="classF">5</span>
+            <span :class="classF">6</span>
           </div>
         </div>
 
@@ -850,7 +850,18 @@
                 <tbody>
                   <tr v-for="file in selectedFile" :key="file.name">
                     <td>{{ file.filename }}</td>
-                    <td class="pl-2 pr-2 text-center">
+                        <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+
+                      <a
+                        class="btn btn-info btn-sm "
+                        :download="file.filename"
+                        :href="
+                          'data:' + file.mimeType + ';base64,' + file.imageBytes
+                        "
+                        target="_blank"
+                      >
+                        Download
+                      </a>
                       <button
                         @click="preview(file.mimeType, file.imageBytes)"
                         class="btn btn-secondary btn-sm ml-1"
@@ -2323,11 +2334,11 @@ export default {
 
 
           
-          // if (resp.data[1].STATUS === "Completed" && resp.data[2].STATUS === "In Progress") {
-          //   this.counter = 2
-          // } else {
-          //   this.counter = 3
-          // }
+          if (resp.data[1].STATUS === "Completed" && resp.data[2].STATUS === "In Progress") {
+            this.counter = 2
+          } else {
+            this.counter = 3
+          }
 
         }
       } catch (err) {
@@ -2383,6 +2394,8 @@ export default {
           EXPENSE_TYPE: this.itemmodalExpenseType.name,
           date_: this.expenseType_Date,
         };
+
+        console.log(addData)
         this.expenseType_Data.push(addData);
         this.clear_expenseType();
         this.attemptXpInsert = false;
@@ -2703,8 +2716,18 @@ export default {
 
     // The Attachments
     preview(mimeType, imageBytes) {
-      var newTab = window.open();
-      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
+      {
+        var newTab = window.open();
+        newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      }
+
+      else if (mimeType === 'application/pdf')
+      {
+        let pdfWindow = window.open('#')
+        pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
+      }
+    
     },
 
     // Add new files scripts

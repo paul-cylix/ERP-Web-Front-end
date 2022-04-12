@@ -356,7 +356,7 @@
               <tr>
                 <th colspan="6" scope="col">
                   <aside class="d-flex align-items-center">
-                    <span class="mb-1 ml-1"> Expense Detals</span>
+                    <span class="mb-1 ml-1"> Expense Details</span>
                   </aside>
                 </th>
                 <th v-if="isApproval">
@@ -390,14 +390,7 @@
                 <td>{{ item.CLIENT_NAME }}</td>
                 <td>{{ item.EXPENSE_TYPE }}</td>
                 <td>{{ item.DESCRIPTION }}</td>
-                <td>
-                  {{
-                    parseFloat(item.AMOUNT).toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                    })
-                  }}
-                </td>
-
+                <td>{{ item.AMOUNT }}</td>
                 <td v-if="isApproval" class="pl-0 m-0">
                   <aside class="d-flex justify-content-center">
                     <button
@@ -474,14 +467,7 @@
                 <td>{{ item.DESTINATION_TO }}</td>
                 <td>{{ item.MOT }}</td>
                 <td>{{ item.DESCRIPTION }}</td>
-                <td>
-                  {{
-                    parseFloat(item.AMT_SPENT).toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                    })
-                  }}
-                </td>
-
+                <td>{{ item.AMT_SPENT }}</td>
                 <td v-if="isApproval" class="pl-0 m-0">
                   <aside class="d-flex justify-content-center">
                     <button
@@ -541,7 +527,7 @@
             <input
               type="file"
               multiple
-              v-if="isEditable"
+              v-if="isApproval || true"
               name="fields[assetsFieldHandle][]"
               id="assetsFieldHandle"
               class="w-25 h-25 overflow-hidden"
@@ -555,7 +541,7 @@
               style="width: 100%; cursor: pointer"
               class="block pt-3 cursor-pointer"
             >
-              <span class="text-secondary" v-if="isEditable"
+              <span class="text-secondary" v-if="isApproval || true"
                 >Click here or drop file(s)</span
               >
               <span class="text-secondary" v-else
@@ -575,7 +561,7 @@
                     <div class="col text-left">
                       <span>{{ file.filename }}</span>
                     </div>
-                    <div class="co-2" v-if="isEditable">
+                    <div class="co-2" v-if="isApproval || true">
                       <button
                         class="btn btn-danger btn-sm"
                         @click="
@@ -895,7 +881,18 @@
                 <tbody>
                   <tr v-for="(file, index) in selectedFile" :key="file.id">
                     <td>{{ file.filename }}</td>
-                    <td class="pl-2 pr-2 text-center">
+                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+
+                      <a
+                        class="btn btn-info btn-sm mr-1"
+                        :download="file.filename"
+                        :href="
+                          'data:' + file.mimeType + ';base64,' + file.imageBytes
+                        "
+                        target="_blank"
+                      >
+                        Download
+                      </a>
                       <button
                         @click="
                           removeAttachedFile(
@@ -905,7 +902,7 @@
                             file.filepath
                           )
                         "
-                        v-if="isEditable"
+                        v-if="isApproval"
                         class="btn btn-danger btn-sm"
                       >
                         Remove
@@ -1017,61 +1014,439 @@
         </div>
         <!-- /.modal -->
 
+
+
+        <!-- Modal Expense Type -->
+        <div
+          class="modal fade"
+          id="modal-expenseType"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h6 class="modal-title">
+                  <b>Expense Type</b>
+                </h6>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                  @click="closeModal()"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <small><label for="reference">Date</label></small>
+
+                      <date-picker
+                        valueType="format"
+                        style="display: block; width: 100%; line-height: 20px"
+                        v-model="expenseType_Date"
+                      ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingXPDateNeeded && attemptXpInsert"
+                        >Date is required!</small
+                      >
+                    </div>
+                  </div>
+                  <div class="col-md-8">
+                    <div class="form-group">
+                      <small
+                        ><label for="projectName">Client Name</label></small
+                      >
+                      <model-list-select
+                        :list="modalclient"
+                        v-model="itemclientName"
+                        option-value="code"
+                        option-text="name"
+                        placeholder="select item"
+                        style="padding: 9px"
+                      >
+                      </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingXPClientItem && attemptXpInsert"
+                        >Client Name is required!</small
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <small><label for="projectName">Amount</label></small>
+
+                      <input
+                        type="text"
+                        @keyup="formatCurrencyExpense($event)"
+                        @blur="formatCurrencyExpense($event, 'blur')"
+                        pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
+                        class="form-control form-control-sm py-3"
+                        v-model="expenseType_Amount"
+                      />
+
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingXPAmount && attemptXpInsert"
+                        >Amount is required!</small
+                      >
+                    </div>
+                  </div>
+
+                  <div class="col-md-8">
+                    <div class="form-group">
+                      <small
+                        ><label for="modalamount">Expense Type</label></small
+                      >
+                      <model-list-select
+                        :list="modalExpenseType"
+                        v-model="itemmodalExpenseType"
+                        option-value="code"
+                        option-text="name"
+                        placeholder="select item"
+                        style="padding: 9px"
+                      >
+                      </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingXPType && attemptXpInsert"
+                        >Expense Type is required!</small
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <textarea
+                        class="form-control"
+                        id="remarks"
+                        rows="5"
+                        v-model="expenseType_Remarks"
+                        placeholder="Please input request remarks here!"
+                      ></textarea>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingXPRemarks && attemptXpInsert"
+                        >Reporting Manager is required!</small
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer justify-content-end">
+                <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+                <button
+                  v-if="isButton"
+                  type="button"
+                  class="btn btn-success btn-sm"
+                  @click="insert_ExpenseType()"
+                >
+                  insert
+                </button>
+
+                <button
+                  v-else
+                  type="button"
+                  class="btn btn-success btn-sm"
+                  @click="update_ExpenseType()"
+                >
+                  Update
+                </button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+        <!-- /. Modal Expense Type -->
+
+
+
+   <!-- Modal Transporation Details  -->
+        <div
+          class="modal fade"
+          id="modal-Transportation"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h6 class="modal-title">
+                  <b>Transportation Details</b>
+                </h6>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                  @click="closeModal()"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <small><label for="reference">Date</label></small>
+
+                      <date-picker
+                        valueType="format"
+                        style="display: block; width: 100%; line-height: 20px"
+                        v-model="transpoSetup_Date"
+                      ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingTDDateNeeded && attemptTdInsert"
+                        >Date is required!</small
+                      >
+                    </div>
+                  </div>
+                  <div class="col-md-8">
+                    <div class="form-group">
+                      <small
+                        ><label for="projectName">Client Name</label></small
+                      >
+                      <model-list-select
+                        :list="modalclient"
+                        v-model="itemclientName"
+                        option-value="code"
+                        option-text="name"
+                        placeholder="select item"
+                        style="padding: 9px"
+                      >
+                      </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingTDClientItem && attemptTdInsert"
+                        >Client name is required!</small
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <small
+                        ><label for="projectName"
+                          >Mode of Transportation</label
+                        ></small
+                      >
+
+                      <model-list-select
+                        :list="transpoSetup"
+                        v-model="itemtranspoSetup"
+                        option-value="code"
+                        option-text="name"
+                        placeholder="select item"
+                        style="padding: 9px"
+                      >
+                      </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingTDMot && attemptTdInsert"
+                        >Mode of transportation is required!</small
+                      >
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <small><label for="projectName">Amount</label></small>
+
+                      <input
+                        type="text"
+                        @keyup="formatCurrencyTranspo($event)"
+                        @blur="formatCurrencyTranspo($event, 'blur')"
+                        pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
+                        class="form-control form-control-sm py-3"
+                        v-model="transpoSetup_Amount"
+                      />
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingTDAmount && attemptTdInsert"
+                        >Amount is required!</small
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <small
+                        ><label for="projectName"
+                          >Destination From</label
+                        ></small
+                      >
+
+                      <input
+                        type="text"
+                        class="form-control form-control-sm py-3"
+                        v-model.trim="transpoSetup_From"
+                      />
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingTDFrom && attemptTdInsert"
+                        >Destination from is required!</small
+                      >
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <small
+                        ><label for="projectName">Destination To</label></small
+                      >
+                      <input
+                        type="text"
+                        class="form-control form-control-sm py-3"
+                        v-model.trim="transpoSetup_to"
+                      />
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingTDTo && attemptTdInsert"
+                        >Destination to is required!</small
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <textarea
+                        class="form-control"
+                        id="remarks"
+                        rows="5"
+                        v-model.trim="transpoSetup_Remarks"
+                        placeholder="Please input request remarks here!"
+                      ></textarea>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingTDRemarks && attemptTdInsert"
+                        >Transportation remarks is required!</small
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer justify-content-end">
+                <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+                <button
+                  v-if="isButton"
+                  type="button"
+                  class="btn btn-success btn-sm"
+                  @click="insert_transpoSetup()"
+                >
+                  insert
+                </button>
+
+                <button
+                  v-else
+                  type="button"
+                  class="btn btn-success btn-sm"
+                  @click="update_transpoSetup()"
+                >
+                  Update
+                </button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+        <!-- /. Modal Transporation Details -->
+
+
+
+
+
+
+
+
         <!-- /. Main Form -->
         <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start">
-            <div class="col-lg-2" v-show="counter">
+          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
+            
               <button
+                v-show="counter"
                 type="button"
                 @click="counter--"
-                class="btn btn-block btn-secondary btn-sm"
+                class="btn mr-1 btn-secondary btn-sm"
               >
                 Previous
               </button>
-            </div>
+            
 
-            <div class="col-lg-2" v-if="this.counter <= isAttachments">
+            <aside class="col-lg-2" v-if="this.counter <= isAttachments">
               <button
                 v-if="this.isInitiator"
                 type="button"
                 @click="next()"
-                class="btn btn-block btn-primary btn-sm"
+                class="btn mr-1 btn-primary btn-sm"
               >
-                NextInit
+              <!-- next init -->
+                Next
               </button>
               <button
                 v-else
                 type="button"
-                @click="counter++"
-                class="btn btn-block btn-primary btn-sm"
+                @click="next()"
+                class="btn mr-1 btn-primary btn-sm"
               >
                 Next
               </button>
-            </div>
+            </aside>
           </aside>
 
-          <aside class="col-lg-6 d-flex justify-content-end">
-            <div class="col-lg-2">
+          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
+            
               <button
                 type="button"
-                class="btn btn-block btn-warning btn-sm"
+                class="btn ml-1 btn-warning btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
               >
                 Reply
               </button>
-            </div>
+            
 
-            <div class="col-lg-2">
+            
               <button
                 type="button"
-                class="btn btn-block btn-danger btn-sm"
+                class="btn ml-1 btn-danger btn-sm"
                 @click="close()"
               >
                 Close
               </button>
-            </div>
+            
           </aside>
         </div>
         <!-- / Buttons -->
@@ -1090,18 +1465,21 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
+   async created() {
     // Request Details
-    this.getProjects();
-    this.getReportingManager(this.loggedUserId);
-    this.todaysDate();
-    this.getPcExpense(this.processId);
-    this.getPcTranspo(this.processId);
-
-    // Request Details
-    this.getPcMain(this.processId);
-    this.getActualSign(this.processId, this.form, this.companyId);
-    this.getAttachments(this.processId, this.form);
+    this.isLoading = true;
+    await this.getProjects();
+    await this.getReportingManager(this.loggedUserId);
+    await this.todaysDate();
+    await this.getPcExpense(this.processId);
+    await this.getPcTranspo(this.processId);
+    await this.getBusinesses(this.companyId);
+    await this.getexpenseType();
+    await this.gettranspoSetup();
+    await this.getPcMain(this.processId);
+    await this.getActualSign(this.processId, this.form, this.companyId);
+    await this.getAttachments(this.processId, this.form);
+    this.isLoading = false;
   },
   watch: {
     // Request Details
@@ -1113,25 +1491,30 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
-    $route(newRoute) {
-      this.getProjects();
-      this.getReportingManager(this.loggedUserId);
-      this.todaysDate();
-      this.getPcExpense(this.processId);
-      this.getPcTranspo(this.processId);
-      // Request Details
-      this.getPcMain(this.processId);
-      this.getActualSign(this.processId, this.form, this.companyId);
-      this.getAttachments(this.processId, this.form);
-      console.log(newRoute);
+     async $route(newRoute) {
+      this.isLoading = true;
+      await this.getProjects();
+      await this.getReportingManager(this.loggedUserId);
+      await this.todaysDate();
+      await this.getPcExpense(this.processId);
+      await this.getPcTranspo(this.processId);
+      await this.getBusinesses(this.companyId);
+      await this.getexpenseType();
+      await this.gettranspoSetup();
+      await this.getPcMain(this.processId);
+      await this.getActualSign(this.processId, this.form, this.companyId);
+      await this.getAttachments(this.processId, this.form);
+      this.isLoading = false;
+
+      console.warn(newRoute)
     },
   },
   computed: {
     isEditable() {
-      if (this.isEdit === this.isInitiator) {
-        return true;
-      } else {
+      if (this.isLiquidation === true) {
         return false;
+        } else {
+        return true;
       }
     },
     classA() {
@@ -1271,28 +1654,162 @@ export default {
       }
     },
 
+    missingXPDateNeeded() {
+      if (this.expenseType_Date === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingXPClientItem() {
+      if (this.itemclientName.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingXPAmount() {
+      if (
+        this.expenseType_Amount.length === 0 ||
+        parseFloat(this.expenseType_Amount) < 1
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingXPType() {
+      if (this.itemmodalExpenseType.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingXPRemarks() {
+      if (this.expenseType_Remarks.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+        missingTDDateNeeded() {
+      if (this.transpoSetup_Date === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingTDClientItem() {
+      if (this.itemclientName.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingTDMot() {
+      if (this.itemtranspoSetup.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingTDAmount() {
+      if (
+        this.transpoSetup_Amount.length === 0 ||
+        parseFloat(this.transpoSetup_Amount) < 1
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingTDFrom() {
+      if (this.transpoSetup_From.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingTDTo() {
+      if (this.transpoSetup_to.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingTDRemarks() {
+      if (this.transpoSetup_Remarks.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingExpenses() {
+      if (
+        this.expenseType_Data.length >= 1 ||
+        this.transpoSetup_Data.length >= 1
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+
+    missingAttachments() {
+      if (this.selectedFile.length >= 1 || this.selectedFileNew.length >= 1) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+
+
+
+
+
+
+
+
+
     // Sum of all amount spend in liquidation
     expenseType_totalAmount() {
       if (this.expenseType_Data.length > 0) {
-        const total = this.expenseType_Data
+        let total = this.expenseType_Data
           .map((expenseType_Data) =>
+            // convert money type string to float
             parseFloat(expenseType_Data.AMOUNT.replace(/,/g, ""))
           )
           .reduce((acc, expenseType_Data) => expenseType_Data + acc);
+        // convert to money type
         return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
       }
     },
 
+
     // sum of all amount spend in transportation
     transpoSetup_totalAmount() {
       if (this.transpoSetup_Data.length > 0) {
-        const total = this.transpoSetup_Data
+        let total = this.transpoSetup_Data
           .map((transpoSetup_Data) =>
+            // convert money type string to float
             parseFloat(transpoSetup_Data.AMT_SPENT.replace(/,/g, ""))
           )
           .reduce((acc, transpoSetup_Data) => transpoSetup_Data + acc);
+        // convert to money type
         return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
       } else {
         return 0;
@@ -1316,6 +1833,11 @@ export default {
       attemptReply: false,
       attemptNextOne: false,
       attemptNextTwo: false,
+      attemptXpInsert: false,
+      attemptTdInsert: false,
+
+
+
       // Request Details
       reportingManager: [],
       reportingManagerItem: {},
@@ -1453,6 +1975,357 @@ export default {
   },
 
   methods: {
+    update_transpoSetup() {
+      this.attemptTdInsert = true;
+      const validated = this.validate_Transpo();
+      this.resetAlert();
+
+      if (validated) {
+        const addData = {
+          id: this.transpoSetup_EditData.id,
+          CLIENT_NAME: this.itemclientName.name,
+          DESTINATION_FRM: this.transpoSetup_From,
+          DESTINATION_TO: this.transpoSetup_to,
+          DESCRIPTION: this.transpoSetup_Remarks,
+          AMT_SPENT: this.transpoSetup_Amount,
+          MOT: this.itemtranspoSetup.name,
+          CLIENT_ID: this.itemclientName.code,
+          date_: this.transpoSetup_Date,
+        };
+        this.transpoSetup_Data.push(addData);
+        this.transpoSetup_EditData = "";
+        this.transpoSetup_Data.splice(this.setIndex, 1);
+
+        this.transpoSetup_Data.sort(function (a, b) {
+          return a.id - b.id;
+        });
+
+        this.clear_expenseType();
+        this.clear_transpo();
+        this.attemptTdInsert = false;
+        this.addAlert(
+          "Success",
+          "Transportation details added successfully!",
+          "true"
+        );
+      } else {
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
+    },
+
+    edit_transpoSetup(index) {
+      this.isButton = false;
+      const transpoSetup_Data = this.transpoSetup_Data[index];
+      this.transpoSetup_EditData = transpoSetup_Data;
+      this.setIndex = index;
+
+      // console.log(transpoSetup_Data);
+
+      this.itemclientName = {
+        code: transpoSetup_Data.CLIENT_ID,
+        name: transpoSetup_Data.CLIENT_NAME,
+      };
+
+      this.itemtranspoSetup = {
+        code: transpoSetup_Data.MOT,
+        name: transpoSetup_Data.MOT,
+      };
+
+      this.transpoSetup_Amount = transpoSetup_Data.AMT_SPENT;
+      this.transpoSetup_From = transpoSetup_Data.DESTINATION_FRM;
+      this.transpoSetup_to = transpoSetup_Data.DESTINATION_TO;
+      this.transpoSetup_Remarks = transpoSetup_Data.DESCRIPTION;
+      this.transpoSetup_Date = transpoSetup_Data.date_;
+
+      // console.log(index)
+    },
+
+    trash_transpoSetup(index) {
+      this.transpoSetup_Data.splice(index, 1);
+      // console.log(index)
+    },
+
+    update_ExpenseType() {
+      this.attemptXpInsert = true;
+      const validated = this.validate_expenseType();
+      this.resetAlert();
+      if (validated) {
+        // start
+        const addData = {
+          id: this.expenseType_EditData.id,
+          CLIENT_NAME: this.itemclientName.name,
+          DESCRIPTION: this.expenseType_Remarks,
+          AMOUNT: this.expenseType_Amount,
+          CLIENT_ID: this.itemclientName.code,
+          EXPENSE_TYPE: this.itemmodalExpenseType.name,
+          date_: this.expenseType_Date,
+        };
+
+        this.expenseType_Data.push(addData);
+        this.expenseType_EditData = "";
+        this.expenseType_Data.splice(this.setIndex, 1);
+
+        // this.liquidation.push(this.editliquidation)
+        this.expenseType_Data.sort(function (a, b) {
+          return a.id - b.id;
+        });
+        this.clear_expenseType();
+        this.attemptXpInsert = false;
+        // end
+        this.addAlert("Success", "Expense details added successfully!", "true");
+      } else {
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
+    },
+
+    edit_ExpenseType(index) {
+      this.isButton = false;
+      const expenseType_Data = this.expenseType_Data[index];
+      this.expenseType_EditData = expenseType_Data;
+      // this.expenseType_Data.splice(index, 1);
+      this.setIndex = index;
+
+      // console.log(expenseType_Data);
+
+      this.itemclientName = {
+        code: expenseType_Data.CLIENT_ID,
+        name: expenseType_Data.CLIENT_NAME,
+      };
+      this.itemmodalExpenseType = {
+        code: expenseType_Data.EXPENSE_TYPE,
+        name: expenseType_Data.EXPENSE_TYPE,
+      };
+
+      this.expenseType_Date = expenseType_Data.date_;
+      this.expenseType_Amount = expenseType_Data.AMOUNT;
+      this.expenseType_Remarks = expenseType_Data.DESCRIPTION;
+    },
+
+    trash_ExpenseType(index) {
+      // console.log('1'+ index)
+      this.expenseType_Data.splice(index, 1);
+    },
+
+    async getBusinesses(companyId) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/general-businesses/${companyId}`
+        );
+
+        if (resp.status === 200) {
+          const client = [];
+          for (const key in resp.data) {
+            // console.log(key)
+            const request = {
+              code: resp.data[key].businessNumber,
+              name: resp.data[key].businessName,
+            };
+            client.push(request);
+          }
+          this.modalclient = client;
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
+        async getexpenseType() {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/get-expenseType",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+
+      // console.log(responseData);
+      if (!response.ok) {
+        const error = new Error(
+          responseData.message || "Failed to fetch modal ExpenseType Type."
+        );
+        throw error;
+      }
+      const modalExpenseType = [];
+      for (const key in responseData[0]) {
+        // console.log(key)
+        const request = {
+          code: responseData[0][key].type,
+          name: responseData[0][key].type,
+        };
+        modalExpenseType.push(request);
+      }
+      this.modalExpenseType = modalExpenseType;
+      // console.log(responseData[0].businessNumber)
+    },
+
+    async gettranspoSetup() {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/get-transpoSetup",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+
+      // console.log(responseData);
+      if (!response.ok) {
+        const error = new Error(
+          responseData.message || "Failed to fetch modal ExpenseType Type."
+        );
+        throw error;
+      }
+      const transpoSetup = [];
+      for (const key in responseData[0]) {
+        // console.log(key)
+        const request = {
+          code: responseData[0][key].MODE,
+          name: responseData[0][key].MODE,
+        };
+        transpoSetup.push(request);
+      }
+      this.transpoSetup = transpoSetup;
+      // console.log(responseData[0].businessNumber)
+    },
+
+
+
+
+
+
+
+        // modal td & xd
+    closeModal() {
+      this.clear_expenseType();
+      this.clear_transpo();
+      this.resetAlert();
+      this.attemptXpInsert = false;
+      this.attemptTdInsert = false;
+    },
+    // Expense CRUD
+    insert_ExpenseType() {
+      this.attemptXpInsert = true;
+      const validated = this.validate_expenseType();
+      this.resetAlert();
+      if (validated) {
+        const addData = {
+          id: this.i++,
+          CLIENT_NAME: this.itemclientName.name,
+          DESCRIPTION: this.expenseType_Remarks,
+          AMOUNT: this.expenseType_Amount,
+          CLIENT_ID: this.itemclientName.code,
+          EXPENSE_TYPE: this.itemmodalExpenseType.name,
+          date_: this.expenseType_Date,
+        };
+
+        console.log(addData)
+
+        this.expenseType_Data.push(addData);
+
+        console.log(this.expenseType_Data)
+        this.clear_expenseType();
+        this.attemptXpInsert = false;
+
+        this.addAlert("Success", "Expense details added successfully!", "true");
+      } else {
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
+    },
+
+        // Transpo Crud
+    insert_transpoSetup() {
+      this.attemptTdInsert = true;
+      const validated = this.validate_Transpo();
+      this.resetAlert();
+      if (validated) {
+        const addData = {
+          id: this.i++,
+          CLIENT_NAME: this.itemclientName.name,
+          DESTINATION_FRM: this.transpoSetup_From,
+          DESTINATION_TO: this.transpoSetup_to,
+          DESCRIPTION: this.transpoSetup_Remarks,
+          AMT_SPENT: this.transpoSetup_Amount,
+          MOT: this.itemtranspoSetup.name,
+          CLIENT_ID: this.itemclientName.code,
+          date_: this.transpoSetup_Date,
+        };
+        this.transpoSetup_Data.push(addData);
+        this.clear_expenseType();
+        this.clear_transpo();
+        this.attemptTdInsert = false;
+
+        this.addAlert("Success", "Expense details added successfully!", "true");
+      } else {
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
+    },
+
+
+    clear_expenseType() {
+      this.expenseType_Date = null;
+      this.itemclientName = {};
+      this.expenseType_Amount = "";
+      this.itemmodalExpenseType = {};
+      this.expenseType_RealAmount = "";
+      this.expenseType_Remarks = "";
+    },
+
+    clear_transpo() {
+      this.transpoSetup_Date = null;
+      this.itemclientName = {};
+      this.itemtranspoSetup = {};
+      this.transpoSetup_Amount = "";
+      this.transpoSetup_RealAmount = "";
+      this.transpoSetup_From = "";
+      this.transpoSetup_to = "";
+      this.transpoSetup_Remarks = "";
+    },
+
+    validate_expenseType() {
+      if (
+        !this.missingXPDateNeeded &&
+        !this.missingXPClientItem &&
+        !this.missingXPAmount &&
+        !this.missingXPType &&
+        !this.missingXPRemarks
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    validate_Transpo() {
+      if (
+        !this.missingTDDateNeeded &&
+        !this.missingTDClientItem &&
+        !this.missingTDMot &&
+        !this.missingTDAmount &&
+        !this.missingTDFrom &&
+        !this.missingTDTo &&
+        !this.missingTDRemarks
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+
+    setButton() {
+      this.isButton = true;
+    },
+
     async reply() {
       this.isLoadingModal = true;
       this.attemptReply = true;
@@ -1484,12 +2357,25 @@ export default {
         fd.append("processId", this.processId);
 
         fd.append("form", this.form);
+
+        // Logged User Credentials
         fd.append("loggedUserId", this.loggedUserId);
         fd.append("loggedUserFullName", this.loggedUserFullName);
         fd.append("companyId", this.companyId);
         fd.append("companyName", this.companyName);
+        fd.append("loggedUserFirstName", this.loggedUserFirstName);
+        fd.append("loggedUserLastName", this.loggedUserLastName);
+        fd.append("loggedUserDepartment", this.loggedUserDepartment);
+        fd.append("loggedUserPosition", this.loggedUserPosition);
+
+
+
+
+
         fd.append("class", "PC");
 
+        fd.append("expenseData", JSON.stringify(this.expenseType_Data));
+        fd.append("transpoData", JSON.stringify(this.transpoSetup_Data));
         fd.append("removedFiles", JSON.stringify(this.removedAttachedFilesId));
 
         try {
@@ -1523,16 +2409,48 @@ export default {
         }
       } else {
         this.isLoadingModal = false;
-        this.addAlert("Failed", "Please complete required fields!", "false");
+        if (this.isLiquidation === true) {
+          if (this.missingExpenses || this.missingAttachments) {
+            this.openToast("top-right", "error", 'Please Add Expenses and Attachments!');
+          } else if (this.missingReplyRemarks) {
+            this.addAlert("Failed", "Reply fields is required!", "false");
+          } else {
+            this.openToast("top-right", "error", 'Please complete all required fields!');
+          }
+        } else {
+          if (this.missingAttachments && this.missingReplyRemarks) {
+            this.openToast("top-right", "error", 'Please complete required fields!');
+            this.addAlert("Failed", "Reply fields is required!", "false");
+
+          } else if (this.missingAttachments) {
+            this.openToast("top-right", "error", 'Please Add Attachments!');
+            
+          } else {
+            this.addAlert("Failed", "Reply fields is required!", "false");
+
+          }
+        }
+
+
       }
     },
 
     validate_reply() {
-      if (!this.missingReplyRemarks) {
-        return true;
+      if (this.isLiquidation === true) {
+        if (!this.missingExpenses && !this.missingReplyRemarks && !this.missingAttachments) {
+          return true;
+        } else{
+          return false;
+        }
       } else {
-        return false;
+        if (!this.missingReplyRemarks && !this.missingAttachments) {
+          return true;
+        } else {
+          return false;
+        }
       }
+
+
     },
     close() {
       this.$router.replace("/clarifications");
@@ -1579,13 +2497,15 @@ export default {
     },
 
     async getPcExpense(id) {
+
+      
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/get-PcExpense/${id}`
         );
 
         if (resp.status === 200) {
-          console.log(resp.data);
+          // console.warn(resp.data);
 
           this.expenseType_Data = resp.data;
         }
@@ -1602,7 +2522,7 @@ export default {
         );
 
         if (resp.status === 200) {
-          console.log(resp.data);
+          // console.log(resp.data);
 
           this.transpoSetup_Data = resp.data;
         }
@@ -1644,14 +2564,14 @@ export default {
       }
     },
     async getActualSign(id, form, companyId) {
-      this.isLoading = true;
+      
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`
         );
         // console.log(resp.status);
         if (resp.status === 200) {
-          this.isLoading = false;
+
           this.payeeName = resp.data[0].Payee;
 
           if (resp.data[2].STATUS === "Not Started") {
@@ -1660,6 +2580,12 @@ export default {
 
           if (resp.data[1].STATUS === "Completed") {
             this.isLiquidation = true;
+            // console.log(this.isLiquidation)
+          }
+
+          if (resp.data[2].STATUS === "Completed") {
+            this.isApproval = true;
+            console.warn(this.isApproval)
           }
 
           const reportingManagerItem = {
@@ -1794,8 +2720,36 @@ export default {
     next() {
       // is isLiquidation - step is 6
       if (this.isLiquidation) {
+        console.log(this.isLiquidation)
         // is Not isLiquidation - step is 4
+        // this.counter++;
+
+      // bagong dagdag
+      if (this.counter === 0 || this.counter === 1 || this.counter === 2) {
         this.counter++;
+        // console.log("alert 012");
+      } else if (this.counter === 3) {
+        this.attemptNext = true;
+
+        if (!this.missingExpenses) {
+          this.counter++;
+        } else {
+          this.openToast(
+            "top-right",
+            "warning",
+            "Please provide your expenses!"
+          );
+        }
+      } else if (this.counter === 4) {
+        this.attemptNextTwo = true;
+        if (!this.missingAttachments) {
+          this.counter++;
+        } else {
+          this.openToast("top-right", "warning", "Attachments is required!");
+        }
+      }
+      // bagong dagdag
+
       } else {
         // Request DEtails
         if (this.counter === 0) {
@@ -1832,6 +2786,81 @@ export default {
     formatNumber(n) {
       // format number 1000000 to 1,234,567
       return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+
+        formatCurrencyExpense(input, blur) {
+      // appends $ to value, validates decimal side
+      // and puts cursor back in right position.
+
+      // get input value
+      let input_val = this.expenseType_Amount;
+
+      // don't validate empty input
+      if (input_val === "") {
+        return;
+      }
+
+      // original length
+      let original_len = input_val.length;
+
+      // initial caret position
+      let caret_pos = input.target.selectionStart;
+
+      // check for decimal
+      if (input_val.indexOf(".") >= 0) {
+        // get position of first decimal
+        // this prevents multiple decimals from
+        // being entered
+        let decimal_pos = input_val.indexOf(".");
+
+        // split number by decimal point
+        let left_side = input_val.substring(0, decimal_pos);
+        let right_side = input_val.substring(decimal_pos);
+
+        // add commas to left side of number
+        left_side = this.formatNumber(left_side);
+
+        // validate right side
+        right_side = this.formatNumber(right_side);
+
+        // On blur make sure 2 numbers after decimal
+        if (blur === "blur") {
+          right_side += "00";
+        }
+
+        // Limit decimal to only 2 digits
+        right_side = right_side.substring(0, 2);
+
+        // join number by .
+        input_val = left_side + "." + right_side;
+      } else {
+        // no decimal entered
+        // add commas to number
+        // remove all non-digits
+        input_val = this.formatNumber(input_val);
+        // input_val = input_val;
+
+        // final formatting
+        if (blur === "blur") {
+          input_val += ".00";
+        }
+      }
+
+      // send updated string to input
+      this.expenseType_Amount = input_val;
+      input.target.value = input_val;
+
+      let realAmount = input_val;
+      if (realAmount.indexOf(",") !== -1) {
+        realAmount = realAmount.replace(/,/g, "");
+      }
+      this.expenseType_RealAmount = realAmount;
+      // console.log(this.expenseType_RealAmount);
+
+      // put caret back in the right position
+      let updated_len = input_val.length;
+      caret_pos = updated_len - original_len + caret_pos;
+      input.target.setSelectionRange(caret_pos, caret_pos);
     },
 
     formatCurrency(input, blur) {
@@ -1908,10 +2937,95 @@ export default {
       input.target.setSelectionRange(caret_pos, caret_pos);
     },
 
+    formatCurrencyTranspo(input, blur) {
+      // appends $ to value, validates decimal side
+      // and puts cursor back in right position.
+
+      // get input value
+      let input_val = this.transpoSetup_Amount;
+
+      // don't validate empty input
+      if (input_val === "") {
+        return;
+      }
+
+      // original length
+      let original_len = input_val.length;
+
+      // initial caret position
+      let caret_pos = input.target.selectionStart;
+
+      // check for decimal
+      if (input_val.indexOf(".") >= 0) {
+        // get position of first decimal
+        // this prevents multiple decimals from
+        // being entered
+        let decimal_pos = input_val.indexOf(".");
+
+        // split number by decimal point
+        let left_side = input_val.substring(0, decimal_pos);
+        let right_side = input_val.substring(decimal_pos);
+
+        // add commas to left side of number
+        left_side = this.formatNumber(left_side);
+
+        // validate right side
+        right_side = this.formatNumber(right_side);
+
+        // On blur make sure 2 numbers after decimal
+        if (blur === "blur") {
+          right_side += "00";
+        }
+
+        // Limit decimal to only 2 digits
+        right_side = right_side.substring(0, 2);
+
+        // join number by .
+        input_val = left_side + "." + right_side;
+      } else {
+        // no decimal entered
+        // add commas to number
+        // remove all non-digits
+        input_val = this.formatNumber(input_val);
+        // input_val = input_val;
+
+        // final formatting
+        if (blur === "blur") {
+          input_val += ".00";
+        }
+      }
+
+      // send updated string to input
+      this.transpoSetup_Amount = input_val;
+      input.target.value = input_val;
+
+      let realAmount = input_val;
+      if (realAmount.indexOf(",") !== -1) {
+        realAmount = realAmount.replace(/,/g, "");
+      }
+      this.transpoSetup_RealAmount = realAmount;
+      // console.log(this.transpoSetup_RealAmount);
+
+      // put caret back in the right position
+      let updated_len = input_val.length;
+      caret_pos = updated_len - original_len + caret_pos;
+      input.target.setSelectionRange(caret_pos, caret_pos);
+    },
+
     // The Attachments
     preview(mimeType, imageBytes) {
-      var newTab = window.open();
-      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
+      {
+        var newTab = window.open();
+        newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      }
+
+      else if (mimeType === 'application/pdf')
+      {
+        let pdfWindow = window.open('#')
+        pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
+      }
+    
     },
 
     onFileSelected(event) {
@@ -1958,6 +3072,8 @@ export default {
       const attachmentId = { id: id, filename: filename, filepath: filepath };
       this.removedAttachedFilesId.push(attachmentId);
       this.selectedFile.splice(index, 1);
+
+      // console.log(this.removedAttachedFilesId)
     },
 
     dragover(event) {

@@ -419,7 +419,9 @@
                 >
                 </model-list-select>
 
-                <small class="text-danger p-0 m-0" v-show="this.isCoordinatorRequired && this.missingCoordinator"
+                <small
+                  class="text-danger p-0 m-0"
+                  v-show="this.isCoordinatorRequired && this.missingCoordinator"
                   >Coordinator is required!</small
                 >
               </div>
@@ -1174,6 +1176,16 @@
                   >
                     <td class="col-9">{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center col-3">
+                      <a
+                        class="btn btn-info btn-sm ml-1"
+                        :download="file.filename"
+                        :href="
+                          'data:' + file.mimeType + ';base64,' + file.imageBytes
+                        "
+                        target="_blank"
+                      >
+                        Download
+                      </a>
                       <button
                         class="btn btn-secondary btn-sm ml-1"
                         @click="preview(file.mimeType, file.imageBytes)"
@@ -1283,78 +1295,82 @@
 
         <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
-            
-              <button
-                v-show="counter"
-                type="button"
-                @click="counter--"
-                class="btn mr-2 btn-secondary btn-sm"
-              >
-                Previous
-              </button>
-            
+          <aside
+            class="
+              col-lg-6
+              d-flex
+              justify-content-start
+              align-items-center
+              flex-nowrap
+            "
+          >
+            <button
+              v-show="counter"
+              type="button"
+              @click="counter--"
+              class="btn mr-2 btn-secondary btn-sm"
+            >
+              Previous
+            </button>
 
-          
-              <button
-                v-show="this.counter > -1 && this.counter < 6"
-                type="button"
-                @click="next()"
-                class="btn mr-2 btn-primary btn-sm"
-              >
-                Next
-              </button>
-          
+            <button
+              v-show="this.counter > -1 && this.counter < 6"
+              type="button"
+              @click="next()"
+              class="btn mr-2 btn-primary btn-sm"
+            >
+              Next
+            </button>
           </aside>
 
-          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
-            
-              <button
-                type="button"
-                class="btn ml-2 btn-success btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Approve')"
-              >
-                Approve
-              </button>
-            
+          <aside
+            class="
+              col-lg-6
+              d-flex
+              justify-content-end
+              align-items-center
+              flex-nowrap
+            "
+          >
+            <button
+              type="button"
+              class="btn ml-2 btn-success btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Approve')"
+            >
+              Approve
+            </button>
 
-            
-              <button
-                :disabled="isInitiator"
-                type="button"
-                class="btn ml-2 btn-danger btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Reject')"
-              >
-                Reject
-              </button>
-            
+            <button
+              :disabled="isInitiator"
+              type="button"
+              class="btn ml-2 btn-danger btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Reject')"
+            >
+              Reject
+            </button>
 
-            
-              <button
-                :disabled="isInitiator"
-                type="button"
-                class="btn ml-2 btn-warning btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Clarify')"
-              >
-                Clarify
-              </button>
-            
+            <button
+              :disabled="isInitiator"
+              type="button"
+              class="btn ml-2 btn-warning btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Clarify')"
+            >
+              Clarify
+            </button>
 
-            
-              <button
-                type="button"
-                class="btn ml-2 btn-danger btn-sm"
-                @click="close()"
-              >
-                Close
-              </button>
-            
+            <button
+              type="button"
+              class="btn ml-2 btn-danger btn-sm"
+              @click="close()"
+            >
+              Close
+            </button>
           </aside>
         </div>
         <!-- / Buttons -->
@@ -1456,11 +1472,11 @@ export default {
       }
     },
 
-    itemrecipient(newValue){
-      if(newValue.code) {
+    itemrecipient(newValue) {
+      if (newValue.code) {
         this.resetAlert();
       }
-    }
+    },
   },
   computed: {
     classA() {
@@ -1490,8 +1506,6 @@ export default {
       const yyyy = today.getFullYear();
       return yyyy;
     },
-
-
 
     projectNameFormula() {
       const today = new Date(this.soDate);
@@ -1691,8 +1705,6 @@ export default {
         return false;
       }
     },
-
-
   },
   data() {
     return {
@@ -1705,8 +1717,6 @@ export default {
       attemptModalSubmit: false,
 
       attemptNextCoordi: false,
-
-
 
       isLoadingSpinner: false,
       isLoadingModal: false,
@@ -1814,7 +1824,7 @@ export default {
       message: "", // added successfully
       type: "", // true or false
 
-      referenceNumber: '',
+      referenceNumber: "",
       requestDate: null,
 
       isCoordinatorRequired: false,
@@ -1824,10 +1834,10 @@ export default {
       recipent: [],
       itemrecipient: {},
       attemptClarify: false,
-      inprogressId: '',
+      inprogressId: "",
 
       isInitiator: false,
-
+      isAccountingAcknowledgement: false,
     };
   },
 
@@ -1837,13 +1847,13 @@ export default {
         form: this.$route.params.frmName,
         processId: this.$route.params.id,
         companyId: this.companyId,
-      }
+      };
       const responseData = await this.$store.dispatch(
         "sof/getInprogressId",
         data
       );
-    
-      this.inprogressId = responseData
+
+      this.inprogressId = responseData;
     },
 
     async queryRecipients() {
@@ -1853,16 +1863,14 @@ export default {
         frmClass: this.$route.params.frmClass,
         loggedUserId: this.loggedUserId,
         companyId: this.companyId,
-      }
+      };
 
       const responseData = await this.$store.dispatch(
         "sof/queryRecipients",
         data
       );
-      
-      this.recipent = responseData
 
-
+      this.recipent = responseData;
     },
 
     // important methods in approval modal
@@ -1894,15 +1902,12 @@ export default {
 
     //
 
-
-
     close() {
       this.$router.replace("/approvals");
     },
 
     async querySof() {
       try {
-
         await this.$store.dispatch("sof/querySof", {
           processId: this.$route.params.id,
           frmName: this.$route.params.frmName,
@@ -1931,6 +1936,19 @@ export default {
           this.sofType = { code: "POC", name: "POC" };
         }
 
+        const isAccountingAcknowledgement = data[4]["actual_sign"][2]["STATUS"];
+
+        if (isAccountingAcknowledgement === "In Progress") {
+          this.isAccountingAcknowledgement = true;
+          console.log(
+            `Accounting Acknowledgement is ${isAccountingAcknowledgement}`
+          );
+        } else {
+          console.log(
+            `Accounting Acknowledgement is ${isAccountingAcknowledgement}`
+          );
+        }
+
         // console.log(data[0]['setup_project'][0]['Business_Number'])
         // console.log(data[0]['setup_project'][0]['business_fullname'])
         // console.log(data[0]['setup_project'][0]['CLIENTCODE'])
@@ -1938,7 +1956,7 @@ export default {
         // console.log(data[0]['setup_project'][0]['PMName'])
 
         // Customer Details
-        
+
         this.projectName = data[1]["sales_orders"][0]["project"];
 
         // Customer Details
@@ -1990,8 +2008,8 @@ export default {
           name: data[1]["sales_orders"][0]["DeliveryAddress"],
         };
 
-        this.referenceNumber = data[1]["sales_orders"][0]["soNum"]
-        this.requestDate = data[1]["sales_orders"][0]["sodate"]
+        this.referenceNumber = data[1]["sales_orders"][0]["soNum"];
+        this.requestDate = data[1]["sales_orders"][0]["sodate"];
 
         this.deliveryAddressItem = selectedDeliveryAddressItem;
 
@@ -2078,38 +2096,39 @@ export default {
         this.documentDetailsSelected = documentDetailsSelected;
 
         this.selectedFile = data[5]["attachments"]["data"];
-      
-      
-      
-      
-      
-      // select Coordinator -> check if its required
-      // console.log(this.$route.params.frmName)
-      if(this.$route.params.frmName === 'Sales Order - Project') {
-        if(data[4]["actual_sign"][3]["STATUS"] === 'In Progress') {
-          this.isCoordinatorRequired = true;
-        }
-      }
 
-      if(frmName === 'Sales Order - Demo' || frmName === 'Sales Order - POC') {
-        if(data[4]["actual_sign"][4]['USER_GRP_IND'] === "Initiator" && data[4]["actual_sign"][4]['STATUS'] === "In Progress"){
-          this.isDmoPocComplete = true;
+        // select Coordinator -> check if its required
+        // console.log(this.$route.params.frmName)
+        if (this.$route.params.frmName === "Sales Order - Project") {
+          if (data[4]["actual_sign"][3]["STATUS"] === "In Progress") {
+            this.isCoordinatorRequired = true;
+          }
         }
-      }
 
-      
+        if (
+          frmName === "Sales Order - Demo" ||
+          frmName === "Sales Order - POC"
+        ) {
+          if (
+            data[4]["actual_sign"][4]["USER_GRP_IND"] === "Initiator" &&
+            data[4]["actual_sign"][4]["STATUS"] === "In Progress"
+          ) {
+            this.isDmoPocComplete = true;
+          }
+        }
+
         const queryuserId = data[1]["sales_orders"][0]["UID"];
         const userId = parseInt(this.loggedUserId);
 
         if (queryuserId === userId) {
           this.isInitiator = true;
         } else {
-          this.counter = 6
+          if (data[4]["actual_sign"][3]["STATUS"] === "In Progress") {
+            this.counter = 2;
+          } else {
+            this.counter = 6;
+          }
         }
-      
-      
-      
-      
       } catch (error) {
         this.openToast(
           "top-right",
@@ -2121,63 +2140,60 @@ export default {
       }
     },
 
-    submit(type){
+    submit(type) {
       const apptype = type;
       // console.log(apptype)
-      if(this.isCoordinatorRequired && apptype === 'Approve'){
-        if(this.missingCoordinator){
-              this.openToast(
-                "top-right",
-                "error",
-                "Coordinator is Required! Please Select Coordinator in Step 3!"
-              );
+      if (this.isCoordinatorRequired && apptype === "Approve") {
+        if (this.missingCoordinator) {
+          this.openToast(
+            "top-right",
+            "error",
+            "Coordinator is Required! Please Select Coordinator in Step 3!"
+          );
         } else {
-          this.submitTwo(apptype)
+          this.submitTwo(apptype);
         }
       } else {
-        this.submitTwo(apptype)
+        this.submitTwo(apptype);
       }
     },
-    
 
     async submitTwo(type) {
       const fd = new FormData();
 
       fd.append("form", this.$route.params.frmName);
       fd.append("processId", this.$route.params.id);
-      fd.append("frmClass",this.$route.params.frmClass)
+      fd.append("frmClass", this.$route.params.frmClass);
       fd.append("remarks", this.remarks);
       fd.append("referenceNumber", this.referenceNumber);
       fd.append("class", "SOF");
-      fd.append("inprogressId",this.inprogressId);
+      fd.append("inprogressId", this.inprogressId);
+
+      fd.append(
+        "isAccountingAcknowledgement",
+        this.isAccountingAcknowledgement
+      );
 
       // fd.append("recipientId", this.itemrecipient.code);
       // fd.append("inprogressId", this.inprogressId);
       fd.append("isCoordinatorRequired", this.isCoordinatorRequired);
       fd.append("isDmoPocComplete", this.isDmoPocComplete);
 
-      if(this.isCoordinatorRequired){
+      if (this.isCoordinatorRequired) {
         fd.append("coordinatorID", this.coordinatorItem.code);
         fd.append("coordinatorName", this.coordinatorItem.name);
       }
 
       // fd.append("inprogressId",this.itemrecipient.name);
 
-      
-
-
-      fd.append("loggedUserId",this.loggedUserId);
-      fd.append("loggedUserFirstName",this.loggedUserFirstName);
-      fd.append("loggedUserLastName",this.loggedUserLastName);
-      fd.append("loggedUserFullName",this.loggedUserFullName);
-      fd.append("loggedUserDepartment",this.loggedUserDepartment);
-      fd.append("loggedUserPosition",this.loggedUserPosition);
-      fd.append("companyId",this.companyId);
-      fd.append("companyName",this.companyName);
-
-
-
-
+      fd.append("loggedUserId", this.loggedUserId);
+      fd.append("loggedUserFirstName", this.loggedUserFirstName);
+      fd.append("loggedUserLastName", this.loggedUserLastName);
+      fd.append("loggedUserFullName", this.loggedUserFullName);
+      fd.append("loggedUserDepartment", this.loggedUserDepartment);
+      fd.append("loggedUserPosition", this.loggedUserPosition);
+      fd.append("companyId", this.companyId);
+      fd.append("companyName", this.companyName);
 
       if (type === "Approve") {
         this.isLoadingModal = true;
@@ -2195,18 +2211,18 @@ export default {
             this.openToast("top-right", "success", resp.data.message);
             this.$router.replace("/approvals");
           }
-
-    
         } catch (err) {
           this.isLoadingModal = false;
           if (err.response.status === 422) {
             this.openToast("top-right", "error", err.response.data);
           } else {
-            this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+            this.openToast(
+              "top-right",
+              "error",
+              "Internal Server Error! Please inform the administrator!"
+            );
           }
         }
-
-
       } else if (type === "Reject") {
         this.isLoadingModal = true;
         try {
@@ -2229,14 +2245,18 @@ export default {
           if (err.response.status === 422) {
             this.openToast("top-right", "error", err.response.data);
           } else {
-            this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+            this.openToast(
+              "top-right",
+              "error",
+              "Internal Server Error! Please inform the administrator!"
+            );
           }
         }
       } else if (type === "Clarify") {
         this.isLoadingModal = true;
         this.attemptClarify = true;
         this.resetAlert();
-        fd.append("recipientId",this.itemrecipient.code);
+        fd.append("recipientId", this.itemrecipient.code);
 
         if (!this.missingModalRecipient === true) {
           this.isLoadingModal = false;
@@ -2261,20 +2281,11 @@ export default {
             this.openToast("top-right", "error", err);
           }
           // end
-
         } else {
-            this.isLoadingModal = false;
-            this.addAlert("Failed", "Please select recipent!", "false");
+          this.isLoadingModal = false;
+          this.addAlert("Failed", "Please select recipent!", "false");
         }
-
-
-
-
-
-
       }
-
-      
     },
 
     openToast(position, variant, message) {
@@ -2287,33 +2298,25 @@ export default {
       });
     },
 
-     next() {
-      if(this.isCoordinatorRequired === true){
+    next() {
+      if (this.isCoordinatorRequired === true) {
         if (this.counter === 2) {
           this.attemptNextCoordi = true;
-            if(!this.missingCoordinator){
-              this.counter++;
-            } else {
-              this.openToast(
-                "top-right",
-                "error",
-                "Coordinator is Required! Please Select Coordinator in Step 3!"
-              );
-            }
+          if (!this.missingCoordinator) {
+            this.counter++;
+          } else {
+            this.openToast(
+              "top-right",
+              "error",
+              "Coordinator is Required! Please Select Coordinator in Step 3!"
+            );
+          }
         } else {
           this.counter++;
         }
       } else {
         this.counter++;
       }
-
-
-
-
-
-
-
-
     },
 
     async queryCompany() {
@@ -2326,16 +2329,18 @@ export default {
 
     async queryCoordinators() {
       const responseData = await this.$store.dispatch("sof/queryCoordinators");
-      this.coordinator = responseData
-
+      this.coordinator = responseData;
     },
 
     async querySelectedCoordinator() {
-      const responseData = await this.$store.dispatch("sof/querySelectedCoordinator",this.$route.params.id);
+      const responseData = await this.$store.dispatch(
+        "sof/querySelectedCoordinator",
+        this.$route.params.id
+      );
 
-      if(responseData[0]){
-        this.coordinatorItem = responseData[0]
-      }else{
+      if (responseData[0]) {
+        this.coordinatorItem = responseData[0];
+      } else {
         this.coordinatorItem = {};
       }
     },
@@ -2461,8 +2466,17 @@ export default {
     },
 
     preview(mimeType, imageBytes) {
-      var newTab = window.open();
-      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      if (mimeType === "image/jpeg" || mimeType === "image/png") {
+        var newTab = window.open();
+        newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      } else if (mimeType === "application/pdf") {
+        let pdfWindow = window.open("#");
+        pdfWindow.document.write(
+          `<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +
+            encodeURI(imageBytes) +
+            "'></iframe>"
+        );
+      }
     },
 
     formatNumber(n) {

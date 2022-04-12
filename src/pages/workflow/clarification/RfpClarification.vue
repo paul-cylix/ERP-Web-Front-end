@@ -774,7 +774,18 @@
                 <tbody>
                   <tr v-for="(file, index) in selectedFile" :key="file.id">
                     <td>{{ file.filename }}</td>
-                    <td class="pl-2 pr-2 text-center">
+                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+
+                      <a
+                        class="btn btn-info btn-sm mr-1"
+                        :download="file.filename"
+                        :href="
+                          'data:' + file.mimeType + ';base64,' + file.imageBytes
+                        "
+                        target="_blank"
+                      >
+                        Download
+                      </a>
                       <button
                         v-if="isInitiator"
                         class="btn btn-danger btn-sm"
@@ -830,18 +841,19 @@
 
         <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start">
-            <div class="col-lg-2" v-show="counter">
+          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
+            
               <button
+                v-show="counter"
                 type="button"
                 @click="counter--"
                 class="btn btn-block btn-secondary btn-sm"
               >
                 Previous
               </button>
-            </div>
-            <div
-              class="col-lg-2"
+            
+            <aside
+              
               v-show="!isLiquidation"
               v-if="this.counter <= 2"
             >
@@ -850,7 +862,7 @@
                 v-if="isInitiator"
                 type="button"
                 @click="next()"
-                class="btn btn-block btn-primary btn-sm"
+                class="btn mr-1 btn-primary btn-sm"
               >
                 Next
               </button>
@@ -859,48 +871,47 @@
                 v-else
                 type="button"
                 @click="counter++"
-                class="btn btn-block btn-primary btn-sm"
+                class="btn mr-1 btn-primary btn-sm"
               >
                 Next
               </button>
-            </div>
+            </aside>
 
-            <div
-              class="col-lg-2"
+    
+              <button
+                   
               v-show="isLiquidation"
               v-if="this.counter <= 3"
-            >
-              <button
                 type="button"
                 @click="counter++"
-                class="btn btn-block btn-primary btn-sm"
+                class="btn mr-1 btn-primary btn-sm"
               >
                 Next
               </button>
-            </div>
+          
           </aside>
 
-          <aside class="col-lg-6 d-flex justify-content-end">
-            <div class="col-lg-2">
+          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
+            
               <button
                 type="button"
-                class="btn btn-block btn-warning btn-sm"
+                class="btn ml-1 btn-warning btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
               >
                 Reply
               </button>
-            </div>
+            
 
-            <div class="col-lg-2">
+            
               <button
                 type="button"
-                class="btn btn-block btn-danger btn-sm"
+                class="btn ml-1 btn-danger btn-sm"
                 @click="close()"
               >
                 Close
               </button>
-            </div>
+            
           </aside>
         </div>
         <!-- / Buttons -->
@@ -1791,9 +1802,19 @@ export default {
 
     // The Attachments
     preview(mimeType, imageBytes) {
-      var newTab = window.open();
-      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
-    },
+      if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
+      {
+        var newTab = window.open();
+        newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      }
+
+      else if (mimeType === 'application/pdf')
+      {
+        let pdfWindow = window.open('#')
+        pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
+      }
+    
+   },
 
     // Add new files scripts
     onFileSelected(event) {

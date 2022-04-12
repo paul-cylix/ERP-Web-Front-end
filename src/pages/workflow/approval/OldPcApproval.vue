@@ -2185,8 +2185,18 @@ export default {
     },
 
     preview(mimeType, imageBytes) {
-      var newTab = window.open();
-      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
+      {
+        var newTab = window.open();
+        newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      }
+
+      else if (mimeType === 'application/pdf')
+      {
+        let pdfWindow = window.open('#')
+        pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
+      }
+    
     },
 
     dragover(event) {

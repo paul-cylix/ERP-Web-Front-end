@@ -745,7 +745,18 @@
                 <tbody>
                   <tr v-for="file in selectedFile" :key="file.name">
                     <td>{{ file.filename }}</td>
-                    <td class="pl-2 pr-2 text-center">
+                                     <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+
+                      <a
+                        class="btn btn-info btn-sm "
+                        :download="file.filename"
+                        :href="
+                          'data:' + file.mimeType + ';base64,' + file.imageBytes
+                        "
+                        target="_blank"
+                      >
+                        Download
+                      </a>
                       <button
                         @click="preview(file.mimeType, file.imageBytes)"
                         class="btn btn-secondary btn-sm ml-1"
@@ -827,49 +838,38 @@
 
         <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start">
-            <div class="col-lg-2" v-show="counter">
+          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
+            
               <button
+                v-show="counter"
                 type="button"
                 @click="counter--"
-                class="btn btn-block btn-secondary btn-sm"
+                class="btn mr-1 btn-secondary btn-sm"
               >
                 Previous
               </button>
-            </div>
 
-            <div class="col-lg-2" v-if="this.counter <= isAttachments">
               <button
+                v-if="this.counter <= isAttachments"
                 type="button"
                 @click="counter++"
-                class="btn btn-block btn-primary btn-sm"
+                class="btn mr-1 btn-primary btn-sm"
               >
                 Next
               </button>
-            </div>
+          
           </aside>
 
-          <aside class="col-lg-6 d-flex justify-content-end">
-            <div class="col-lg-2">
-              <!-- <button
-                type="button"
-                class="btn btn-block btn-warning btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-              >
-                Withdrawn
-              </button> -->
-            </div>
-
-            <div class="col-lg-2">
+          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
+   
               <button
                 type="button"
-                class="btn btn-block btn-danger btn-sm"
+                class="btn ml-1 btn-danger btn-sm"
                 @click="close()"
               >
                 Close
               </button>
-            </div>
+          
           </aside>
         </div>
         <!-- / Buttons -->
@@ -1322,8 +1322,18 @@ export default {
       this.filePreview();
     },
     preview(mimeType, imageBytes) {
-      var newTab = window.open();
-      newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
+      {
+        var newTab = window.open();
+        newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      }
+
+      else if (mimeType === 'application/pdf')
+      {
+        let pdfWindow = window.open('#')
+        pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
+      }
+    
     },
 
     dragover(event) {

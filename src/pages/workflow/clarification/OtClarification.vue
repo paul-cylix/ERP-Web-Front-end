@@ -410,23 +410,24 @@
 
         <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start">
-            <div class="col-lg-2" v-show="counter">
+          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
+            
               <button
+                v-show="counter"
                 type="button"
                 @click="counter--"
-                class="btn btn-block btn-secondary btn-sm"
+                class="btn mr-1 btn-secondary btn-sm"
               >
                 Previous
               </button>
-            </div>
+            
             <!-- <button @click="test()">test</button> -->
-            <div class="col-lg-2" v-if="this.counter <= 1">
+            <aside  v-if="this.counter <= 1">
               <button
                 v-if="this.isInitiator"
                 type="button"
                 @click="next()"
-                class="btn btn-block btn-primary btn-sm"
+                class="btn mr-1 btn-primary btn-sm"
               >
                 Next
               </button>
@@ -434,34 +435,34 @@
                 v-else
                 type="button"
                 @click="counter++"
-                class="btn btn-block btn-primary btn-sm"
+                class="btn mr-1 btn-primary btn-sm"
               >
                 Next
               </button>
-            </div>
+            </aside>
           </aside>
 
-          <aside class="col-lg-6 d-flex justify-content-end">
-            <div class="col-lg-2">
+          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
+            
               <button
                 type="button"
-                class="btn btn-block btn-warning btn-sm"
+                class="btn ml-1 btn-warning btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
               >
                 Reply
               </button>
-            </div>
+            
 
-            <div class="col-lg-2">
+            
               <button
                 type="button"
-                class="btn btn-block btn-danger btn-sm"
+                class="btn ml-1 btn-danger btn-sm"
                 @click="close()"
               >
                 Close
               </button>
-            </div>
+            
           </aside>
         </div>
         <!-- / Buttons -->
