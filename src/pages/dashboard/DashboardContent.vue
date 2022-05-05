@@ -74,6 +74,14 @@
               </h6>
             </div>
 
+            <div class="card-header accordionheaderOne">
+              <h6 class="mb-0">
+                <a class="collapsed text-white"   @click="redirect('/the-caf')" role="button" data-toggle="collapse" aria-expanded="false">
+                  Cash Advance
+                </a>
+              </h6>
+            </div>
+
 
 
       

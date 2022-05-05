@@ -3,16 +3,14 @@
     <router-view></router-view>
     <div class="col-md-12 mt-3">
       <div class="card card-secondary">
+        <div
+          class="overlay"
+          style="background-color: white !important"
+          v-show="isLoadingSpinner"
+        >
+          <loading-spinner></loading-spinner>
+        </div>
 
-
-              <div
-        class="overlay"
-        style="background-color: white !important"
-        v-show="isLoadingSpinner"
-      >
-        <loading-spinner></loading-spinner>
-      </div>
-      
         <div class="card-header">
           <h3 class="card-title">Participated Requests</h3>
         </div>
@@ -21,6 +19,8 @@
         </div>
       </div>
     </div>
+    <modal-remarks :remarks="remarks"></modal-remarks>
+    <modal-status :status="status"></modal-status>
   </aside>
 </template>
 <script>
@@ -32,6 +32,8 @@ export default {
     return {
       isLoadingSpinner: false,
       requestArray: [],
+      remarks: [],
+      status: [],
     };
   },
 
@@ -82,31 +84,45 @@ export default {
         ],
       };
     },
+
+    getRemarks() {
+      return this.$store.getters["remarks/getRemarks"];
+    },
+
+    getStatus() {
+      return this.$store.getters["status/getStatus"];
+    },
   },
 
   watch: {
-    //Navigate
     $route(newRoute) {
       this.getApprovals();
-      console.log(newRoute);
+      console.warn(newRoute);
+    },
+
+
+    getRemarks(newValue) {
+      this.remarks = newValue;
+    },
+
+    getStatus(newValue) {
+      this.status = newValue;
     },
   },
   methods: {
     async getApprovals() {
-          this.isLoadingSpinner = true    
 
+      this.isLoadingSpinner = true;
       const loggedUserId = localStorage.getItem("id");
       const companyId = localStorage.getItem("companyId");
 
-      
-
       const response = await fetch(
-        `http://127.0.0.1:8000/api/getApprovals/${loggedUserId}/${companyId}`,
+        `http://127.0.0.1:8000/api/getParticipants/${loggedUserId}/${companyId}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            Accept: "application/json",
           },
         }
       );
@@ -119,22 +135,15 @@ export default {
         throw error;
       }
 
-    this.requestArray = responseData.data;
-    this.isLoadingSpinner = false   
-    },
+      console.log(responseData.data)
 
-    // activateAction(button){
-    //   alert(button)
-    // }
+      this.requestArray = responseData.data;
+      this.isLoadingSpinner = false;
+    },
   },
 
-
-
-
-
-
-  async mounted() {
-    await this.getApprovals();
+   mounted() {
+     this.getApprovals();
   },
 };
 </script>

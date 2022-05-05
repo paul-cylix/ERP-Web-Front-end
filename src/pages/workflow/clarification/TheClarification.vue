@@ -144,6 +144,8 @@ export default {
         }
       }
 
+      console.log(responseData.data)
+
       this.requestArray = responseData.data;
       this.isLoadingSpinner = false;
     },

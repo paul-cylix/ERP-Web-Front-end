@@ -282,6 +282,10 @@ export default {
       return state.user.companies;
     },
 
+    selectedCompany(state){
+      return state.user.companyName;
+    }
+
     // auto logout remove for now
     // didAutoLogout(state) {
     //   return state.didAutoLogout;

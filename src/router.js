@@ -21,13 +21,14 @@ import NotFound from './pages/NotFound.vue';
 import TheRfp from "./pages/accounting/TheRfp.vue";
 import TheRe from "./pages/accounting/TheRe.vue";
 import ThePc from "./pages/accounting/ThePc.vue";
+import TheCaf from "./pages/accounting/TheCaf.vue";
 import TheOt from "./pages/humanresource/TheOt.vue";
 import TheItf from "./pages/humanresource/TheItf.vue";
 import TheLaf from "./pages/humanresource/TheLaf.vue";
 import TheDtr from "./pages/humanresource/TheDtr.vue";
 import TheSof from "./pages/salesorder/TheSof.vue";
 
-
+import RfpParticipant from "./pages/workflow/participant/RfpParticipant.vue";
 import RfpInprogress from "./pages/workflow/inprogress/RfpInprogress.vue";
 import RfpApproval from "./pages/workflow/approval/RfpApproval.vue";
 import RfpInput from "./pages/workflow/input/RfpInput.vue";
@@ -38,7 +39,7 @@ import RfpWithdrawn from "./pages/workflow/withdrawn/RfpWithdrawn.vue";
 
 
 
-
+import ReParticipant from "./pages/workflow/participant/ReParticipant.vue";
 import ReInprogress from "./pages/workflow/inprogress/ReInprogress.vue";
 import ReApproval from "./pages/workflow/approval/ReApproval.vue";
 import ReInput from "./pages/workflow/input/ReInput.vue";
@@ -49,7 +50,7 @@ import ReWithdrawn from "./pages/workflow/withdrawn/ReWithdrawn.vue";
 
 
 
-
+import PcParticipant from "./pages/workflow/participant/PcParticipant.vue";
 import PcInprogress from "./pages/workflow/inprogress/PcInprogress.vue";
 import PcApproval from "./pages/workflow/approval/PcApproval.vue";
 import PcClarification from "./pages/workflow/clarification/PcClarification.vue";
@@ -57,8 +58,19 @@ import PcApproved from "./pages/workflow/approved/PcApproved.vue";
 import PcRejected from "./pages/workflow/rejected/PcRejected.vue";
 import PcWithdrawn from "./pages/workflow/withdrawn/PcWithdrawn.vue";
 
+import CafParticipant from "./pages/workflow/participant/CafParticipant.vue";
+import CafInput from "./pages/workflow/input/CafInput.vue";
+import CafApproval from "./pages/workflow/approval/CafApproval.vue";
+import CafInprogress from "./pages/workflow/inprogress/CafInprogress.vue";
+import CafClarification from "./pages/workflow/clarification/CafClarification.vue";
+import CafApproved from "./pages/workflow/approved/CafApproved.vue";
+import CafWithdrawn from "./pages/workflow/withdrawn/CafWithdrawn.vue";
+import CafRejected from "./pages/workflow/rejected/CafRejected.vue";
 
 
+
+
+import OtParticipant from "./pages/workflow/participant/OtParticipant.vue";
 import OtInprogress from "./pages/workflow/inprogress/OtInprogress.vue";
 import OtApproval from "./pages/workflow/approval/OtApproval.vue";
 import OtInput from "./pages/workflow/input/OtInput.vue";
@@ -69,7 +81,7 @@ import OtWithdrawn from "./pages/workflow/withdrawn/OtWithdrawn.vue";
 
 
 
-
+import ItfParticipant from "./pages/workflow/participant/ItfParticipant.vue";
 import ItfInprogress from "./pages/workflow/inprogress/ItfInprogress.vue";
 import ItfApproval from "./pages/workflow/approval/ItfApproval.vue";
 import ItfInput from "./pages/workflow/input/ItfInput.vue";
@@ -80,7 +92,7 @@ import ItfWithdrawn from "./pages/workflow/withdrawn/ItfWithdrawn.vue"
 
 
 
-
+import LafParticipant from "./pages/workflow/participant/LafParticipant.vue";
 import LafInprogress from "./pages/workflow/inprogress/LafInprogress.vue";
 import LafApproval from "./pages/workflow/approval/LafApproval.vue";
 import LafClarification from "./pages/workflow/clarification/LafClarification.vue";
@@ -90,7 +102,7 @@ import LafWithdrawn from "./pages/workflow/withdrawn/LafWithdrawn.vue";
 
 
 
-
+import SofParticipant from "./pages/workflow/participant/SofParticipant.vue";
 import SofInprogress from "./pages/workflow/inprogress/SofInprogress.vue";
 import SofApproval from "./pages/workflow/approval/SofApproval.vue";
 import SofInput from "./pages/workflow/input/SofInput.vue";
@@ -124,6 +136,65 @@ const routes = [
       {
         path: "/participants",
         component: TheParticipant,
+        children: [
+          {
+            path: ":id",
+            name: "Request for Payment-participant",
+            component: RfpParticipant,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Reimbursement Request-participant",
+            component: ReParticipant,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Petty Cash Request-participant",
+            component: PcParticipant,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Cash Advance Request-participant",
+            component: CafParticipant,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Overtime Request-participant",
+            component: OtParticipant,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Itinerary Request-participant",
+            component: ItfParticipant,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Leave Request-participant",
+            component: LafParticipant,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "sales_order_frm-participant",
+            component: SofParticipant,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+
+        ],
         meta: { requiresAuth: true },
       },
       {
@@ -134,6 +205,13 @@ const routes = [
             path: ":id",
             name: "Request for Payment-input",
             component: RfpInput,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Cash Advance Request-input",
+            component: CafInput,
             props: true,
             meta: { requiresAuth: true },
           },
@@ -195,6 +273,13 @@ const routes = [
             path: ":id",
             name: "Petty Cash Request-approval",
             component: PcApproval,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Cash Advance Request-approval",
+            component: CafApproval,
             props: true,
             meta: { requiresAuth: true },
           },
@@ -328,6 +413,13 @@ const routes = [
           },
           {
             path: ":id",
+            name: "Cash Advance Request-inprogress",
+            component: CafInprogress,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
             name: "Overtime Request-inprogress",
             component: OtInprogress,
             props: true,
@@ -379,6 +471,13 @@ const routes = [
             path: ":id",
             name: "Petty Cash Request-clarification",
             component: PcClarification,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Cash Advance Request-clarification",
+            component: CafClarification,
             props: true,
             meta: { requiresAuth: true },
           },
@@ -440,6 +539,13 @@ const routes = [
           },
           {
             path: ":id",
+            name: "Cash Advance Request-approved",
+            component: CafApproved,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
             name: "Overtime Request-approved",
             component: OtApproved,
             props: true,
@@ -491,6 +597,13 @@ const routes = [
             path: ":id",
             name: "Petty Cash Request-withdrawn",
             component: PcWithdrawn,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Cash Advance Request-withdrawn",
+            component: CafWithdrawn,
             props: true,
             meta: { requiresAuth: true },
           },
@@ -552,6 +665,13 @@ const routes = [
           },
           {
             path: ":id",
+            name: "Cash Advance Request-rejected",
+            component: CafRejected,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
             name: "Overtime Request-rejected",
             component: OtRejected,
             props: true,
@@ -584,6 +704,7 @@ const routes = [
       { path: "/the-rfp", component: TheRfp, meta: { requiresAuth: true } },
       { path: "/the-re", component: TheRe, meta: { requiresAuth: true } },
       { path: "/the-pc", component: ThePc, meta: { requiresAuth: true } },
+      { path: "/the-caf", component: TheCaf, meta: { requiresAuth: true } },
       { path: "/the-ot", component: TheOt, meta: { requiresAuth: true } },
       { path: "/the-itf", component: TheItf, meta: { requiresAuth: true } },
       { path: "/the-laf", component: TheLaf, meta: { requiresAuth: true } },

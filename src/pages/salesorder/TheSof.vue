@@ -1347,11 +1347,10 @@ export default {
   },
   async created() {
     this.isLoadingSpinner = true
-    await this.queryCompany();
-    await this.queryCompanySystemDetails();
-    await this.queryCompanyDocumentDetails();
-    await this.queryCurrency();
-    
+      await this.queryCompany();
+      await this.queryCompanySystemDetails();
+      await this.queryCompanyDocumentDetails();
+      await this.queryCurrency();
     this.isLoadingSpinner = false
 
   },

@@ -5,16 +5,15 @@
       <div
         class="overlay"
         style="background-color: white !important"
-        v-show="isLoading"
+        v-show="isLoadingSpinner"
       >
         <loading-spinner></loading-spinner>
       </div>
       <div class="card-header">
-        <h3 class="card-title">{{this.isCoordinatorRequired}}</h3>
+        <h3 class="card-title">Sales Order</h3>
       </div>
       <div class="card-body">
-        <card-spinner :show="isLoadingSpinner"></card-spinner>
-
+        <!-- <card-spinner :show="isLoadingSpinner"></card-spinner> -->
         <!-- Step Numbers -->
         <div class="d-flex progressBarWrapper text-center">
           <div class="progressbar" :class="classA">
@@ -114,11 +113,7 @@
                   :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="missingSOFType && attemptNext"
-                  >SOF Type is required!</small
-                >
+
               </div>
             </div>
 
@@ -139,17 +134,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="this.disableStyle"
-                  :isDisabled="
-                    this.isInitiator === false
-                  "
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="missingCustomerName && attemptNextOne"
-                  >Customer Name is required!</small
-                >
+
               </div>
             </div>
             <div class="col-md-3">
@@ -161,17 +150,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="this.disableStyle"
-                  :isDisabled="
-                    this.isInitiator === false
-                  "
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="missingContactPerson && attemptNextOne"
-                  >Contact Person is required!</small
-                >
+
               </div>
             </div>
             <div class="col-md-3">
@@ -185,17 +168,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="this.disableStyle"
-                  :isDisabled="
-                    this.isInitiator === false
-                  "
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="missingContactNumber && attemptNextOne"
-                  >Contact Number is required!</small
-                >
+
               </div>
             </div>
           </div>
@@ -212,17 +189,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="this.disableStyle"
-                  :isDisabled="
-                    this.isInitiator === false
-                  "
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="missingDeliveryAddress && attemptNextOne"
-                  >Delivery Address is required!</small
-                >
+
               </div>
             </div>
 
@@ -237,17 +208,10 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="this.disableStyle"
-                  :isDisabled="
-                    this.isInitiator === false
-                  "
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="missingBillingAddress && attemptNextOne"
-                  >Billing Address is required!</small
-                >
               </div>
             </div>
           </div>
@@ -263,9 +227,7 @@
                   v-model.trim="accountManager"
                   class="form-control py-3 form-control-sm"
                 />
-                <!-- <small class="text-danger p-0 m-0" v-show="true"
-                  >Account Manager is required!</small
-                > -->
+ 
               </div>
             </div>
             <div class="col-md-6">
@@ -277,9 +239,7 @@
                   v-model.trim="delegates"
                   class="form-control py-3 form-control-sm"
                 />
-                <!-- <small class="text-danger p-0 m-0" v-show="true"
-                  >Delegates is required!</small
-                > -->
+
               </div>
             </div>
           </div>
@@ -296,13 +256,9 @@
                   type="text"
                   class="form-control form-control-sm py-3"
                   v-model.trim="poNumber"
-                  :disabled="this.isInitiator === false"
+                  :disabled="true"
                 />
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextTwo && missingPONumber"
-                  >Customer PO Number is required!</small
-                >
+
               </div>
             </div>
 
@@ -310,38 +266,35 @@
               <div class="form-group">
                 <small><label for="podate">Customer PO Date</label></small>
                 <date-picker
-                :disabled="this.isInitiator === false"
                   v-model="poDate"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
+                  :disabled="true"
                 ></date-picker>
 
-
-
-
-
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextTwo && missingPODate"
-                  >Customer PO Date is required!</small
-                >
               </div>
             </div>
             <div class="col-md-3">
               <div class="form-group">
                 <small><label for="projectstart">Project Start</label></small>
                 <date-picker
+                  v-if="
+                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
+                  "
                   v-model="projectStart"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
-                  :disabled="this.isInitiator === false || this.sofType.code === 'DMO' || this.sofType.code === 'POC'"
+                  disabled
                 ></date-picker>
 
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextTwo && missingProjectStart"
-                  >Project Start is required!</small
-                >
+                <date-picker
+                  v-else
+                  v-model="projectStart"
+                  :disabled="true"
+                  valueType="format"
+                  style="display: block; width: 100%; line-height: 20px border:red;"
+                ></date-picker>
+
               </div>
             </div>
 
@@ -349,17 +302,23 @@
               <div class="form-group">
                 <small><label for="projectend"> Project End</label></small>
                 <date-picker
-                  :disabled="this.isInitiator === false || this.sofType.code === 'DMO' || this.sofType.code === 'POC'"
+                  v-if="
+                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
+                  "
                   v-model="projectEnd"
                   valueType="format"
-                  
+                  disabled
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextTwo && missingProjectEnd"
-                  >Project End is required!</small
-                >
+
+                <date-picker
+                  v-else
+                  v-model="projectEnd"
+                  valueType="format"
+                  disabled
+                  style="display: block; width: 100%; line-height: 20px border:red;"
+                ></date-picker>
+
               </div>
             </div>
           </div>
@@ -373,17 +332,12 @@
                   ></small
                 >
                 <input
+                  disabled
                   type="text"
                   v-model.trim="projectShortText"
                   class="form-control py-3 form-control-sm"
-                  :disabled="this.isInitiator === false"
-
                 />
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextTwo && missingProjectShortText"
-                  >Project Short Text is required!</small
-                >
+
               </div>
             </div>
 
@@ -392,7 +346,7 @@
                 <small><label for="projectname">Project Name</label></small>
                 <input
                   type="text"
-                  v-model.trim="projectNameFormula"
+                  v-model.trim="projectName"
                   disabled
                   class="form-control py-3 form-control-sm"
                 />
@@ -411,16 +365,12 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="isDDCoordinatorRequired"
-                  :isDisabled="isCoordinatorRequired === false || isInitiator === false"
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
 
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="this.isCoordinatorRequired && this.missingCoordinator"
-                  >Coordinator is required!</small
-                >
+
               </div>
             </div>
 
@@ -428,27 +378,12 @@
               <div class="form-group">
                 <small><label for="projectcode">Project Code</label></small>
                 <input
-                  list="suggestions"
+                  disabled
                   type="text"
                   v-model.trim="projectCode"
                   class="form-control py-3 form-control-sm"
-                  :disabled="this.isInitiator === false"
-
                 />
-                <datalist id="suggestions">
-                  <option
-                    v-for="item in projectCodeDataList"
-                    :key="item.project_no"
-                  >
-                    {{ item.project_no }}
-                  </option>
-                </datalist>
 
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextTwo && missingProjectCode"
-                  >Project Code is required!</small
-                >
               </div>
             </div>
           </div>
@@ -462,14 +397,9 @@
                   name="scopeofwork"
                   v-model.trim="scopeOfWork"
                   rows="5"
-                  :disabled="this.isInitiator === false"
-
+                  disabled
                 ></textarea>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextTwo && missingScopeOfWork"
-                  >Scope of Work is required!</small
-                >
+
               </div>
             </div>
           </div>
@@ -486,13 +416,9 @@
                   v-model.trim="paymentTerms"
                   type="text"
                   class="form-control py-3 form-control-sm"
-                  :disabled="this.isInitiator === false || this.sofType.code === 'DMO' || this.sofType.code === 'POC'"
+                  disabled
                 />
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextThree && missingPaymentTerms"
-                  >Payment Terms is required!</small
-                >
+
               </div>
             </div>
 
@@ -503,14 +429,10 @@
                   type="text"
                   class="form-control py-3 form-control-sm"
                   v-model.trim="warranty"
-                  :disabled="this.isInitiator === false || this.sofType.code === 'DMO' || this.sofType.code === 'POC'"
+                  disabled
                 />
 
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextThree && missingWarranty"
-                  >Warranty is required!</small
-                >
+
               </div>
             </div>
 
@@ -523,17 +445,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="isDropdownRequiredTwo"
-                  :isDisabled="
-                    this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextThree && missingCurrency"
-                  >Currency is required!</small
-                >
+    
               </div>
             </div>
 
@@ -548,13 +464,9 @@
                   class="form-control form-control-sm py-3"
                   id="projectCost"
                   v-model="projectCost"
-                  :disabled="this.isInitiator === false || this.sofType.code === 'DMO' || this.sofType.code === 'POC'"
+                  :disabled="true"
                 />
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextThree && missingProjectCost"
-                  >Project Cost is required!</small
-                >
+
               </div>
             </div>
           </div>
@@ -571,17 +483,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="isDropdownRequiredTwo"
-                  :isDisabled="
-                    this.isInitiator === false || this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextThree && missingDownPaymentRequired"
-                  >Down Payment is required!</small
-                >
+
               </div>
             </div>
 
@@ -591,22 +497,10 @@
                 <input
                   type="number"
                   v-model.trim="downPaymentPercentage"
-                  :disabled="this.downPaymentRequiredItem.code === false || this.isInitiator === false"
+                  :disabled="true"
                   class="form-control py-3 form-control-sm"
                 />
-                <div class="d-flex flex-column">
-                  <small
-                    class="text-danger p-0 m-0"
-                    v-show="attemptNextThree && missingDownPaymentPercentage"
-                    >Down Payment Percentage is required!
-                  </small>
 
-                  <small
-                    class="text-danger p-0 m-0"
-                    v-show="attemptNextThree && dpValitade"
-                    >Down Payment Percentage must be 1% - 100%
-                  </small>
-                </div>
               </div>
             </div>
 
@@ -619,9 +513,7 @@
                   :disabled="true"
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
-                <!-- <small class="text-danger p-0 m-0" v-show="attemptNextThree && "
-                  >Down Payment Date Received is required!</small
-                > -->
+
               </div>
             </div>
 
@@ -630,13 +522,11 @@
                 <small><label for="softype">Invoice Number</label></small>
                 <input
                   type="text"
-                  v-model="invoiceNumber"
                   disabled
+                  v-model="invoiceNumber"
                   class="form-control py-3 form-control-sm"
                 />
-                <!-- <small class="text-danger p-0 m-0" v-show="attemptNextThree && "
-                  >Invouce Number is required!</small
-                > -->
+
               </div>
             </div>
           </div>
@@ -650,17 +540,11 @@
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
-                  :style="isDropdownRequiredTwo"
-                  :isDisabled="
-                    this.isInitiator === false || this.sofType.code === 'DMO' || this.sofType.code === 'POC'
-                  "
+                  style="padding: 9px; background-color: #e9ecef"
+                  :isDisabled="true"
                 >
                 </model-list-select>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextThree && missingInvoiceRequired"
-                  >Invoice Required is required!</small
-                >
+
               </div>
             </div>
 
@@ -669,15 +553,11 @@
                 <small><label for="softype">Invoice Date Needed</label></small>
                 <date-picker
                   v-model="invoiceDateNeeded"
-                  :disabled="this.invoiceRequiredItem.code === false || this.isInitiator === false"
+                  :disabled="true"
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
-                <small
-                  class="text-danger p-0 m-0"
-                  v-show="attemptNextThree && missingInvoiceDateNeeded"
-                  >Invoice Date Needed is required!</small
-                >
+
               </div>
             </div>
 
@@ -689,17 +569,15 @@
                 <model-list-select
                   :list="salesInvoiceReleased"
                   v-model="salesInvoiceReleasedItem"
+                  :isDisabled="true"
                   option-value="code"
                   option-text="name"
                   placeholder="select item"
                   style="padding: 9px; background-color: #e9ecef"
-                  disabled="true"
-                  :isDisabled="true"
+                
                 >
                 </model-list-select>
-                <!-- <small class="text-danger p-0 m-0" v-show="true"
-                  >Sales Invoice Released is required!</small
-                > -->
+
               </div>
             </div>
 
@@ -712,9 +590,7 @@
                   valueType="format"
                   style="display: block; width: 100%; line-height: 20px border:red;"
                 ></date-picker>
-                <!-- <small class="text-danger p-0 m-0" v-show="true"
-                  >Date of Invoice is required!</small
-                > -->
+
               </div>
             </div>
           </div>
@@ -731,12 +607,10 @@
                   class="form-control"
                   name="accountingremarks"
                   v-model.trim="accountingRemarks"
+                  disabled
                   rows="5"
-                  :disabled="this.isInitiator === false"
                 ></textarea>
-                <!-- <small class="text-danger p-0 m-0" v-show="true"
-                  >Accounting Remarks is required!</small
-                > -->
+  
               </div>
             </div>
           </div>
@@ -756,56 +630,18 @@
                       <tr>
                         <th style="width: 10%"></th>
                         <th style="width: 80%">System Details</th>
-                        <th style="width: 10%" class="text-right">
-                          <button
-                            v-show="isInitiator"
-                            class="btn btn-success btn-sm"
-                            data-toggle="modal"
-                            data-target="#modal-details"
-                            @click="setModalTitle('System')"
-                          >
-                            <i class="fas fa-plus"></i>
-                          </button>
-                        </th>
+                        <th style="width: 10%" class="text-right"></th>
                       </tr>
                     </thead>
-
-                    <tbody style="font-size: 14px" v-if="isInitiator">
-                      <tr v-for="item in systemDetailsList" :key="item.id">
-                        <td style="width: 10%" >
-                          <input
-                            type="checkbox"
-                            :value="item"
-                            class="ml-3 mr-0"
-                            v-model="item.selected"
-                          />
-                        </td>
-                        <td style="width: 80%" >{{ item.type_name }}</td>
+                    <tbody style="font-size: 14px">
+                      <tr v-for="item in systemDetailsSelected" :key="item.id">
+                        <td style="width: 10%"></td>
+                        <td style="width: 80%">{{ item.systemType }}</td>
                       </tr>
                     </tbody>
-
-                    <tbody style="font-size: 14px" v-else>
-                      <tr v-for="item in systemDetailsList" :key="item.id">
-                        <td style="width: 10%" v-if="item.selected === true" >
-                          <input
-                            v-if="isInitiator"
-                            type="checkbox"
-                            :value="item"
-                            class="ml-3 mr-0"
-                            v-model="item.selected"
-                          />
-                        </td>
-                        <td style="width: 80%" v-if="item.selected === true" >{{ item.type_name }}</td>
-                      </tr>
-                    </tbody>
-
-
                   </table>
-                  <small
-                    class="text-danger p-0 m-0"
-                    v-show="attemptNextFour && missingSystemDetails"
-                    >System Details is required!</small
-                  >
+
+
                 </div>
               </div>
             </div>
@@ -813,8 +649,6 @@
             <div class="col-md-6">
               <div class="d-flex">
                 <div class="bg-white">
-                  
-
                   <table
                     class="table table-fixed table-striped table-hover table-sm"
                   >
@@ -822,58 +656,20 @@
                       <tr>
                         <th style="width: 10%"></th>
                         <th style="width: 80%">Document Details</th>
-                        <th style="width: 10%" class="text-right">
-                          <button
-                          v-show="isInitiator"
-                            class="btn btn-success btn-sm"
-                            data-toggle="modal"
-                            data-target="#modal-details"
-                            @click="setModalTitle('Document')"
-                          >
-                            <i class="fas fa-plus"></i>
-                          </button>
-                        </th>
+                        <th style="width: 10%" class="text-right"></th>
                       </tr>
                     </thead>
-
-                    <!-- Editable Docs -->
-                    <tbody style="font-size: 14px" v-if="isInitiator">
-                      <tr v-for="item in documentDetailsList" :key="item.DocID">
-                        <td style="width: 10%"  >
-                          <input
-                          
-                            type="checkbox"
-                            :value="item"
-                            class="ml-3 mr-0"
-                            v-model="item.selected"
-                          />
-                        </td>
-                        <td style="width: 80%"  >{{ item.DocumentName }}</td>
+                    <tbody style="font-size: 14px">
+                      <tr
+                        v-for="item in documentDetailsSelected"
+                        :key="item.ID"
+                      >
+                        <td style="width: 10%"></td>
+                        <td style="width: 80%">{{ item.DocName }}</td>
                       </tr>
                     </tbody>
-
-                    <!-- Read Only Docs -->
-                    <tbody style="font-size: 14px" v-else>
-                      <tr v-for="item in documentDetailsList" :key="item.DocID">
-                        <td style="width: 10%" v-if="item.selected === true" >
-                          <input
-                            v-if="isInitiator"
-                            type="checkbox"
-                            :value="item"
-                            class="ml-3 mr-0"
-                            v-model="item.selected"
-                          />
-                        </td>
-                        <td style="width: 80%" v-if="item.selected === true" >{{ item.DocumentName }}</td>
-                      </tr>
-                    </tbody>
-
                   </table>
-                  <small
-                    class="text-danger p-0 m-0"
-                    v-show="attemptNextFour && missingDocumentDetails"
-                    >Document Details is required!</small
-                  >
+    
                 </div>
               </div>
             </div>
@@ -894,72 +690,44 @@
           "
           id="app"
         >
-          <div
-            class="pt-2 col-md-12 rounded"
-            @dragover="dragover"
-            @dragleave="dragleave"
-            @drop="drop"
-            id="uploadContainer"
-          >
-            <input
-              v-if="this.isInitiator"
-              type="file"
-              multiple
-              name="fields[assetsFieldHandle][]"
-              id="assetsFieldHandle"
-              class="w-25 h-25 overflow-hidden"
-              @change="onFileSelected"
-              ref="file"
-              accept=".pdf,.jpg,.jpeg,.png"
-            />
-
+          <div class="pt-2 col-md-12 rounded" id="uploadContainer">
             <label
               for="assetsFieldHandle"
               style="width: 100%; cursor: pointer"
               class="block pt-3 cursor-pointer"
             >
-                 <span class="text-secondary" v-if="isInitiator"
-                >Click here or drop file(s)</span
-              >
-              <span class="text-secondary" v-else
-                >List of attached file(s)</span
-              >
+              <span class="text-secondary">List of Attached File</span>
             </label>
-            <small
-              class="text-danger p-0 m-0"
-              v-show="missingAttachments && attemptNextFive"
-              >Attachments is required!</small
-            >
 
             <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-              <!-- Already attached files -->
               <li
                 class="text-sm mt-2"
-                v-for="(file, index) in selectedFile"
+                v-for="file in selectedFile"
                 :key="file.id"
               >
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.filename }}</span>
-                    </div>
-                    <div class="co-2" v-if="isInitiator" >
-                      <button
-                        class="btn btn-danger btn-sm"
-                        @click="
-                          removeAttachedFile(
-                            index,
-                            file.id,
-                            file.filename,
-                            file.filepath
-                          )
-                        "
-                        title="Remove file"
+                      <span
+                        ><label>{{ file.filename }}</label></span
                       >
-                        Remove
+                    </div>
+                    <div>
+                      <button class="btn btn-info btn-sm" type="button">
+                        <a
+                          :download="file.filename"
+                          style="color: white"
+                          :href="
+                            'data:' +
+                            file.mimeType +
+                            ';base64,' +
+                            file.imageBytes
+                          "
+                          target="_blank"
+                          >Download</a
+                        >
                       </button>
                     </div>
-
                     <div class="col-2">
                       <button
                         class="btn btn-secondary btn-sm"
@@ -971,42 +739,9 @@
                   </div>
                 </div>
               </li>
-              <!-- /.Already attached files -->
-
-              <!-- Newly added files -->
-              <li
-                class="text-sm mt-2"
-                v-for="file in selectedFileNew"
-                :key="file.id"
-              >
-                <div class="row d-flex justify-content-center">
-                  <div class="col-md-4 d-flex">
-                    <div class="col text-left">
-                      <span>{{ file.name }}</span>
-                    </div>
-                    <div class="co-2">
-                      <button
-                        class="btn btn-danger btn-sm"
-                        type="button"
-                        @click="removeNew(selectedFileNew.indexOf(file))"
-                        title="Remove file"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <div class="col-2">
-                      <button
-                        @click="previewNew(selectedFileNew.indexOf(file))"
-                        class="btn btn-secondary btn-sm"
-                      >
-                        Preview
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <!-- /.Newly added files -->
             </ul>
+
+            <!-- </aside> -->
           </div>
         </aside>
         <!-- /.Attachments -->
@@ -1039,11 +774,11 @@
                   </tr>
                   <tr class="d-flex">
                     <td class="col-3">Reference Number</td>
-                    <td class="col-9">{{ `SOF-${this.todaysYear}` }}</td>
+                    <td class="col-9">{{ this.referenceNumber }}</td>
                   </tr>
                   <tr class="d-flex">
                     <td class="col-3">Request Date</td>
-                    <td class="col-9">{{ this.requestDate }}</td>
+                    <td class="col-9">{{ this.soDate }}</td>
                   </tr>
                   <tr class="d-flex">
                     <td class="col-3">Customer Name</td>
@@ -1122,7 +857,7 @@
                   </tr>
                   <tr class="d-flex">
                     <td class="col-3">Project Name</td>
-                    <td class="col-9">{{ this.projectNameFormula }}</td>
+                    <td class="col-9">{{ this.projectName }}</td>
                   </tr>
 
                   <tr class="d-flex">
@@ -1252,14 +987,12 @@
                     <td class="col-3">System Details</td>
                     <td class="col-9">
                       <ul>
-                        <aside
-                          v-for="item in systemDetailsList"
-                          :key="item.sysID"
+                        <li
+                          v-for="item in systemDetailsSelected"
+                          :key="item.id"
                         >
-                          <li v-if="item.selected">
-                            {{ item.type_name }}
-                          </li>
-                        </aside>
+                          {{ item.systemType }}
+                        </li>
                       </ul>
                     </td>
                   </tr>
@@ -1267,14 +1000,12 @@
                     <td class="col-3">Document Details</td>
                     <td class="col-9">
                       <ul>
-                        <aside
-                          v-for="item in documentDetailsList"
-                          :key="item.DocID"
+                        <li
+                          v-for="item in documentDetailsSelected"
+                          :key="item.ID"
                         >
-                          <li v-if="item.selected">
-                            {{ item.DocumentName }}
-                          </li>
-                        </aside>
+                          {{ item.DocName }}
+                        </li>
                       </ul>
                     </td>
                   </tr>
@@ -1309,17 +1040,16 @@
                     <td class="col-9"><b>Filename</b></td>
                     <td class="col-3"><b>Actions</b></td>
                   </tr>
-
                   <tr
                     class="d-flex"
-                    v-for="(file, index) in selectedFile"
+                    v-for="file in selectedFile"
                     :key="file.id"
                   >
                     <td class="col-9">{{ file.filename }}</td>
-                    <td class="pl-2 pr-2 text-center col-3 d-flex justify-content-center align-items-center">
+                                        <td class="pl-2 pr-2 text-center col-3 d-flex justify-content-center align-items-center">
 
                       <a
-                        class="btn btn-info btn-sm mr-1"
+                        class="btn btn-info btn-sm "
                         :download="file.filename"
                         :href="
                           'data:' + file.mimeType + ';base64,' + file.imageBytes
@@ -1328,48 +1058,9 @@
                       >
                         Download
                       </a>
-
-
                       <button
-                      v-if="isInitiator"
-                        @click="
-                          removeAttachedFile(
-                            index,
-                            file.id,
-                            file.filename,
-                            file.filepath
-                          )
-                        "
-                        class="btn btn-danger btn-sm"
-                      >
-                        Remove
-                      </button>
-                      <button
+                        class="btn btn-secondary btn-sm ml-1"
                         @click="preview(file.mimeType, file.imageBytes)"
-                        class="btn btn-secondary btn-sm ml-1"
-                      >
-                        Preview
-                      </button>
-                    </td>
-                  </tr>
-
-                  <tr
-                    class="d-flex"
-                    v-for="file in selectedFileNew"
-                    :key="file.name"
-                  >
-                    <td class="col-9">{{ file.name }}</td>
-                    <td class="pl-2 pr-2 text-center col-3">
-                      <button
-                        @click="removeNew(selectedFileNew.indexOf(file))"
-                        class="btn btn-danger btn-sm"
-                        
-                      >
-                        Remove
-                      </button>
-                      <button
-                        @click="previewNew(selectedFileNew.indexOf(file))"
-                        class="btn btn-secondary btn-sm ml-1"
                       >
                         Preview
                       </button>
@@ -1400,14 +1091,16 @@
               </div>
 
               <div class="modal-header">
-                <h6 class="modal-title"><b>Reply Request</b></h6>
+                <h6 class="modal-title">
+                  <b>{{ this.title }} Request</b>
+                </h6>
                 <button
                   type="button"
-                  class="close"
                   id="modalCloseButton"
+                  class="close"
                   data-dismiss="modal"
                   aria-label="Close"
-                  @click="closeModal()"
+                  @click="closeDefaultModal()"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -1419,21 +1112,38 @@
                   v-bind:message="this.message"
                   v-bind:type="this.type"
                 ></the-alert>
+
+                <!-- <div class="row" v-if="isForClarity">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <model-list-select
+                        :list="recipent"
+                        v-model="itemrecipient"
+                        option-value="code"
+                        option-text="name"
+                        placeholder="Select Recipient"
+                        style="padding: 9px"
+                      >
+                      </model-list-select>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalRecipient && attemptClarify"
+                        >Recipient is required!</small
+                      >
+                    </div>
+                  </div>
+                </div> -->
+
                 <div class="row">
                   <div class="col-md-12">
                     <div class="form-group">
-                      <small><label for="remarks">Remarks</label></small>
                       <textarea
                         class="form-control"
                         id="remarks"
                         rows="5"
                         v-model.trim="remarks"
+                        placeholder="Please input request remarks here!"
                       ></textarea>
-                      <small
-                        class="text-danger p-0 m-0"
-                        v-if="missingReplyRemarks && attemptReply"
-                        >Remarks is required!</small
-                      >
                     </div>
                   </div>
                 </div>
@@ -1443,77 +1153,7 @@
                 <button
                   type="button"
                   class="btn btn-primary btn-sm"
-                  @click="reply()"
-                >
-                  Reply
-                </button>
-              </div>
-            </div>
-            <!-- /.modal-content -->
-          </div>
-          <!-- /.modal-dialog -->
-        </div>
-        <!-- /.modal -->
-
-
-
-
-
-        <!-- Modal documents-->
-        <div
-          class="modal fade"
-          id="modal-details"
-          data-backdrop="static"
-          data-keyboard="false"
-        >
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="overlay" v-show="isLoadingModal">
-                <i class="fas fa-2x fa-sync fa-spin"></i>
-              </div>
-              <div class="modal-header">
-                <h6 class="modal-title">
-                  <b>Add {{ this.modalTitle }} Details</b>
-                </h6>
-                <button
-                  type="button"
-                  id="modalCloseButton"
-                  class="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                  @click="clearModal()"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <!-- Start -->
-
-                <div class="form-group">
-                  <small
-                    ><label for="accountingremarks"
-                      >{{ this.modalTitle }} Name</label
-                    ></small
-                  >
-                  <input
-                    type="text"
-                    class="form-control form-control-sm py-3"
-                    v-model.trim="modalInputform"
-                  />
-
-                  <small
-                    class="text-danger p-0 m-0"
-                    v-show="attemptModalSubmit && missingModalInputform"
-                    >{{ this.modalTitle }} Name is required!</small
-                  >
-                </div>
-                <!-- End -->
-              </div>
-              <div class="modal-footer justify-content-end">
-                <button
-                  type="button"
-                  class="btn btn-success btn-sm"
-                  @click="validateModal()"
+                  @click="submit(title)"
                 >
                   Submit
                 </button>
@@ -1523,50 +1163,7 @@
           </div>
           <!-- /.modal-dialog -->
         </div>
-        <!-- /.modal documents -->
-
-
-
-
-
-
-
-
-
-        
-
-        <!-- <div class="row d-flex justify-content-end mt-3">
-          <div class="col-md-1" v-show="counter">
-            <button
-              type="button"
-              @click="counter--"
-              class="btn btn-block btn-secondary btn-sm"
-            >
-              Previous
-            </button>
-          </div>
-          <div class="col-md-1" v-if="this.counter > -1 && this.counter < 6">
-            <button
-              type="button"
-              @click="next()"
-              class="btn btn-block btn-primary btn-sm"
-            >
-              Next
-            </button>
-          </div>
-
-          <div class="col-md-1" v-else>
-            <button
-              type="button"
-              @click="submit()"
-              class="btn btn-block btn-success btn-sm"
-            >
-              Submit
-            </button>
-          </div>
-
-          <button @click="test()">test</button>
-        </div> -->
+        <!-- /.modal -->
 
         <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
@@ -1582,40 +1179,19 @@
               </button>
             
 
-            <aside v-if="this.counter > -1 && this.counter < 6">
-              <!-- button for initiator -->
+       
               <button
-                v-if="isInitiator"
-                type="button"
-                @click="next()"
-                class="btn mr-1 btn-primary btn-sm"
-              >
-                Next
-              </button>
-              <!-- button for approver -->
-              <button
-                v-else
+                v-show="this.counter > -1 && this.counter < 6"
                 type="button"
                 @click="counter++"
                 class="btn mr-1 btn-primary btn-sm"
               >
                 Next
               </button>
-            </aside>
+            
           </aside>
 
           <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
-            
-              <button
-                type="button"
-                class="btn ml-1 btn-warning btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-              >
-                Reply
-              </button>
-            
-
             
               <button
                 type="button"
@@ -1624,7 +1200,7 @@
               >
                 Close
               </button>
-            
+        
           </aside>
         </div>
         <!-- / Buttons -->
@@ -1645,41 +1221,44 @@ export default {
     ModelListSelect,
   },
   async created() {
-    this.isLoading = true;
+    this.isLoadingSpinner = true;
     await this.querySof();
     await this.queryCompany();
     await this.queryCoordinators();
     await this.querySelectedCoordinator();
-    await this.queryCompanySystemDetails();
-    await this.queryCompanyDocumentDetails();
-    await this.queryCurrency();
-    this.isLoading = false;
+    this.isLoadingSpinner = false;
   },
-
-
-
   watch: {
     counter() {
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
     },
 
-    async customerNameItem(newValue, oldValue) {
-      if (this.customerNameItem.code) {
+    async customerNameItem(newValue) {
+      if (this.customerNameItem) {
         this.isLoadingSpinner = true;
         const customerId = newValue.code;
-        // console.log(customerId)
-        await this.queryCompanyAddress(customerId);
-        await this.queryCompanyContacts(customerId);
-        await this.queryCompanyCode(customerId);
+        // console.log(newValue)
         await this.queryDelegates(customerId);
 
         // if condition will clear the payment terms if its dmo or prj
         if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-          this.paymentTerms =
-            this.customerNameItem.term === undefined
-              ? null
-              : this.customerNameItem.term;
+
+          if (this.customerNameItem.term === undefined) {
+            this.paymentTerms = null;
+          } else if (
+            this.customerNameItem.term === undefined &&
+            this.paymentTerms.length === 0
+          ) {
+            this.paymentTerms = null;
+          } else if (
+            this.customerNameItem.term &&
+            this.paymentTerms.length === 0
+          ) {
+            this.paymentTerms = this.customerNameItem.term;
+          } else if (this.customerNameItem.term && this.paymentTerms) {
+            this.paymentTerms;
+          }
         }
 
         this.accountManager =
@@ -1687,31 +1266,11 @@ export default {
             ? null
             : this.customerNameItem.amgr;
 
-        // this.customerNameItem = {}
-        if (oldValue["code"]) {
-          this.contactPersonItem = {};
-          this.contactNumberItem = {};
-          this.deliveryAddressItem = {};
-          this.billingAddressItem = {};
-        }
-
         this.isLoadingSpinner = false;
       }
     },
 
-    // remova dp percentage if dropdown dp required is no
-    downPaymentRequiredItem(newValue, oldValue) {
-      if (oldValue.code === true && newValue.code === false) {
-        this.downPaymentPercentage = "";
-      }
-      // (this.downPaymentRequiredItem) ? this.downPaymentDateReceived = null : this.downPaymentDateReceived = null;
-    },
 
-    invoiceRequiredItem(newValue, oldValue) {
-      if (oldValue.code === true && newValue.code === false) {
-        this.invoiceDateNeeded = null;
-      }
-    },
 
     sofType(newValue) {
       if (newValue.code === "DMO" || newValue.code === "POC") {
@@ -1751,39 +1310,16 @@ export default {
       return { active: this.counter >= 6 };
     },
 
-    todaysYear() {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      return yyyy;
-    },
+ 
 
-    todaysDate() {
-      const today = new Date();
-      let dd = today.getDate();
-      let mm = today.getMonth() + 1;
-      const yyyy = today.getFullYear();
 
-      if (mm < 10) {
-        mm = `0${mm}`;
-      }
-
-      if (dd < 10) {
-        dd = `0${dd}`;
-      }
-
-      const todaysDate = yyyy + "-" + mm + "-" + dd;
-      return todaysDate;
-    },
 
     projectNameFormula() {
-      const requestedDate = this.requestDate;
-      const today = new Date(requestedDate);
+      const today = new Date(this.soDate);
       // let dd = today.getDate();
       let mm = today.getMonth() + 1;
       let yyyy = today.getFullYear();
-      let m = new Date(requestedDate).toLocaleString("en-us", {
-        month: "short",
-      });
+      let m = new Date(this.soDate).toLocaleString("en-us", { month: "short" });
 
       if (mm < 10) {
         mm = `0${mm}`;
@@ -1804,223 +1340,23 @@ export default {
       return projectName;
     },
 
-    isDropdownRequired() {
-      if (this.sofType.code === "DMO" || this.sofType.code === "POC") {
-        return "padding: 9px; background-color: #e9ecef";
-      } else {
-        return "padding: 9px";
-      }
-    },
-
-    isDropdownRequiredTwo() {
-      if (this.isInitiator === false || this.sofType.code === "DMO" || this.sofType.code === "POC") {
-        return "padding: 9px; background-color: #e9ecef";
-      } else {
-        return "padding: 9px";
-      }
-    },
-
-
-
-    disableStyle(){
-      if (this.isInitiator === false) {
-        return "padding: 9px; background-color: #e9ecef";
-      } else {
-        return "padding: 9px";
-      }
-    },
-
-    missingSOFType() {
-      return this.sofType.code === undefined ? true : false;
-    },
-
-    // Customer Details
-
-    missingCustomerName() {
-      return this.customerNameItem.code === undefined ? true : false;
-    },
-
-    missingContactPerson() {
-      return this.contactPersonItem.code === undefined ? true : false;
-    },
-
-    missingContactNumber() {
-      return this.contactNumberItem.code === undefined ? true : false;
-    },
-
-    missingDeliveryAddress() {
-      return this.deliveryAddressItem.code === undefined ? true : false;
-    },
-
-    missingBillingAddress() {
-      return this.billingAddressItem.code === undefined ? true : false;
-    },
-
-    // Project Details
-
-    missingPONumber() {
-      return this.poNumber.length === 0 ? true : false;
-    },
-
-    missingPODate() {
-      return this.poDate === null ? true : false;
-    },
-
-    missingProjectStart() {
-      if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-        return this.projectStart === null ? true : false;
-      } else {
-        return false;
-      }
-    },
-
-    missingProjectEnd() {
-      if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-        return this.projectEnd === null ? true : false;
-      }
-    },
-
-    missingProjectShortText() {
-      return this.projectShortText.length === 0 ? true : false;
-    },
-
-    missingProjectCode() {
-      return this.projectCode.length === 0 ? true : false;
-    },
-
-    missingScopeOfWork() {
-      return this.scopeOfWork.length === 0 ? true : false;
-    },
-
-    // Payment & Delivery Details
-
-    missingPaymentTerms() {
-      if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-        return this.paymentTerms.length === 0 ? true : false;
-      }
-    },
-
-    missingWarranty() {
-      if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-        return this.warranty.length === 0 ? true : false;
-      }
-    },
-
-    missingCurrency() {
-      if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-        return this.currencyItem.code === undefined ? true : false;
-      }
-    },
-
-    missingProjectCost() {
-      if (this.sofType.code === "DLV" || this.sofType === "PRJ") {
-        return this.projectCost.length === 0 || parseFloat(this.projectCost) < 1
-          ? true
-          : false;
-      }
-    },
-
-    missingDownPaymentRequired() {
-      return this.downPaymentRequiredItem.code === undefined ? true : false;
-    },
-
-    missingDownPaymentPercentage() {
-      if (this.downPaymentRequiredItem.code === true) {
-        return this.downPaymentPercentage.length < 1 ||
-          parseFloat(this.downPaymentPercentage) < 1
-          ? true
-          : false;
-      } else {
-        return false;
-      }
-    },
-
-    dpValitade() {
-      if (this.downPaymentRequiredItem.code === true) {
-        return parseInt(this.downPaymentPercentage) >= 1 &&
-          parseInt(this.downPaymentPercentage) <= 100
-          ? false
-          : true;
-      } else {
-        return false;
-      }
-    },
-    missingInvoiceRequired() {
-      return this.invoiceRequiredItem.code === undefined ? true : false;
-    },
-
-    missingInvoiceDateNeeded() {
-      if (this.invoiceRequiredItem.code === true) {
-        return this.invoiceDateNeeded === null ? true : false;
-      } else {
-        return false;
-      }
-    },
-
-    // System & Document Details
-
-    missingSystemDetails() {
-      let systems = this.systemDetailsList;
-      var isSystemSelected = systems.filter(function (system) {
-        return system.selected === true;
-      });
-      return isSystemSelected.length ? false : true;
-    },
-
-    missingDocumentDetails() {
-      const documents = this.documentDetailsList;
-      var isDocumentSelected = documents.filter(function (document) {
-        return document.selected === true;
-      });
-      return isDocumentSelected.length ? false : true;
-    },
-
-    // Attachments
-    missingAttachments() {
-      return this.selectedFile.length === 0 && this.selectedFileNew.length === 0
-        ? true
-        : false;
-    },
-
     missingModalInputform() {
       return this.modalInputform.length === 0 ? true : false;
     },
 
-    isDDCoordinatorRequired() {
-      if (this.isCoordinatorRequired === false || this.isInitiator === false) {
-        return "padding: 9px; background-color: #e9ecef";
-      } else {
-        return "padding: 9px";
-      }
-    },
-
     missingCoordinator() {
       return this.coordinatorItem.code === undefined ? true : false;
-    },
+    }
 
-        missingReplyRemarks() {
-      if (this.remarks.length === 0) {
-        return true;
-      } else {
-        return false;
-      }
-    },
+
   },
   data() {
     return {
-      attemptNext: false,
-      attemptNextOne: false,
-      attemptNextTwo: false,
-      attemptNextThree: false,
-      attemptNextFour: false,
-      attemptNextFive: false,
+      todaysDate: null,
       attemptModalSubmit: false,
-
-      attemptReply: false,
 
       isLoadingSpinner: false,
       isLoadingModal: false,
-      isLoading: false,
       // need sa query
       // Logged User Data
       loggedUserId: localStorage.getItem("id"),
@@ -2054,9 +1390,10 @@ export default {
       billingAddress: [],
       billingAddressItem: {},
       accountManager: null,
-      delegates: "",
+      delegates: null,
 
       // Project Details
+      soDate: null,
       poNumber: "",
       poDate: null,
       projectStart: null,
@@ -2066,7 +1403,6 @@ export default {
       coordinator: [],
       coordinatorItem: {},
       projectCode: "",
-      projectCodeDataList: [],
       scopeOfWork: "",
 
       // Payment & Delivery Details
@@ -2099,27 +1435,21 @@ export default {
       accountingRemarks: "",
 
       // System & Document Details
+
       systemDetailsList: [],
       systemDetailsSelected: [],
       documentDetailsList: [],
       documentDetailsSelected: [],
 
-      // The Attachments already listed
+      // The Attachments
       selectedFile: [],
       filespreview: [],
 
-      // Attachments that are newly added
-      selectedFileNew: [],
-      filespreviewNew: [],
 
-      // filtes to remove in existing attachments
-      removedAttachedFilesId: [],
 
-      modalTitle: null,
-      modalInputform: "",
-
-      isCoordinatorRequired: false,
-      isInitiator: false,
+      isLoading: false,
+      title: "",
+      remarks: "",
 
       // The Alert
       isAlert: false,
@@ -2127,25 +1457,25 @@ export default {
       message: "", // added successfully
       type: "", // true or false
 
-      remarks: '',
+      referenceNumber: '',
+      requestDate: null,
 
-      projectId: null,
-      
+      isCoordinatorRequired: false,
+      isDmoPocComplete: false,
+      isSiConfirmation: false,
+
     };
   },
 
   methods: {
-    closeModal() {
-      this.resetAlert();
-      this.remarks = '';
-      this.attemptReply = false;
+    // important methods in approval modal
+    setTitle(title) {
+      this.title = title;
     },
 
-    addAlert(header, message, type) {
-      this.isAlert = true;
-      this.header = header;
-      this.message = message;
-      this.type = type;
+    closeDefaultModal() {
+      this.resetModal();
+      this.resetAlert();
     },
 
     resetAlert() {
@@ -2154,34 +1484,34 @@ export default {
       this.message = "";
       this.type = "";
     },
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
+    },
+    resetModal() {
+      this.attemptClarify = false;
+      this.remarks = "";
+    },
+
+    //
+
+
 
     close() {
-      this.$router.replace("/clarifications");
+      this.$router.replace("/approved");
     },
 
-    async queryCoordinators() {
-      const responseData = await this.$store.dispatch("sof/queryCoordinators");
-      this.coordinator = responseData;
-    },
-
-    async querySelectedCoordinator() {
-      const responseData = await this.$store.dispatch("sof/querySelectedCoordinator",this.$route.params.id);
-
-      if(responseData[0]){
-        this.coordinatorItem = responseData[0]
-      }else{
-        this.coordinatorItem = {};
-      }
-    },
-    
     async querySof() {
       try {
+
         await this.$store.dispatch("sof/querySof", {
           processId: this.$route.params.id,
           frmName: this.$route.params.frmName,
           companyId: this.companyId,
         });
-        // sof data
+
         const data = this.$store.getters["sof/getSofData"];
 
         // console.warn(data);
@@ -2210,9 +1540,10 @@ export default {
         // console.log(data[0]['setup_project'][0]['term_type'])
         // console.log(data[0]['setup_project'][0]['PMName'])
 
-        this.projectId = data[0]["setup_project"][0]["project_id"];
-
         // Customer Details
+        
+        this.projectName = data[1]["sales_orders"][0]["project"];
+
 
         const selectedCustomerNameItem = {
           code: data[0]["setup_project"][0]["Business_Number"],
@@ -2262,8 +1593,8 @@ export default {
           name: data[1]["sales_orders"][0]["DeliveryAddress"],
         };
 
-        this.referenceNumber = data[1]["sales_orders"][0]["soNum"];
-        this.requestDate = data[1]["sales_orders"][0]["sodate"];
+        this.referenceNumber = data[1]["sales_orders"][0]["soNum"]
+        this.requestDate = data[1]["sales_orders"][0]["sodate"]
 
         this.deliveryAddressItem = selectedDeliveryAddressItem;
 
@@ -2308,8 +1639,6 @@ export default {
             data[1]["sales_orders"][0]["dp_percentage"];
         }
 
-        // console.log(data[1]["sales_orders"][0]["dp_percentage"])
-
         if (data[1]["sales_orders"][0]["IsInvoiceRequired"]) {
           this.invoiceRequiredItem = { code: true, name: "Yes" };
           this.invoiceDateNeeded = data[1]["sales_orders"][0]["invDate"];
@@ -2319,36 +1648,65 @@ export default {
           this.salesInvoiceReleasedItem = { code: true, name: "Yes" };
           this.dateOfInvoice = data[1]["sales_orders"][0]["InvoiceDate"];
         }
-
+    
         this.invoiceNumber = data[1]["sales_orders"][0]["InvoiceNumber"];
         this.accountingRemarks = data[1]["sales_orders"][0]["Remarks2"];
 
-        // Attachments
+        // sales order docs
+
+        const systemDetails = data[2]["sales_order_system"];
+        const systemDetailsSelected = [];
+
+        systemDetails.forEach((element) => {
+          const data = {
+            id: element["id"],
+            imported_from_excel: element["imported_from_excel"],
+            soid: element["soid"],
+            sysID: element["sysID"],
+            systemType: element["systemType"],
+          };
+          systemDetailsSelected.push(data);
+        });
+
+        this.systemDetailsSelected = systemDetailsSelected;
+
+        const documentDetails = data[3]["sales_order_docs"];
+        const documentDetailsSelected = [];
+
+        documentDetails.forEach((element) => {
+          const data = {
+            DocID: element["DocID"],
+            DocName: element["DocName"],
+            ID: element["ID"],
+            SOID: element["SOID"],
+            imported_from_excel: element["imported_from_excel"],
+          };
+          documentDetailsSelected.push(data);
+        });
+
+        this.documentDetailsSelected = documentDetailsSelected;
+
         this.selectedFile = data[5]["attachments"]["data"];
 
-        // console.log(data[4]["actual_sign"][3])
-        if (this.$route.params.frmName === "Sales Order - Project") {
-          if (
-            data[4]["actual_sign"][3]["USER_GRP_IND"] ===
-              "Approval of Project Head" &&
-            data[4]["actual_sign"][3]["STATUS"] === "Completed"
-          ) {
-            this.isCoordinatorRequired = true;
-          }
+
+      
+      
+      
+      
+      
+      // select Coordinator -> check if its required
+      // console.log(this.$route.params.frmName)
+      if(frmName === 'Sales Order - Project') {
+        if(data[4]["actual_sign"][7]['USER_GRP_IND'] === 'SI Confirmation' && data[4]["actual_sign"][7]['STATUS'] === 'In Progress') {
+          this.isSiConfirmation = true
         }
-
-        // if(this.$route.params.frmName === 'Sales Order - Project') {
-        //   if(data[4]["actual_sign"][3]["STATUS"] === 'In Progress') {
-        //     this.isCoordinatorRequired = true;
-        //   }
-        // }
-
-        const queryuserId = data[1]["sales_orders"][0]["UID"];
-        const userId = parseInt(this.loggedUserId);
-
-        if (queryuserId === userId) {
-          this.isInitiator = true;
+      } else if (frmName === 'Sales Order - Delivery') {
+        if(data[4]["actual_sign"][5]['USER_GRP_IND'] === 'SI Confirmation' && data[4]["actual_sign"][5]['STATUS'] === 'In Progress') {
+          this.isSiConfirmation = true
         }
+      }
+
+      
       } catch (error) {
         this.openToast(
           "top-right",
@@ -2360,148 +1718,99 @@ export default {
       }
     },
 
-    reply(){
-      this.attemptReply = true
-      this.resetAlert();
-
-      // if coordinator is required this is the validation
-      if (this.isCoordinatorRequired) {
-        if(!this.missingReplyRemarks && !this.missingCoordinator){
-          // console.log('run reply')
-          this.replyTwo();
-        } else if (this.missingReplyRemarks && !this.missingCoordinator ) {
-          // console.log('missing reply')
-          this.addAlert("Failed", "Remarks is required!", "false");
-        } else if (!this.missingReplyRemarks && this.missingCoordinator ) {
-          // console.log('missing coordinator')
-          this.addAlert("Failed", "Coordinator is required!  Proceed to Step 3!", "false");
+    submit(type){
+      this.attemptNext = true;
+      const apptype = type;
+      if(this.isSiConfirmation){
+        if(this.missingSalesInvoiceReleased || this.missingDateOfInvoice){
+          this.openToast(
+                "top-right",
+                "error",
+                "Sales Invoice Realeased & Date of Invoice is Required! Please Select in Step 4!"
+              );
         } else {
-          // console.log('missing all')
-          this.addAlert("Failed", "Please complete required fields!", "false");
-
+          this.submitTwo(apptype)
         }
       } else {
-        // if coordinator is not required this is the validation
-        if (!this.missingReplyRemarks) {
-          this.replyTwo();
-        } else {
-          this.addAlert("Failed", "Please complete required fields!", "false");
-        }
+        this.submitTwo(apptype)
       }
-
-
-
-
     },
+    
 
-    async replyTwo() {
-      this.isLoadingModal = true;
-      
+    async submitTwo(type) {
+      const fd = new FormData();
 
-      try {
-        const payload = {
-          // Logged User Credentials
-          loggedUserId: this.loggedUserId,
-          loggedUserFirstName: this.loggedUserFirstName,
-          loggedUserLastName: this.loggedUserLastName,
-          loggedUserFullName: this.loggedUserFullName,
-          loggedUserDepartment: this.loggedUserDepartment,
-          loggedUserPosition: this.loggedUserPosition,
-          companyId: this.companyId,
-          companyName: this.companyName,
-
-          // So CLassification
-          sofType: this.sofType,
-
-          // Customer Details
-          customerNameItem: this.customerNameItem,
-          contactPersonItem: this.contactPersonItem,
-          contactNumberItem: this.contactNumberItem,
-          deliveryAddressItem: this.deliveryAddressItem,
-          billingAddressItem: this.billingAddressItem,
-
-          // Project Details
-          poNumber: this.poNumber,
-          poDate: this.poDate,
-          projectStart: this.projectStart,
-          projectEnd: this.projectEnd,
-          projectShortText: this.projectShortText,
-          projectId: this.projectId,
-          projectName: this.projectNameFormula,
-          coordinator: this.coordinatorItem,
-          projectCode: this.projectCode,
-          scopeOfWork: this.scopeOfWork,
-
-          // Payment & Delivery Details
-          paymentTerms: this.paymentTerms,
-          warranty: this.warranty,
-          currencyItem: this.currencyItem.name,
-          projectCost: this.projectCost,
-          downPaymentRequiredItem: this.downPaymentRequiredItem.code,
-          downPaymentPercentage: this.downPaymentPercentage,
-          downPaymentDateReceived: this.downPaymentDateReceived,
-          invoiceNumber: this.invoiceNumber,
-          invoiceRequiredItem: this.invoiceRequiredItem.code,
-          invoiceDateNeeded: this.invoiceDateNeeded,
-          salesInvoiceReleasedItem: this.salesInvoiceReleasedItem.code,
-          dateOfInvoice: this.dateOfInvoice,
-          accountingRemarks: this.accountingRemarks,
+      fd.append("form", this.$route.params.frmName);
+      fd.append("processId", this.$route.params.id);
+      fd.append("frmClass",this.$route.params.frmClass)
+      fd.append("remarks", this.remarks);
+      fd.append("referenceNumber", this.referenceNumber);
+      fd.append("class", "SOF");
+      // fd.append("recipientId", this.itemrecipient.code);
+      // fd.append("inprogressId", this.inprogressId);
+      fd.append("isCoordinatorRequired", this.isCoordinatorRequired);
+      fd.append("isDmoPocComplete", this.isDmoPocComplete);
+      fd.append("isSiConfirmation", this.isSiConfirmation);
+      fd.append("invoiceNumber", this.invoiceNumber);
+      fd.append("dateOfInvoice", this.dateOfInvoice);
+      fd.append("salesInvoiceReleased", this.salesInvoiceReleasedItem.code);
 
 
 
-          // System & Document Details
-          systemDetailsSelected: this.systemDetailsList,
-          documentDetailsSelected: this.documentDetailsList,
 
-          accountManager: this.accountManager,
-
-          // The Attachments
-          selectedFileNew: this.selectedFileNew,
-          removedAttachedFilesId: this.removedAttachedFilesId,
-
-          // Mods
-          isInitiator: this.isInitiator,
-          remarks: this.remarks,
-          processId: this.$route.params.id,
-          frmClass: this.$route.params.frmClass,
-          form: this.$route.params.frmName,
-          isCoordinatorRequired: this.isCoordinatorRequired,
-          referenceNumber: this.referenceNumber,
-        };
-
-
-
-        // console.log(payload)
-        const response = await this.$store.dispatch("sof/replySof", payload);
-        console.log(response)
-
-        if (response.status >= 200 && response.status <= 399) {
-          this.openToast(
-            "top-right",
-            "success",
-            "Your Sales Order Request was successfully submitted."
-          );
-        }
-        document.getElementById("modalCloseButton").click();
-        this.isLoadingModal = true;
-        this.$router.replace("/clarifications");
-
-
-      } catch (error) {
-        this.isLoadingModal = false;
-
-        if (error.response.status === 422) {
-          this.openToast("top-right", "error", error.response.data);
-        } else {
-          this.openToast(
-            "top-right",
-            "error",
-            "Internal Server Error! Please inform the administrator!"
-          );
-        }
-
-        console.info(error);
+      if(this.isCoordinatorRequired){
+        fd.append("coordinatorID", this.coordinatorItem.code);
+        fd.append("coordinatorName", this.coordinatorItem.name);
       }
+
+
+      fd.append("loggedUserId",this.loggedUserId);
+      fd.append("loggedUserFirstName",this.loggedUserFirstName);
+      fd.append("loggedUserLastName",this.loggedUserLastName);
+      fd.append("loggedUserDepartment",this.loggedUserDepartment);
+      fd.append("loggedUserPosition",this.loggedUserPosition);
+      fd.append("companyId",this.companyId);
+      fd.append("companyName",this.companyName);
+
+
+
+
+
+      if (type === "Approve") {
+        this.isLoadingModal = true;
+
+        try {
+          const resp = await axios.post(
+            "http://127.0.0.1:8000/api/approve-request",
+            fd
+          );
+
+          this.isLoadingModal = false;
+          document.getElementById("modalCloseButton").click();
+          if (resp.status === 200) {
+            // console.log(resp.data);
+            this.openToast("top-right", "success", resp.data.message);
+            this.$router.replace("/inputs");
+          }
+
+    
+        } catch (err) {
+          this.isLoadingModal = false;
+          if (err.response.status === 422) {
+            this.openToast("top-right", "error", err.response.data);
+          } else {
+            this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+          }
+        }
+
+
+      } else if (type === "Reject") {
+        console.log("Reject");
+      } else if (type === "Clarify") {
+        console.log("Clarify");
+      }
+
+      
     },
 
     openToast(position, variant, message) {
@@ -2514,158 +1823,7 @@ export default {
       });
     },
 
-    async next() {
-      if (this.counter === 0) {
-        this.attemptNext = true;
-        if (!this.missingSOFType) {
-          this.counter++;
-        }
-      } else if (this.counter === 1) {
-        this.attemptNextOne = true;
-        if (
-          !this.missingCustomerName &&
-          !this.missingContactPerson &&
-          !this.missingContactNumber &&
-          !this.missingDeliveryAddress &&
-          !this.missingBillingAddress
-        ) {
-          this.counter++;
-        }
-      } else if (this.counter === 2) {
-        this.attemptNextTwo = true;
 
-        try {
-          this.isLoadingSpinner = true;
-          const isExist = await this.$store.dispatch(
-            "sof/checkIfProjectCodeExistSoid",
-            {
-              projCode: this.projectCode,
-              processId: this.$route.params.id,
-            }
-          );
-
-
-
-
-          // check if this request requires a coordinator
-          if (this.isCoordinatorRequired && this.isInitiator) {
-            // if coordinator is required the computed of missingcoordinator will be addd
-          if (
-            !this.missingPONumber &&
-            !this.missingPODate &&
-            !this.missingProjectStart &&
-            !this.missingProjectEnd &&
-            !this.missingProjectShortText &&
-            !this.missingProjectCode &&
-            !this.missingScopeOfWork &&
-            !this.missingCoordinator &&
-            isExist === 0
-          ) {
-            this.counter++;
-          } else if (
-            !this.missingPONumber &&
-            !this.missingPODate &&
-            !this.missingProjectStart &&
-            !this.missingProjectEnd &&
-            !this.missingProjectShortText &&
-            !this.missingProjectCode &&
-            !this.missingScopeOfWork &&
-            !this.missingCoordinator &&
-            isExist === 1
-          ) {
-            this.openToast(
-              "top-right",
-              "error",
-              "Project Code must be unique!"
-            );
-          } else if (isExist === 1) {
-            this.openToast(
-              "top-right",
-              "error",
-              "Project Code must be unique!"
-            );
-          }
-
-
-
-          } else {
-            // if the validation doesnt require coordinator it will be the old validation
-                      if (
-            !this.missingPONumber &&
-            !this.missingPODate &&
-            !this.missingProjectStart &&
-            !this.missingProjectEnd &&
-            !this.missingProjectShortText &&
-            !this.missingProjectCode &&
-            !this.missingScopeOfWork &&
-            isExist === 0
-          ) {
-            this.counter++;
-          } else if (
-            !this.missingPONumber &&
-            !this.missingPODate &&
-            !this.missingProjectStart &&
-            !this.missingProjectEnd &&
-            !this.missingProjectShortText &&
-            !this.missingProjectCode &&
-            !this.missingScopeOfWork &&
-            isExist === 1
-          ) {
-            this.openToast(
-              "top-right",
-              "error",
-              "Project Code must be unique!"
-            );
-          } else if (isExist === 1) {
-            this.openToast(
-              "top-right",
-              "error",
-              "Project Code must be unique!"
-            );
-          }
-            
-          }
-
-
-
-
-
-          this.isLoadingSpinner = false;
-        } catch (error) {
-          // Handle Error Here
-          alert("error");
-          console.log(error.status);
-        }
-
-        
-      } else if (this.counter === 3) {
-        this.attemptNextThree = true;
-
-        if (
-          !this.missingPaymentTerms &&
-          !this.missingWarranty &&
-          !this.missingCurrency &&
-          !this.missingProjectCost &&
-          !this.missingDownPaymentRequired &&
-          !this.missingDownPaymentPercentage &&
-          !this.missingInvoiceRequired &&
-          !this.missingInvoiceDateNeeded &&
-          !this.dpValitade
-        ) {
-          this.counter++;
-        }
-      } else if (this.counter === 4) {
-        this.attemptNextFour = true;
-        if (!this.missingSystemDetails && !this.missingDocumentDetails) {
-          this.counter++;
-        }
-      } else if (this.counter === 5) {
-        this.attemptNextFive = true;
-        if (!this.missingAttachments) {
-          this.counter++;
-        }
-      }
-    },
 
     async queryCompany() {
       const responseData = await this.$store.dispatch(
@@ -2675,30 +1833,20 @@ export default {
       this.customerName = responseData;
     },
 
-    async queryCompanyAddress(customerId) {
-      const responseData = await this.$store.dispatch(
-        "sof/queryCompanyAddress",
-        customerId
-      );
-      this.deliveryAddress = responseData;
-      this.billingAddress = responseData;
+    async queryCoordinators() {
+      const responseData = await this.$store.dispatch("sof/queryCoordinators");
+      this.coordinator = responseData
+
     },
 
-    async queryCompanyContacts(customerId) {
-      const responseData = await this.$store.dispatch(
-        "sof/queryCompanyContacts",
-        customerId
-      );
-      this.contactPerson = responseData.contact;
-      this.contactNumber = responseData.number;
-    },
+    async querySelectedCoordinator() {
+      const responseData = await this.$store.dispatch("sof/querySelectedCoordinator",this.$route.params.id);
 
-    async queryCompanyCode(customerId) {
-      const responseData = await this.$store.dispatch(
-        "sof/queryCompanyCode",
-        customerId
-      );
-      this.projectCodeDataList = responseData;
+      if(responseData[0]){
+        this.coordinatorItem = responseData[0]
+      }else{
+        this.coordinatorItem = {};
+      }
     },
 
     async queryDelegates(customerId) {
@@ -2714,26 +1862,6 @@ export default {
       }
     },
 
-    async queryCompanySystemDetails() {
-      const responseData = await this.$store.dispatch(
-        "sof/queryCompanySelectedSystemDetails",
-        this.$route.params.id
-      );
-      this.systemDetailsList = responseData;
-    },
-    async queryCompanyDocumentDetails() {
-      const responseData = await this.$store.dispatch(
-        "sof/queryCompanySelectedDocumentDetails",
-        this.$route.params.id
-      );
-      this.documentDetailsList = responseData;
-    },
-
-    async queryCurrency() {
-      const responseData = await this.$store.dispatch("sof/queryCurrency");
-      this.currency = responseData;
-    },
-
     setModalTitle(title) {
       this.modalTitle = title;
     },
@@ -2743,47 +1871,12 @@ export default {
       this.modalInputform = "";
     },
 
-    validateModal() {
-      this.attemptModalSubmit = true;
-      if (!this.missingModalInputform) {
-        this.insertSystemAndDocumentName();
-      }
-    },
 
-    async insertSystemAndDocumentName() {
-      this.isLoadingModal = true;
-      try {
-        const response = await this.$store.dispatch(
-          "sof/insertSystemAndDocumentName",
-          {
-            id: this.loggedUserId,
-            modalTitle: this.modalTitle,
-            modalInputform: this.modalInputform,
-          }
-        );
-        await this.queryCompanySystemDetails();
-        await this.queryCompanyDocumentDetails();
-        this.isLoadingModal = false;
-        this.clearModal();
-        // Open Toast
-        if (response.status === 201) {
-          this.openToast("top-right", "success", "Added Successfully!");
-        }
-      } catch (error) {
-        this.isLoadingModal = false;
 
-        // console.warn(error.response.status)
-        if (error.response.status === 422) {
-          this.openToast("top-right", "error", error.response.data);
-        } else {
-          this.openToast("top-right", "error", "Please inform the admin!");
-        }
-      }
-    },
+
 
     // The Attachments
 
-    // The Attachments
     preview(mimeType, imageBytes) {
       if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
       {
@@ -2797,87 +1890,6 @@ export default {
         pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
       }
     
-   },
-
-    onFileSelected(event) {
-      let selectedFilesNew = event.target.files;
-      for (let i = 0; i < selectedFilesNew.length; i++) {
-        this.selectedFileNew.push(selectedFilesNew[i]);
-      }
-      this.filePreviewNew();
-    },
-
-    onInputChange(event) {
-      let selectedFilesNew = event.dataTransfer.files;
-      for (let i = 0; i < selectedFilesNew.length; i++) {
-        this.selectedFileNew.push(selectedFilesNew[i]);
-      }
-      this.filePreviewNew();
-    },
-
-    previewNew(i) {
-      // console.log(i)
-      const url = this.filespreviewNew[i].link;
-      window.open(url, "_blank", "resizable=yes");
-    },
-
-    filePreviewNew() {
-      let files = this.selectedFileNew;
-      const fileContainer = [];
-      for (let i = 0; i < files.length; i++) {
-        let tmppath = URL.createObjectURL(files[i]);
-        const thisFiles = {
-          link: tmppath,
-        };
-        fileContainer.push(thisFiles);
-      }
-      this.filespreviewNew = fileContainer;
-    },
-
-    removeNew(i) {
-      this.selectedFileNew.splice(i, 1);
-      this.filePreviewNew();
-    },
-
-    removeAttachedFile(index, id, filename, filepath) {
-      const attachmentId = { id: id, filename: filename, filepath: filepath };
-      this.removedAttachedFilesId.push(attachmentId);
-      this.selectedFile.splice(index, 1);
-    },
-
-    dragover(event) {
-      event.preventDefault();
-      // Add some visual fluff to show the user can drop its files
-      if (!event.currentTarget.classList.contains("bg-white")) {
-        event.currentTarget.classList.remove("bg-light");
-        event.currentTarget.classList.add("bg-white");
-      }
-    },
-    dragleave(event) {
-      // Clean up
-      event.currentTarget.classList.add("bg-light");
-      event.currentTarget.classList.remove("bg-white");
-    },
-    drop(event) {
-      event.preventDefault();
-      this.onInputChange(event); // Trigger the onChange event manually
-
-      // Clean up
-      event.currentTarget.classList.add("bg-light");
-      event.currentTarget.classList.remove("bg-white");
-    },
-
-    filePreview() {
-      let files = this.selectedFile;
-      const fileContainer = [];
-      for (let i = 0; i < files.length; i++) {
-        let tmppath = URL.createObjectURL(files[i]);
-        const thisFiles = {
-          link: tmppath,
-        };
-        fileContainer.push(thisFiles);
-      }
-      this.filespreview = fileContainer;
     },
 
     formatNumber(n) {
