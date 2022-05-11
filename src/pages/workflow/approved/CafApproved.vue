@@ -695,13 +695,15 @@ export default {
             
 
             if (parseFloat(resp.data.approved_amount) <= 0) {
-              this.approvedAmount = 0
+              this.approvedAmount = parseFloat(
+              0.00
+            ).toLocaleString(undefined, { minimumFractionDigits: 2 });
             } else {
               this.approvedAmount = parseFloat(
               resp.data.approved_amount
             ).toLocaleString(undefined, { minimumFractionDigits: 2 });
             }
-
+            
             this.payableDateFrom = resp.data.date_from.slice(0, 10)
             this.payableDateTo = resp.data.date_to.slice(0, 10)
 

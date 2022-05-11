@@ -584,7 +584,7 @@ export default {
       fd.append("payableDateTo", this.payableDateTo);
       fd.append("employeeName", this.employeeItem.name);
       fd.append("employeeId", this.employeeItem.code);
-      fd.append("requestedAmount", this.installmentAmount);
+      fd.append("installmentAmount", this.installmentAmount);
       fd.append("purpose", this.purpose);
 
       fd.append("loggedUserId", this.loggedUserId);
