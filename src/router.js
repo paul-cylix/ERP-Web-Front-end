@@ -112,6 +112,8 @@ import SofWithdrawn from "./pages/workflow/withdrawn/SofWithdrawn.vue";
 import SofRejected from "./pages/workflow/rejected/SofRejected.vue";
 
 
+import TheMrf from "./pages/supplychain/TheMrf.vue";
+
 
 
 
@@ -715,6 +717,7 @@ const routes = [
     ],
     meta: { requiresAuth: true },
   },
+  { path: "/the-mrf", component: TheMrf },
   { path: '/:notFound(.*)', component: NotFound }
 
 ];
