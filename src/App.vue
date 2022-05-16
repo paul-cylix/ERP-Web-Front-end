@@ -24,6 +24,5 @@ export default {
   //     }
   //   }
   // }
-  //test
 }
 </script>
