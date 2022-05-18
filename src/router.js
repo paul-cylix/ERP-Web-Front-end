@@ -126,6 +126,7 @@ Vue.use(VueRouter);
 const routes = [
   { path: "/", redirect: "/login" },
   { path: "/login", component: UserLogin, meta: { requiresUnauth: true } },
+  { path: "/the-mrf", component: TheMrf },
   {
     path: "/thedashboard",
     component: MainDashboard,
@@ -717,7 +718,6 @@ const routes = [
     ],
     meta: { requiresAuth: true },
   },
-  { path: "/the-mrf", component: TheMrf },
   { path: '/:notFound(.*)', component: NotFound }
 
 ];

@@ -1500,7 +1500,7 @@ export default {
 
 
     close() {
-      this.$router.replace("/approved");
+      this.$router.replace("/participants");
     },
 
     async querySof() {

@@ -35,6 +35,8 @@ export default {
             const frmclass = this.data.frmClass // requestforpayment
             const frmName = this.data.requestType // Request for Payment
             const name = frmName+'-'+this.data.workflow; // inprogressbyId
+           
+           
 
             
             // this is use exclusively for sales order request
@@ -43,23 +45,29 @@ export default {
 
             const companyId = this.companyId;
         
+      
 
             if(actionName === 'open'){
                 
+                console.log(frmclass)
+
                 if (frmclass === 'sales_order_frm') {                    
                     this.$router.push({name: name2, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
+                    alert('if')
+
                 } else {
                     this.$router.push({name: name, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
+                    alert('else')
                 }
             }
 
-            if(actionName === 'remarks'){
+            else if(actionName === 'remarks'){
                 await this.$store.dispatch("remarks/setLoading");
                 await this.$store.dispatch("remarks/notifications", {id: id, frmname: frmName});
                 await this.$store.dispatch("remarks/setLoading");
             }
 
-            if(actionName === 'status'){
+            else if(actionName === 'status'){
                 await this.$store.dispatch("remarks/setLoading");
                 await this.$store.dispatch("status/queryStatus", {id: id, frmname: frmName, companyId: companyId});
                 await this.$store.dispatch("remarks/setLoading");
