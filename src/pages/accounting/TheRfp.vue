@@ -2,7 +2,7 @@
   <div class="col-md-12 mt-3">
     <!-- Form Element sizes -->
 
-    <div class="card card-secondary">
+    <div class="card card-secondary chrome">
       <div
         class="overlay"
         style="background-color: white !important"

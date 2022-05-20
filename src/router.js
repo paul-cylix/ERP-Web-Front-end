@@ -113,6 +113,8 @@ import SofRejected from "./pages/workflow/rejected/SofRejected.vue";
 
 
 import TheMrf from "./pages/supplychain/TheMrf.vue";
+import TheCart from "./pages/supplychain/TheCart.vue";
+
 
 
 
@@ -127,6 +129,8 @@ const routes = [
   { path: "/", redirect: "/login" },
   { path: "/login", component: UserLogin, meta: { requiresUnauth: true } },
   { path: "/the-mrf", component: TheMrf },
+  { path: "/the-cart", component: TheCart },
+
   {
     path: "/thedashboard",
     component: MainDashboard,
