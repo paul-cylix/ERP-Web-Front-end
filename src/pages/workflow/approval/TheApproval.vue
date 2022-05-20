@@ -15,7 +15,9 @@
           <h3 class="card-title">For Approval Requests</h3>
         </div>
         <div class="card-body pt-0 pb-3">
+
           <data-table v-bind="parametersTable1" />
+          
         </div>
       </div>
     </div>
