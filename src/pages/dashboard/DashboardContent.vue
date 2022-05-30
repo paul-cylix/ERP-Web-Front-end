@@ -152,15 +152,44 @@
   </div>
 
 
-  <!-- Sales Order -->
-
   <div class="card m-0 p-0">
     <div class="card-header accordionheader" id="heading-3">
       <h6 class="mb-0">
-        <a role="button" class="text-white"   @click="redirect('/the-sof')"  data-toggle="collapse" href="#collapse-3" aria-expanded="true" aria-controls="collapse-3">
+        <a role="button" class="text-white" data-toggle="collapse" href="#collapse-3" aria-expanded="true" aria-controls="collapse-3">
           Sales Order
         </a>
       </h6>
+    </div>
+    <div id="collapse-3" class="collapse" data-parent="#accordion" aria-labelledby="heading-3">
+      <div class="card-body pt-3 px-3 pb-0">
+        
+        <div id="accordion-2">
+
+          <div class="card">
+            
+            <div class="card-header accordionheaderOne" >
+              <h6 class="mb-0">
+                <a class="collapsed text-white"  @click="redirect('/the-sof')"  role="button" data-toggle="collapse" aria-expanded="false">
+                  Sales Order Request
+                </a>
+              </h6>
+            </div>
+
+            <div class="card-header accordionheaderOne" >
+              <h6 class="mb-0">
+                <a class="collapsed text-white"   @click="redirect('/sales-order-list')" role="button" data-toggle="collapse" aria-expanded="false">
+                  Sales Order List
+                </a>
+              </h6>
+            </div>
+
+ 
+
+          </div>
+
+        </div>  
+
+      </div>
     </div>
   </div>
 
@@ -169,7 +198,6 @@
 
 
 
-<!-- /. Sales Order -->
 
 
 </div>
