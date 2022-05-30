@@ -133,9 +133,9 @@ Vue.use(VueRouter);
 const routes = [
   { path: "/", redirect: "/login" },
   { path: "/login", component: UserLogin, meta: { requiresUnauth: true } },
-  { path: "/the-mrf", component: TheMrf },
-  { path: "/the-cart", component: TheCart },
-  { path: "/the-mr", component: TheMr },
+  { path: "/the-mrf", component: TheMrf, meta: {requiresAuth: true} },
+  { path: "/the-cart", component: TheCart, meta: {requiresAuth: true} },
+  { path: "/the-mr", component: TheMr, meta: {requiresAuth: true} },
 
   
 
