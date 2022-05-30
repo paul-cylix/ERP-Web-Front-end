@@ -104,7 +104,7 @@
           </div>
           <!-- /.Skeleton Card -->
 
-                    <!-- Skeleton Card -->
+        <!-- Skeleton Card -->
           <div class="col skeleton-card-wrapper mb-2">
 
             <div class="card skeleton-card">
@@ -184,23 +184,21 @@
           </div>
           <!-- /.Skeleton Card -->
 
-                    <!-- Skeleton Card -->
+          <!-- Skeleton Card -->
           <div class="col skeleton-card-wrapper mb-2">
-
             <div class="card skeleton-card">
               <div class="skeleton-img"></div>
               <div class="card-body skeleton-body">
-              <span class="skeleton-header"></span>
-              <div class="wrapper-skeleton-details mt-2">
-                <span class="list1 mt-1"></span>
-                <span class="list2 mt-1"></span>
-                <span class="list3 mt-1"></span>
-                <span class="list4 mt-1"></span>
-                <span class="list5 mt-1"></span>
-              </div>
+                <span class="skeleton-header"></span>
+                <div class="wrapper-skeleton-details mt-2">
+                  <span class="list1 mt-1"></span>
+                  <span class="list2 mt-1"></span>
+                  <span class="list3 mt-1"></span>
+                  <span class="list4 mt-1"></span>
+                  <span class="list5 mt-1"></span>
+                </div>
               </div>
             </div>
-
           </div>
           <!-- /.Skeleton Card -->
           

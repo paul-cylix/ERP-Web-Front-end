@@ -114,6 +114,11 @@ import SofRejected from "./pages/workflow/rejected/SofRejected.vue";
 
 import TheMrf from "./pages/supplychain/TheMrf.vue";
 import TheCart from "./pages/supplychain/TheCart.vue";
+import TheMr from "./pages/supplychain/TheMr.vue";
+
+
+import TheList from "./pages/workflow/list/TheList.vue";
+import SofList from "./pages/workflow/list/SofList.vue"
 
 
 
@@ -130,6 +135,9 @@ const routes = [
   { path: "/login", component: UserLogin, meta: { requiresUnauth: true } },
   { path: "/the-mrf", component: TheMrf },
   { path: "/the-cart", component: TheCart },
+  { path: "/the-mr", component: TheMr },
+
+  
 
   {
     path: "/thedashboard",
@@ -708,6 +716,22 @@ const routes = [
         ],
         meta: { requiresAuth: true },
       },
+      {
+        path: "/sales-order-list",
+        component: TheList,
+        children: [
+          {
+            path: ":id",
+            name: "sales_order_frm-list",
+            component: SofList,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+        ],
+        meta: { requiresAuth: true },
+      },
+
+
       { path: "/the-rfp", component: TheRfp, meta: { requiresAuth: true } },
       { path: "/the-re", component: TheRe, meta: { requiresAuth: true } },
       { path: "/the-pc", component: ThePc, meta: { requiresAuth: true } },
