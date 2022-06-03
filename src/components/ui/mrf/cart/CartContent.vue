@@ -51,6 +51,15 @@
           :cart_quantity="crt.cart_quantity"
           :created_at="crt.created_at"
           :updated_at="crt.updated_at"
+          
+          :specification="crt.specification"
+          :description="crt.description"
+          :item_code="crt.item_code"
+          :category_id="crt.category_id"
+          :category_name="crt.category_name"
+          :brand_id="crt.brand_id"
+          :brand_name="crt.brand_name"
+          
           @delete-product="beforeDeleteProduct"
           @toggle-checkbox="beforeToggleCheckbox"
           @decrease-product-qty="productQtyChange"

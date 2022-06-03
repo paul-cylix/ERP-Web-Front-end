@@ -24,15 +24,15 @@
           </div>
 
           <div class="product-details p-2">
-            <h6 class="">Lorem ipsum dolor</h6>
+            <h6 class="">{{ description }}</h6>
             <ul>
-              <li>Item Code:<span>Lorem ipsum dolor sit</span></li>
-              <li>On Hand:<span>Lorem ipsum dolor sit.</span></li>
-              <li>Model:<span>Lorem ipsum dolor sit.</span></li>
-              <li>Category:<span>Lorem ipsum dolor sit.</span></li>
-              <li>Sub Category:<span>Lorem ipsum dolor sit.</span></li>
-              <li>Brand:<span>Lorem ipsum dolor sit.</span></li>
-              <li>SKU:<span>Lorem ipsum dolor sit.</span></li>
+              <li>Item Code:<span>{{ item_code }}</span></li>
+              <!-- <li>On Hand:<span>Lorem ipsum dolor sit.</span></li> -->
+              <!-- <li>Model:<span>Lorem ipsum dolor sit.</span></li> -->
+              <li>Category:<span>{{ category_name }}</span></li>
+              <li>UoM:<span>{{ cart_uom_name }}</span></li>
+              <li>Brand:<span>{{ brand_name }}</span></li>
+              <!-- <li>SKU:<span>{{ category_name }}</span></li> -->
             </ul>
           </div>
         </div>
@@ -106,6 +106,14 @@ export default {
     "cart_quantity",
     "created_at",
     "updated_at",
+
+    "specification",
+    "description",
+    "item_code",
+    "category_id",
+    "category_name",
+    "brand_id",
+    "brand_name",
   ],
 
   methods: {
