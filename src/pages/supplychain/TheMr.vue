@@ -934,7 +934,7 @@ export default {
       this.isLoading = true;
 
       const response = await fetch(
-        "http://127.0.0.1:8000/api/cart-show/136/1/2",
+        `http://127.0.0.1:8000/api/cart-show/${this.loggedUserId}/${this.companyId}/2`,
         {
           method: "GET",
           headers: {
