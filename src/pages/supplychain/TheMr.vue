@@ -129,8 +129,8 @@
                         <li>
                           Item Code:<span>{{ cart.item_code }}</span>
                         </li>
-                        <li>Category:<span>test</span></li>
-                        <li>Sub Category:<span>test</span></li>
+                        <li>Category:<span>{{ cart.type }}</span></li>
+                        <!-- <li>Sub Category:<span>test</span></li> -->
                         <li>
                           Brand:<span>{{ cart.brand }}</span>
                         </li>
@@ -143,7 +143,7 @@
                         <li>
                           SKU<span>{{ cart.SKU }}</span>
                         </li>
-                        <li>On Hand:<span>test</span></li>
+                        <!-- <li>On Hand:<span>test</span></li> -->
                         <li>
                           Order Qty:<span>{{ cart.cart_quantity }}</span>
                         </li>
