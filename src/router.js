@@ -117,10 +117,11 @@ import TheMrf from "./pages/supplychain/TheMrf.vue";
 import TheCart from "./pages/supplychain/TheCart.vue";
 import TheMr from "./pages/supplychain/TheMr.vue";
 
-
+// use to see sof attachments
 import TheList from "./pages/workflow/list/TheList.vue";
-import SofList from "./pages/workflow/list/SofList.vue"
+import SofList from "./pages/workflow/list/SofList.vue";
 
+import PortalRegister from "./pages/cylixportal/PortalRegister.vue";
 
 import store from "./store/index.js";
 
