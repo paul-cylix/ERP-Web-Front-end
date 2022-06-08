@@ -1,7 +1,5 @@
 <template>
     <div class="main-container d-flex justify-content-center align-items-center" style="height:100vh" >
-     
-     
         <div class="login-box ">
             <div class="login-logo">
                 <b>ERP</b>Web
