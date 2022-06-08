@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 
 import UserLogin from "./pages/auth/UserLogin.vue";
+import UserRegister from "./pages/auth/UserRegister.vue";
 import MainDashboard from "./pages/dashboard/MainDashboard.vue";
 import DashboardContent from "./pages/dashboard/DashboardContent.vue";
 import TheParticipant from "./pages/workflow/participant/TheParticipant.vue";
@@ -121,11 +122,6 @@ import TheList from "./pages/workflow/list/TheList.vue";
 import SofList from "./pages/workflow/list/SofList.vue"
 
 
-
-
-
-
-
 import store from "./store/index.js";
 
 Vue.use(VueRouter);
@@ -133,11 +129,10 @@ Vue.use(VueRouter);
 const routes = [
   { path: "/", redirect: "/login" },
   { path: "/login", component: UserLogin, meta: { requiresUnauth: true } },
+  { path: "/register", component: UserRegister, meta: { requiresUnauth: true } },
   { path: "/the-mrf", component: TheMrf, meta: {requiresAuth: true} },
   { path: "/the-cart", component: TheCart, meta: {requiresAuth: true} },
   { path: "/the-mr", component: TheMr, meta: {requiresAuth: true} },
-
-  
 
   {
     path: "/thedashboard",
