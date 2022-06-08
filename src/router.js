@@ -130,6 +130,7 @@ const routes = [
   { path: "/", redirect: "/login" },
   { path: "/login", component: UserLogin, meta: { requiresUnauth: true } },
   { path: "/register", component: UserRegister, meta: { requiresUnauth: true } },
+  { path: "/cylix-portal-register", component: PortalRegister, meta: {requiresUnauth: true} },
   { path: "/the-mrf", component: TheMrf, meta: {requiresAuth: true} },
   { path: "/the-cart", component: TheCart, meta: {requiresAuth: true} },
   { path: "/the-mr", component: TheMr, meta: {requiresAuth: true} },
