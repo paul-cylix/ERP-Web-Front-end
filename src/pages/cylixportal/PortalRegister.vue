@@ -3,7 +3,7 @@
     <div class="register-box">
       <div class="card card-outline card-primary">
         <div class="card-header text-center">
-          <a href="../../index2.html" class="h1">The<b>Cylix</b>Portal</a>
+          <a href="../../index2.html" class="h1"><b>Cylix</b>Portal</a>
         </div>
 
         <div class="overlay" v-show="isLoading">
