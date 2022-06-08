@@ -121,6 +121,8 @@ import TheList from "./pages/workflow/list/TheList.vue";
 import SofList from "./pages/workflow/list/SofList.vue"
 
 
+import PortalRegister from "./pages/cylixportal/PortalRegister.vue";
+
 
 
 
@@ -133,9 +135,12 @@ Vue.use(VueRouter);
 const routes = [
   { path: "/", redirect: "/login" },
   { path: "/login", component: UserLogin, meta: { requiresUnauth: true } },
+  { path: "/cylix-portal-register", component: PortalRegister, meta: {requiresUnauth: true} },
   { path: "/the-mrf", component: TheMrf, meta: {requiresAuth: true} },
   { path: "/the-cart", component: TheCart, meta: {requiresAuth: true} },
   { path: "/the-mr", component: TheMr, meta: {requiresAuth: true} },
+
+
 
   
 
