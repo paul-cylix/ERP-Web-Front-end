@@ -28,6 +28,9 @@ import TheItf from "./pages/humanresource/TheItf.vue";
 import TheLaf from "./pages/humanresource/TheLaf.vue";
 import TheDtr from "./pages/humanresource/TheDtr.vue";
 import TheSof from "./pages/salesorder/TheSof.vue";
+import TheAex from "./pages/humanresource/TheAex.vue"; // The Attendance Export
+
+
 
 import RfpParticipant from "./pages/workflow/participant/RfpParticipant.vue";
 import RfpInprogress from "./pages/workflow/inprogress/RfpInprogress.vue";
@@ -738,6 +741,8 @@ const routes = [
       { path: "/the-laf", component: TheLaf, meta: { requiresAuth: true } },
       { path: "/the-dtr", component: TheDtr, meta: { requiresAuth: true } },
       { path: "/the-sof", component: TheSof, meta: { requiresAuth: true } },
+      { path: "/the-aex", component: TheAex, meta: { requiresAuth: true } },
+
       
 
     ],
