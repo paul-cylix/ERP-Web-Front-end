@@ -1,5 +1,5 @@
 <template>
-  <body class="hold-transition sidebar-collapse layout-top-nav layout-fixed">
+  <body class="hold-transition sidebar-collapse layout-top-nav layout-fixed layout-navbar-fixed">
     <div class="wrapper">
       <!-- Top Navbar -->
       <nav
@@ -7,7 +7,7 @@
       >
         <div class="container">
           <router-link to="/the-mrf" class="navbar-brand">
-            <span class="brand-text font-weight-light">Cylix Supply Chain</span>
+            <span class="brand-text font-weight-light">Material Request</span>
           </router-link>
           <!-- Right navbar links -->
           <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
@@ -164,16 +164,12 @@
                 <!-- Request Form -->
                 <aside v-if="counter === 1">
                   <div class="row">
-                    <div class="col-md-3">
+
+                    <!-- if selected class is MRF  -->
+                    <div class="col-md-3" >
                       <div class="form-group">
-                        <small><label for="reference">MRF Number</label></small>
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                          id="reference"
-                          disabled
-                          :value="'MRF-' + todaysYear"
-                        />
+                        <small><label for="reference">{{ referenceNumber }} Number</label></small>
+                        <input type="text" class="form-control form-control-sm py-3" id="reference" disabled :value="referenceNumber+ '-' +todaysYear"/>
                       </div>
                     </div>
 
@@ -410,7 +406,7 @@
                     <tbody>
                       <tr>
                         <td>MRF Number</td>
-                        <td style="width: 70%">{{ "MRF-" + todaysYear }}</td>
+                        <td style="width: 70%">{{ referenceNumber+ '-' + todaysYear }}</td>
                       </tr>
                       <tr>
                         <td>Department</td>
@@ -650,6 +646,7 @@ export default {
               { code: 3, name: "Material Request Demo" },
               { code: 4, name: "Material Request POC" },
             ];
+            this.referenceNumber = 'MRF'
           } else if (newValue.code === 2) {
             this.TypeList = [
               { code: 5, name: "Asset Request Project" },
@@ -658,15 +655,18 @@ export default {
               { code: 8, name: "Asset Request POC" },
               { code: 9, name: "Asset Request Internal" },
             ];
+            this.referenceNumber = 'ARF'
           } else if (newValue.code === 3) {
             this.TypeList = [
               { code: 10, name: "Supplies Request Project" },
               { code: 11, name: "Supplies Request Internal" },
             ];
+            this.referenceNumber = 'SURF'
           }
         } else {
           this.TypeSelected = {};
           this.isTypeSelected = false;
+          this.referenceNumber = 'RMA'
         }
       } else {
         this.TypeSelected = {};
@@ -779,6 +779,7 @@ export default {
       attemptNext: false,
       isLoading: false,
       cartList: [],
+      referenceNumber : 'MRF',
       classList: [
         { code: 1, name: "Material Request" },
         { code: 2, name: "Asset Request" },
