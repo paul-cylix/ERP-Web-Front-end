@@ -127,10 +127,10 @@
                     <div class="card-detail-list">
                       <ul>
                         <li>
-                          Item Code:<span>{{ cart.item_code }}</span>
+                          Item Codes:<span>{{ cart.item_code }}</span>
                         </li>
                         <li>Category:<span>{{ cart.type }}</span></li>
-                        <!-- <li>Sub Category:<span>test</span></li> -->
+                        <li>Sub Category:<span>{{ cart.group_description }}</span></li>
                         <li>
                           Brand:<span>{{ cart.brand }}</span>
                         </li>
@@ -590,7 +590,7 @@
                 v-else
                 type="button"
                 class="btn ml-1 btn-primary btn-sm"
-                @click="submit()"
+                @click="purchase()"
               >
                 Submit
               </button>
@@ -959,6 +959,32 @@ export default {
       this.carts = responseData;
     },
 
+    async purchase() {
+      const data = {
+        "requisition_no" : this.referenceNumber+ '/' +this.todaysYear,
+        "trans_type" : this.referenceNumber,
+        "delivery_date" : this.actualDeliveryDate,
+        "planned_delivery_date" : this.plannedDeliveryDate,
+        "requested_date" : this.requestedDate,
+        "remarks" : this.remarks,
+        "userid" : this.loggedUserId,
+        "clientid" : this.clientId,
+        "costid" : this.costCenter.code,
+        "costname" : this.costCenter.name,
+        "clientname" : this.clientName,
+        "short_text" : this.mrfShortText,
+        "companyId" : this.companyId
+      }
+      // console.log(data);
+
+      try {
+        const res = await axios.post("http://127.0.0.1:8000/api/cart-purchase", data);
+        this.openToast("top-right", "success", res.data);
+        // console.log(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    },
     // Request Details
     todaysDate() {
       const today = new Date();
@@ -976,6 +1002,15 @@ export default {
 
       const todaysDate = yyyy + "-" + mm + "-" + dd;
       this.requestedDate = todaysDate;
+    },
+    openToast(position, variant, message) {
+      const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
+      VsToast.show({
+        title: `${toastTitle}`,
+        message: `${message}`,
+        variant,
+        position,
+      });
     },
   },
 };
