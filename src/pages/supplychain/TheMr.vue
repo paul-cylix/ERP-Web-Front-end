@@ -980,6 +980,16 @@ export default {
       try {
         const res = await axios.post("http://127.0.0.1:8000/api/cart-purchase", data);
         this.openToast("top-right", "success", res.data);
+
+        this.actualDeliveryDate = "",
+        this.plannedDeliveryDate = "",
+        this.mrfShortText = "",
+        this.reportingManagerItem = {},
+        this.costCenter = {},
+        this.clientName = "",
+        this.classSelected = {},
+        this.TypeSelected = {}
+        this.remarks = ""
         // console.log(res.data);
       } catch (err) {
         console.log(err);
