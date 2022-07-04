@@ -37,11 +37,11 @@
                         </div>
 
                         <div class="input-group mb-3">
-                            <input type="password" class="form-control" v-model="password" placeholder="Password">
+                            <input type="password" class="form-control toggle-password" v-model="password" placeholder="Password">
 
                             <div class="input-group-append">
-                                <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
+                                <div class="input-group-text" @click="togglePassword">
+                                <span class="fas fa-eye toggle-eye"></span>
                                 </div>
                             </div>
                             <small class="w-100 text-danger p-0 m-0" v-if="missingPassword && attemptSubmit" >Password is required!</small>
@@ -52,11 +52,11 @@
                         </div>
 
                         <div class="input-group mb-3">
-                            <input type="password" class="form-control" v-model="confirmPassword" placeholder="Confirm password">
+                            <input type="password" class="form-control toggle-password" v-model="confirmPassword" placeholder="Confirm password">
 
                             <div class="input-group-append">
-                                <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
+                                <div class="input-group-text" @click="togglePassword">
+                                <span class="fas fa-eye toggle-eye"></span>
                                 </div>
                             </div>
                             <small class="w-100 text-danger p-0 m-0" v-if="missingConfirmPassword && attemptSubmit">Password does not match!</small>
@@ -67,7 +67,7 @@
                             </div>
                             <!-- /.col -->
                             <div class="col-4">
-                                <button type="submit" class="btn btn-dark btn-block" @click.prevent="register">Register</button>
+                                <button type="submit" :disabled="isButtonDisabled" class="btn btn-dark btn-block" @click.prevent="register">Register</button>
                             </div>
                             <!-- /.col -->
                         </div>
@@ -85,6 +85,7 @@
 /*eslint-disable*/
 import { ModelListSelect } from "vue-search-select";
 import axios from "axios";
+import VsToast from "@vuesimple/vs-toast";
 
 export default {
   components: {
@@ -153,6 +154,7 @@ export default {
       attemptSubmit : false,
       isEmailExist : false,
       isLoading: false,
+      isButtonDisabled : false
     };
   },
   methods: {
@@ -202,6 +204,8 @@ export default {
         const validated = this.validateEmptyFields()
 
         if(validated) {
+            this.isButtonDisabled = true
+            this.isLoading = true;
             const data = {
                 'id' : this.id,
                 'name' : this.emp_fullname,
@@ -218,12 +222,20 @@ export default {
                 const resp = await axios.post("http://127.0.0.1:8000/api/register", data);
 
                 if(resp.data.status == 'success') {
-                    alert(resp.data.message)
+                  this.emp_email = ""
+                  this.employee = {}
+                  this.password = ""
+                  this.confirmPassword = ""
+                  this.attemptSubmit = false
+                  this.openToast("top-right", "success", resp.data.message);
+                  this.isButtonDisabled = false
+                  this.isLoading = false
                 }else {
                     this.isEmailExist = true
+                    this.isButtonDisabled = false
+                    this.isLoading = false
                 }
             } catch (err) {
-                // Handle Error Here
                 console.error(err);
             }
         }
@@ -232,7 +244,40 @@ export default {
     validateEmptyFields() {
         if(!this.missingFullName && !this.missingPassword && !this.missingPasswordLength && !this.missingPasswordLowercase && !this.missingPasswordUppercase && !this.missingPasswordNumber && !this.missingConfirmPassword) return true 
         return false
-    }
+    },
+
+    togglePassword() {
+      const icon = document.querySelectorAll(".toggle-eye");
+      const password = document.querySelectorAll(".toggle-password");
+
+      if (password[0].type === "password") {
+        password.forEach((element) => {
+          element.setAttribute("type", "text");
+        });
+
+        icon.forEach((element) => {
+          element.classList.add("fa-eye-slash");
+        });
+      } else {
+        password.forEach((element) => {
+          element.setAttribute("type", "password");
+        });
+
+        icon.forEach((element) => {
+          element.classList.remove("fa-eye-slash");
+        });
+      }
+    },
+
+    openToast(position, variant, message) {
+      const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
+      VsToast.show({
+        title: `${toastTitle}`,
+        message: `${message}`,
+        variant,
+        position,
+      });
+    },
 
   },
 };
