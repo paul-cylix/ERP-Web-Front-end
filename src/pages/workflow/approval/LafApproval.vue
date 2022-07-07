@@ -498,15 +498,17 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
-    this.getLafMain(this.processId, this.companyId);
-    this.getInprogressId(this.processId, this.companyId, this.form);
-    this.getRecipients(
+  async created() {
+    this.isLoading = true;
+    await this.getLafMain(this.processId, this.companyId);
+    await this.getInprogressId(this.processId, this.companyId, this.form);
+    await this.getRecipients(
       this.processId,
       this.loggedUserId,
       this.companyId,
       this.form
     );
+  this.isLoading = false;
   },
   watch: {
     counter() {
@@ -514,16 +516,17 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
-    $route(newRoute) {
-      this.getLafMain(this.processId, this.companyId);
-      this.getInprogressId(this.processId, this.companyId, this.form);
-      this.getRecipients(
-        this.processId,
+    async $route(newRoute) {
+      this.isLoading = true;
+      await this.getLafMain(newRoute.params.id, newRoute.params.frmName);
+      await this.getInprogressId(newRoute.params.id, newRoute.params.frmName, this.form);
+      await this.getRecipients(
+        newRoute.params.id,
         this.loggedUserId,
-        this.companyId,
+        newRoute.params.frmName,
         this.form
       );
-      console.log(newRoute);
+      this.isLoading = false;
     },
   },
   computed: {
@@ -786,14 +789,14 @@ export default {
       this.title = title;
     },
     async getLafMain(id, companyId) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/get-laf-main/${id}/${companyId}`
         );
 
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
           this.leaveData = resp.data;
           this.referenceNumber = resp.data[0].reference;
           this.requestedDate = resp.data[0].request_date;

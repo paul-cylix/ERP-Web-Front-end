@@ -503,64 +503,70 @@
 
         <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
-        
-              <button
-                v-show="counter"
-                type="button"
-                @click="counter--"
-                class="btn mr-1 btn-secondary btn-sm"
-              >
-                Previous
-              </button>
-      
+          <aside
+            class="
+              col-lg-6
+              d-flex
+              justify-content-start
+              align-items-center
+              flex-nowrap
+            "
+          >
+            <button
+              v-show="counter"
+              type="button"
+              @click="counter--"
+              class="btn mr-1 btn-secondary btn-sm"
+            >
+              Previous
+            </button>
 
-        
-              <button
-                v-if="this.counter <= 1"
-                type="button"
-                @click="counter++"
-                class="btn mr-1 btn-primary btn-sm"
-              >
-                Next
-              </button>
-          
+            <button
+              v-if="this.counter <= 1"
+              type="button"
+              @click="counter++"
+              class="btn mr-1 btn-primary btn-sm"
+            >
+              Next
+            </button>
           </aside>
 
-          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
-            
-              <button
-                type="button"
-                class="btn ml-1 btn-success btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Approve')"
-              >
-                Approve
-              </button>
-            
+          <aside
+            class="
+              col-lg-6
+              d-flex
+              justify-content-end
+              align-items-center
+              flex-nowrap
+            "
+          >
+            <button
+              type="button"
+              class="btn ml-1 btn-success btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Approve')"
+            >
+              Approve
+            </button>
 
-            
-              <button
-                type="button"
-                class="btn ml-1 btn-warning btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Withdrawn')"
-              >
-                Withdrawn
-              </button>
-            
+            <button
+              type="button"
+              class="btn ml-1 btn-warning btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Withdrawn')"
+            >
+              Withdrawn
+            </button>
 
-            
-              <button
-                type="button"
-                class="btn ml-1 btn-danger btn-sm"
-                @click="close()"
-              >
-                Close
-              </button>
-            
+            <button
+              type="button"
+              class="btn ml-1 btn-danger btn-sm"
+              @click="close()"
+            >
+              Close
+            </button>
           </aside>
         </div>
         <!-- / Buttons -->
@@ -580,9 +586,11 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
-    this.getItfMain(this.$route.params.id);
-    this.getItfActualDetails(this.$route.params.id);
+  async created() {
+    this.isLoading = true;
+    await this.getItfMain(this.$route.params.id);
+    await this.getItfActualDetails(this.$route.params.id);
+    this.isLoading = false;
   },
   watch: {
     counter() {
@@ -590,10 +598,11 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
-    $route(newRoute) {
-      console.log(newRoute);
-      this.getItfMain(this.$route.params.id);
-      this.getItfActualDetails(this.$route.params.id);
+    async $route(newRoute) {
+      this.isLoading = true;
+      await this.getItfMain(newRoute.params.id);
+      await this.getItfActualDetails(newRoute.params.id);
+      this.isLoading = false;
     },
   },
   computed: {
@@ -783,11 +792,7 @@ export default {
     },
 
     validateEmptyFields() {
-      if (
-        !this.missingModalActualStart &&
-        !this.missingModalActualEnd 
-
-      ) {
+      if (!this.missingModalActualStart && !this.missingModalActualEnd) {
         return true;
       } else {
         return false;
@@ -894,7 +899,7 @@ export default {
     },
 
     async getItfMain(id) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/itf-main/${id}`
@@ -902,7 +907,7 @@ export default {
         // console.log(resp.data);
         if (resp.status === 200) {
           // console.log(resp.data)
-          this.isLoading = false;
+          // this.isLoading = false;
           this.referenceNumber = resp.data.data.reference;
           this.requestedDate = resp.data.data.date_needed;
           this.reportingManagerName = resp.data.data.reporting_manager;
@@ -910,25 +915,25 @@ export default {
       } catch (err) {
         // Handle Error Here
         console.error(err);
-        this.isLoading = false;
+        // this.isLoading = false;
       }
     },
 
     async getItfActualDetails(id) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/itf-actual-details/${id}`
         );
         // console.log(resp.data);
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
           this.itinerary = resp.data.data;
         }
       } catch (err) {
         // Handle Error Here
         console.error(err);
-        this.isLoading = false;
+        // this.isLoading = false;
       }
     },
     openToast(position, variant, message) {

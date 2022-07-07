@@ -899,18 +899,37 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
+  async created() {
     // Request Details
-    this.getPcMain(this.processId);
-    this.getActualSign(this.processId, this.form, this.companyId);
-    this.getAttachments(this.processId, this.form);
-    this.getPcExpense(this.processId);
-    this.getPcTranspo(this.processId);
+    this.isLoading = true;
+    await this.getPcMain(this.processId);
+    await this.getActualSign(this.processId, this.form, this.companyId);
+    await this.getAttachments(this.processId, this.form);
+    await this.getPcExpense(this.processId);
+    await this.getPcTranspo(this.processId);
+    this.isLoading = false;
   },
   watch: {
     // Request Details
     projectItem(newValue) {
       this.getClient(newValue.code);
+    },
+
+    counter() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    },
+
+    async $route(newRoute) {
+    console.log(newRoute)
+    this.isLoading = true;
+    this.counter = 0
+    await this.getPcMain(this.$route.params.id);
+    await this.getActualSign(this.$route.params.id, this.$route.params.frmName, this.companyId);
+    await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+    await this.getPcExpense(this.$route.params.id);
+    await this.getPcTranspo(this.$route.params.id);
+    this.isLoading = false;
     },
   },
   computed: {
@@ -1197,14 +1216,14 @@ export default {
       }
     },
     async getActualSign(id, form, companyId) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`
         );
         // console.log(resp.status);
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
           this.payeeName = resp.data[0].Payee;
 
           if (resp.data[1].STATUS === "Completed") {

@@ -903,18 +903,20 @@ export default {
     },
 
     //Navigate
-    $route(newRoute) {
+    async $route(newRoute) {
+      this.isLoading = true;
       this.counter = 0;
       this.remarks = "";
       console.log(newRoute);
 
       this.todaysDate();
-      this.getReInprogress(
+      await this.getReInprogress(
         this.$route.params.id,
-        this.form,
+        this.$route.params.frmName,
         this.companyId,
         this.loggedUserId
       );
+      this.isLoading = false;
     },
   },
   computed: {
@@ -1123,14 +1125,17 @@ export default {
     };
   },
 
-  created() {
+  async created() {
+    this.isLoading = true;
     this.todaysDate();
-    this.getReInprogress(
+    await this.getReInprogress(
       this.$route.params.id,
-      this.form,
+      this.$route.params.frmName,
       this.companyId,
       this.loggedUserId
     );
+    this.isLoading = false;
+
   },
 
   methods: {
@@ -1343,8 +1348,8 @@ export default {
       this.requestDate = todaysDate;
     },
 
-    getReInprogress(id, form, companyId, loggedUserId) {
-      this.isLoading = true;
+    async getReInprogress(id, form, companyId, loggedUserId) {
+      // this.isLoading = true;
 
       let showMain = `http://127.0.0.1:8000/api/getRE/${id}`;
       let showExpense = `http://127.0.0.1:8000/api/get-ReExpense/${id}`;
@@ -1366,7 +1371,7 @@ export default {
 
       // const requestFive = axios.get(showActualSign);
 
-      axios
+      await axios
         .all([
           requestOne.catch(() => null),
           requestTwo.catch(() => null),
@@ -1445,7 +1450,7 @@ export default {
           this.openToast("top-right", "error", errors);
         })
         .then(() => {
-          this.isLoading = false;
+          // this.isLoading = false;
         });
     },
 

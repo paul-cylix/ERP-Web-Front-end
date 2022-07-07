@@ -1441,21 +1441,25 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
+  async created() {
     // Request Details
-    this.getProjects();
-    this.getReportingManager(this.loggedUserId);
-    this.todaysDate();
-    this.getBusinesses();
-    this.getexpenseType();
-    this.gettranspoSetup();
+    this.isLoading = true;
 
-    this.getReClarification(
+    await this.getProjects();
+    await this.getReportingManager(this.loggedUserId);
+    await this.todaysDate();
+    await this.getBusinesses();
+    await this.getexpenseType();
+    await this.gettranspoSetup();
+
+    await this.getReClarification(
       this.$route.params.id,
       this.$route.params.frmName,
       this.companyId,
       this.loggedUserId
     );
+    this.isLoading = false;
+
   },
   watch: {
     // Request Details
@@ -1473,6 +1477,27 @@ export default {
     transpoSetup_totalAmount() {
       this.re_totalAmount();
     },
+
+    async $route(newRoute) {
+      this.isLoading = true;
+      this.counter = 0;
+      this.remarks = '';
+      await this.getProjects();
+      await this.getReportingManager(this.loggedUserId);
+      await this.todaysDate();
+      await this.getBusinesses();
+      await this.getexpenseType();
+      await this.gettranspoSetup();
+
+      await this.getReClarification(
+        this.$route.params.id,
+        this.$route.params.frmName,
+        this.companyId,
+        this.loggedUserId
+      );
+      console.log(newRoute)
+      this.isLoading = false;
+    }
   },
   computed: {
     classA() {
@@ -1988,8 +2013,8 @@ export default {
       this.type = "";
     },
 
-    getReClarification(id, form, companyId, loggedUserId) {
-      this.isLoading = true;
+    async getReClarification(id, form, companyId, loggedUserId) {
+      // this.isLoading = true;
       console.log(loggedUserId);
       // console.log(companyId);
       let showMain = `http://127.0.0.1:8000/api/getRE/${id}`;
@@ -2004,7 +2029,7 @@ export default {
       const requestFour = axios.get(showAttachments);
       const requestFive = axios.get(showActualSign);
 
-      axios
+      await axios
         .all([
           requestOne.catch(() => null),
           requestTwo.catch(() => null),
@@ -2150,7 +2175,7 @@ export default {
           console.log(errors);
         })
         .then(() => {
-          this.isLoading = false;
+          // this.isLoading = false;
         });
     },
     setButton() {

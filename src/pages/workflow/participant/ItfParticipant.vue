@@ -365,9 +365,11 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
-    this.getItfMain(this.$route.params.id);
-    this.getItfDetails(this.$route.params.id);
+  async created() {
+this.isLoading = true;
+    await this.getItfMain(this.$route.params.id);
+    await this.getItfDetails(this.$route.params.id);
+    this.isLoading = false;
   },
   watch: {
     counter() {
@@ -375,10 +377,12 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
-    $route(newRoute) {
-      console.log(newRoute);
-      this.getItfMain(this.$route.params.id);
-      this.getItfDetails(this.$route.params.id);
+    async $route(newRoute) {
+      this.counter = 0
+      this.isLoading = true;
+      await this.getItfMain(newRoute.params.id);
+      await this.getItfDetails(newRoute.params.id);
+      this.isLoading = false;
     },
   },
   computed: {
@@ -478,7 +482,7 @@ export default {
     },
 
     async getItfMain(id) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/itf-main/${id}`
@@ -486,7 +490,7 @@ export default {
         // console.log(resp.data);
         if (resp.status === 200) {
           // console.log(resp.data)
-          this.isLoading = false;
+          // this.isLoading = false;
           this.referenceNumber = resp.data.data.reference;
           this.requestedDate = resp.data.data.date_needed;
           this.reportingManagerName = resp.data.data.reporting_manager;
@@ -494,18 +498,18 @@ export default {
       } catch (err) {
         // Handle Error Here
         console.error(err);
-        this.isLoading = false;
+        // this.isLoading = false;
       }
     },
     async getItfDetails(id) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/itf-details/${id}`
         );
         // console.log(resp.data);
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
           this.itinerary = resp.data.data;
 
           if (resp.data.data[0].actual_end === null) {
@@ -517,7 +521,7 @@ export default {
       } catch (err) {
         // Handle Error Here
         console.error(err);
-        this.isLoading = false;
+        // this.isLoading = false;
       }
     },
     close() {

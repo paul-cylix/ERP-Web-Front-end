@@ -431,8 +431,10 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
-    this.getLafMain(this.processId, this.companyId);
+  async created() {
+    this.isLoading = true;
+    await this.getLafMain(this.processId, this.companyId);
+    this.isLoading = false;
   },
   watch: {
     counter() {
@@ -440,10 +442,11 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
-    $route(newRoute) {
-      this.getLafMain(this.processId, this.companyId);
-
-      console.log(newRoute);
+    async $route(newRoute) {
+      this.isLoading = true;
+      this.counter = 0
+      await this.getLafMain(newRoute.params.id, this.companyId);
+      this.isLoading = false;
     },
   },
   computed: {

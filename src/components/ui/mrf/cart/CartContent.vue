@@ -52,6 +52,9 @@
           :created_at="crt.created_at"
           :updated_at="crt.updated_at"
           
+          :selected_uom="{uom_id: crt.cart_uom_id, uom_name:crt.cart_uom_name}"
+          :uom="uom"
+
           :specification="crt.specification"
           :description="crt.description"
           :item_code="crt.item_code"
@@ -64,6 +67,7 @@
           @toggle-checkbox="beforeToggleCheckbox"
           @decrease-product-qty="productQtyChange"
           @increase-product-qty="productQtyChange"
+          @change-uom="changeUom"
         >
         </cart-card>
       </aside>
@@ -100,9 +104,13 @@
             </div>
             <div></div>
             <div class="text-center">
-              <button class="btn btn-sm btn-secondary">
+              <router-link to="/the-mrf" class="btn btn-sm btn-secondary">
                 <i class="fas fa-arrow-left mr-2"></i>Back
-              </button>
+              </router-link>
+
+   
+
+
             </div>
             <div class="text-center">
               <button class="btn btn-sm btn-success" @click="next">
@@ -141,6 +149,8 @@ export default {
     stateCart(newValue) {
       this.cart = newValue;
       this.countSelectedCart(newValue);
+
+      // console.log(newValue)
     },
   },
 
@@ -150,14 +160,24 @@ export default {
       cart: [],
       isCart: false,
       selectedCount: 0,
+      uom: [],
     };
   },
 
   async created() {
+    this.isCartLoading = true;
     await this.fetchCart();
+    await this.fetchUom();
+    this.isCartLoading = false;
   },
 
   methods: {
+    async fetchUom(){
+      await this.$store.dispatch("sc/fetchUom");
+      const uom = await this.$store.getters["sc/getUom"];
+      this.uom = uom;
+    },
+
     async fetchCart() {
       this.isCartLoading = true;
       this.isCart = false;
@@ -261,6 +281,10 @@ export default {
       } else {
         this.openToast("top-right", "error", "Select a product to delete!");
       }
+    },
+
+    changeUom(uom){
+      this.$store.dispatch("sc/changeUom", uom);
     },
 
     beforeToggleCheckbox(cartData) {
