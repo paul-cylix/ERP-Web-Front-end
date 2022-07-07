@@ -1468,25 +1468,27 @@ export default {
   },
   watch: {
     //Navigate
-    $route(newRoute) {
+    async $route(newRoute) {
       // this.todaysDate();
+      this.isLoading = true;    
+      this.remarks = '';
       this.counter = 0;
-      this.getPcMain(this.processId);
-      this.getInprogressId(this.processId, this.companyId, this.form);
-      this.getActualSign(this.processId, this.form, this.companyId);
-      this.getAttachments(this.processId, this.form);
-      this.getBusinesses(this.companyId);
-      this.getPcExpense(this.processId);
-      this.getPcTranspo(this.processId);
-      this.getexpenseType();
-      this.gettranspoSetup();
-      this.getRecipients(
-        this.processId,
+      await this.getPcMain(this.$route.params.id);
+      await this.getInprogressId(this.$route.params.id, this.companyId, this.$route.params.frmName);
+      await this.getActualSign(this.$route.params.id, this.$route.params.frmName, this.companyId);
+      await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+      await this.getBusinesses(this.companyId);
+      await this.getPcExpense(this.$route.params.id);
+      await this.getPcTranspo(this.$route.params.id);
+      await this.getexpenseType();
+      await this.gettranspoSetup();
+      await this.getRecipients(
+        this.$route.params.id,
         this.loggedUserId,
         this.companyId,
-        this.form
+        this.$route.params.frmName
       );
-
+      this.isLoading = false;   
       console.log(newRoute);
     },
 
@@ -1924,6 +1926,10 @@ export default {
       fd.append("transpoData", JSON.stringify(this.transpoSetup_Data));
 
       if (type === "Approve") {
+
+        const validated = this.approveValidate();
+        console.warn(validated)
+        if (validated) {
         try {
           const resp = await axios.post(
             "http://127.0.0.1:8000/api/approve-request",
@@ -1946,6 +1952,12 @@ export default {
           // Handle Error Here
           console.error(err);
         }
+        } else {
+          this.isLoadingModal = false;
+          this.openToast("top-right", "error", "Please complete all required fields!");
+        }
+
+
       }
       if (type === "Reject") {
         try {
@@ -2029,6 +2041,18 @@ export default {
         } else {
           this.openToast("top-right", "warning", "Attachments is required!");
         }
+      }
+    },
+
+    approveValidate(){
+      if (this.isApproval) {
+        if (this.missingAttachments || this.missingExpenses) {
+          return false
+        } else {
+          return true
+        }
+      } else {
+        return true
       }
     },
 

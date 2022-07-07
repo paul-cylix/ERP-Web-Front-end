@@ -642,21 +642,22 @@ export default {
     },
 
     //Navigate
-    $route(newRoute) {
-      // this.showRfpMain(this.$route.params.id);
-      // this.showRfpDetail(this.$route.params.id);
-      // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
-
-      this.getRfpApproval(
-        this.$route.params.id,
-        this.form,
-        this.companyId,
-        this.loggedUserId
-      );
-
+    async $route(newRoute) {
+      this.isLoading = true;
+      // await this.showRfpMain(this.$route.params.id);
+      // await this.showRfpDetail(this.$route.params.id);
+      // await this.showRfpAttachments(this.$route.params.id, this.$route.params.frmName);
+      
+    await this.getRfpApproval(
+      this.$route.params.id,
+      this.$route.params.frmName,
+      this.companyId,
+      this.loggedUserId
+    );
       this.counter = 0;
-      this.remarks = "";
+      this.withdrawRemarks = "";
       console.log(newRoute);
+      this.isLoading = false;
     },
   },
   computed: {
@@ -777,18 +778,20 @@ export default {
     };
   },
 
-  created() {
+  async created() {
     // console.log(this.$route.params.id);
     // this.showRfpMain(this.$route.params.id);
     // this.showRfpDetail(this.$route.params.id);
-    // this.showRfpAttachments(this.$route.params.id, this.form);
+    // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
+    this.isLoading = true;
 
-    this.getRfpApproval(
+    await this.getRfpApproval(
       this.$route.params.id,
-      this.form,
+      this.$route.params.frmName,
       this.companyId,
       this.loggedUserId
     );
+    this.isLoading = false;
   },
 
   methods: {
@@ -820,8 +823,8 @@ export default {
       }
     },
 
-    getRfpApproval(id, form, companyId, loggedUserId) {
-      this.isLoading = true;
+    async getRfpApproval(id, form, companyId, loggedUserId) {
+      
       let showRfpMain = `http://127.0.0.1:8000/api/rfp-main/${id}`;
       let showRfpDetail = `http://127.0.0.1:8000/api/rfp-main-detail/${id}`;
       let showRfpAttachments = `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`;
@@ -838,7 +841,7 @@ export default {
       const requestSix = axios.get(showRecipient);
       const requestSeven = axios.get(showInprogressId);
 
-      axios
+      await axios
         .all([
           requestOne,
           requestTwo,
@@ -925,7 +928,7 @@ export default {
           console.log(errors);
         })
         .then(() => {
-          this.isLoading = false;
+          
         });
     },
     // End of get rfp data

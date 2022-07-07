@@ -176,7 +176,7 @@
               <tr v-for="(item, index) in overtime" :key="item.id">
                 <td class="text-center">{{ index + 1 }}.</td>
                 <td>{{ item.employee_name }}</td>
-                <td>{{ item.cust_name }}</td>
+                <td>{{ item.PRJNAME }}</td>
                 <td>{{ item.overtime_date }}</td>
                 <td>{{ item.ot_in }}</td>
                 <td>{{ item.ot_out }}</td>
@@ -308,7 +308,7 @@
                   <tr v-for="(item, index) in overtime" :key="item.id">
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.employee_name }}</td>
-                    <td>{{ item.cust_name }}</td>
+                    <td>{{ item.PRJNAME }}</td>
                     <td>{{ item.overtime_date }}</td>
                     <td>{{ item.ot_in }}</td>
                     <td>{{ item.ot_out }}</td>
@@ -745,18 +745,20 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
+  async created() {
     // Request Details
-    this.getOtMain(this.$route.params.id);
-    this.getActualSign(
+    this.isLoading = true;  
+    await this.getOtMain(this.$route.params.id);
+    await this.getActualSign(
       this.$route.params.id,
       this.$route.params.frmName,
       this.companyId
     );
-    this.getProjects();
-    this.getReportingManager(this.loggedUserId);
-    this.todaysDate();
-    this.getEmployees(this.companyId);
+    await this.getProjects();
+    await this.getReportingManager(this.loggedUserId);
+    await this.todaysDate();
+    await this.getEmployees(this.companyId);
+    this.isLoading = false; 
   },
   watch: {
     counter() {
@@ -764,19 +766,22 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
-    $route(newRoute) {
+    async $route(newRoute) {
       console.log(newRoute);
-
-      this.getOtMain(this.$route.params.id);
-      this.getActualSign(
-        this.$route.params.id,
-        this.$route.params.frmName,
+      this.isLoading = true;  
+      this.counter = 0
+      this.remarks = '';
+      await this.getOtMain(newRoute.params.id);
+      await this.getActualSign(
+        newRoute.params.id,
+        newRoute.params.frmName,
         this.companyId
       );
-      this.getProjects();
-      this.getReportingManager();
-      this.todaysDate();
-      this.getEmployees(this.companyId);
+      await this.getProjects();
+      await this.getReportingManager(this.loggedUserId);
+      await this.todaysDate();
+      await this.getEmployees(this.companyId);
+      this.isLoading = false; 
     },
 
     // Request Details
@@ -1153,12 +1158,12 @@ export default {
       }
     },
     async getOtMain(id) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(`http://127.0.0.1:8000/api/ot-main/${id}`);
         // console.log(resp.data);
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
           this.referenceNumber = resp.data[0].reference;
           this.requestedDate = resp.data[0].request_date;
           this.guid = resp.data[0].GUID;
@@ -1181,7 +1186,7 @@ export default {
       } catch (err) {
         // Handle Error Here
         console.error(err);
-        this.isLoading = false;
+        // this.isLoading = false;
       }
     },
 
@@ -1462,9 +1467,10 @@ export default {
         employee_id: this.itemEmployeeName.code,
         employee_name: this.itemEmployeeName.name,
         purpose: this.modalPurpose,
-        cust_id: this.itemModalProjectName.code,
-        cust_name: this.itemModalProjectName.name,
-        PRJID: this.clientId,
+        cust_id: this.clientId,
+        cust_name: this.clientName,
+        PRJID: this.itemModalProjectName.code,
+        PRJNAME: this.itemModalProjectName.name,
         main_id: this.mainId,
       };
       // this.overtime.push(addData);
@@ -1517,8 +1523,8 @@ export default {
         name: selectedOvertime.employee_name,
       };
       this.itemModalProjectName = {
-        code: selectedOvertime.cust_id,
-        name: selectedOvertime.cust_name,
+        code: selectedOvertime.PRJID,
+        name: selectedOvertime.PRJNAME,
       };
       this.overtimeDate = selectedOvertime.overtime_date;
       this.authTimeStart = this.convertTimeAndDate(selectedOvertime.ot_in);
@@ -1684,9 +1690,10 @@ export default {
         employee_id: this.itemEmployeeName.code,
         employee_name: this.itemEmployeeName.name,
         purpose: this.modalPurpose,
-        cust_id: this.itemModalProjectName.code,
-        cust_name: this.itemModalProjectName.name,
-        PRJID: this.clientId,
+        cust_id: this.clientId,
+        cust_name: this.clientName,
+        PRJID: this.itemModalProjectName.code,
+        PRJNAME: this.itemModalProjectName.name,
         main_id: this.mainId,
       };
       // this.overtime.push(addData);

@@ -53,11 +53,11 @@ export default {
 
                 if (frmclass === 'sales_order_frm') {                    
                     this.$router.push({name: name2, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
-                    alert('if')
+                    // alert('if')
 
                 } else {
                     this.$router.push({name: name, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
-                    alert('else')
+                    // alert('else')
                 }
             }
 

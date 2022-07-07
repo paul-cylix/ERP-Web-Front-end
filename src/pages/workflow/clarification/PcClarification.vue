@@ -10,7 +10,8 @@
         <loading-spinner></loading-spinner>
       </div>
       <div class="card-header">
-        <h3 class="card-title">Petty Cash Request</h3>
+        <h3 class="card-title">Petty Cash Request{{isEditable}} {{isLiquidation}} 
+          {{isApproval}} {{disablefields}}</h3>
       </div>
       <div class="card-body">
         <!-- Step Numbers -->
@@ -527,7 +528,7 @@
             <input
               type="file"
               multiple
-              v-if="isApproval || true"
+              v-if="isAbletoAttach"
               name="fields[assetsFieldHandle][]"
               id="assetsFieldHandle"
               class="w-25 h-25 overflow-hidden"
@@ -541,7 +542,7 @@
               style="width: 100%; cursor: pointer"
               class="block pt-3 cursor-pointer"
             >
-              <span class="text-secondary" v-if="isApproval || true"
+              <span class="text-secondary" v-if="isAbletoAttach"
                 >Click here or drop file(s)</span
               >
               <span class="text-secondary" v-else
@@ -1491,32 +1492,53 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
-     async $route(newRoute) {
-      this.isLoading = true;
-      await this.getProjects();
-      await this.getReportingManager(this.loggedUserId);
-      await this.todaysDate();
-      await this.getPcExpense(this.processId);
-      await this.getPcTranspo(this.processId);
+    async $route(newRoute) {
+      // this.todaysDate();
+      this.isLoading = true;    
+      this.remarks = '';
+      this.counter = 0;
+      await this.getPcMain(this.$route.params.id);
+      await this.getInprogressId(this.$route.params.id, this.companyId, this.$route.params.frmName);
+      await this.getActualSign(this.$route.params.id, this.$route.params.frmName, this.companyId);
+      await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
       await this.getBusinesses(this.companyId);
+      await this.getPcExpense(this.$route.params.id);
+      await this.getPcTranspo(this.$route.params.id);
       await this.getexpenseType();
       await this.gettranspoSetup();
-      await this.getPcMain(this.processId);
-      await this.getActualSign(this.processId, this.form, this.companyId);
-      await this.getAttachments(this.processId, this.form);
-      this.isLoading = false;
-
-      console.warn(newRoute)
+      await this.getRecipients(
+        this.$route.params.id,
+        this.loggedUserId,
+        this.companyId,
+        this.$route.params.frmName
+      );
+      this.isLoading = false;   
+      console.log(newRoute);
     },
   },
   computed: {
     isEditable() {
-      if (this.isLiquidation === true) {
+      if (this.isLiquidation === false && this.isApproval === false && this.disablefields === true) {
         return false;
-        } else {
+      } else if (this.isLiquidation === false && this.isApproval === false && this.disablefields === false){
+        return true;
+      } else if (this.isLiquidation === true && this.isApproval === true && this.disablefields === false){
+        return false;
+      }
+    },
+
+    
+    isAbletoAttach() {
+      if (this.isLiquidation === false && this.isApproval === false && this.disablefields === true) {
+        return false;
+      } else if (this.isLiquidation === false && this.isApproval === false && this.disablefields === false){
+        return true;
+      } else if (this.isLiquidation === true && this.isApproval === true && this.disablefields === false){
         return true;
       }
     },
+
+
     classA() {
       return { active: this.counter >= 0 };
     },
@@ -1971,6 +1993,8 @@ export default {
       header: "", // Syccess or Failed
       message: "", // added successfully
       type: "", // true or false
+
+      disablefields: false,
     };
   },
 
@@ -2440,10 +2464,15 @@ export default {
         if (!this.missingExpenses && !this.missingReplyRemarks && !this.missingAttachments) {
           return true;
         } else{
+          console.log(this.missingExpenses)
+          console.log(this.missingReplyRemarks)
+          console.log(this.missingAttachments)
           return false;
         }
       } else {
         if (!this.missingReplyRemarks && !this.missingAttachments) {
+          return true;
+        } else if (!this.missingReplyRemarks && this.missingAttachments){
           return true;
         } else {
           return false;
@@ -2578,14 +2607,13 @@ export default {
             this.isEdit = true;
           }
 
-          if (resp.data[1].STATUS === "Completed") {
+          if (resp.data[2].STATUS === "Completed") {
             this.isLiquidation = true;
-            // console.log(this.isLiquidation)
+            this.isApproval = true;
           }
 
-          if (resp.data[2].STATUS === "Completed") {
-            this.isApproval = true;
-            console.warn(this.isApproval)
+          if (resp.data[2].STATUS === "For Clarification") {
+            this.disablefields = true;
           }
 
           const reportingManagerItem = {

@@ -646,13 +646,15 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
+  async created() {
     // Request Details
-    this.getItfMain(this.processId);
-    this.getItfDetails(this.processId);
-    this.getBusinessList(this.companyId);
-    this.getReportingManager(this.loggedUserId);
-    this.getActualSign(this.processId, this.form, this.companyId);
+this.isLoading = true;
+    await this.getItfMain(this.processId);
+    await this.getItfDetails(this.processId);
+    await this.getBusinessList(this.companyId);
+    await this.getReportingManager(this.loggedUserId);
+    await this.getActualSign(this.processId, this.form, this.companyId);
+  this.isLoading = false;
   },
   watch: {
     counter() {
@@ -660,13 +662,14 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
-    $route(newRoute) {
-      console.log(newRoute);
-      this.getItfMain(this.processId);
-      this.getItfDetails(this.processId);
-      this.getBusinessList(this.companyId);
-      this.getReportingManager(this.loggedUserId);
-      this.getActualSign(this.processId, this.form, this.companyId);
+    async $route(newRoute) {
+      this.isLoading = true;
+      await this.getItfMain(newRoute.params.id);
+      await this.getItfDetails(newRoute.params.id);
+      await this.getBusinessList(this.companyId);
+      await this.getReportingManager(this.loggedUserId);
+      await this.getActualSign(newRoute.params.id, newRoute.params.frmName, this.companyId);
+    this.isLoading = false;
     },
   },
   computed: {
@@ -920,7 +923,7 @@ export default {
     },
 
     async getItfMain(id) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/itf-main/${id}`
@@ -928,7 +931,7 @@ export default {
         // console.log(resp.data);
         if (resp.status === 200) {
           // console.log(resp.data)
-          this.isLoading = false;
+          // this.isLoading = false;
           this.referenceNumber = resp.data.data.reference;
           this.requestedDate = resp.data.data.date_needed;
 
@@ -941,18 +944,18 @@ export default {
       } catch (err) {
         // Handle Error Here
         console.error(err);
-        this.isLoading = false;
+        // this.isLoading = false;
       }
     },
     async getItfDetails(id) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/itf-details/${id}`
         );
         // console.log(resp.data);
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
           this.itinerary = resp.data.data;
 
           if (resp.data.data[0].actual_end === null) {
@@ -964,19 +967,19 @@ export default {
       } catch (err) {
         // Handle Error Here
         console.error(err);
-        this.isLoading = false;
+        // this.isLoading = false;
       }
     },
 
     async getActualSign(id, form, companyId) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`
         );
 
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
 
           const reportingManagerItem = {
             code: resp.data[0].RM_ID,
@@ -987,19 +990,19 @@ export default {
       } catch (err) {
         // Handle Error Here
         console.error(err);
-        this.isLoading = false;
+        // this.isLoading = false;
       }
     },
 
     async getReportingManager(rmid) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/reporting-manager/${rmid}`
         );
 
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
 
           const reportingManager = [];
           for (const key in resp.data) {
@@ -1014,7 +1017,7 @@ export default {
       } catch (err) {
         // Handle Error Here
         console.error(err);
-        this.isLoading = false;
+        // this.isLoading = false;
       }
     },
     close() {

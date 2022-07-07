@@ -145,7 +145,7 @@
               <tr v-for="(item, index) in overtime" :key="item.id">
                 <td class="text-center">{{ index + 1 }}.</td>
                 <td>{{ item.employee_name }}</td>
-                <td>{{ item.cust_name }}</td>
+                <td>{{ item.PRJNAME }}</td>
                 <td>{{ item.overtime_date }}</td>
                 <td>{{ item.ot_in }}</td>
                 <td>{{ item.ot_out }}</td>
@@ -261,7 +261,7 @@
                   <tr v-for="(item, index) in overtime" :key="item.id">
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.employee_name }}</td>
-                    <td>{{ item.cust_name }}</td>
+                    <td>{{ item.PRJNAME }}</td>
                     <td>{{ item.overtime_date }}</td>
                     <td>{{ item.ot_in }}</td>
                     <td>{{ item.ot_out }}</td>
@@ -469,16 +469,18 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
-    this.getOtMain(this.$route.params.id);
-    this.getAttachments(this.$route.params.id, this.$route.params.frmName);
-    this.getInprogressId(this.processId, this.companyId, this.form);
-    this.getRecipients(
-      this.processId,
+  async created() {
+    this.isLoading = true;
+    await this.getOtMain(this.$route.params.id);
+    await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+    await this.getInprogressId(this.$route.params.id, this.$route.params.frmName);
+    await this.getRecipients(
+      this.$route.params.id,
       this.loggedUserId,
       this.companyId,
       this.form
     );
+    this.isLoading = false;
   },
   watch: {
     counter() {
@@ -486,18 +488,22 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
-    $route(newRoute) {
-      console.log(newRoute);
-
-      this.getOtMain(this.$route.params.id);
-      this.getAttachments(this.$route.params.id, this.$route.params.frmName);
-      this.getInprogressId(this.processId, this.companyId, this.form);
-      this.getRecipients(
-        this.processId,
+    async $route(newRoute) {
+      console.warn(newRoute);
+      this.isLoading = true;
+      this.counter = 0
+      this.withdrawRemarks = ''
+      this.remarks = ''
+      await this.getOtMain(newRoute.params.id);
+      await this.getAttachments(newRoute.params.id, newRoute.params.frmName);
+      await this.getInprogressId(newRoute.params.id, this.companyId, newRoute.params.frmName);
+      await this.getRecipients(
+        newRoute.params.id,
         this.loggedUserId,
         this.companyId,
-        this.form
+        newRoute.params.frmName
       );
+      this.isLoading = false;
     },
   },
   computed: {
@@ -879,12 +885,12 @@ export default {
     },
 
     async getOtMain(id) {
-      this.isLoading = true;
+      
       try {
         const resp = await axios.get(`http://127.0.0.1:8000/api/ot-main/${id}`);
         // console.log(resp.data);
         if (resp.status === 200) {
-          this.isLoading = false;
+          
           this.referenceNumber = resp.data[0].reference;
           this.requestedDate = resp.data[0].request_date;
           this.reportingManagerName = resp.data[0].reporting_manager;
@@ -900,7 +906,7 @@ export default {
       } catch (err) {
         // Handle Error Here
         console.error(err);
-        this.isLoading = false;
+        
       }
     },
 

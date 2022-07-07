@@ -7,6 +7,7 @@ export default {
       supplies: [],
       categories: [],
       subCategories: [],
+      uom: [],
       brands: [],
       cart: [],
     };
@@ -17,6 +18,14 @@ export default {
       state.supplies.push(...payload);
     },
 
+    fetchSuppliesTwo(state, payload) {
+      state.supplies = payload;
+    },
+
+    deleteSupplies(state) {
+      state.supplies = [];
+    },
+
     fetchCategory(state, payload) {
       state.categories = payload;
     },
@@ -25,12 +34,39 @@ export default {
       state.subCategories = payload;
     },
 
+    fetchUom(state, payload) {
+      state.uom = payload;
+    },
+
     fetchBrand(state, payload) {
       state.brands = payload;
     },
 
     fetchCart(state, payload) {
       state.cart = payload;
+    },
+
+    changeUom(state, payload) {
+      const listCart = state.cart;
+
+      // console.log(payload.cart_id)
+      // console.log(payload.uom_id)
+      // console.log(payload.uom_name)
+
+      // find then update the selected card when id is matched
+      const updatedCart = listCart.map((cartState) => {
+        if (cartState.cart_id === payload.cart_id) {
+          cartState.cart_uom_id = payload.uom_id;
+          cartState.cart_uom_name = payload.uom_name;
+          // console.log('true')
+        }
+
+        return cartState;
+      });
+
+      // console.warn(updatedCart);
+
+      state.cart = updatedCart;
     },
 
     toggleCheckbox(state, payload) {
@@ -75,19 +111,15 @@ export default {
     productQtyChange(state, payload) {
       const listCart = state.cart;
 
-
       // find then update the selected card when id is matched
       listCart.map((cartState) => {
-
         if (cartState.cart_id === payload.cart_id) {
-
           if (payload.quanityTo) {
             cartState.cart_quantity++;
           } else {
             cartState.cart_quantity--;
           }
         }
-
 
         return cartState;
       });
@@ -97,21 +129,38 @@ export default {
   actions: {
     async fetchSupplies(context, payload) {
       const fd = new FormData();
+      const pageNumber = payload.page_number;
+      // console.error(payload.first_attempt);
+
       fd.append("companyId", 1);
+      fd.append("filtered_data", JSON.stringify(payload.filtered_data));
 
       try {
         const resp = await axios.post(
-          `http://127.0.0.1:8000/api/get-materials?page=${payload}`,
+          `http://127.0.0.1:8000/api/get-materials?page=${pageNumber}`,
           fd
         );
 
         if (resp.status >= 200 && resp.status <= 399) {
           const supplies = resp.data.data;
           if (resp.data.data.length) {
-            context.commit("fetchSupplies", supplies);
-            return !!resp.data.data.length;
+            if (payload.first_attempt) {
+              context.commit("fetchSuppliesTwo", supplies);
+            } else {
+              context.commit("fetchSupplies", supplies);
+            }
+            return {first_attempt:payload.first_attempt, is_available: !!resp.data.data.length}
+
+            // return !!resp.data.data.length;
           } else {
-            return !!resp.data.data.length;
+            if(payload.first_attempt){
+              context.commit("deleteSupplies");
+            }
+
+            
+
+            return {first_attempt:payload.first_attempt, is_available: !!resp.data.data.length}
+            // return !!resp.data.data.length;
           }
         }
 
@@ -202,6 +251,10 @@ export default {
       }
     },
 
+    changeUom(context, payload) {
+      context.commit("changeUom", payload);
+    },
+
     toggleCheckbox(context, payload) {
       context.commit("toggleCheckbox", payload);
     },
@@ -219,7 +272,6 @@ export default {
         loggedUserId: loggedUserId,
         companyId: companyId,
       };
-
 
       try {
         const resp = await axios.post(
@@ -243,6 +295,19 @@ export default {
         const resp = await axios.get(`http://127.0.0.1:8000/api/get-category`);
         if (resp.status >= 200 && resp.status <= 399) {
           context.commit("fetchCategory", resp.data);
+        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+        throw err;
+      }
+    },
+
+    async fetchUom(context) {
+      try {
+        const resp = await axios.get(`http://127.0.0.1:8000/api/get-uom`);
+        if (resp.status >= 200 && resp.status <= 399) {
+          context.commit("fetchUom", resp.data);
         }
       } catch (err) {
         // Handle Error Here
@@ -291,6 +356,10 @@ export default {
 
     getSubCategory(state) {
       return state.subCategories;
+    },
+
+    getUom(state) {
+      return state.uom;
     },
 
     getBrand(state) {

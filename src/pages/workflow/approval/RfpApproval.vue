@@ -1458,27 +1458,35 @@ export default {
     },
 
     //Navigate
-    $route(newRoute) {
+    async $route(newRoute) {
       // this.getRfpApproval(this.$route.params.id, this.form);
+      this.isLoading = true
 
       this.counter = 0;
       this.withdrawRemarks = "";
-      console.log(newRoute);
+      console.warn(newRoute);
 
-      this.getActualSign(this.processId, this.form, this.companyId);
-      this.getRfpMain(this.processId);
-      this.getRfpDetails(this.processId);
-      this.getAttachments(this.processId, this.form);
-      this.getRecipient(
-        this.processId,
+      // this.$route.params.id
+      // this.$route.params.frmName
+      // this.$route.params.frmClass
+      // this.$route.params.workflow
+
+
+      await this.getActualSign(this.$route.params.id, this.$route.params.frmName, this.companyId);
+      await this.getRfpMain(this.$route.params.id);
+      await this.getRfpDetails(this.$route.params.id);
+      await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+      await this.getRecipient(
+        this.$route.params.id,
         this.loggedUserId,
         this.companyId,
-        this.form
+        this.$route.params.frmName
       );
-      this.getInprogressId(this.processId, this.companyId, this.form);
-      this.getBusinesses(this.companyId);
-      this.getcurrencyName();
-      this.getexpenseType();
+      await this.getInprogressId(this.$route.params.id, this.companyId, this.$route.params.frmName);
+      await this.getBusinesses(this.companyId);
+      await this.getcurrencyName();
+      await this.getexpenseType();
+            this.isLoading = false
     },
   },
 
@@ -1833,14 +1841,14 @@ export default {
     // },
 
     async getRfpMain(id) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/rfp-main/${id}`
         );
 
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
           this.reportingManager = resp.data.data.REPORTING_MANAGER;
 
           this.referenceNumber = resp.data.data.REQREF;
@@ -1858,21 +1866,21 @@ export default {
           }
         }
       } catch (err) {
-        this.isLoading = false;
+        // this.isLoading = false;
         // Handle Error Here
         console.error(err);
       }
     },
 
     async getRfpDetails(id) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/rfp-main-detail/${id}`
         );
 
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
           this.clientName = resp.data.data.CLIENTNAME;
           this.purpose = resp.data.data.PURPOSED;
           this.payeeName = resp.data.data.PAYEE;
@@ -1900,14 +1908,14 @@ export default {
           this.projectName = resp.data.data.PROJECT;
         }
       } catch (err) {
-        this.isLoading = false;
+        // this.isLoading = false;
         // Handle Error Here
         console.error(err);
       }
     },
 
     async getAttachments(id, form) {
-      this.isLoading = true;
+      // this.isLoading = true;
 
       try {
         const resp = await axios.get(
@@ -1918,7 +1926,7 @@ export default {
         // showReportingManager - responesSix
         this.selectedFile = resp.data.data;
       } catch (err) {
-        this.isLoading = false;
+        // this.isLoading = false;
 
         // Handle Error Here
         console.error(err);
@@ -1926,7 +1934,7 @@ export default {
     },
 
     async getActualSign(id, form, companyId) {
-      this.isLoading = true;
+      // this.isLoading = true;
       let apiRes = null;
       try {
         const resp = await axios.get(
@@ -1935,7 +1943,7 @@ export default {
 
         console.log(resp.status);
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
 
           const reportingManagerItem = {
             code: resp.data[2].RM_ID,
@@ -1957,7 +1965,7 @@ export default {
           }
         }
       } catch (err) {
-        this.isLoading = false;
+        // this.isLoading = false;
         apiRes = err.response;
         // Handle Error Here
         console.error(err);

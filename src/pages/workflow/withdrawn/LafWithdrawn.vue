@@ -429,8 +429,10 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
-    this.getLafMain(this.processId, this.companyId);
+  async created() {
+    this.isLoading = true;
+    await this.getLafMain(this.processId, this.companyId);
+    this.isLoading = false;
   },
   watch: {
     counter() {
@@ -438,10 +440,11 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
-    $route(newRoute) {
-      this.getLafMain(this.processId, this.companyId);
-
-      console.log(newRoute);
+    async $route(newRoute) {
+      this.isLoading = true;
+      this.counter = 0
+      await this.getLafMain(newRoute.params.id, this.companyId);
+      this.isLoading = false;
     },
   },
   computed: {
@@ -558,14 +561,14 @@ export default {
     },
 
     async getLafMain(id, companyId) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/get-laf-main/${id}/${companyId}`
         );
 
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
           this.leaveData = resp.data;
           this.referenceNumber = resp.data[0].reference;
           this.requestedDate = resp.data[0].request_date;

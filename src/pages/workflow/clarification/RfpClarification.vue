@@ -1507,18 +1507,20 @@ export default {
     };
   },
 
-  created() {
+  async created() {
+    this.isLoading = true;
     // use for liquidation
-    this.getRfpMain(this.processId);
-    this.getRfpDetails(this.processId);
-    this.getBusinesses(this.companyId);
-    this.getActualSign(this.processId, this.form, this.companyId);
-    this.getcurrencyName();
-    this.getexpenseType();
+    await this.getRfpMain(this.$route.params.id);
+    await this.getRfpDetails(this.$route.params.id);
+    await this.getBusinesses(this.companyId);
+    await this.getActualSign(this.$route.params.id, this.$route.params.frmName, this.companyId);
+    await this.getcurrencyName();
+    await this.getexpenseType();
     // this.getLiquidation(this.$route.params.id);
-    this.getReportingManager(this.loggedUserId);
-    this.getProjects();
-    this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+    await this.getReportingManager(this.loggedUserId);
+    await this.getProjects();
+    await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+    this.isLoading = false;
   },
   watch: {
     // Request Details
@@ -1531,6 +1533,27 @@ export default {
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
     },
+
+        //Navigate
+    async $route(newRoute) {
+    this.isLoading = true;
+    this.counter = 0;
+    // use for liquidation
+    await this.getRfpMain(this.$route.params.id);
+    await this.getRfpDetails(this.$route.params.id);
+    await this.getBusinesses(this.companyId);
+    await this.getActualSign(this.$route.params.id, this.$route.params.frmName, this.companyId);
+    await this.getcurrencyName();
+    await this.getexpenseType();
+    // this.getLiquidation(this.$route.params.id);
+    await this.getReportingManager(this.loggedUserId);
+    await this.getProjects();
+    await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+    this.isLoading = false;
+    console.log(newRoute)
+    },
+
+
   },
 
   methods: {
@@ -1598,14 +1621,14 @@ export default {
     },
 
     async getRfpMain(id) {
-      this.isLoading = true;
+      
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/rfp-main/${id}`
         );
 
         if (resp.status === 200) {
-          this.isLoading = false;
+          
           this.referenceNumber = resp.data.data.REQREF;
           this.requestDate = resp.data.data.DATE;
           this.dateNeeded = resp.data.data.Deadline;
@@ -1620,21 +1643,21 @@ export default {
           }
         }
       } catch (err) {
-        this.isLoading = false;
+        
         // Handle Error Here
         console.error(err);
       }
     },
 
     async getRfpDetails(id) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/rfp-main-detail/${id}`
         );
 
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
           this.clientName = resp.data.data.CLIENTNAME;
           this.purpose = resp.data.data.PURPOSED;
           this.payeeName = resp.data.data.PAYEE;
@@ -1658,20 +1681,20 @@ export default {
           this.projectItem = projectItem;
         }
       } catch (err) {
-        this.isLoading = false;
+        // this.isLoading = false;
         // Handle Error Here
         console.error(err);
       }
     },
 
     async getActualSign(id, form, companyId) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`
         );
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
           const reportingManagerItem = {
             code: resp.data[2].RM_ID,
             name: resp.data[2].REPORTING_MANAGER,
@@ -1685,7 +1708,7 @@ export default {
           } else {
             // alert('false')
             console.log("liquidation is false");
-            this.isLiquidation = false;
+            // this.isLiquidation = false;
           }
         }
       } catch (err) {

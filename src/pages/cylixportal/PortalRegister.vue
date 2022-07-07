@@ -261,7 +261,7 @@ export default {
         const email = this.email
         const password = this.password
         const confirmPassword = this.confirmPassword
-        const selectedRank = this.selectedRank.code
+        const selectedRank = this.selectedRank.name
         const selectedManager = this.selectedManager.id
 
       

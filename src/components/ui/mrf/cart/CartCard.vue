@@ -26,20 +26,40 @@
           <div class="product-details p-2">
             <h6 class="">{{ description }}</h6>
             <ul>
-              <li>Item Code:<span>{{ item_code }}</span></li>
-              <!-- <li>On Hand:<span>Lorem ipsum dolor sit.</span></li> -->
+              <li>
+                Item Code:<span>{{ item_code }}</span>
+              </li>
+              <!-- <li>
+                On Hand:<span>{{ selectedUom }}</span>
+              </li> -->
               <!-- <li>Model:<span>Lorem ipsum dolor sit.</span></li> -->
-              <li>Category:<span>{{ category_name }}</span></li>
-              <li>UoM:<span>{{ cart_uom_name }}</span></li>
-              <li>Brand:<span>{{ brand_name }}</span></li>
+              <li>
+                Category:<span>{{ category_name }}</span>
+              </li>
+              <!-- <li>
+                UoM:<span>{{ uom }}</span>
+              </li> -->
+              <li>
+                Brand:<span>{{ brand_name }}</span>
+              </li>
               <!-- <li>SKU:<span>{{ category_name }}</span></li> -->
             </ul>
           </div>
         </div>
 
         <div class="d-flex justify-content-center align-items-center px-4">
-          <select class="form-control form-control-sm">
-            <option>Small select</option>
+          <!-- <model-list-select
+            :list="uom"
+            v-model="selectedUom"
+            option-value="uom_id"
+            option-text="uom_name"
+            placeholder="select item"
+            style="padding: 9px"
+          >
+          </model-list-select> -->
+
+          <select class="form-control form-control-sm" v-model="selectedUom" @change="changeUom">
+            <option :value="item" v-for="item in uom" :key="item.uom_id">{{ item.uom_name }}</option>
           </select>
         </div>
 
@@ -92,8 +112,12 @@
 </template>
 
 <script>
+// import { ModelListSelect } from "vue-search-select";
 import VsToast from "@vuesimple/vs-toast";
 export default {
+  // components: {
+  //   ModelListSelect,
+  // },
   name: "CartCard",
   props: [
     "cart_id",
@@ -107,6 +131,9 @@ export default {
     "created_at",
     "updated_at",
 
+    "uom",
+    "selected_uom",
+
     "specification",
     "description",
     "item_code",
@@ -116,7 +143,24 @@ export default {
     "brand_name",
   ],
 
+  data() {
+    return {
+      selectedUom: {},
+    };
+  },
+
+  watch: {
+    selected_uom() {
+      this.selectedUom = {uom_id:this.$props.cart_uom_id, uom_name:this.$props.cart_uom_name}
+    }
+  },
+
   methods: {
+    changeUom(){
+      const newUom = {cart_id: this.cart_id, uom_id:this.selectedUom.uom_id , uom_name:this.selectedUom.uom_name ,}
+      this.$emit("change-uom", newUom);
+    },
+
     deleteProduct() {
       const product = {
         cart_id: this.cart_id,
@@ -150,7 +194,11 @@ export default {
       };
 
       if (this.cart_quantity <= 1) {
-        this.openToast("top-right", "error", "Negative quantity is not allowed!");
+        this.openToast(
+          "top-right",
+          "error",
+          "Negative quantity is not allowed!"
+        );
       } else {
         this.$emit("decrease-product-qty", productQtyTo);
       }
@@ -164,7 +212,7 @@ export default {
       this.$emit("increase-product-qty", productQtyTo);
     },
 
-      openToast(position, variant, message) {
+    openToast(position, variant, message) {
       const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
       VsToast.show({
         title: `${toastTitle}`,

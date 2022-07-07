@@ -154,7 +154,7 @@
               <tr v-for="(item, index) in overtime" :key="item.id">
                 <td class="text-center">{{ index + 1 }}.</td>
                 <td>{{ item.employee_name }}</td>
-                <td>{{ item.cust_name }}</td>
+                <td>{{ item.PRJNAME }}</td>
                 <td>{{ item.overtime_date }}</td>
                 <td>{{ item.ot_in }}</td>
                 <td>{{ item.ot_out }}</td>
@@ -364,7 +364,7 @@
                   <tr v-for="(item, index) in overtime" :key="item.id">
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.employee_name }}</td>
-                    <td>{{ item.cust_name }}</td>
+                    <td>{{ item.PRJNAME }}</td>
                     <td>{{ item.overtime_date }}</td>
                     <td>{{ item.ot_in }}</td>
                     <td>{{ item.ot_out }}</td>
@@ -1169,9 +1169,10 @@ export default {
           employee_id: this.itemEmployeeName.code,
           employee_name: this.itemEmployeeName.name,
           purpose: this.modalPurpose,
-          cust_id: this.itemModalProjectName.code,
-          cust_name: this.itemModalProjectName.name,
-          PRJID: this.clientId,
+          cust_id: this.clientId,
+          cust_name: this.clientName,
+          PRJID: this.itemModalProjectName.code,
+          PRJNAME: this.itemModalProjectName.name,
           main_id: this.mainId,
         };
         // this.overtime.push(addData);
@@ -1240,6 +1241,8 @@ export default {
       this.editOvertime = selectedOvertime;
       this.setIndex = index;
 
+      console.log(selectedOvertime)
+
       console.log(this.editOvertime);
 
       this.itemEmployeeName = {
@@ -1247,8 +1250,8 @@ export default {
         name: selectedOvertime.employee_name,
       };
       this.itemModalProjectName = {
-        code: selectedOvertime.cust_id,
-        name: selectedOvertime.cust_name,
+        code: selectedOvertime.PRJID,
+        name: selectedOvertime.PRJNAME,
       };
       this.overtimeDate = selectedOvertime.overtime_date;
       this.authTimeStart = selectedOvertime.ot_in;
@@ -1325,13 +1328,15 @@ export default {
           employee_id: this.itemEmployeeName.code,
           employee_name: this.itemEmployeeName.name,
           purpose: this.modalPurpose,
-          cust_id: this.itemModalProjectName.code,
-          cust_name: this.itemModalProjectName.name,
-          PRJID: this.clientId,
+          cust_id: this.clientId,
+          cust_name: this.clientName,
+          PRJID: this.itemModalProjectName.code,
+          PRJNAME: this.itemModalProjectName.name,
           main_id: this.mainId,
         };
         // this.overtime.push(addData);
         otData.push(addData);
+        console.log(addData)
 
         const fd = new FormData();
         fd.append("overtimeData", JSON.stringify(otData));

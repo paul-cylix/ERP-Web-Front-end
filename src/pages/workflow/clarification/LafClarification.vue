@@ -736,15 +736,17 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
+  async created() {
     // Request Details
-    this.getLafMain(this.processId, this.companyId);
+    this.isLoading = true;
+    await this.getLafMain(this.processId, this.companyId);
+    await this.getReportingManager(this.loggedUserId);
+    await this.getEmployees(this.companyId);
+    await this.getMediumOfReport();
+    await this.getLeaveType();
+    await this.todaysDate();
+    this.isLoading = false;
 
-    this.getReportingManager(this.loggedUserId);
-    this.getEmployees(this.companyId);
-    this.getMediumOfReport();
-    this.getLeaveType();
-    this.todaysDate();
   },
   watch: {
     counter() {
@@ -752,15 +754,16 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
-    $route(newRoute) {
-      this.getLafMain(this.processId, this.companyId);
-      this.getReportingManager(this.loggedUserId);
-      this.getEmployees(this.companyId);
-      this.getMediumOfReport();
-      this.getLeaveType();
-      this.todaysDate();
+    async $route(newRoute) {
+      this.isLoading = true;
+      await this.getLafMain(newRoute.params.id, this.companyId);
+      await this.getReportingManager(this.loggedUserId);
+      await this.getEmployees(this.companyId);
+      await this.getMediumOfReport();
+      await this.getLeaveType();
+      await this.todaysDate();
+      this.isLoading = false;
 
-      console.log(newRoute);
     },
   },
   computed: {
@@ -1030,14 +1033,14 @@ export default {
     },
 
     async getLafMain(id, companyId) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/get-laf-main/${id}/${companyId}`
         );
 
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
           this.leaveData = resp.data;
           this.referenceNumber = resp.data[0].reference;
           this.requestedDate = resp.data[0].request_date;
@@ -1331,7 +1334,7 @@ export default {
 
     // Query
     async getReportingManager(userid) {
-      this.isLoading = true;
+      // this.isLoading = true;
       const response = await fetch(
         `http://127.0.0.1:8000/api/reporting-manager/${userid}`,
         {
@@ -1360,11 +1363,11 @@ export default {
         reportingManager.push(request);
       }
       this.reportingManager = reportingManager;
-      this.isLoading = false;
+      // this.isLoading = false;
     },
 
     async getEmployees(companyId) {
-      this.isLoading = true;
+      // this.isLoading = true;
 
       try {
         const resp = await axios.get(
@@ -1372,7 +1375,7 @@ export default {
         );
 
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
 
           const employeeName = [];
           for (const key in resp.data) {
@@ -1386,7 +1389,7 @@ export default {
           // console.log(this.employeeName);
         }
       } catch (err) {
-        this.isLoading = false;
+        // this.isLoading = false;
 
         // Handle Error Here
         console.error(err);
@@ -1394,13 +1397,13 @@ export default {
     },
 
     async getMediumOfReport() {
-      this.isLoading = true;
+      // this.isLoading = true;
 
       try {
         const resp = await axios.get(`http://127.0.0.1:8000/api/get-reports`);
 
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
 
           const array = [];
           for (const key in resp.data) {
@@ -1413,7 +1416,7 @@ export default {
           this.report = array;
         }
       } catch (err) {
-        this.isLoading = false;
+        // this.isLoading = false;
 
         // Handle Error Here
         console.error(err);
@@ -1421,13 +1424,13 @@ export default {
     },
 
     async getLeaveType() {
-      this.isLoading = true;
+      // this.isLoading = true;
 
       try {
         const resp = await axios.get(`http://127.0.0.1:8000/api/get-leavetype`);
 
         if (resp.status === 200) {
-          this.isLoading = false;
+          // this.isLoading = false;
 
           const array = [];
           for (const key in resp.data) {
