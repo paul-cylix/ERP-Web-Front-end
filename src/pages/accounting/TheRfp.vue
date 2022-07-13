@@ -879,7 +879,7 @@ export default {
       this.isLoading = true;
 
       const response = await fetch(
-        "http://127.0.0.1:8000/api/general-projects",
+        `http://127.0.0.1:8000/api/general-getprojects/${localStorage.getItem("companyId")}`,
         {
           method: "GET",
           headers: {

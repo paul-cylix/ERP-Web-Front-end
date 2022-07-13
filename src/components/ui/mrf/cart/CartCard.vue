@@ -36,9 +36,9 @@
               <li>
                 Category:<span>{{ category_name }}</span>
               </li>
-              <!-- <li>
-                UoM:<span>{{ uom }}</span>
-              </li> -->
+              <li>
+                Sub Category:<span>{{ subcategory_name }}</span>
+              </li>
               <li>
                 Brand:<span>{{ brand_name }}</span>
               </li>
@@ -130,6 +130,10 @@ export default {
     "cart_quantity",
     "created_at",
     "updated_at",
+
+    "subcategory_id",
+    "subcategory_name",
+    "subcategory_category_id",
 
     "uom",
     "selected_uom",

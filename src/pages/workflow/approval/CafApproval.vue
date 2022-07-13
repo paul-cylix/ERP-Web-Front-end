@@ -624,7 +624,7 @@ export default {
     return {
       isLoading: false,
       isLoadingModal: false,
-      counter: 0,
+      counter: 1,
       setIndex: "",
       attemptNext: false,
       attemptNextOne: false,

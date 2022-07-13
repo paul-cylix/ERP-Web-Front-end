@@ -121,7 +121,7 @@
 
                   <div class="card-details-holder">
                     <h6>
-                      <b>{{ cart.description }}</b>
+                      <b>{{ cart.item_code }}</b>
                     </h6>
                     <p>{{ cart.specification }}</p>
                     <div class="card-detail-list">

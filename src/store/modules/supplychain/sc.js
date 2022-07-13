@@ -237,6 +237,7 @@ export default {
         );
         if (resp.status >= 200 && resp.status <= 399) {
           if (resp.data.length) {
+            console.log(resp.data)
             context.commit("fetchCart", resp.data);
             return !!resp.data.length;
           } else {

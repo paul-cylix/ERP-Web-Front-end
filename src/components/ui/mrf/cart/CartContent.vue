@@ -51,6 +51,10 @@
           :cart_quantity="crt.cart_quantity"
           :created_at="crt.created_at"
           :updated_at="crt.updated_at"
+
+          :subcategory_id="crt.subcategory_id"
+          :subcategory_name="crt.subcategory_name"
+          :subcategory_category_id="crt.subcategory_category_id"
           
           :selected_uom="{uom_id: crt.cart_uom_id, uom_name:crt.cart_uom_name}"
           :uom="uom"
@@ -190,6 +194,8 @@ export default {
         this.isCart = false;
       }
       this.isCartLoading = false;
+
+
     },
 
     productQtyChange(object) {

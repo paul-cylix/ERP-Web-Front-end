@@ -2496,7 +2496,7 @@ export default {
           this.openToast(
             "top-right",
             "error",
-            "Internal Server Error! Please inform the administrator!"
+            "Internal Server Error! Please inform the administrator!sss"
           );
         }
 

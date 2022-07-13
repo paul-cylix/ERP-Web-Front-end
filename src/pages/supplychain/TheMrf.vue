@@ -393,7 +393,7 @@ export default {
         const supplies = await this.$store.getters["sc/getSupplies"];
         this.supplies = supplies;
         this.isLastPage = false;
-        // console.log("avialable");
+        console.log(supplies);
       } else {
 
         if (return_data.first_attempt) {
