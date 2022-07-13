@@ -163,6 +163,71 @@
               <div class="card-body">
                 <!-- Request Form -->
                 <aside v-if="counter === 1">
+                
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <small><label for="projectName">Class</label></small>
+                        <model-list-select
+                          :list="classList"
+                          v-model="classSelected"
+                          option-value="code"
+                          option-text="name"
+                          placeholder="select item"
+                          style="padding: 9px"
+                        >
+                        </model-list-select>
+                        <small
+                          class="text-danger p-0 m-0"
+                          v-if="missingClass && attemptNext"
+                          >Class is required!</small
+                        >
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <small><label for="clientName">Type </label></small>
+                        <model-list-select
+                          :list="TypeList"
+                          v-model="TypeSelected"
+                          option-value="code"
+                          option-text="name"
+                          placeholder="select item"
+                          :style="isTypeDisabled"
+                          :isDisabled="isTypeSelected === false"
+                        >
+                        </model-list-select>
+                        <small
+                          class="text-danger p-0 m-0"
+                          v-if="missingType && attemptNext"
+                          >Type is required!</small
+                        >
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row" v-if="isSuppliesRequestInternal">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <small><label for="clientName">Type of Supplies Request Internal </label></small>
+                        <model-list-select
+                          :list="processTypeList"
+                          v-model="processType"
+                          option-value="code"
+                          option-text="name"
+                          placeholder="select item"
+                        >
+                        </model-list-select>
+                        <small
+                          class="text-danger p-0 m-0"
+                          v-if="missingProcessType && attemptNext"
+                          >This field is required!</small
+                        >
+                      </div>
+                    </div>
+                  </div>
+
                   <div class="row">
 
                     <!-- if selected class is MRF  -->
@@ -313,49 +378,6 @@
                           id="clientName"
                           v-model="clientName"
                         />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small><label for="projectName">Class</label></small>
-                        <model-list-select
-                          :list="classList"
-                          v-model="classSelected"
-                          option-value="code"
-                          option-text="name"
-                          placeholder="select item"
-                          style="padding: 9px"
-                        >
-                        </model-list-select>
-                        <small
-                          class="text-danger p-0 m-0"
-                          v-if="missingClass && attemptNext"
-                          >Class is required!</small
-                        >
-                      </div>
-                    </div>
-
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small><label for="clientName">Type </label></small>
-                        <model-list-select
-                          :list="TypeList"
-                          v-model="TypeSelected"
-                          option-value="code"
-                          option-text="name"
-                          placeholder="select item"
-                          :style="isTypeDisabled"
-                          :isDisabled="isTypeSelected === false"
-                        >
-                        </model-list-select>
-                        <small
-                          class="text-danger p-0 m-0"
-                          v-if="missingType && attemptNext"
-                          >Type is required!</small
-                        >
                       </div>
                     </div>
                   </div>
@@ -633,6 +655,10 @@ export default {
     this.getProjects();
   },
   watch: {
+    TypeSelected(newValue) {
+      if(newValue.name == 'Supplies Request Internal') return this.isSuppliesRequestInternal = true
+      this.isSuppliesRequestInternal = false
+    },
     classSelected(newValue) {
       if (!!newValue.code) {
         if (newValue.code >= 0 && newValue.code <= 3) {
@@ -641,25 +667,25 @@ export default {
 
           if (newValue.code === 1) {
             this.TypeList = [
-              { code: 1, name: "Material Request Project" },
-              { code: 2, name: "Material Request Delivery" },
-              { code: 3, name: "Material Request Demo" },
-              { code: 4, name: "Material Request POC" },
+              { code: 1, name: "Material Request Project", type: "Project", process_type: "Sales Order" },
+              { code: 2, name: "Material Request Delivery", type: "Delivery", process_type: "Sales Order" },
+              { code: 3, name: "Material Request Demo", type: "Demo", process_type: "Sales Order" },
+              { code: 4, name: "Material Request POC", type: "POC", process_type: "Sales Order" },
             ];
             this.referenceNumber = 'MRF'
           } else if (newValue.code === 2) {
             this.TypeList = [
-              { code: 5, name: "Asset Request Project" },
-              { code: 6, name: "Asset Request Deliver" },
-              { code: 7, name: "Asset Request Demo" },
-              { code: 8, name: "Asset Request POC" },
-              { code: 9, name: "Asset Request Internal" },
+              { code: 5, name: "Asset Request Project", type: "Project", process_type: "Sales Order" },
+              { code: 6, name: "Asset Request Deliver", type: "Deliver", process_type: "Sales Order" },
+              { code: 7, name: "Asset Request Demo", type: "Demo", process_type: "Sales Order" },
+              { code: 8, name: "Asset Request POC", type: "POC", process_type: "Sales Order" },
+              { code: 9, name: "Asset Request Internal", type: "Stocking", process_type: "Internal Process" },
             ];
             this.referenceNumber = 'ARF'
           } else if (newValue.code === 3) {
             this.TypeList = [
-              { code: 10, name: "Supplies Request Project" },
-              { code: 11, name: "Supplies Request Internal" },
+              { code: 10, name: "Supplies Request Project", type: "Project", process_type: "Sales Order" },
+              { code: 11, name: "Supplies Request Internal", type: "Stocking", process_type: "" },
             ];
             this.referenceNumber = 'SURF'
           }
@@ -752,6 +778,12 @@ export default {
       if (this.remarks === undefined || this.remarks == "") return true;
       return false;
     },
+    missingProcessType() {
+      // if (this.remarks === undefined || this.remarks == "") return true;
+      // return false;
+      if(this.isSuppliesRequestInternal == true && this.processType == "" ) return true
+      return false
+    },
     todaysYear() {
       const today = new Date();
       const yyyy = today.getFullYear();
@@ -772,9 +804,11 @@ export default {
       project: [],
       costCenter: {},
       classSelected: {},
+      isSuppliesRequestInternal : false,
       TypeSelected: {},
       TypeList: [],
       isTypeSelected: false,
+      processType: '',
       counter: 0,
       attemptNext: false,
       isLoading: false,
@@ -786,9 +820,14 @@ export default {
         { code: 3, name: "Supplies Request" },
         { code: 4, name: "RMA Request" },
       ],
+      processTypeList : [
+        { code: 1, name: "Warehouse Supplies"},
+        { code: 2, name: "Office Supplies"},
+      ],
 
       // Logged User Data
       loggedUserId: localStorage.getItem("id"),
+      employeeId: localStorage.getItem("employee_id"),
       loggedUserFirstName: localStorage.getItem("fname"),
       loggedUserLastName: localStorage.getItem("lname"),
       loggedUserFullName: localStorage.getItem("fullName"),
@@ -822,7 +861,8 @@ export default {
           !this.missingCostCenter &&
           !this.missingClass &&
           !this.missingType &&
-          !this.missingRemarks
+          !this.missingRemarks &&
+          !this.missingProcessType 
         ) {
           this.counter++;
         }
@@ -960,6 +1000,7 @@ export default {
     },
 
     async purchase() {
+      this.processType = this.processType == 1 ? 'Warehouse Supplies' : 'Office Supplies'
       const data = {
         "requisition_no" : this.referenceNumber+ '/' +this.todaysYear,
         "trans_type" : this.referenceNumber,
@@ -973,8 +1014,13 @@ export default {
         "costname" : this.costCenter.name,
         "clientname" : this.clientName,
         "short_text" : this.mrfShortText,
-        "companyId" : this.companyId
+        "companyId" : this.companyId,
+        "req_person_id" : this.employeeId,
+        "rmid" : this.reportingManagerItem.code,
+        "type" : this.TypeSelected.type,
+        "procss_type" : this.TypeSelected.process_type == "" ? this.processType : this.TypeSelected.process_type
       }
+
       // console.log(data);
 
       try {
@@ -993,6 +1039,7 @@ export default {
         // console.log(res.data);
       } catch (err) {
         console.log(err);
+        this.openToast("top-right", "success", err);
       }
     },
     // Request Details
