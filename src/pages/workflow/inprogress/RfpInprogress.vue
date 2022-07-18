@@ -333,6 +333,15 @@
                         ><label>{{ file.filename }}</label></span
                       >
                     </div>
+
+
+                    <!-- preview of pdf or image endpoint -->
+                    <div>
+                      <button @click="previewPDForImage(file.mimeType, file.filepath, file.filename)">Preview PDF or Image</button>
+                    </div>
+
+
+
                     <div>
                       <button class="btn btn-info btn-sm" type="button">
                         <a
@@ -965,6 +974,9 @@ export default {
             this.selectedFile = responesThree.data.data;
             // console.log(this.selectedFile);
 
+            console.log('response3');
+            console.log(responesThree);
+
             //showActualSign - responesFour
             if (responesFour.data[2].STATUS === "Completed") {
               console.log("liquidation is true");
@@ -1069,6 +1081,27 @@ export default {
     close() {
       this.$router.replace("/inprogress");
     },
+
+
+
+    previewPDForImage(mimeType, filepath, filename) {
+      // console.log(mimeType);
+      // console.log(filepath);
+      // console.log(filename);
+
+      var newTab = window.open();
+
+      if (mimeType === 'image/jpeg' || mimeType === 'image/png') {
+        newTab.document.body.innerHTML = `<img src="http://127.0.0.1:8000/api/getFile?filepath=${filepath}&filename=${filename}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      }
+      else if (mimeType === 'application/pdf') {
+        newTab.document.write(`<iframe width='100%' height='100%' src='http://127.0.0.1:8000/api/getFile?filepath=${filepath}&filename=${filename}'></iframe>`)
+      }
+    },
+
+
+
+
     preview(mimeType, imageBytes) {
       if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
       {
