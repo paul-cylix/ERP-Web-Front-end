@@ -326,7 +326,7 @@
                   <div class="row d-flex justify-content-center">
                     <div class="col-md-4 d-flex">
                       <div class="col text-left">
-                        <span>{{ file.name }}</span>
+                        <span><label>{{ file.name }}</label></span>
                       </div>
                       <div class="co-2">
                         <button
@@ -717,6 +717,8 @@ export default {
       companyId: localStorage.getItem("companyId"),
       companyName: localStorage.getItem("companyName"),
 
+      form: "Request for Payment",
+
       // fields: [
       //   "Reference Number",
       //   "Request Date",
@@ -801,7 +803,7 @@ export default {
       });
     },
 
-    sendRequest() {
+      async sendRequest() {
       this.isLoading = true;
 
       const fd = new FormData();
@@ -823,6 +825,8 @@ export default {
       fd.append("modeOfPayment", this.modeOfPaymentItem.name);
       fd.append("currency", this.currencyItem.name);
       fd.append("amount", this.realAmount);
+      fd.append("class", "RFP");
+      fd.append("form", this.form);
 
       fd.append("loggedUserId", this.loggedUserId);
       fd.append("loggedUserFirstName", this.loggedUserFirstName);
@@ -832,28 +836,58 @@ export default {
       fd.append("companyId", this.companyId);
       fd.append("companyName", this.companyName);
 
-      axios
-        .post("http://127.0.0.1:8000/api/rfp", fd)
-        .then((res) => {
-          // handle success
-          console.log(res);
+
+
+
+      try {
+        const resp = await axios.post(
+          `http://127.0.0.1:8000/api/rfp`,
+          fd
+        );
+
+        if (resp.status >= 200 && resp.status <= 399) {
           this.isLoading = false;
-          this.openToast("top-right", "success", res.data.Success);
+          this.openToast("top-right", "success", resp.data.message);
           this.$router.replace("/inprogress");
-        })
-        .catch(function (error) {
-          // handle error
-          console.log(error.data);
+        }
+
+        console.log(resp.data);
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
           this.isLoading = false;
           this.openToast(
             "top-right",
             "error",
             "Please Contact the administrator! and try again later"
           );
-        })
-        .then(function () {
-          // always executed
-        });
+      }
+
+
+
+
+      // axios
+      //   .post("http://127.0.0.1:8000/api/rfp", fd)
+      //   .then((res) => {
+      //     // handle success
+      //     console.log(res);
+      //     this.isLoading = false;
+      //     this.openToast("top-right", "success", res.data.message);
+      //     this.$router.replace("/inprogress");
+      //   })
+      //   .catch(function (error) {
+      //     // handle error
+      //     console.log(error.data);
+      //     this.isLoading = false;
+      //     this.openToast(
+      //       "top-right",
+      //       "error",
+      //       "Please Contact the administrator! and try again later"
+      //     );
+      //   })
+      //   .then(function () {
+      //     // always executed
+      //   });
     },
 
     // Request Details

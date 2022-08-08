@@ -401,17 +401,18 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.filename }}</span>
+                      <span><label>{{ file.filename }}</label></span>
                     </div>
 
-                    <div class="col-2">
-                      <button
-                        class="btn btn-secondary btn-sm ml-1"
-                        @click="preview(file.mimeType, file.imageBytes)"
-                      >
-                        Preview
-                      </button>
+                    <!-- New Preview and Download using laravel filepath -->
+                    <div>
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
                     </div>
+                    <div class="col-2">
+                      <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                    </div>
+
+
                   </div>
                 </div>
               </li>
@@ -679,6 +680,10 @@
                   <tr v-for="file in selectedFile" :key="file.id">
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                      <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+
+                    <!-- <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
 
                       <a
                         class="btn btn-info btn-sm mr-1"
@@ -699,7 +704,7 @@
                         class="btn btn-secondary btn-sm ml-1"
                       >
                         Preview
-                      </button>
+                      </button> -->
                     </td>
                   </tr>
                 </tbody>
@@ -1177,20 +1182,20 @@ export default {
         });
     },
 
-    preview(mimeType, imageBytes) {
-      if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
-      {
-        var newTab = window.open();
-        newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
-      }
+  //   preview(mimeType, imageBytes) {
+  //     if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
+  //     {
+  //       var newTab = window.open();
+  //       newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+  //     }
 
-      else if (mimeType === 'application/pdf')
-      {
-        let pdfWindow = window.open('#')
-        pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
-      }
+  //     else if (mimeType === 'application/pdf')
+  //     {
+  //       let pdfWindow = window.open('#')
+  //       pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
+  //     }
     
-   },
+  //  },
   },
 };
 </script>

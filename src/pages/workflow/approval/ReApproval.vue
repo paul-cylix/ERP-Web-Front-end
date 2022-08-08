@@ -400,16 +400,15 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.filename }}</span>
+                      <span><label>{{ file.filename }}</label></span>
                     </div>
 
-                    <div class="col-2">
-                      <button
-                        class="btn btn-secondary btn-sm ml-1"
-                        @click="preview(file.mimeType, file.imageBytes)"
-                      >
-                        Preview
-                      </button>
+                    <div>
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                    </div>
+
+                    <div class="ml-1">
+                      <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
                     </div>
                   </div>
                 </div>
@@ -679,24 +678,11 @@
                   <tr v-for="file in selectedFile" :key="file.id">
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
-
-                      <a
-                        class="btn btn-info btn-sm mr-1"
-                        :download="file.filename"
-                        :href="
-                          'data:' + file.mimeType + ';base64,' + file.imageBytes
-                        "
-                        target="_blank"
-                      >
-                        Download
-                      </a>
-
-                      <button
-                        @click="preview(file.mimeType, file.imageBytes)"
-                        class="btn btn-secondary btn-sm ml-1"
-                      >
-                        Preview
-                      </button>
+                    
+                    <aside class="d-flex align-items-center justify-content-end">
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                      <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                    </aside>
                     </td>
                   </tr>
                 </tbody>
@@ -1155,25 +1141,51 @@ export default {
         fd.append("loggedUserFullname", this.loggedUserFullName);
         fd.append("isInitiator", this.isInitiator);
 
-        axios
-          .post("http://127.0.0.1:8000/api/approve-request", fd)
-          .then((res) => {
-            // handle success
-            document.getElementById("modalCloseButton").click();
-            // console.log(res);
-            this.openToast("top-right", "success", res.data.message);
-            this.$router.replace("/approvals");
-          })
-          .catch((error) => {
-            // handle error
-            console.log(error);
-            document.getElementById("modalCloseButton").click();
-            this.openToast("top-right", "error", error);
-          })
-          .then(() => {
-            // always executed
-            this.isLoadingModal = false;
-          });
+        try {
+        const resp = await axios.post(
+          "http://127.0.0.1:8000/api/approve-request",
+          fd
+        );
+
+        if (resp.status >= 200 && resp.status <= 399) {
+          this.isLoadingModal = false;
+          document.getElementById("modalCloseButton").click();
+          this.openToast("top-right", "success", resp.data.message);
+          this.$router.replace("/approvals");
+        }
+
+        console.log(resp.data);
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+          this.isLoadingModal = false;
+          this.openToast(
+            "top-right",
+            "error",
+            "Please Contact the administrator! and try again later"
+          );
+      }
+
+
+        // axios
+        //   .post("http://127.0.0.1:8000/api/approve-request", fd)
+        //   .then((res) => {
+        //     // handle success
+        //     document.getElementById("modalCloseButton").click();
+        //     // console.log(res);
+        //     this.openToast("top-right", "success", res.data.message);
+        //     this.$router.replace("/approvals");
+        //   })
+        //   .catch((error) => {
+        //     // handle error
+        //     console.log(error);
+        //     document.getElementById("modalCloseButton").click();
+        //     this.openToast("top-right", "error", error);
+        //   })
+        //   .then(() => {
+        //     // always executed
+        //     this.isLoadingModal = false;
+        //   });
       }
 
       if (type === "Reject") {
@@ -1410,7 +1422,9 @@ export default {
 
             this.uid = responseOne.data.data.UID;
 
-            if (responseOne.data.data.UID === this.loggedUserId) {
+            
+
+            if (responseOne.data.data.UID == this.loggedUserId) {
               this.isInitiator = true;
               // this.counter = 0;
             } else {
@@ -1454,20 +1468,20 @@ export default {
         });
     },
 
-    preview(mimeType, imageBytes) {
-      if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
-      {
-        var newTab = window.open();
-        newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
-      }
+    // preview(mimeType, imageBytes) {
+    //   if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
+    //   {
+    //     var newTab = window.open();
+    //     newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+    //   }
 
-      else if (mimeType === 'application/pdf')
-      {
-        let pdfWindow = window.open('#')
-        pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
-      }
+    //   else if (mimeType === 'application/pdf')
+    //   {
+    //     let pdfWindow = window.open('#')
+    //     pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
+    //   }
     
-    },
+    // },
   },
 };
 </script>

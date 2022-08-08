@@ -531,10 +531,15 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.filename }}</span>
+                      <span
+                        ><label>{{ file.filename }}</label></span
+                      >
+                    </div>
+                    <div>
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
                     </div>
 
-                    <div v-if="isApproval">
+                    <div class="ml-1" v-if="isApproval">
                       <button
                         class="btn btn-danger btn-sm"
                         type="button"
@@ -552,13 +557,8 @@
                       </button>
                     </div>
 
-                    <div class="col-2">
-                      <button
-                        class="btn btn-secondary btn-sm"
-                        @click="preview(file.mimeType, file.imageBytes)"
-                      >
-                        Preview
-                      </button>
+                    <div class="ml-1">
+                      <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
                     </div>
                   </div>
                 </div>
@@ -573,7 +573,7 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.name }}</span>
+                      <span><label>{{ file.name }}</label></span>
                     </div>
                     <div>
                       <button
@@ -585,7 +585,7 @@
                         Remove
                       </button>
                     </div>
-                    <div class="col-2">
+                    <div class="ml-1">
                       <button
                         class="btn btn-secondary btn-sm"
                         @click="filePreviewNew(selectedFileNew.indexOf(file))"
@@ -850,35 +850,50 @@
                 <tbody>
                   <tr v-for="file in selectedFile" :key="file.name">
                     <td>{{ file.filename }}</td>
-                        <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
-
-                      <a
-                        class="btn btn-info btn-sm "
-                        :download="file.filename"
-                        :href="
-                          'data:' + file.mimeType + ';base64,' + file.imageBytes
+                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                      <aside class="d-flex align-items-center justify-content-end">
+                        <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                        
+                        <button class="btn btn-danger btn-sm ml-1" v-if="isApproval"
+                        @click="
+                          removeAttachedFile(
+                            index,
+                            file.id,
+                            file.filename,
+                            file.filepath
+                          )
                         "
-                        target="_blank"
+                        title="Remove file"
                       >
-                        Download
-                      </a>
-                      <button
-                        @click="preview(file.mimeType, file.imageBytes)"
-                        class="btn btn-secondary btn-sm ml-1"
-                      >
-                        Preview
+                        Remove
                       </button>
+                        
+                        <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                      </aside>
                     </td>
                   </tr>
+
+                  <!-- Newly Added -->
                   <tr v-for="file in selectedFileNew" :key="file.index">
                     <td>{{ file.name }}</td>
-                    <td class="pl-2 pr-2 text-center">
+                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                      <aside class="d-flex align-items-center justify-content-end">
+                      
+                      <button
+                        class="btn btn-danger btn-sm"
+                        type="button"
+                        @click="removeFileNew(selectedFileNew.indexOf(file))"
+                        title="Remove file"
+                      >
+                        Remove
+                      </button>
                       <button
                         @click="filePreviewNew(selectedFileNew.indexOf(file))"
                         class="btn btn-secondary btn-sm ml-1"
                       >
                         Preview
                       </button>
+                      </aside>
                     </td>
                   </tr>
                 </tbody>
@@ -1950,6 +1965,10 @@ export default {
           }
         } catch (err) {
           // Handle Error Here
+          this.isLoadingModal = false;
+            this.openToast("top-right", "error", "Please contact the Administrator!");
+
+
           console.error(err);
         }
         } else {

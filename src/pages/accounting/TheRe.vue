@@ -498,7 +498,7 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.name }}</span>
+                      <span><label>{{ file.name }}</label></span>
                     </div>
                     <div class="co-2">
                       <button
@@ -1219,14 +1219,17 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
+  async created() {
     // Request Details
-    this.getProjects();
-    this.getReportingManager();
-    this.todaysDate();
-    this.getBusinesses();
-    this.getexpenseType();
-    this.gettranspoSetup();
+    this.isLoading = true
+    await this.getProjects();
+    await this.getReportingManager();
+    await this.todaysDate();
+    await this.getBusinesses();
+    await this.getexpenseType();
+    await this.gettranspoSetup();
+    this.isLoading = false
+
   },
   watch: {
     // Request Details
@@ -1719,7 +1722,7 @@ export default {
       });
     },
 
-    submit() {
+    async submit() {
       this.isLoading = true;
       const fd = new FormData();
 
@@ -1768,6 +1771,12 @@ export default {
       fd.append("amount", this.amount);
       fd.append("MOP", this.modeOfPaymentItem.name);
       fd.append("currency", this.currencyItem.name);
+      fd.append("class", "RE");
+      fd.append("form", "Reimbursement Request");
+
+
+      
+      
 
       fd.append("loggedUserId", this.loggedUserId);
       fd.append("loggedUserFirstName", this.loggedUserFirstName);
@@ -1780,36 +1789,72 @@ export default {
       fd.append("expenseType_Data", JSON.stringify(this.expenseType_Data));
       fd.append("transpoSetup_Data", JSON.stringify(this.transpoSetup_Data));
 
-      axios
-        .post("http://127.0.0.1:8000/api/saveRe", fd)
-        .then((res) => {
-          // handle success
-          // console.log(res.data.message)
+
+
+
+      try {
+        const resp = await axios.post(
+          "http://127.0.0.1:8000/api/saveRe",
+          fd
+        );
+
+        if (resp.status >= 200 && resp.status <= 399) {
           this.isLoading = false;
+          this.openToast("top-right", "success", resp.data.message);
+          this.$router.replace("/inprogress");
+        }
 
-          if (res.status === 200) {
-            this.openToast("top-right", "success", res.data.message);
-            this.$router.replace("/inprogress");
-          }
-
-          if (res.status === 202) {
-            // console.log(res)
-            this.openToast("top-right", "error", res.data.message);
-          }
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error.data);
+        console.log(resp.data);
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
           this.isLoading = false;
           this.openToast(
             "top-right",
             "error",
             "Please Contact the administrator! and try again later"
           );
-        })
-        .then(() => {
-          // always executed
-        });
+      }
+
+
+
+
+
+
+
+
+
+
+      // axios
+      //   .post("http://127.0.0.1:8000/api/saveRe", fd)
+      //   .then((res) => {
+      //     // handle success
+      //     // console.log(res.data.message)
+      //     this.isLoading = false;
+
+      //     if (res.status === 200) {
+      //       this.openToast("top-right", "success", res.data.message);
+      //       this.$router.replace("/inprogress");
+      //     }
+
+      //     if (res.status === 202) {
+      //       // console.log(res)
+      //       this.openToast("top-right", "error", res.data.message);
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     // handle error
+      //     console.log(error.data);
+      //     this.isLoading = false;
+      //     this.openToast(
+      //       "top-right",
+      //       "error",
+      //       "Please Contact the administrator! and try again later"
+      //     );
+      //   })
+      //   .then(() => {
+      //     // always executed
+      //   });
     },
 
     insert_transpoSetup() {

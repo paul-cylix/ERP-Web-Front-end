@@ -335,14 +335,34 @@
                     </div>
 
 
-                    <!-- preview of pdf or image endpoint -->
-                    <div>
+                    <!-- preview of pdf or image endpoint Jomel-->
+                    <!-- <div>
                       <button @click="previewPDForImage(file.mimeType, file.filepath, file.filename)">Preview PDF or Image</button>
+                    </div> -->
+        
+
+                    <!-- Vue Working Code Scratch For preview and download of image and pdf -->
+                    <!-- <div>
+                      <a :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview Any Type of File</a>
+                    </div>
+
+                    <div>
+                      <a :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download Any Type of File</a>
+                    </div> -->
+
+
+
+                    <!-- New Preview and Download using laravel filepath -->
+                    <div>
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                    </div>
+                    <div class="ml-1">
+                      <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
                     </div>
 
 
-
-                    <div>
+                    <!-- Old Preview and Download using image bytes -->
+                    <!-- <div>
                       <button class="btn btn-info btn-sm" type="button">
                         <a
                           :download="file.filename"
@@ -365,7 +385,12 @@
                       >
                         Preview
                       </button>
-                    </div>
+                    </div> -->
+                    <!-- Old Preview and Download using image bytes -->
+
+
+
+
                   </div>
                 </div>
               </li>
@@ -568,7 +593,13 @@
                   <tr v-for="file in selectedFile" :key="file.filename">
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
-                      <a
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                      <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+
+                     
+                     
+                     
+                      <!-- <a
                         class="btn btn-info btn-sm"
                         :download="file.filename"
                         :href="
@@ -577,14 +608,15 @@
                         target="_blank"
                       >
                         Download
-                      </a>
+                      </a> -->
 
-                      <button
+
+                      <!-- <button
                         class="btn btn-secondary btn-sm ml-1"
                         @click="preview(file.mimeType, file.imageBytes)"
                       >
                         Preview
-                      </button>
+                      </button> -->
                     </td>
                   </tr>
                 </tbody>
@@ -1083,40 +1115,34 @@ export default {
     },
 
 
+    // Jomel Preview using endpoint
+    // previewPDForImage(mimeType, filepath, filename) {
+    //   var newTab = window.open();
 
-    previewPDForImage(mimeType, filepath, filename) {
-      // console.log(mimeType);
-      // console.log(filepath);
-      // console.log(filename);
-
-      var newTab = window.open();
-
-      if (mimeType === 'image/jpeg' || mimeType === 'image/png') {
-        newTab.document.body.innerHTML = `<img src="http://127.0.0.1:8000/api/getFile?filepath=${filepath}&filename=${filename}" resizable=yes, style="max-width: 100%; height: auto; ">`;
-      }
-      else if (mimeType === 'application/pdf') {
-        newTab.document.write(`<iframe width='100%' height='100%' src='http://127.0.0.1:8000/api/getFile?filepath=${filepath}&filename=${filename}'></iframe>`)
-      }
-    },
+    //   if (mimeType === 'image/jpeg' || mimeType === 'image/png') {
+    //     newTab.document.body.innerHTML = `<img src="http://127.0.0.1:8000/api/getFile?filepath=${filepath}&filename=${filename}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+    //   }
+    //   else if (mimeType === 'application/pdf') {
+    //     newTab.document.write(`<iframe width='100%' height='100%' src='http://127.0.0.1:8000/api/getFile?filepath=${filepath}&filename=${filename}'></iframe>`)
+    //   }
+    // },
 
 
 
+    // Preview using Blob 
+    // preview(mimeType, imageBytes) {
+    //   if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
+    //   {
+    //     var newTab = window.open();
+    //     newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+    //   }
 
-    preview(mimeType, imageBytes) {
-      if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
-      {
-        var newTab = window.open();
-        newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
-      }
-
-      else if (mimeType === 'application/pdf')
-      {
-        let pdfWindow = window.open('#')
-        pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
-      }
-    
-    
-    },
+    //   else if (mimeType === 'application/pdf')
+    //   {
+    //     let pdfWindow = window.open('#')
+    //     pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
+    //   }
+    // },
 
     // showRfpMain(id) {
     //   axios

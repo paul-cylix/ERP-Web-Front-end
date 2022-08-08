@@ -333,7 +333,7 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.name }}</span>
+                      <span><label>{{ file.name }}</label></span>
                     </div>
                     <div class="co-2">
                       <button
@@ -571,11 +571,14 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
+  async created() {
     // Request Details
-    this.getProjects();
-    this.getReportingManager(this.loggedUserId);
-    this.todaysDate();
+    this.isLoading = true
+    await this.getProjects();
+    await this.getReportingManager(this.loggedUserId);
+    await this.todaysDate();
+    this.isLoading = false
+
   },
   watch: {
     // Request Details

@@ -10,8 +10,8 @@
         <loading-spinner></loading-spinner>
       </div>
       <div class="card-header">
-        <h3 class="card-title">Petty Cash Request{{isEditable}} {{isLiquidation}} 
-          {{isApproval}} {{disablefields}}</h3>
+        <h3 class="card-title">Petty Cash Request
+          </h3>
       </div>
       <div class="card-body">
         <!-- Step Numbers -->
@@ -560,9 +560,13 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.filename }}</span>
+                      <span><label>{{ file.filename }}</label></span>
                     </div>
-                    <div class="co-2" v-if="isApproval || true">
+                    <div>
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                    </div>
+
+                    <div class="ml-1" v-if="isApproval || true">
                       <button
                         class="btn btn-danger btn-sm"
                         @click="
@@ -578,13 +582,9 @@
                         Remove
                       </button>
                     </div>
-                    <div class="col-2">
-                      <button
-                        class="btn btn-secondary btn-sm"
-                        @click="preview(file.mimeType, file.imageBytes)"
-                      >
-                        Preview
-                      </button>
+
+                    <div class="ml-1">
+                      <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
                     </div>
                   </div>
                 </div>
@@ -600,9 +600,9 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.name }}</span>
+                      <span><label>{{ file.name }}</label></span>
                     </div>
-                    <div class="co-2">
+                    <div>
                       <button
                         class="btn btn-danger btn-sm"
                         type="button"
@@ -612,7 +612,7 @@
                         Remove
                       </button>
                     </div>
-                    <div class="col-2">
+                    <div class="ml-1">
                       <button
                         @click="previewNew(selectedFileNew.indexOf(file))"
                         class="btn btn-secondary btn-sm"
@@ -882,18 +882,11 @@
                 <tbody>
                   <tr v-for="(file, index) in selectedFile" :key="file.id">
                     <td>{{ file.filename }}</td>
-                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                      <aside class="d-flex align-items-center justify-content-end">
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
 
-                      <a
-                        class="btn btn-info btn-sm mr-1"
-                        :download="file.filename"
-                        :href="
-                          'data:' + file.mimeType + ';base64,' + file.imageBytes
-                        "
-                        target="_blank"
-                      >
-                        Download
-                      </a>
+
                       <button
                         @click="
                           removeAttachedFile(
@@ -904,23 +897,22 @@
                           )
                         "
                         v-if="isApproval"
-                        class="btn btn-danger btn-sm"
+                        class="btn btn-danger btn-sm ml-1"
                       >
                         Remove
                       </button>
 
-                      <button
-                        @click="preview(file.mimeType, file.imageBytes)"
-                        class="btn btn-secondary btn-sm ml-1"
-                      >
-                        Preview
-                      </button>
+                      <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                      </aside>
+
                     </td>
                   </tr>
 
                   <tr v-for="file in selectedFileNew" :key="file.name">
                     <td>{{ file.name }}</td>
-                    <td class="pl-2 pr-2 text-center">
+                                          <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                      <aside class="d-flex align-items-center justify-content-end">
+
                       <button
                         @click="removeNew(selectedFileNew.indexOf(file))"
                         class="btn btn-danger btn-sm"
@@ -933,6 +925,7 @@
                       >
                         Preview
                       </button>
+                      </aside>
                     </td>
                   </tr>
                 </tbody>
@@ -1430,6 +1423,20 @@
           <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
             
               <button
+                v-if="isLiquidation"
+                v-show="this.counter === 5"
+                type="button"
+                class="btn ml-1 btn-warning btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+              >
+                Reply
+              </button>
+
+              <button
+                v-else
+                v-show="this.counter === 3"
+
                 type="button"
                 class="btn ml-1 btn-warning btn-sm"
                 data-toggle="modal"

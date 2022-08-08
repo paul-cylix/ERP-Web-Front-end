@@ -427,12 +427,17 @@
                   v-for="(file, index) in selectedFile"
                   :key="file.id"
                 >
-                  <div class="row d-flex justify-content-center">
+                  <div class="row d-flex justify-content-center ">
                     <div class="col-md-4 d-flex">
                       <div class="col text-left">
-                        <span>{{ file.filename }}</span>
+                        <span><label>{{ file.filename }}</label></span>
                       </div>
-                      <div v-if="isInitiator">
+
+                    <div>
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                    </div>
+
+                      <div class="ml-1" v-if="isInitiator">
                         <button
                           class="btn btn-danger btn-sm"
                           type="button"
@@ -450,14 +455,9 @@
                         </button>
                       </div>
 
-                      <div class="col-2">
-                        <button
-                          class="btn btn-secondary btn-sm"
-                          @click="preview(file.mimeType, file.imageBytes)"
-                        >
-                          Preview
-                        </button>
-                      </div>
+                    <div class="ml-1">
+                      <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                    </div>
                     </div>
                   </div>
                 </li>
@@ -471,7 +471,7 @@
                   <div class="row d-flex justify-content-center">
                     <div class="col-md-4 d-flex">
                       <div class="col text-left">
-                        <span>{{ file.name }}</span>
+                        <span><label>{{ file.name }}</label></span>
                       </div>
                       <div v-if="isInitiator">
                         <button
@@ -487,7 +487,7 @@
                           Remove
                         </button>
                       </div>
-                      <div class="col-2">
+                      <div class="ml-1">
                         <button
                           class="btn btn-secondary btn-sm"
                           @click="
@@ -698,18 +698,10 @@
                   <tr v-for="(file, index) in selectedFile" :key="file.id">
                     <td>{{ file.filename }}</td>
                     <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
-                      <a
-                        class="btn btn-info btn-sm mr-1"
-                        :download="file.filename"
-                        :href="
-                          'data:' + file.mimeType + ';base64,' + file.imageBytes
-                        "
-                        target="_blank"
-                      >
-                        Download
-                      </a>
-
-                      <button
+                      <aside class="d-flex align-items-center justify-content-end">
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                      
+                      <button class="btn btn-danger btn-sm ml-1" v-if="isInitiator"
                         @click="
                           removeAttachedFile(
                             index,
@@ -718,24 +710,30 @@
                             file.filepath
                           )
                         "
-                        class="btn btn-danger btn-sm"
-                        v-if="isInitiator"
                       >
                         Remove
                       </button>
 
-                      <button
+                      <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+
+                      </aside>
+
+
+                      <!-- <button
                         class="btn btn-secondary btn-sm ml-1"
                         @click="preview(file.mimeType, file.imageBytes)"
                       >
-                        Preview
-                      </button>
+                        Previews
+                      </button> -->
                     </td>
                   </tr>
 
                   <tr v-for="file in selectedFileLiquidation" :key="file.index">
                     <td>{{ file.name }}</td>
-                    <td class="pl-2 pr-2 text-center">
+                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                      <aside class="d-flex align-items-center justify-content-end">
+                      
+              
                       
                       <button
                         @click="
@@ -748,6 +746,8 @@
                         Remove
                       </button>
 
+                      
+
                       <button
                         class="btn btn-secondary btn-sm ml-1"
                         @click="
@@ -758,6 +758,9 @@
                       >
                         Preview
                       </button>
+                      </aside>
+
+
                     </td>
                   </tr>
                 </tbody>
@@ -788,7 +791,7 @@
             <!-- liquidation is false -->
   
               <button
-                      v-show="!isLiquidation"
+              v-show="!isLiquidation"
               v-if="this.counter <= 2"
                 type="button"
                 @click="counter++"
@@ -801,8 +804,8 @@
             <!-- liquidation is true -->
    
               <button
-                     v-show="isLiquidation"
-              v-if="this.counter <= 3"
+                v-show="isLiquidation"
+                v-if="this.counter <= 3"
                 type="button"
                 @click="next()"
                 class="btn mr-2 btn-primary btn-sm"
@@ -954,13 +957,13 @@
               Submit
             </button>
 
+              <!-- Submit button for initiator in liquidation -->
             <button
               type="button"
               v-show="isInitiator === true && isLiquidation === true"
               class="btn btn-primary btn-sm"
               @click="submit('SubmitInitiator')"
             >
-              <!-- button initiator submit all liquidation -->
               Submit
             </button>
           </div>
@@ -1381,6 +1384,7 @@ export default {
       isInitiator: false,
       isLiquidation: false,
 
+
       // newly attached files in liquidation
       selectedFileLiquidation: [],
       filespreviewLiquidation: "",
@@ -1674,13 +1678,17 @@ export default {
 
       // liqudidation
       if (type === "SubmitInitiator") {
+
+        
+
+        if (this.selectedFile.length || this.selectedFileLiquidation.length && this.liquidation.length) {
         const fd = new FormData();
 
         for (let i = 0; i < this.selectedFileLiquidation.length; i++) {
           fd.append("file[]", this.selectedFileLiquidation[i]);
         }
 
-        fd.append("rfpid", this.$route.params.id);
+        fd.append("processId", this.$route.params.id);
         fd.append("companyId", this.companyId);
         fd.append("loggedUserId", this.loggedUserId);
         fd.append("remarks", this.remarks);
@@ -1690,30 +1698,68 @@ export default {
         fd.append("liquidation", JSON.stringify(this.liquidation));
         fd.append("removedFiles", JSON.stringify(this.removedAttachedFilesId));
 
-        // console.log(this.$route.params.id)
 
-        axios
-          .post("http://127.0.0.1:8000/api/rfpLiquidation", fd)
-          .then((res) => {
-            // handle success
 
-            this.isLoadingModal = false;
-            document.getElementById("modalCloseButton").click();
+          try {
+          const res = await axios.post(
+            "http://127.0.0.1:8000/api/rfpLiquidation",
+            fd
+          );
 
-            console.log(res);
+          console.log(res.data);
+          this.isLoadingModal = false;
+          document.getElementById("modalCloseButton").click();
+
+          if (res.status === 200) {
             this.openToast("top-right", "success", res.data.message);
             this.$router.replace("/approvals");
-          })
-          .catch((error) => {
-            // handle error
-            console.log(error);
-            this.isLoadingModal = false;
-            document.getElementById("modalCloseButton").click();
-            this.openToast("top-right", "error", error);
-          })
-          .then(function () {
-            // always executed
-          });
+          }
+
+          if (res.status === 202) {
+            // console.log(res)
+            this.openToast("top-right", "error", res.data.message);
+          }
+        } catch (err) {
+          // Handle Error Here
+          console.error(err);
+          this.isLoadingModal = false;
+          this.openToast("top-right", "error", err);
+
+        }
+        } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
+        }
+
+
+
+        // console.log(this.$route.params.id)
+
+
+
+
+        // axios
+        //   .post("http://127.0.0.1:8000/api/rfpLiquidation", fd)
+        //   .then((res) => {
+        //     // handle success
+
+        //     this.isLoadingModal = false;
+        //     document.getElementById("modalCloseButton").click();
+
+        //     console.log(res);
+        //     this.openToast("top-right", "success", res.data.message);
+        //     this.$router.replace("/approvals");
+        //   })
+        //   .catch((error) => {
+        //     // handle error
+        //     console.log(error);
+        //     this.isLoadingModal = false;
+        //     document.getElementById("modalCloseButton").click();
+        //     this.openToast("top-right", "error", error);
+        //   })
+        //   .then(function () {
+        //     // always executed
+        //   });
       }
     },
     close() {
@@ -2257,20 +2303,20 @@ export default {
     },
 
     // The Attachments
-    preview(mimeType, imageBytes) {
-      if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
-      {
-        var newTab = window.open();
-        newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
-      }
+    // preview(mimeType, imageBytes) {
+    //   if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
+    //   {
+    //     var newTab = window.open();
+    //     newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+    //   }
 
-      else if (mimeType === 'application/pdf')
-      {
-        let pdfWindow = window.open('#')
-        pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
-      }
+    //   else if (mimeType === 'application/pdf')
+    //   {
+    //     let pdfWindow = window.open('#')
+    //     pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
+    //   }
     
-    },
+    // },
 
     onFileSelected(event) {
       let selectedFiles = event.target.files;

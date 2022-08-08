@@ -515,10 +515,14 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.filename }}</span>
+                      <span><label>{{ file.filename }}</label></span>
                     </div>
 
-                    <div v-if="isInitiator">
+                    <div>
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                    </div>
+
+                    <div class="ml-1" v-if="isInitiator">
                       <button
                         class="btn btn-danger btn-sm"
                         type="button"
@@ -536,13 +540,8 @@
                       </button>
                     </div>
 
-                    <div class="col-2">
-                      <button
-                        class="btn btn-secondary btn-sm"
-                        @click="preview(file.mimeType, file.imageBytes)"
-                      >
-                        Preview
-                      </button>
+                    <div class="ml-1">
+                      <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
                     </div>
                   </div>
                 </div>
@@ -557,7 +556,7 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.name }}</span>
+                      <span><label>{{ file.name }}</label></span>
                     </div>
                     <div>
                       <button
@@ -569,7 +568,7 @@
                         Remove
                       </button>
                     </div>
-                    <div class="col-2">
+                    <div class="ml-1">
                       <button
                         class="btn btn-secondary btn-sm"
                         @click="filePreviewNew(selectedFileNew.indexOf(file))"
@@ -773,22 +772,14 @@
                 </thead>
                 <tbody>
                   <tr v-for="(file, index) in selectedFile" :key="file.id">
-                    <td>{{ file.filename }}</td>
-                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                  <td>{{ file.filename }}</td>
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                      <aside class="d-flex align-items-center justify-content-end">
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
 
-                      <a
-                        class="btn btn-info btn-sm mr-1"
-                        :download="file.filename"
-                        :href="
-                          'data:' + file.mimeType + ';base64,' + file.imageBytes
-                        "
-                        target="_blank"
-                      >
-                        Download
-                      </a>
                       <button
                         v-if="isInitiator"
-                        class="btn btn-danger btn-sm"
+                        class="btn btn-danger btn-sm ml-1"
                         @click="
                           removeAttachedFile(
                             index,
@@ -801,17 +792,16 @@
                         Remove
                       </button>
 
-                      <button
-                        class="btn btn-secondary btn-sm ml-1"
-                        @click="preview(file.mimeType, file.imageBytes)"
-                      >
-                        Preview
-                      </button>
+                      <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                      </aside>
                     </td>
                   </tr>
+
                   <tr v-for="file in selectedFileNew" :key="file.index">
                     <td>{{ file.name }}</td>
-                    <td class="pl-2 pr-2 text-center">
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                      <aside class="d-flex align-items-center justify-content-end">
+
                       <button
                         @click="removeFileNew(selectedFileNew.indexOf(file))"
                         class="btn btn-danger btn-sm"
@@ -826,6 +816,7 @@
                       >
                         Preview
                       </button>
+                      </aside>
                     </td>
                   </tr>
                 </tbody>
@@ -847,15 +838,16 @@
                 v-show="counter"
                 type="button"
                 @click="counter--"
-                class="btn btn-block btn-secondary btn-sm"
+                class="btn mr-1 btn-secondary btn-sm"
               >
                 Previous
               </button>
             
             <aside
-              
-              v-show="!isLiquidation"
-              v-if="this.counter <= 2"
+           
+
+              v-show="this.counter <= 2"
+              v-if="!isLiquidation"
             >
               <!-- validation button initiator for next page if you are the initiator -->
               <button
@@ -877,23 +869,48 @@
               </button>
             </aside>
 
-    
+            <aside v-else>
+              
+                <button
+                v-show="this.counter <= 3"
+                v-if="isInitiator"
+                type="button"
+                @click="next()"
+                class="btn mr-1 btn-primary btn-sm"
+              >
+                Next
+              </button>
+
               <button
-                   
-              v-show="isLiquidation"
-              v-if="this.counter <= 3"
+              v-show="this.counter <= 3"
+              v-else
                 type="button"
                 @click="counter++"
                 class="btn mr-1 btn-primary btn-sm"
               >
                 Next
               </button>
+            </aside>
+
           
           </aside>
 
           <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
             
+              <button 
+                v-if="isLiquidation"
+                v-show="this.counter === 4"
+                type="button"
+                class="btn ml-1 btn-warning btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+              >
+                Reply
+              </button>
+
               <button
+                v-else
+                v-show="this.counter === 3"
                 type="button"
                 class="btn ml-1 btn-warning btn-sm"
                 data-toggle="modal"
@@ -1616,8 +1633,40 @@ export default {
         }
         // Attachments
       } else if (counter === 2) {
-        this.counter++;
+        if (this.isLiquidation) {
+          if (this.liquidation.length) {
+            this.counter++;
+          } else {
+            this.openToast(
+              "top-right",
+              "warning",
+              "Please provide your liquidation!"
+            );
+          }
+        } else {
+        if (this.selectedFile.length || this.selectedFileNew.length) {
+          this.counter++;
+        } else {
+            this.openToast(
+              "top-right",
+              "warning",
+              "Please provide your attachments!"
+            );
+        }
+        }
+      } else if (counter === 3 && this.isLiquidation) {
+        if (this.selectedFile.length || this.selectedFileNew.length) {
+          this.counter++;
+        } else {
+            this.openToast(
+              "top-right",
+              "warning",
+              "Please provide your attachments!"
+            );
+        }
       }
+
+
     },
 
     async getRfpMain(id) {
@@ -1769,7 +1818,7 @@ export default {
       }
     },
 
-    reply() {
+    async reply() {
       this.isLoadingModal = true;
       const fd = new FormData();
       for (let i = 0; i < this.selectedFileNew.length; i++) {
@@ -1801,23 +1850,55 @@ export default {
       fd.append("removedFiles", JSON.stringify(this.removedAttachedFilesId));
       fd.append("liquidation", JSON.stringify(this.liquidation));
 
-      axios
-        .post("http://127.0.0.1:8000/api/reply-request", fd)
-        .then((res) => {
-          // handle success
-          console.log(res);
+
+          try {
+          const res = await axios.post(
+            "http://127.0.0.1:8000/api/reply-request",
+            fd
+          );
+
+          console.log(res.data);
           this.isLoadingModal = false;
           document.getElementById("modalCloseButton").click();
-          this.openToast("top-right", "success", res.data.message);
-          this.$router.replace("/approvals");
-        })
-        .catch(function (error) {
-          // handle error
-          console.log(error);
-        })
-        .then(function () {
-          // always executed
-        });
+
+          if (res.status === 200) {
+            this.openToast("top-right", "success", res.data.message);
+            this.$router.replace("/approvals");
+          }
+
+          if (res.status === 202) {
+            // console.log(res)
+            this.openToast("top-right", "error", res.data.message);
+            this.$router.replace("/approvals");
+
+          }
+        } catch (err) {
+          // Handle Error Here
+          console.error(err);
+          this.isLoadingModal = false;
+          this.openToast("top-right", "error", err);
+
+        }
+
+
+
+      // axios
+      //   .post("http://127.0.0.1:8000/api/reply-request", fd)
+      //   .then((res) => {
+      //     // handle success
+      //     console.log(res);
+      //     this.isLoadingModal = false;
+      //     document.getElementById("modalCloseButton").click();
+      //     this.openToast("top-right", "success", res.data.message);
+      //     this.$router.replace("/approvals");
+      //   })
+      //   .catch(function (error) {
+      //     // handle error
+      //     console.log(error);
+      //   })
+      //   .then(function () {
+      //     // always executed
+      //   });
     },
     close() {
       this.$router.replace("/clarifications");

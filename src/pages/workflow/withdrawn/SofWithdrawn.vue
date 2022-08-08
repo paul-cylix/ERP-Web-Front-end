@@ -712,30 +712,14 @@
                         ><label>{{ file.filename }}</label></span
                       >
                     </div>
+                    <!-- New Preview and Download using laravel filepath -->
                     <div>
-                      <button class="btn btn-info btn-sm" type="button">
-                        <a
-                          :download="file.filename"
-                          style="color: white"
-                          :href="
-                            'data:' +
-                            file.mimeType +
-                            ';base64,' +
-                            file.imageBytes
-                          "
-                          target="_blank"
-                          >Download</a
-                        >
-                      </button>
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
                     </div>
-                    <div class="col-2">
-                      <button
-                        class="btn btn-secondary btn-sm"
-                        @click="preview(file.mimeType, file.imageBytes)"
-                      >
-                        Preview
-                      </button>
+                    <div class="ml-1">
+                      <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
                     </div>
+   
                   </div>
                 </div>
               </li>
@@ -1046,24 +1030,11 @@
                     :key="file.id"
                   >
                     <td class="col-9">{{ file.filename }}</td>
-                                        <td class="pl-2 pr-2 text-center col-3 d-flex justify-content-center align-items-center">
+                    <td class="pl-2 pr-2 text-center col-3 d-flex justify-content-center align-items-center">
 
-                      <a
-                        class="btn btn-info btn-sm "
-                        :download="file.filename"
-                        :href="
-                          'data:' + file.mimeType + ';base64,' + file.imageBytes
-                        "
-                        target="_blank"
-                      >
-                        Download
-                      </a>
-                      <button
-                        class="btn btn-secondary btn-sm ml-1"
-                        @click="preview(file.mimeType, file.imageBytes)"
-                      >
-                        Preview
-                      </button>
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                      <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+
                     </td>
                   </tr>
                 </tbody>

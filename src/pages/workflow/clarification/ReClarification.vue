@@ -308,11 +308,7 @@
                     :disabled="true"
                   />
 
-                  <small
-                    class="text-danger p-0 m-0"
-                    v-if="this.missingAmount && attemptNextOne"
-                    >Amount is required!</small
-                  >
+
                 </div>
               </div>
             </div>
@@ -537,9 +533,14 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.filename }}</span>
+                        <span><label>{{ file.filename }}</label></span>
                     </div>
-                    <div class="co-2" v-if="isEdit">
+
+                    <div>
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                    </div>
+
+                    <div class="ml-1" v-if="isEdit">
                       <button
                         class="btn btn-danger btn-sm"
                         @click="
@@ -556,13 +557,8 @@
                       </button>
                     </div>
 
-                    <div class="col-2">
-                      <button
-                        class="btn btn-secondary btn-sm"
-                        @click="preview(file.mimeType, file.imageBytes)"
-                      >
-                        Preview
-                      </button>
+                    <div class="ml-1">
+                      <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
                     </div>
                   </div>
                 </div>
@@ -578,7 +574,7 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.name }}</span>
+                        <span><label>{{ file.name }}</label></span>
                     </div>
                     <div class="co-2">
                       <button
@@ -590,7 +586,7 @@
                         Remove
                       </button>
                     </div>
-                    <div class="col-2">
+                    <div class="ml-1">
                       <button
                         @click="previewNew(selectedFileNew.indexOf(file))"
                         class="btn btn-secondary btn-sm"
@@ -852,20 +848,9 @@
                 <tbody>
                   <tr v-for="(file, index) in selectedFile" :key="file.id">
                     <td>{{ file.filename }}</td>
-
-
-                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
-
-                      <a
-                        class="btn btn-info btn-sm mr-1"
-                        :download="file.filename"
-                        :href="
-                          'data:' + file.mimeType + ';base64,' + file.imageBytes
-                        "
-                        target="_blank"
-                      >
-                        Download
-                      </a>
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                      <aside class="d-flex align-items-center justify-content-end">
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
 
                       <button
                         @click="
@@ -877,24 +862,21 @@
                           )
                         "
                         v-if="isEdit"
-                        class="btn btn-danger btn-sm"
+                        class="btn btn-danger btn-sm ml-1"
                       >
                         Remove
                       </button>
 
-
-                      <button
-                        @click="preview(file.mimeType, file.imageBytes)"
-                        class="btn btn-secondary btn-sm ml-1"
-                      >
-                        Preview
-                      </button>
+                      <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                      </aside>
                     </td>
                   </tr>
 
                   <tr v-for="file in selectedFileNew" :key="file.name">
                     <td>{{ file.name }}</td>
-                    <td class="pl-2 pr-2 text-center">
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                      <aside class="d-flex align-items-center justify-content-end">
+
                       <button
                         @click="removeNew(selectedFileNew.indexOf(file))"
                         class="btn btn-danger btn-sm"
@@ -907,6 +889,7 @@
                       >
                         Preview
                       </button>
+                      </aside>
                     </td>
                   </tr>
                 </tbody>
@@ -1355,7 +1338,7 @@
                   class="btn btn-primary btn-sm"
                   @click="reply()"
                 >
-                  Reply
+                  Reply 1
                 </button>
               </div>
             </div>
@@ -1406,12 +1389,13 @@
           <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
             
               <button
+                v-show="this.counter === 5"
                 type="button"
                 class="btn ml-1 btn-warning btn-sm"
                 data-toggle="modal"
                 data-target="#modal-default"
               >
-                Reply
+                Reply 2
               </button>
             
 
@@ -1958,6 +1942,7 @@ export default {
         fd.append("companyName", this.companyName);
         fd.append("guid", this.guid);
         fd.append("class", "RE");
+        fd.append("referenceNumber", this.referenceNumber);
         fd.append("removedFiles", JSON.stringify(this.removedAttachedFilesId));
         try {
           const res = await axios.post(
@@ -1979,6 +1964,8 @@ export default {
         } catch (err) {
           this.isLoadingModal = false;
           // Handle Error Here
+            this.openToast("top-right", "error", "Please Contact the administrator! and try again later");
+
           console.error(err);
         }
       } else {
@@ -1988,7 +1975,7 @@ export default {
     },
 
     validate_reply() {
-      if (!this.missingReplyRemarks) {
+      if (!this.missingReplyRemarks && (this.expenseType_Data.length || this.transpoSetup_Data.length) && (this.selectedFile.length || this.selectedFileNew.length)) {
         return true;
       } else {
         return false;
@@ -2710,21 +2697,6 @@ export default {
       // console.log(this.reportingManager);
     },
 
-    // The Attachments
-    preview(mimeType, imageBytes) {
-      if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
-      {
-        var newTab = window.open();
-        newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
-      }
-
-      else if (mimeType === 'application/pdf')
-      {
-        let pdfWindow = window.open('#')
-        pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
-      }
-    
-   },
 
     onFileSelected(event) {
       let selectedFilesNew = event.target.files;

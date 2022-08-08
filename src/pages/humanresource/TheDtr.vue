@@ -402,8 +402,8 @@ export default {
     },
   },
 
-  created() {
-    this.getDtr();
+  async created() {
+    await this.getDtr();
   },
 };
 </script>

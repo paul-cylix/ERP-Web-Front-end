@@ -878,9 +878,9 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span>{{ file.name }}</span>
+                      <span><label>{{ file.name }}</label></span>
                     </div>
-                    <div class="co-2">
+                    <div>
                       <button
                         class="btn btn-danger btn-sm"
                         type="button"
@@ -890,7 +890,7 @@
                         Remove
                       </button>
                     </div>
-                    <div class="col-2">
+                    <div class="ml-1">
                       <button
                         @click="preview(selectedFile.indexOf(file))"
                         class="btn btn-secondary btn-sm"
