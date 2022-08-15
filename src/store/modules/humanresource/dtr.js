@@ -13,6 +13,10 @@ export default {
   },
 
   mutations: {
+    clearSelectedData(state){
+      state.selectedDtr = [];
+    },
+
     addSelectedDtr(state, payload) {
       state.selectedDtr.push(payload);
     },
@@ -96,6 +100,9 @@ export default {
   },
 
   actions: {
+    clearSelectedData(context){
+      context.commit("clearSelectedData");
+    },
     addSelectedDtr(context, payload) {
       context.commit("addSelectedDtr", {
         DepartmentName: payload.DepartmentName,
@@ -127,15 +134,17 @@ export default {
     async getDtr(context,payload) {
       
       const id = payload
+      console.warn(id)
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-hr-emp/${id}`
+          `http://localhost/portal_i/get_users_dtr.php?logged_userid=${id}`
         );
         // console.log(response);
 
-        const payload = response.data;
-
+        let payload = response.data;
+        // console.log(payload)
         context.commit("getDtr", payload);
+
       } catch (error) {
         console.error(error);
       }
@@ -163,10 +172,11 @@ export default {
 
       try {
         const resp = await axios.post(
-          "http://127.0.0.1:8000/api/get-hr-emp",
+          "http://localhost/portal_i/post_approve_dtr.php",
           fd
         );
-        console.log(resp.data);
+        console.log(resp.data)
+
         return resp.status;
       } catch (err) {
         // Handle Error Here
@@ -177,19 +187,17 @@ export default {
 
     async set(_, payload) {
       const fd = new FormData();
-      fd.append("id", payload.id);
+      const setdata = []
+      setdata.push(payload.data)
       fd.append("setStatus", payload.setStatus);
-
-      fd.append("dtr_date", payload.dtr_date);
-      fd.append("in_am", payload.in_am);
-      fd.append("out_pm", payload.out_pm);
-
+      fd.append("selectedData", JSON.stringify(setdata));
 
       try {
         const resp = await axios.post(
-          "http://127.0.0.1:8000/api/post-hr-emp",
+          "http://localhost/portal_i/post_approve_dtr.php",
           fd
         );
+        console.log(resp.data)
         // console.log(resp.data);
         return resp.status;
       } catch (err) {

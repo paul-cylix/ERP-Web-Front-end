@@ -3,9 +3,9 @@
     <div class="row">
       <div class="col-md-3">
         <div class="card card-secondary">
-          <div class="overlay" v-show="isFilterLoading">
+          <!-- <div class="overlay" v-show="isFilterLoading">
             <loading-spinner></loading-spinner>
-          </div>
+          </div> -->
           <div class="card-header">
             <h3 class="card-title">Filter</h3>
           </div>
@@ -21,7 +21,8 @@
                     option-value="code"
                     option-text="name"
                     placeholder="select item"
-                    style="padding: 9px"
+                    :style="isDropdownRequired"
+                    :isDisabled="this.isFilterLoading === true"
                   >
                   </model-list-select>
                 </div>
@@ -36,6 +37,7 @@
                     v-model="dateRange"
                     style="display: block; width: 100%; line-height: 20px border:red;"
                     range
+                    :disabled="this.isFilterLoading === true"
                   ></date-picker>
                 </div>
               </div>
@@ -44,6 +46,7 @@
             <div class="text-right mt-1">
               <button
                 type="button"
+                :disabled="this.isFilterLoading === true"
                 class="btn btn-primary btn-sm"
                 @click="filter"
               >
@@ -99,10 +102,24 @@ export default {
   },
 
   computed: {
+    isDropdownRequired() {
+      if (this.isFilterLoading === true) {
+        return "padding: 9px; background-color: #F4F6F9; border-color: #cccccc;";
+      } else {
+        return "padding: 9px";
+      }
+    },
+
     parametersTable1() {
       return {
         data: this.requestArray,
-        perPageSizes: [10, 25, 50, 100, 10000],
+        perPageSizes: [
+          10,
+          25,
+          50,
+          100,
+          100 * Math.ceil(this.requestArray.length / 100),
+        ],
         allowedExports: ["csv", "json", "txt"],
         tableClass:
           "table table-sm table-striped table-bordered small table-hover",
@@ -130,38 +147,32 @@ export default {
 
   watch: {},
 
-  created() {
-    this.getDtr();
-    this.getEmployees(this.companyId);
+  async created() {
+    this.isFilterLoading = true;
+    await this.getEmployees(this.companyId);
+    this.isFilterLoading = false;
   },
 
   methods: {
-    async getDtr() {
-      this.isCardLoading = true;
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-user-attendance`
-        );
-        this.isCardLoading = false;
+    perPageSizes() {
+      // round `length` to the closest multiple of 100
+      // for example, `length` = 743 means `fullSize` = 800
+      let fullSize = 100 * Math.ceil(this.requestArray.length / 100);
 
-        this.requestArray = response.data;
-      } catch (error) {
-        this.isCardLoading = false;
-
-        console.error(error);
-      }
+      // return the result
+      return [10, 20, 50, fullSize];
     },
 
     async getEmployees(companyId) {
-      this.isFilterLoading = true;
+      // this.isFilterLoading = true;
 
       try {
         const resp = await axios.get(
-          `http://127.0.0.1:8000/api/get-employees/${companyId}`
+          `http://localhost/portal_i/get_employees_aex.php?company_id=${companyId}`
         );
 
         if (resp.status === 200) {
-          this.isFilterLoading = false;
+          // this.isFilterLoading = false;
 
           // console.log(resp);
 
@@ -176,12 +187,11 @@ export default {
           this.employee = employeeName;
         }
       } catch (err) {
-        this.isFilterLoading = false;
+        // this.isFilterLoading = false;
 
         // Handle Error Here
         console.error(err);
         this.catchError(err);
-
       }
     },
 
@@ -191,37 +201,30 @@ export default {
       const bDateRange = !!this.dateRange[0];
       const bEmployee = !!this.selectedEmployee.code;
 
-      if (bEmployee === false && bDateRange === false) {
-        await this.getDtr();
+      const companyId = this.companyId;
+      const dateRange = bDateRange === true ? this.dateRange : false;
+      const employee = bEmployee === true ? this.selectedEmployee : false;
+
+      const fd = {
+        companyId: companyId,
+        dateRange: dateRange,
+        employee: employee,
+      };
+
+      try {
+        const resp = await axios.post(
+          "http://localhost/portal_i/post_filteredemployees_aex.php",
+          fd
+        );
+        this.requestArray = resp.data;
         this.isCardLoading = false;
         this.isFilterLoading = false;
-      } else {
-        const companyId = this.companyId;
-        const dateRange = bDateRange === true ? this.dateRange : false;
-        const employee = bEmployee === true ? this.selectedEmployee : false;
-
-        const fd = {
-          companyId: companyId,
-          dateRange: dateRange,
-          employee: employee,
-        };
-
-        try {
-          const resp = await axios.post(
-            "http://127.0.0.1:8000/api/post-filtered-attendance",
-            fd
-          );
-          
-          this.requestArray = resp.data;
-          this.isCardLoading = false;
-          this.isFilterLoading = false;
-        } catch (err) {
-          // Handle Error Here
-          console.error(err);
-          this.catchError(err);
-          this.isCardLoading = false;
-          this.isFilterLoading = false;
-        }
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+        this.catchError(err);
+        this.isCardLoading = false;
+        this.isFilterLoading = false;
       }
     },
 

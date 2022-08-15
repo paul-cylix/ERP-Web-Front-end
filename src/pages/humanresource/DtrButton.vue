@@ -69,23 +69,25 @@ export default {
       // const name = frmName+'-'+this.data.workflow; // inprogressbyId
 
       if (actionName === "approve") {
+
         await this.$store.dispatch("dtr/setLoading");
         const resp = await this.$store.dispatch("dtr/set", {
-          ...this.data,
+          data:this.data,
           setStatus: "Active",
         });
         await this.$store.dispatch("dtr/setLoading");
-        this.setToast(resp);
+        this.setToast(resp, 'Active');
+
       }
 
       if (actionName === "reject") {
         await this.$store.dispatch("dtr/setLoading");
         const resp = await this.$store.dispatch("dtr/set", {
-          ...this.data,
+          data:this.data,
           setStatus: "Reject",
         });
         await this.$store.dispatch("dtr/setLoading");
-        this.setToast(resp);
+        this.setToast(resp, 'Reject');
       }
 
       if (actionName === "edit") {
@@ -93,9 +95,9 @@ export default {
       }
     },
 
-    setToast(response) {
+    setToast(response,status) {
       if (response >= 200 && response <= 250) {
-        this.openToast("top-right", "success", "Attendance is now Active");
+        this.openToast("top-right", "success", `Attendance is now ${status}`);
       } else {
         this.openToast("top-right", "error", "Please Try Again Later!");
       }

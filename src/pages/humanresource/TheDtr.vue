@@ -77,9 +77,9 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-          <div class="overlay" v-show="isLoadingModal">
-            <i class="fas fa-2x fa-sync fa-spin"></i>
-          </div>
+            <div class="overlay" v-show="isLoadingModal">
+              <i class="fas fa-2x fa-sync fa-spin"></i>
+            </div>
             <h6 class="modal-title"><b>Update Attendance</b></h6>
             <button
               type="button"
@@ -102,8 +102,9 @@
                     valueType="format"
                     style="display: block; width: 100%; line-height: 20px border:red;"
                   ></date-picker>
-                  <small class="text-danger p-0 m-0"
-                  v-if="missingDate && attemptUpdate"
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingDate && attemptUpdate"
                     >Date is required!</small
                   >
                 </div>
@@ -114,14 +115,15 @@
                   <small><label for="dateNeeded">In</label></small>
                   <date-picker
                     v-model="in_am"
-                    :minute-step="5"
+                    :minute-step="1"
                     format="hh:mm A"
                     value-type="format"
                     type="time"
                     style="display: block; width: 100%; line-height: 20px"
                   ></date-picker>
-                  <small class="text-danger p-0 m-0"
-                  v-if="missingIn && attemptUpdate"
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingIn && attemptUpdate"
                     >In is required!</small
                   >
                 </div>
@@ -132,14 +134,15 @@
                   <small><label for="dateNeeded">Out</label></small>
                   <date-picker
                     v-model="out_pm"
-                    :minute-step="5"
+                    :minute-step="1"
                     format="hh:mm A"
                     value-type="format"
                     type="time"
                     style="display: block; width: 100%; line-height: 20px"
                   ></date-picker>
-                  <small class="text-danger p-0 m-0"
-                  v-if="missingOut && attemptUpdate"
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingOut && attemptUpdate"
                     >Out is required!</small
                   >
                 </div>
@@ -189,7 +192,7 @@ export default {
       modalData: {
         DepartmentName: null,
         EmployeeName: null,
-        Status: null,
+        status: null,
         dtr_date: null,
         id: null,
         in_am: null,
@@ -280,14 +283,14 @@ export default {
       return this.$store.getters["dtr/editableData"];
     },
 
-    missingDate(){
-      return (this.dtr_date === null) ? true : false;
+    missingDate() {
+      return this.dtr_date === null ? true : false;
     },
-    missingIn(){
-      return (this.in_am === null) ? true : false;
+    missingIn() {
+      return this.in_am === null ? true : false;
     },
-    missingOut(){
-      return (this.out_pm === null) ? true : false;
+    missingOut() {
+      return this.out_pm === null ? true : false;
     },
   },
 
@@ -331,19 +334,30 @@ export default {
         out_pm: this.out_pm,
       };
 
-      if(this.attemptUpdate === true && !this.missingDate && !this.missingIn && !this.missingOut){
+      if (
+        this.attemptUpdate === true &&
+        !this.missingDate &&
+        !this.missingIn &&
+        !this.missingOut
+      ) {
         await this.$store.dispatch("dtr/updateListDtr", editedData);
-        this.openToast("top-right", "success", "Attendance updated successfully");
+        this.openToast(
+          "top-right",
+          "success",
+          "Attendance updated successfully"
+        );
         document.getElementById("modalCloseButton").click();
         this.attemptUpdate = false;
       } else {
-        this.openToast("top-right", "error", "Please complete required fields!");
+        this.openToast(
+          "top-right",
+          "error",
+          "Please complete required fields!"
+        );
       }
-      
+
       this.isLoadingModal = false;
-
-
-    },    
+    },
 
     openToast(position, variant, message) {
       const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
@@ -355,29 +369,42 @@ export default {
       });
     },
 
-    setToast(response) {
+    setToast(response, status) {
       if (response >= 200 && response <= 250) {
-        this.openToast("top-right", "success", "Attendance is now Active");
+        this.openToast("top-right", "success", `Attendance is now ${status}`);
       } else {
         this.openToast("top-right", "error", "Please Try Again Later!");
       }
     },
 
     async setSelected(status) {
-      this.isLoading = true;
-      const statusArgs = status === true ? "Active" : "Reject";
+      const selectedData = this.$store.getters["dtr/getSelectedDtr"];
 
-      const response = await this.$store.dispatch("dtr/setSelected", {
-        setStatus: statusArgs,
-      });
-      this.isLoading = false;
-      this.setToast(response);
-      this.getDtr();
+      if (selectedData.length) {
+        this.isLoading = true;
+        const statusArgs = status === true ? "Active" : "Reject";
+
+        const response = await this.$store.dispatch("dtr/setSelected", {
+          setStatus: statusArgs,
+        });
+        this.isLoading = false;
+        this.setToast(response, statusArgs);
+        await this.getDtr();
+        this.clearSelectedData();
+      } else {
+        this.openToast("top-right", "error", "Attendance is not Selected!");
+      }
+    },
+
+    clearSelectedData() {
+      this.$store.dispatch("dtr/clearSelectedData");
     },
 
     async getDtr() {
+      this.isLoading = true;
       const id = localStorage.getItem("id");
-      await this.$store.dispatch("dtr/getDtr",id);
+      await this.$store.dispatch("dtr/getDtr", id);
+      this.isLoading = false;
     },
 
     async deleteSelectedDtr(rowData) {
@@ -402,8 +429,8 @@ export default {
     },
   },
 
-  async created() {
-    await this.getDtr();
+  created() {
+    this.getDtr();
   },
 };
 </script>
