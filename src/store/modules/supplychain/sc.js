@@ -127,12 +127,17 @@ export default {
   },
 
   actions: {
+    async deleteSupplies(context){
+      context.commit("deleteSupplies")
+    },
+
     async fetchSupplies(context, payload) {
       const fd = new FormData();
       const pageNumber = payload.page_number;
       // console.error(payload.first_attempt);
+      const companyId = localStorage.getItem("companyId");
 
-      fd.append("companyId", 1);
+      fd.append("companyId", companyId);
       fd.append("filtered_data", JSON.stringify(payload.filtered_data));
 
       try {
@@ -149,17 +154,21 @@ export default {
             } else {
               context.commit("fetchSupplies", supplies);
             }
-            return {first_attempt:payload.first_attempt, is_available: !!resp.data.data.length}
+            return {
+              first_attempt: payload.first_attempt,
+              is_available: !!resp.data.data.length,
+            };
 
             // return !!resp.data.data.length;
           } else {
-            if(payload.first_attempt){
+            if (payload.first_attempt) {
               context.commit("deleteSupplies");
             }
 
-            
-
-            return {first_attempt:payload.first_attempt, is_available: !!resp.data.data.length}
+            return {
+              first_attempt: payload.first_attempt,
+              is_available: !!resp.data.data.length,
+            };
             // return !!resp.data.data.length;
           }
         }
@@ -237,7 +246,7 @@ export default {
         );
         if (resp.status >= 200 && resp.status <= 399) {
           if (resp.data.length) {
-            console.log(resp.data)
+            console.log(resp.data);
             context.commit("fetchCart", resp.data);
             return !!resp.data.length;
           } else {
@@ -309,6 +318,7 @@ export default {
         const resp = await axios.get(`http://127.0.0.1:8000/api/get-uom`);
         if (resp.status >= 200 && resp.status <= 399) {
           context.commit("fetchUom", resp.data);
+          console.log(resp.data);
         }
       } catch (err) {
         // Handle Error Here

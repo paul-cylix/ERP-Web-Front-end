@@ -15,7 +15,7 @@
           </div>
           <div class="d-flex justify-content-center align-items-center">
             <img
-              src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1610416577-vans-1610416571.jpg"
+              src="../../../../../public/dist/img/default-image.png"
               style="height: 150px; width: 120px; object-fit: contain"
               alt=""
               srcset=""
@@ -58,8 +58,14 @@
           >
           </model-list-select> -->
 
-          <select class="form-control form-control-sm" v-model="selectedUom" @change="changeUom">
-            <option :value="item" v-for="item in uom" :key="item.uom_id">{{ item.uom_name }}</option>
+          <select
+            class="form-control form-control-sm"
+            v-model="selectedUom"
+            @change="changeUom"
+          >
+            <option :value="item" v-for="item in uom" :key="item.uom_id">
+              {{ item.uom_name }}
+            </option>
           </select>
         </div>
 
@@ -155,13 +161,20 @@ export default {
 
   watch: {
     selected_uom() {
-      this.selectedUom = {uom_id:this.$props.cart_uom_id, uom_name:this.$props.cart_uom_name}
-    }
+      this.selectedUom = {
+        uom_id: this.$props.cart_uom_id,
+        uom_name: this.$props.cart_uom_name,
+      };
+    },
   },
 
   methods: {
-    changeUom(){
-      const newUom = {cart_id: this.cart_id, uom_id:this.selectedUom.uom_id , uom_name:this.selectedUom.uom_name ,}
+    changeUom() {
+      const newUom = {
+        cart_id: this.cart_id,
+        uom_id: this.selectedUom.uom_id,
+        uom_name: this.selectedUom.uom_name,
+      };
       this.$emit("change-uom", newUom);
     },
 

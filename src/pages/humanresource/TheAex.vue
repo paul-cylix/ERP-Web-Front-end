@@ -168,7 +168,7 @@ export default {
 
       try {
         const resp = await axios.get(
-          `http://localhost/portal_i/get_employees_aex.php?company_id=${companyId}`
+          `http://127.0.0.1:8000/api/get-employees/${companyId}`
         );
 
         if (resp.status === 200) {
@@ -211,9 +211,10 @@ export default {
         employee: employee,
       };
 
+
       try {
         const resp = await axios.post(
-          "http://localhost/portal_i/post_filteredemployees_aex.php",
+          "http://portal.cylix.ph/ctiportal/public/api/post-aex-filter",
           fd
         );
         this.requestArray = resp.data;

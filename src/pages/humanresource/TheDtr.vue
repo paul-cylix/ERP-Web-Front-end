@@ -74,7 +74,7 @@
       data-backdrop="static"
       data-keyboard="false"
     >
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <div class="overlay" v-show="isLoadingModal">
@@ -113,14 +113,24 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <small><label for="dateNeeded">In</label></small>
-                  <date-picker
+                  <!-- <date-picker
                     v-model="in_am"
                     :minute-step="1"
                     format="hh:mm A"
                     value-type="format"
                     type="time"
                     style="display: block; width: 100%; line-height: 20px"
+                  ></date-picker> -->
+                  <date-picker
+                    v-model="in_am"
+                    :minute-step="1"
+                    format="YYYY-MM-DD hh:mm A"
+                    value-type="format"
+                    type="datetime"
+                    style="display: block; width: 100%; line-height: 20px"
                   ></date-picker>
+
+
                   <small
                     class="text-danger p-0 m-0"
                     v-if="missingIn && attemptUpdate"
@@ -132,14 +142,24 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <small><label for="dateNeeded">Out</label></small>
-                  <date-picker
+                  <!-- <date-picker
                     v-model="out_pm"
                     :minute-step="1"
                     format="hh:mm A"
                     value-type="format"
                     type="time"
                     style="display: block; width: 100%; line-height: 20px"
+                  ></date-picker> -->
+                  <!-- 2022-08-17 12:03 AM -->
+                  <date-picker
+                    v-model="out_pm"
+                    :minute-step="1"
+                    format="YYYY-MM-DD hh:mm A"
+                    value-type="format"
+                    type="datetime"
+                    style="display: block; width: 100%; line-height: 20px"
                   ></date-picker>
+
                   <small
                     class="text-danger p-0 m-0"
                     v-if="missingOut && attemptUpdate"

@@ -116,6 +116,10 @@ import SofWithdrawn from "./pages/workflow/withdrawn/SofWithdrawn.vue";
 import SofRejected from "./pages/workflow/rejected/SofRejected.vue";
 
 
+
+import MrfInprogress from "./pages/workflow/inprogress/MrfInprogress.vue";
+
+
 import TheMrf from "./pages/supplychain/TheMrf.vue";
 import TheCart from "./pages/supplychain/TheCart.vue";
 import TheMr from "./pages/supplychain/TheMr.vue";
@@ -146,6 +150,11 @@ const routes = [
       {
         path: "/dashboard",
         component: DashboardContent,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: "/mrf-test-inp",
+        component: MrfInprogress,
         meta: { requiresAuth: true },
       },
       {
@@ -458,6 +467,14 @@ const routes = [
             path: ":id",
             name: "sales_order_frm-inprogress",
             component: SofInprogress,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          // MRF
+          {
+            path: ":id",
+            name: "test-inprogress",
+            component: MrfInprogress,
             props: true,
             meta: { requiresAuth: true },
           },

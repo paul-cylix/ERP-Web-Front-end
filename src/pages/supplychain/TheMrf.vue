@@ -76,10 +76,15 @@
         class="main-sidebar sidebar-dark-primary elevation-4 position-fixed"
       >
         <!-- Brand Logo -->
-        <div class="brand-link">
-          <!-- <img src="../../dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8"> -->
-          <span class="brand-text font-weight-light">Filter</span>
-        </div>
+        <router-link to="/dashboard" class="brand-link">
+          <img src="../../../public/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+          <!-- <span class="brand-text font-weight-light">Filter</span> -->
+                <span class="brand-text font-weight-light h6"
+                  >ERP Procurement System</span
+                >
+
+          
+        </router-link>
 
         <!-- Sidebar -->
         <div class="sidebar">
@@ -315,9 +320,10 @@ export default {
 
   async created() {
     this.isSuppliesLoading = true;
-    await this.fetchSupplies(this.page++, false,{is_SearchSubmitted: this.isSearchSubmitted, actual_search: this.actualSearch, is_filtered: this.isFiltered, filtered_data: this.filteredData});
+    await this.$store.dispatch("sc/deleteSupplies");
     await this.fetchCategory();
     await this.fetchSubCategory();
+    await this.fetchSupplies(this.page++, false,{is_SearchSubmitted: this.isSearchSubmitted, actual_search: this.actualSearch, is_filtered: this.isFiltered, filtered_data: this.filteredData});
     await this.fetchUom();
     await this.fetchBrand();
     this.isSuppliesLoading = false;

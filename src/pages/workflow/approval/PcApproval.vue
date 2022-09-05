@@ -536,7 +536,12 @@
                       >
                     </div>
                     <div>
-                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                      <a
+                        class="btn btn-info btn-sm"
+                        :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`"
+                        target="_blank"
+                        >Download</a
+                      >
                     </div>
 
                     <div class="ml-1" v-if="isApproval">
@@ -558,7 +563,12 @@
                     </div>
 
                     <div class="ml-1">
-                      <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                      <a
+                        class="btn btn-secondary btn-sm"
+                        :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`"
+                        target="_blank"
+                        >Preview</a
+                      >
                     </div>
                   </div>
                 </div>
@@ -573,7 +583,9 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span><label>{{ file.name }}</label></span>
+                      <span
+                        ><label>{{ file.name }}</label></span
+                      >
                     </div>
                     <div>
                       <button
@@ -850,25 +862,48 @@
                 <tbody>
                   <tr v-for="file in selectedFile" :key="file.name">
                     <td>{{ file.filename }}</td>
-                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
-                      <aside class="d-flex align-items-center justify-content-end">
-                        <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                        
-                        <button class="btn btn-danger btn-sm ml-1" v-if="isApproval"
-                        @click="
-                          removeAttachedFile(
-                            index,
-                            file.id,
-                            file.filename,
-                            file.filepath
-                          )
-                        "
-                        title="Remove file"
+                    <td
+                      class="
+                        pl-2
+                        pr-2
+                        text-center
+                        d-flex
+                        justify-content-center
+                        align-items-center
+                      "
+                    >
+                      <aside
+                        class="d-flex align-items-center justify-content-end"
                       >
-                        Remove
-                      </button>
-                        
-                        <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                        <a
+                          class="btn btn-info btn-sm"
+                          :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`"
+                          target="_blank"
+                          >Download</a
+                        >
+
+                        <button
+                          class="btn btn-danger btn-sm ml-1"
+                          v-if="isApproval"
+                          @click="
+                            removeAttachedFile(
+                              index,
+                              file.id,
+                              file.filename,
+                              file.filepath
+                            )
+                          "
+                          title="Remove file"
+                        >
+                          Remove
+                        </button>
+
+                        <a
+                          class="btn btn-secondary btn-sm ml-1"
+                          :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`"
+                          target="_blank"
+                          >Preview</a
+                        >
                       </aside>
                     </td>
                   </tr>
@@ -876,23 +911,33 @@
                   <!-- Newly Added -->
                   <tr v-for="file in selectedFileNew" :key="file.index">
                     <td>{{ file.name }}</td>
-                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
-                      <aside class="d-flex align-items-center justify-content-end">
-                      
-                      <button
-                        class="btn btn-danger btn-sm"
-                        type="button"
-                        @click="removeFileNew(selectedFileNew.indexOf(file))"
-                        title="Remove file"
+                    <td
+                      class="
+                        pl-2
+                        pr-2
+                        text-center
+                        d-flex
+                        justify-content-center
+                        align-items-center
+                      "
+                    >
+                      <aside
+                        class="d-flex align-items-center justify-content-end"
                       >
-                        Remove
-                      </button>
-                      <button
-                        @click="filePreviewNew(selectedFileNew.indexOf(file))"
-                        class="btn btn-secondary btn-sm ml-1"
-                      >
-                        Preview
-                      </button>
+                        <button
+                          class="btn btn-danger btn-sm"
+                          type="button"
+                          @click="removeFileNew(selectedFileNew.indexOf(file))"
+                          title="Remove file"
+                        >
+                          Remove
+                        </button>
+                        <button
+                          @click="filePreviewNew(selectedFileNew.indexOf(file))"
+                          class="btn btn-secondary btn-sm ml-1"
+                        >
+                          Preview
+                        </button>
                       </aside>
                     </td>
                   </tr>
@@ -1362,19 +1407,25 @@
 
         <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
-        
-              <button
-                v-show="counter"
-                type="button"
-                @click="previous()"
-                class="btn btn-secondary mr-2 btn-sm"
-              >
-                Previous
-              </button>
-       
+          <aside
+            class="
+              col-lg-6
+              d-flex
+              justify-content-start
+              align-items-center
+              flex-nowrap
+            "
+          >
+            <button
+              v-show="counter"
+              type="button"
+              @click="previous()"
+              class="btn btn-secondary mr-2 btn-sm"
+            >
+              Previous
+            </button>
 
-            <aside  v-if="this.counter <= isAttachments">
+            <aside v-if="this.counter <= isAttachments">
               <button
                 v-if="this.isLiquidation"
                 type="button"
@@ -1395,52 +1446,52 @@
             </aside>
           </aside>
 
-          <aside class="col-lg-6 d-flex align-items-center justify-content-end flex-nowrap">
- 
-              <button
-                type="button"
-                class="btn btn-success ml-2 btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Approve')"
-              >
-                Approve
-              </button>
-            
+          <aside
+            class="
+              col-lg-6
+              d-flex
+              align-items-center
+              justify-content-end
+              flex-nowrap
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-success ml-2 btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Approve')"
+            >
+              Approve
+            </button>
 
- 
-              <button
-                type="button"
-                class="btn btn-danger ml-2 btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Reject')"
-              >
-                Reject
-              </button>
-            
+            <button
+              type="button"
+              class="btn btn-danger ml-2 btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Reject')"
+            >
+              Reject
+            </button>
 
- 
-              <button
-                type="button"
-                class="btn btn-warning ml-2 btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Clarify')"
-              >
-                Clarify
-              </button>
-            
+            <button
+              type="button"
+              class="btn btn-warning ml-2 btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Clarify')"
+            >
+              Clarify
+            </button>
 
- 
-              <button
-                type="button"
-                class="btn btn-danger ml-2 btn-sm"
-                @click="close()"
-              >
-                Close
-              </button>
-            
+            <button
+              type="button"
+              class="btn btn-danger ml-2 btn-sm"
+              @click="close()"
+            >
+              Close
+            </button>
           </aside>
         </div>
         <!-- / Buttons -->
@@ -1460,7 +1511,7 @@ export default {
     ModelListSelect,
   },
   async created() {
-          this.isLoading = true;
+    this.isLoading = true;
 
     // Request Details
     await this.getPcMain(this.processId);
@@ -1478,20 +1529,30 @@ export default {
       this.companyId,
       this.form
     );
-          this.isLoading = false;
-
+    this.isLoading = false;
   },
   watch: {
     //Navigate
     async $route(newRoute) {
       // this.todaysDate();
-      this.isLoading = true;    
-      this.remarks = '';
+      this.isLoading = true;
+      this.remarks = "";
       this.counter = 0;
       await this.getPcMain(this.$route.params.id);
-      await this.getInprogressId(this.$route.params.id, this.companyId, this.$route.params.frmName);
-      await this.getActualSign(this.$route.params.id, this.$route.params.frmName, this.companyId);
-      await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+      await this.getInprogressId(
+        this.$route.params.id,
+        this.companyId,
+        this.$route.params.frmName
+      );
+      await this.getActualSign(
+        this.$route.params.id,
+        this.$route.params.frmName,
+        this.companyId
+      );
+      await this.getAttachments(
+        this.$route.params.id,
+        this.$route.params.frmName
+      );
       await this.getBusinesses(this.companyId);
       await this.getPcExpense(this.$route.params.id);
       await this.getPcTranspo(this.$route.params.id);
@@ -1503,7 +1564,7 @@ export default {
         this.companyId,
         this.$route.params.frmName
       );
-      this.isLoading = false;   
+      this.isLoading = false;
       console.log(newRoute);
     },
 
@@ -1941,42 +2002,46 @@ export default {
       fd.append("transpoData", JSON.stringify(this.transpoSetup_Data));
 
       if (type === "Approve") {
-
         const validated = this.approveValidate();
-        console.warn(validated)
+        console.warn(validated);
         if (validated) {
-        try {
-          const resp = await axios.post(
-            "http://127.0.0.1:8000/api/approve-request",
-            fd
-          );
+          try {
+            const resp = await axios.post(
+              "http://127.0.0.1:8000/api/approve-request",
+              fd
+            );
 
-          this.isLoadingModal = false;
-          document.getElementById("modalCloseButton").click();
-          if (resp.status === 200) {
-            // console.log(resp.data);
-            this.openToast("top-right", "success", resp.data.message);
-            this.$router.replace("/approvals");
+            this.isLoadingModal = false;
+            document.getElementById("modalCloseButton").click();
+            if (resp.status === 200) {
+              // console.log(resp.data);
+              this.openToast("top-right", "success", resp.data.message);
+              this.$router.replace("/approvals");
+            }
+
+            if (resp.status === 202) {
+              // console.log(resp.data);
+              this.openToast("top-right", "error", resp.data.message);
+            }
+          } catch (err) {
+            // Handle Error Here
+            this.isLoadingModal = false;
+            this.openToast(
+              "top-right",
+              "error",
+              "Please contact the Administrator!"
+            );
+
+            console.error(err);
           }
-
-          if (resp.status === 202) {
-            // console.log(resp.data);
-            this.openToast("top-right", "error", resp.data.message);
-          }
-        } catch (err) {
-          // Handle Error Here
-          this.isLoadingModal = false;
-            this.openToast("top-right", "error", "Please contact the Administrator!");
-
-
-          console.error(err);
-        }
         } else {
           this.isLoadingModal = false;
-          this.openToast("top-right", "error", "Please complete all required fields!");
+          this.openToast(
+            "top-right",
+            "error",
+            "Please complete all required fields!"
+          );
         }
-
-
       }
       if (type === "Reject") {
         try {
@@ -2063,15 +2128,15 @@ export default {
       }
     },
 
-    approveValidate(){
+    approveValidate() {
       if (this.isApproval) {
         if (this.missingAttachments || this.missingExpenses) {
-          return false
+          return false;
         } else {
-          return true
+          return true;
         }
       } else {
-        return true
+        return true;
       }
     },
 
@@ -2175,9 +2240,10 @@ export default {
           const transpoSetup_Data = [];
           for (const key in resp.data) {
             const data = {
-              AMT_SPENT: parseFloat(
-                resp.data[key].AMT_SPENT
-              ).toLocaleString(undefined, { minimumFractionDigits: 2 }),
+              AMT_SPENT: parseFloat(resp.data[key].AMT_SPENT).toLocaleString(
+                undefined,
+                { minimumFractionDigits: 2 }
+              ),
               CLIENT_ID: resp.data[key].CLIENT_ID,
               CLIENT_NAME: resp.data[key].CLIENT_NAME,
               DEPT: resp.data[key].DEPT,
@@ -2367,22 +2433,22 @@ export default {
 
           if (resp.data[1].STATUS === "Completed") {
             this.isLiquidation = true;
-            console.log(this.isLiquidation)
+            console.log(this.isLiquidation);
           }
 
           if (resp.data[2].STATUS === "In Progress") {
             this.isApproval = true;
-            console.log(this.isApproval)
+            console.log(this.isApproval);
           }
 
-
-          
-          if (resp.data[1].STATUS === "Completed" && resp.data[2].STATUS === "In Progress") {
-            this.counter = 2
+          if (
+            resp.data[1].STATUS === "Completed" &&
+            resp.data[2].STATUS === "In Progress"
+          ) {
+            this.counter = 2;
           } else {
-            this.counter = 3
+            this.counter = 3;
           }
-
         }
       } catch (err) {
         // Handle Error Here
@@ -2438,7 +2504,7 @@ export default {
           date_: this.expenseType_Date,
         };
 
-        console.log(addData)
+        console.log(addData);
         this.expenseType_Data.push(addData);
         this.clear_expenseType();
         this.attemptXpInsert = false;
@@ -2759,18 +2825,17 @@ export default {
 
     // The Attachments
     preview(mimeType, imageBytes) {
-      if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
-      {
+      if (mimeType === "image/jpeg" || mimeType === "image/png") {
         var newTab = window.open();
         newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      } else if (mimeType === "application/pdf") {
+        let pdfWindow = window.open("#");
+        pdfWindow.document.write(
+          `<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +
+            encodeURI(imageBytes) +
+            "'></iframe>"
+        );
       }
-
-      else if (mimeType === 'application/pdf')
-      {
-        let pdfWindow = window.open('#')
-        pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
-      }
-    
     },
 
     // Add new files scripts

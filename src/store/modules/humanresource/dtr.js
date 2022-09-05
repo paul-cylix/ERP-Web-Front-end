@@ -137,12 +137,12 @@ export default {
       console.warn(id)
       try {
         const response = await axios.get(
-          `http://localhost/portal_i/get_users_dtr.php?logged_userid=${id}`
+          `http://portal.cylix.ph/ctiportal/public/api/get-dtr-logs/${id}`
         );
         // console.log(response);
 
         let payload = response.data;
-        // console.log(payload)
+        console.warn(payload)
         context.commit("getDtr", payload);
 
       } catch (error) {
@@ -172,7 +172,7 @@ export default {
 
       try {
         const resp = await axios.post(
-          "http://localhost/portal_i/post_approve_dtr.php",
+          "http://portal.cylix.ph/ctiportal/public/api/post-dtr-logs-approve",
           fd
         );
         console.log(resp.data)
@@ -194,7 +194,7 @@ export default {
 
       try {
         const resp = await axios.post(
-          "http://localhost/portal_i/post_approve_dtr.php",
+          "http://portal.cylix.ph/ctiportal/public/api/post-dtr-logs-approve",
           fd
         );
         console.log(resp.data)

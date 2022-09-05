@@ -333,25 +333,6 @@
                         ><label>{{ file.filename }}</label></span
                       >
                     </div>
-
-
-                    <!-- preview of pdf or image endpoint Jomel-->
-                    <!-- <div>
-                      <button @click="previewPDForImage(file.mimeType, file.filepath, file.filename)">Preview PDF or Image</button>
-                    </div> -->
-        
-
-                    <!-- Vue Working Code Scratch For preview and download of image and pdf -->
-                    <!-- <div>
-                      <a :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview Any Type of File</a>
-                    </div>
-
-                    <div>
-                      <a :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download Any Type of File</a>
-                    </div> -->
-
-
-
                     <!-- New Preview and Download using laravel filepath -->
                     <div>
                       <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
@@ -359,38 +340,6 @@
                     <div class="ml-1">
                       <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
                     </div>
-
-
-                    <!-- Old Preview and Download using image bytes -->
-                    <!-- <div>
-                      <button class="btn btn-info btn-sm" type="button">
-                        <a
-                          :download="file.filename"
-                          style="color: white"
-                          :href="
-                            'data:' +
-                            file.mimeType +
-                            ';base64,' +
-                            file.imageBytes
-                          "
-                          target="_blank"
-                          >Download</a
-                        >
-                      </button>
-                    </div>
-                    <div class="col-2">
-                      <button
-                        class="btn btn-secondary btn-sm"
-                        @click="preview(file.mimeType, file.imageBytes)"
-                      >
-                        Preview
-                      </button>
-                    </div> -->
-                    <!-- Old Preview and Download using image bytes -->
-
-
-
-
                   </div>
                 </div>
               </li>

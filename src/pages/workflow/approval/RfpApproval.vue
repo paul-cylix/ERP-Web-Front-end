@@ -1680,8 +1680,11 @@ export default {
       if (type === "SubmitInitiator") {
 
         
+        console.log(this.selectedFile.length );
+        console.log(this.selectedFileLiquidation.length);
+        console.log(this.liquidation.length);
 
-        if (this.selectedFile.length || this.selectedFileLiquidation.length && this.liquidation.length) {
+        if ((this.selectedFile.length || this.selectedFileLiquidation.length) && this.liquidation.length) {
         const fd = new FormData();
 
         for (let i = 0; i < this.selectedFileLiquidation.length; i++) {
@@ -1726,6 +1729,7 @@ export default {
           this.openToast("top-right", "error", err);
 
         }
+
         } else {
         this.isLoadingModal = false;
         this.addAlert("Failed", "Please complete required fields!", "false");

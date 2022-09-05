@@ -474,11 +474,13 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
+  async created() {
     // Request Details
-    this.getBusinessList(this.companyId);
-    this.getReportingManager(this.loggedUserId);
-    this.todaysDate();
+    this.isLoading = true;
+    await this.getBusinessList(this.companyId);
+    await this.getReportingManager(this.loggedUserId);
+    await this.todaysDate();
+    this.isLoading = false;
   },
   watch: {},
   computed: {

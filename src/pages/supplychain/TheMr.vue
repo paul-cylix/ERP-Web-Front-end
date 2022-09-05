@@ -1,5 +1,11 @@
 <template>
-  <body class="hold-transition sidebar-collapse layout-top-nav layout-fixed layout-navbar-fixed">
+  <body
+    class="
+      hold-transition
+      sidebar-collapse
+      layout-top-nav layout-fixed layout-navbar-fixed
+    "
+  >
     <div class="wrapper">
       <!-- Top Navbar -->
       <nav
@@ -33,6 +39,7 @@
       <!-- /.Top Navbar -->
 
       <div class="content-wrapper">
+        <!-- <loading-spinner></loading-spinner> -->
         <!-- Content Header (Page header) -->
         <div class="content-header">
           <div class="container">
@@ -111,7 +118,7 @@
                 <div class="card-body card-split p2">
                   <div class="d-flex justify-content-center align-items-center">
                     <img
-                      src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1610416577-vans-1610416571.jpg"
+                      src="../../../public/dist/img/default-image.png"
                       style="height: 150px; width: 120px; object-fit: contain"
                       alt=""
                       srcset=""
@@ -129,8 +136,12 @@
                         <li>
                           Item Codes:<span>{{ cart.item_code }}</span>
                         </li>
-                        <li>Category:<span>{{ cart.type }}</span></li>
-                        <li>Sub Category:<span>{{ cart.group_description }}</span></li>
+                        <li>
+                          Category:<span>{{ cart.type }}</span>
+                        </li>
+                        <li>
+                          Sub Category:<span>{{ cart.group_description }}</span>
+                        </li>
                         <li>
                           Brand:<span>{{ cart.brand }}</span>
                         </li>
@@ -163,7 +174,6 @@
               <div class="card-body">
                 <!-- Request Form -->
                 <aside v-if="counter === 1">
-                
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
@@ -210,7 +220,11 @@
                   <div class="row" v-if="isSuppliesRequestInternal">
                     <div class="col-md-12">
                       <div class="form-group">
-                        <small><label for="clientName">Type of Supplies Request Internal </label></small>
+                        <small
+                          ><label for="clientName"
+                            >Type of Supplies Request Internal
+                          </label></small
+                        >
                         <model-list-select
                           :list="processTypeList"
                           v-model="processType"
@@ -229,12 +243,21 @@
                   </div>
 
                   <div class="row">
-
                     <!-- if selected class is MRF  -->
-                    <div class="col-md-3" >
+                    <div class="col-md-3">
                       <div class="form-group">
-                        <small><label for="reference">{{ referenceNumber }} Number</label></small>
-                        <input type="text" class="form-control form-control-sm py-3" id="reference" disabled :value="referenceNumber+ '-' +todaysYear"/>
+                        <small
+                          ><label for="reference"
+                            >{{ referenceNumber }} Number</label
+                          ></small
+                        >
+                        <input
+                          type="text"
+                          class="form-control form-control-sm py-3"
+                          id="reference"
+                          disabled
+                          :value="referenceNumber + '-' + todaysYear"
+                        />
                       </div>
                     </div>
 
@@ -424,11 +447,14 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body p-0">
+                  <card-spinner :show="isPageLoading"></card-spinner>
                   <table class="table table-sm table-hover">
                     <tbody>
                       <tr>
                         <td>MRF Number</td>
-                        <td style="width: 70%">{{ referenceNumber+ '-' + todaysYear }}</td>
+                        <td style="width: 70%">
+                          {{ referenceNumber + "-" + todaysYear }}
+                        </td>
                       </tr>
                       <tr>
                         <td>Department</td>
@@ -501,6 +527,7 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body anyClass scroll-bar">
+                  <card-spinner :show="isPageLoading"></card-spinner>
                   <!-- Checkout list -->
                   <!-- Request Details -->
                   <!-- Checkout loop -->
@@ -510,7 +537,7 @@
                         class="d-flex justify-content-center align-items-center"
                       >
                         <img
-                          src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1610416577-vans-1610416571.jpg"
+                          src="../../../public/dist/img/default-image.png"
                           style="
                             height: 150px;
                             width: 120px;
@@ -592,6 +619,7 @@
                 v-show="counter"
                 type="button"
                 @click="counter--"
+                :disabled="isPageLoading"
                 class="btn btn-secondary btn-sm"
               >
                 <i class="fas fa-arrow-left mr-2"></i>
@@ -611,6 +639,7 @@
               <button
                 v-else
                 type="button"
+                :disabled="isPageLoading"
                 class="btn ml-1 btn-primary btn-sm"
                 @click="purchase()"
               >
@@ -648,16 +677,19 @@ export default {
     ControlSidebar,
     MainFooter,
   },
-  created() {
-    this.carts();
-    this.getReportingManager(this.loggedUserId);
-    this.todaysDate();
-    this.getProjects();
+  async created() {
+    this.isLoading = true;
+    await this.carts();
+    await this.getReportingManager(this.loggedUserId);
+    await this.todaysDate();
+    await this.getProjects();
+    this.isLoading = false;
   },
   watch: {
     TypeSelected(newValue) {
-      if(newValue.name == 'Supplies Request Internal') return this.isSuppliesRequestInternal = true
-      this.isSuppliesRequestInternal = false
+      if (newValue.name == "Supplies Request Internal")
+        return (this.isSuppliesRequestInternal = true);
+      this.isSuppliesRequestInternal = false;
     },
     classSelected(newValue) {
       if (!!newValue.code) {
@@ -667,32 +699,87 @@ export default {
 
           if (newValue.code === 1) {
             this.TypeList = [
-              { code: 1, name: "Material Request Project", type: "Project", process_type: "Sales Order" },
-              { code: 2, name: "Material Request Delivery", type: "Delivery", process_type: "Sales Order" },
-              { code: 3, name: "Material Request Demo", type: "Demo", process_type: "Sales Order" },
-              { code: 4, name: "Material Request POC", type: "POC", process_type: "Sales Order" },
+              {
+                code: 1,
+                name: "Material Request Project",
+                type: "Project",
+                process_type: "Sales Order",
+              },
+              {
+                code: 2,
+                name: "Material Request Delivery",
+                type: "Delivery",
+                process_type: "Sales Order",
+              },
+              {
+                code: 3,
+                name: "Material Request Demo",
+                type: "Demo",
+                process_type: "Sales Order",
+              },
+              {
+                code: 4,
+                name: "Material Request POC",
+                type: "POC",
+                process_type: "Sales Order",
+              },
             ];
-            this.referenceNumber = 'MRF'
+            this.referenceNumber = "MRF";
           } else if (newValue.code === 2) {
             this.TypeList = [
-              { code: 5, name: "Asset Request Project", type: "Project", process_type: "Sales Order" },
-              { code: 6, name: "Asset Request Deliver", type: "Deliver", process_type: "Sales Order" },
-              { code: 7, name: "Asset Request Demo", type: "Demo", process_type: "Sales Order" },
-              { code: 8, name: "Asset Request POC", type: "POC", process_type: "Sales Order" },
-              { code: 9, name: "Asset Request Internal", type: "Stocking", process_type: "Internal Process" },
+              {
+                code: 5,
+                name: "Asset Request Project",
+                type: "Project",
+                process_type: "Sales Order",
+              },
+              {
+                code: 6,
+                name: "Asset Request Deliver",
+                type: "Deliver",
+                process_type: "Sales Order",
+              },
+              {
+                code: 7,
+                name: "Asset Request Demo",
+                type: "Demo",
+                process_type: "Sales Order",
+              },
+              {
+                code: 8,
+                name: "Asset Request POC",
+                type: "POC",
+                process_type: "Sales Order",
+              },
+              {
+                code: 9,
+                name: "Asset Request Internal",
+                type: "Stocking",
+                process_type: "Internal Process",
+              },
             ];
-            this.referenceNumber = 'ARF'
+            this.referenceNumber = "ARF";
           } else if (newValue.code === 3) {
             this.TypeList = [
-              { code: 10, name: "Supplies Request Project", type: "Project", process_type: "Sales Order" },
-              { code: 11, name: "Supplies Request Internal", type: "Stocking", process_type: "" },
+              {
+                code: 10,
+                name: "Supplies Request Project",
+                type: "Project",
+                process_type: "Sales Order",
+              },
+              {
+                code: 11,
+                name: "Supplies Request Internal",
+                type: "Stocking",
+                process_type: "",
+              },
             ];
-            this.referenceNumber = 'SURF'
+            this.referenceNumber = "SURF";
           }
         } else {
           this.TypeSelected = {};
           this.isTypeSelected = false;
-          this.referenceNumber = 'RMA'
+          this.referenceNumber = "RMA";
         }
       } else {
         this.TypeSelected = {};
@@ -781,8 +868,9 @@ export default {
     missingProcessType() {
       // if (this.remarks === undefined || this.remarks == "") return true;
       // return false;
-      if(this.isSuppliesRequestInternal == true && this.processType == "" ) return true
-      return false
+      if (this.isSuppliesRequestInternal == true && this.processType == "")
+        return true;
+      return false;
     },
     todaysYear() {
       const today = new Date();
@@ -804,25 +892,25 @@ export default {
       project: [],
       costCenter: {},
       classSelected: {},
-      isSuppliesRequestInternal : false,
+      isSuppliesRequestInternal: false,
       TypeSelected: {},
       TypeList: [],
       isTypeSelected: false,
-      processType: '',
+      processType: "",
       counter: 0,
       attemptNext: false,
       isLoading: false,
       cartList: [],
-      referenceNumber : 'MRF',
+      referenceNumber: "MRF",
       classList: [
         { code: 1, name: "Material Request" },
         { code: 2, name: "Asset Request" },
         { code: 3, name: "Supplies Request" },
         { code: 4, name: "RMA Request" },
       ],
-      processTypeList : [
-        { code: 1, name: "Warehouse Supplies"},
-        { code: 2, name: "Office Supplies"},
+      processTypeList: [
+        { code: 1, name: "Warehouse Supplies" },
+        { code: 2, name: "Office Supplies" },
       ],
 
       // Logged User Data
@@ -835,6 +923,8 @@ export default {
       loggedUserPosition: localStorage.getItem("positionName"),
       companyId: localStorage.getItem("companyId"),
       companyName: localStorage.getItem("companyName"),
+
+      isPageLoading: false,
     };
   },
 
@@ -862,7 +952,7 @@ export default {
           !this.missingClass &&
           !this.missingType &&
           !this.missingRemarks &&
-          !this.missingProcessType 
+          !this.missingProcessType
         ) {
           this.counter++;
         }
@@ -905,9 +995,9 @@ export default {
 
     async getProjects() {
       this.isLoading = true;
-
+      const compid = this.companyId;
       const response = await fetch(
-        "http://127.0.0.1:8000/api/general-projects",
+        `http://127.0.0.1:8000/api/general-getprojects/${compid}`,
         {
           method: "GET",
           headers: {
@@ -1000,46 +1090,58 @@ export default {
     },
 
     async purchase() {
-      this.processType = this.processType == 1 ? 'Warehouse Supplies' : 'Office Supplies'
-      const data = {
-        "requisition_no" : this.referenceNumber+ '/' +this.todaysYear,
-        "trans_type" : this.referenceNumber,
-        "delivery_date" : this.actualDeliveryDate,
-        "planned_delivery_date" : this.plannedDeliveryDate,
-        "requested_date" : this.requestedDate,
-        "remarks" : this.remarks,
-        "userid" : this.loggedUserId,
-        "clientid" : this.clientId,
-        "costid" : this.costCenter.code,
-        "costname" : this.costCenter.name,
-        "clientname" : this.clientName,
-        "short_text" : this.mrfShortText,
-        "companyId" : this.companyId,
-        "req_person_id" : this.employeeId,
-        "rmid" : this.reportingManagerItem.code,
-        "type" : this.TypeSelected.type,
-        "procss_type" : this.TypeSelected.process_type == "" ? this.processType : this.TypeSelected.process_type
-      }
+      this.isPageLoading = true;
 
-      // console.log(data);
+      this.processType =
+        this.processType == 1 ? "Warehouse Supplies" : "Office Supplies";
+      const data = {
+        requisition_no: this.referenceNumber + "/" + this.todaysYear,
+        trans_type: this.referenceNumber,
+        delivery_date: this.actualDeliveryDate,
+        planned_delivery_date: this.plannedDeliveryDate,
+        requested_date: this.requestedDate,
+        remarks: this.remarks,
+        userid: this.loggedUserId,
+        clientid: this.clientId,
+        costid: this.costCenter.code,
+        costname: this.costCenter.name,
+        clientname: this.clientName,
+        short_text: this.mrfShortText,
+        companyId: this.companyId,
+        req_person_id: this.employeeId,
+        rmid: this.reportingManagerItem.code,
+        type: this.TypeSelected.type,
+        procss_type:
+          this.TypeSelected.process_type == ""
+            ? this.processType
+            : this.TypeSelected.process_type,
+      };
+
+      console.log(data);
 
       try {
-        const res = await axios.post("http://127.0.0.1:8000/api/cart-purchase", data);
+        const res = await axios.post(
+          "http://127.0.0.1:8000/api/cart-purchase",
+          data
+        );
+        this.isPageLoading = false;
         this.openToast("top-right", "success", res.data);
+        this.$router.replace("/inprogress");
 
-        this.actualDeliveryDate = "",
-        this.plannedDeliveryDate = "",
-        this.mrfShortText = "",
-        this.reportingManagerItem = {},
-        this.costCenter = {},
-        this.clientName = "",
-        this.classSelected = {},
-        this.TypeSelected = {}
-        this.remarks = ""
+        (this.actualDeliveryDate = ""),
+          (this.plannedDeliveryDate = ""),
+          (this.mrfShortText = ""),
+          (this.reportingManagerItem = {}),
+          (this.costCenter = {}),
+          (this.clientName = ""),
+          (this.classSelected = {}),
+          (this.TypeSelected = {});
+        this.remarks = "";
         // console.log(res.data);
       } catch (err) {
         console.log(err);
-        this.openToast("top-right", "success", err);
+        this.isPageLoading = false;
+        this.openToast("top-right", "error", err);
       }
     },
     // Request Details
