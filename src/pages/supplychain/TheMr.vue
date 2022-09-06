@@ -131,13 +131,12 @@
                       class="d-flex justify-content-center align-items-center"
                     >
                       <img
-                        src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1610416577-vans-1610416571.jpg"
+                        src="./../../../public/dist/img/default-image.png"
                         style="
                           height: 150px;
                           width: 120px;
                           object-fit: contain;
-                        "
-                        alt="" srcset="" class="p-0 m-0"
+                        " alt="" srcset="" class="p-0 m-0"
                       />
                     </div>
 
@@ -529,6 +528,12 @@
 
             <!-- Request Details Review -->
             <div v-if="counter === 3">
+              <div class="custom-modal" v-show="isSpinner">
+                <div class="custom-modal-content">
+                  <loading-spinner></loading-spinner>
+                </div>
+              </div>
+
               <div class="card mt-4">
                 <div class="card-header">
                   <h3 class="card-title font-weight-bold">Request Details</h3>
@@ -631,7 +636,7 @@
                         class="d-flex justify-content-center align-items-center"
                       >
                         <img
-                          src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1610416577-vans-1610416571.jpg"
+                          src="./../../../public/dist/img/default-image.png"
                           style="
                             height: 150px;
                             width: 120px;
@@ -746,6 +751,7 @@
             >
               <!-- go to cart or other page -->
               <button
+                :disabled="isLoading"
                 v-if="counter == 0"
                 type="button"
                 class="btn btn-secondary btn-sm"
@@ -765,6 +771,7 @@
               </button>
 
               <button
+                :disabled="isLoading"
                 v-if="counter <= 2"
                 type="button"
                 @click="next()"
@@ -775,6 +782,7 @@
               </button>
 
               <button
+                :disabled="isSpinner"
                 v-else
                 type="button"
                 class="btn ml-1 btn-primary btn-sm"
@@ -963,6 +971,7 @@ export default {
   },
   data() {
     return {
+      isSpinner : false,
       reportingManager: [],
       reportingManagerItem: {},
       mrfShortText: "",
@@ -1270,6 +1279,7 @@ export default {
     },
 
     async purchase() {
+      this.isSpinner = true
       const fd = new FormData();
       let requisition_no = this.referenceNumber+ '/' +this.todaysYear
       let procss_type = this.TypeSelected.process_type == "" ? this.processType : this.TypeSelected.process_type
@@ -1317,9 +1327,11 @@ export default {
         this.remarks = ""
 
         this.$router.push('/inprogress')
+        this.isSpinner = false
       } catch (err) {
         console.log(err);
         this.openToast("top-right", "error", err);
+        this.isSpinner = false
       }
     },
     // Request Details
@@ -1526,4 +1538,22 @@ export default {
   color: black;
   padding-left: 8px;
 }
+.custom-modal {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+  }
+  .custom-modal-content {
+    margin: 20% auto;
+    padding-left: 15px;
+    padding-right: 15px;
+    width: 25%;
+    width: 100px;
+    height: 100px;
+  }
 </style>
