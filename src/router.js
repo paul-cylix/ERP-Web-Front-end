@@ -473,7 +473,7 @@ const routes = [
           // MRF
           {
             path: ":id",
-            name: "test-inprogress",
+            name: "Asset Request Delivery-inprogress",
             component: MrfInprogress,
             props: true,
             meta: { requiresAuth: true },
