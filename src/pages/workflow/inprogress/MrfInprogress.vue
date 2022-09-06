@@ -256,55 +256,55 @@
               <tbody>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">MRF Number</td>
-                  <td class="col-md-9 px-3">b</td>
+                  <td class="col-md-9 px-3">{{mrf_number}}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Department</td>
-                  <td class="col-md-9 px-3">b</td>
+                  <td class="col-md-9 px-3">{{department}}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Full Name</td>
-                  <td class="col-md-9 px-3">b</td>
+                  <td class="col-md-9 px-3">{{full_name}}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Reporting Manager</td>
-                  <td class="col-md-9 px-3">b</td>
+                  <td class="col-md-9 px-3">{{reporting_manager}}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">MRF Short Text</td>
-                  <td class="col-md-9 px-3">b</td>
+                  <td class="col-md-9 px-3">{{mrf_short_text}}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Date Requested</td>
-                  <td class="col-md-9 px-3">b</td>
+                  <td class="col-md-9 px-3">{{date_requested}}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Planned Delivery Date</td>
-                  <td class="col-md-9 px-3">b</td>
+                  <td class="col-md-9 px-3">{{planned_delivery_date}}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Actual Delivery Date</td>
-                  <td class="col-md-9 px-3">b</td>
+                  <td class="col-md-9 px-3">{{actual_delivery_date}}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Cost Center</td>
-                  <td class="col-md-9 px-3">b</td>
+                  <td class="col-md-9 px-3">{{cost_center}}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Client Name</td>
-                  <td class="col-md-9 px-3">b</td>
+                  <td class="col-md-9 px-3">{{client_name}}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Materials Request Class</td>
-                  <td class="col-md-9 px-3">b</td>
+                  <td class="col-md-9 px-3">{{materials_request_class}}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Materials Request Type</td>
-                  <td class="col-md-9 px-3">b</td>
+                  <td class="col-md-9 px-3">{{materials_request_type}}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Remarks</td>
-                  <td class="col-md-9 px-3">b</td>
+                  <td class="col-md-9 px-3">{{remarks}}</td>
                 </tr>
               </tbody>
             </table>
@@ -339,8 +339,8 @@
                 </tr>
               </thead>
               <tbody>
-                <tr class="row p-0 m-0">
-                  <td class="col-md-9 px-3">samp</td>
+                <tr class="row p-0 m-0" v-for="(file) in selectedFileSOF" :key="file.id">
+                  <td class="col-md-9 px-3">{{file.filename}}</td>
                   <td
                     class="
                       col-md-3
@@ -351,8 +351,31 @@
                       justify-content-center
                       align-items-center
                     "
-                  ></td>
+                  >
+                    <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                    <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                  </td>
                 </tr>
+                <tr class="row p-0 m-0" v-for="(file) in selectedFileMRF" :key="file.id">
+                  <td class="col-md-9 px-3">{{file.filename}}</td>
+                  <td
+                    class="
+                      col-md-3
+                      pl-2
+                      pr-2
+                      text-center
+                      d-flex
+                      justify-content-center
+                      align-items-center
+                    "
+                  >
+                    <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                    <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                  </td>
+                </tr>
+
+
+
               </tbody>
             </table>
           </div>
@@ -378,13 +401,13 @@
             </div>
           </div>
           <!-- /.card-header -->
-          <div class="card-body anyClass scroll-bar">
+          <div class="card-body anyClass scroll-bar" >
             <!-- Checkout list -->
             <!-- Request Details -->
             <!-- Checkout loop -->
 
-            <div class="card">
-              <div class="row">
+            <div class="card py-0" v-for="(item) in requested_items" :key="item.req_dtls_id">
+              <div class="row py-2">
                 <div
                   class="
                     col-md-3
@@ -410,41 +433,22 @@
                 </div>
 
                 <div class="col-md-9 p-3">
-                  <strong class="ellipsis">Generic</strong>
-                  <p class="card--description ellipsis">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Odit aliquam ea perferendis, sed deserunt debitis adipisci
-                    tenetur consequuntur reprehenderit ratione dolore saepe quo
-                    eos vel iure corrupti ex commodi dolores numquam amet
-                    exercitationem quas aspernatur Lorem ipsum dolor sit amet,
-                    consectetur adipisicing elit. Rerum iusto animi doloribus
-                    nobis doloremque dolore excepturi odio eum. Nostrum
-                    asperiores, ea accusantium natus quia laudantium aperiam
-                    maiores velit necessitatibus, itaque nulla quod ab commodi
-                    praesentium cum alias doloribus consequuntur facilis quo? In
-                    eum perspiciatis ducimus, molestias veritatis sed commodi,
-                    nostrum facere dolores necessitatibus sequi non suscipit
-                    praesentium voluptas facilis illo tempore dignissimos? Cum
-                    repudiandae, est ipsum possimus consequatur veniam esse
-                    ratione debitis soluta voluptatem? Placeat, maxime hic!
-                    Totam officia pariatur eos quasi nesciunt alias cum sint
-                    nemo! Id, maiores a. Rerum eligendi porro delectus
-                    perspiciatis consequatur dolore tempore enim dolorem.
-                  </p>
+                  <strong class="ellipsis">{{ item.description }}</strong>
+                  <p class="card--description ellipsis">{{ item.specification }}</p>
                   <ul class="card--details">
-                    <li><span>Item Code:</span></li>
-                    <li><span>Brand:</span></li>
-                    <li><span>Model:</span></li>
-                    <li><span>Category:</span></li>
-                    <li><span>UoM:</span></li>
-                    <li><span>SKU:</span></li>
-                    <li><span>On Hand:</span></li>
-                    <li><span>Order Qty:</span></li>
+                    <li><span class="light">Item Code:</span><span class="dark">{{item.item_code}}</span></li>
+                    <li><span class="light">UoM:</span><span class="dark"></span>{{item.uom}}</li>
+                    <li><span class="light">Category:</span><span class="dark">{{item.category_name}}</span></li>
+                    <li><span class="light">SKU:</span><span class="dark">{{item.sku}}</span></li>
+                    <li><span class="light">Sub Category:</span><span class="dark">{{item.sub_category_name}}</span></li>
+                    <li><span class="light">Order Qty:</span><span class="dark">{{item.order_qty}}</span></li>
+                    <li><span class="light">Brand:</span><span class="dark">{{item.brand_name}}</span></li>
                   </ul>
                 </div>
               </div>
             </div>
 
+          
             <!-- /.Checkout loop -->
             <!-- /.Request Details -->
             <!-- /.Checkout list -->
@@ -480,7 +484,7 @@
             >
               Withdraw
             </button>
-            <button class="btn ml-1 btn-danger btn-sm">Close</button>
+            <button class="btn ml-1 btn-danger btn-sm" @click="close()" >Close</button>
           </div>
           <!-- /. Buttons -->
         </div>
@@ -497,7 +501,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <!-- Overlay Loading Spinner -->
-          <div class="overlay" v-show="false">
+          <div class="overlay" v-show="isLoadingModal">
             <i class="fas fa-2x fa-sync fa-spin"></i>
           </div>
 
@@ -522,6 +526,7 @@
                     class="form-control"
                     id="withdrawRemarks"
                     rows="5"
+                    v-model="withdrawRemarks"
                   ></textarea>
                 </div>
               </div>
@@ -529,7 +534,7 @@
           </div>
           <div class="modal-footer justify-content-end">
             <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-            <button type="button" class="btn btn-primary btn-sm">
+            <button type="button" @click="withdrawn()" class="btn btn-primary btn-sm">
               Withdrawn
             </button>
           </div>
@@ -545,14 +550,36 @@
 
 <script>
 import axios from "axios";
+import VsToast from "@vuesimple/vs-toast";
 export default {
   created() {
-    this.getOtMain();
+    this.getMrf(
+      this.$route.params.id,
+      localStorage.getItem("companyId")
+    );
+  },
+  watch: {
+    counter() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    },
+
+    async $route(newRoute) {
+      this.getMrf(
+      newRoute.params.id,
+      localStorage.getItem("companyId")
+    );
+    }
   },
   data() {
     return {
       counter: 3,
       isLoading: false,
+      isLoadingModal: false,
+
+      withdrawRemarks: '',
+
+      // Request Details Card
       mrf_number: '',
       department: '',
       full_name: '',
@@ -566,23 +593,122 @@ export default {
       materials_request_class: '',
       materials_request_type: '',
       remarks: '',
+
+      // Attachments Card
+      selectedFileSOF: [],
+      selectedFileMRF: [],
+
+      // Requested Items Card
+      requested_items: [],
+
+
+      // Logged User Data
+      loggedUserId: localStorage.getItem("id"),
+      loggedUserFirstName: localStorage.getItem("fname"),
+      loggedUserLastName: localStorage.getItem("lname"),
+      loggedUserFullName: localStorage.getItem("fullName"),
+      loggedUserDepartment: localStorage.getItem("department"),
+      loggedUserPosition: localStorage.getItem("positionName"),
+      companyId: localStorage.getItem("companyId"),
+      companyName: localStorage.getItem("companyName"),
+
+
+      
    };
   },
 
   methods: {
-    async getOtMain() {
+    async getMrf(id ,companyId) {
       this.isLoading = true;
       try {
         const resp = await axios.get(
-          `http://127.0.0.1:8000/api/get-mrf/6746/1`
+          `http://127.0.0.1:8000/api/get-mrf/${id}/${companyId}`
         );
-        console.log(resp);
+        
         this.isLoading = false;
+
+        // Request Details Card
+        this.mrf_number = resp.data.request.mrf_number;
+        this.department = resp.data.user.department;
+        this.full_name = resp.data.user.fullname;
+        this.reporting_manager = resp.data.user.rm_name;
+        this.mrf_short_text = resp.data.request.mrf_short_text;
+        this.date_requested = resp.data.request.date_requested;
+        this.planned_delivery_date = resp.data.request.planned_delivery_date;
+        this.actual_delivery_date = resp.data.request.planned_delivery_date;
+        this.cost_center = resp.data.request.project_name;
+        this.client_name = resp.data.request.client_name
+        this.materials_request_class = resp.data.request.materials_request_class;
+        this.materials_request_type = resp.data.request.materials_request_type;
+        this.remarks = resp.data.request.remarks;
+
+        // Attachments Card
+        this.selectedFileSOF = resp.data.attachmentsSOF
+        this.selectedFileMRF = resp.data.attachmentsMRF
+
+
+        // Requested Items Card
+        this.requested_items = resp.data.request.requisition_details
+
       } catch (err) {
         // Handle Error Here
         console.error(err);
         this.isLoading = false;
       }
+    },
+
+    close() {
+      this.$router.replace("/inprogress");
+    },
+
+    async withdrawn(){
+      this.isLoadingModal = true;
+      const fd = new FormData();
+      const frmClass = this.$route.params.frmClass;
+      const reqId = this.$route.params.id;
+      const form = this.$route.params.frmName;
+
+      fd.append("loggedUserId", localStorage.getItem("id"))
+      fd.append("loggedUserFirstName", localStorage.getItem("fname"))
+      fd.append("loggedUserLastName", localStorage.getItem("lname"))
+      fd.append("loggedUserDepartment", localStorage.getItem("department"))
+      fd.append("loggedUserPosition", localStorage.getItem("positionName"))
+      fd.append("companyId", localStorage.getItem("companyId"))
+      fd.append("companyName", localStorage.getItem("companyName"))
+
+      fd.append("frmClass",frmClass)
+      fd.append("processId",reqId)
+      fd.append("frmClass",form)
+      fd.append("withdrawRemarks",this.withdrawRemarks)
+
+        try {
+        const resp = await axios.post(
+          "http://127.0.0.1:8000/api/mrf-withdraw",
+          fd
+        );
+
+          this.isLoadingModal = false;
+          this.openToast("top-right", "success", resp.data.message);
+          document.getElementById("modalCloseButton").click();
+          this.$router.replace("/inprogress");
+    
+
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+        this.isLoadingModal = false;
+        this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+      }
+    },
+
+    openToast(position, variant, message) {
+      const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
+      VsToast.show({
+        title: `${toastTitle}`,
+        message: `${message}`,
+        variant,
+        position,
+      });
     },
   },
 
@@ -609,6 +735,10 @@ export default {
   max-height: 500px;
 
   overflow-y: scroll;
+
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
 }
 
 .scroll-bar::-webkit-scrollbar {
@@ -726,8 +856,13 @@ export default {
   line-height: 1.3;
 }
 
-.card--details li span {
+.card--details li .light {
   color: #9ca3af;
+}
+
+.card--details li .dark {
+  color: #050505;
+  margin-left: 5px;
 }
 
 .overlay__card-body {
