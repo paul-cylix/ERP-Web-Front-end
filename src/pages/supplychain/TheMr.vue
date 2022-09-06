@@ -63,6 +63,9 @@
               <div class="progressbar" :class="classC">
                 <span :class="classC">3</span>
               </div>
+              <div class="progressbar" :class="classD">
+                <span :class="classD">4</span>
+              </div>
             </div>
 
             <div class="d-flex text-center">
@@ -83,6 +86,13 @@
               <div class="textbar" :class="classC">
                 <small
                   ><span :class="classC" class="font-weight-bold"
+                    >Attachments</span
+                  ></small
+                >
+              </div>
+              <div class="textbar" :class="classD">
+                <small
+                  ><span :class="classD" class="font-weight-bold"
                     >Form Review</span
                   ></small
                 >
@@ -90,70 +100,81 @@
             </div>
             <!-- / Step Numbers -->
 
-            <!-- Checkout Header -->
-            <div class="card mt-4" v-if="counter === 0">
-              <div class="card-body p-2">
-                <span>Product Details</span>
-              </div>
-            </div>
-            <!-- /.Checkout header -->
-
             <!-- Checkout list -->
-            <div class="anyClass scroll-bar" v-if="counter === 0">
-              <div
-                class="overlay"
-                style="background-color: white !important"
-                v-show="isLoading"
-              >
-                <loading-spinner></loading-spinner>
+            <div class="card mt-4" v-if="counter === 0">
+              <div class="card-header">
+                <h3 class="card-title font-weight-bold">Requested Items</h3>
+
+                <div class="card-tools">
+                  <button
+                    type="button"
+                    class="btn btn-tool"
+                    data-card-widget="collapse"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </div>
               </div>
-              <div class="card" v-for="cart in carts" :key="cart.cart_id">
-                <div class="card-body card-split p2">
-                  <div class="d-flex justify-content-center align-items-center">
-                    <img
-                      src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1610416577-vans-1610416571.jpg"
-                      style="height: 150px; width: 120px; object-fit: contain"
-                      alt=""
-                      srcset=""
-                      class="p-0 m-0"
-                    />
-                  </div>
+              <!-- /.card-header -->
+              <div class="card-body anyClass scroll-bar">
+                <div
+                  class="overlay"
+                  style="background-color: white !important"
+                  v-show="isLoading"
+                >
+                  <loading-spinner></loading-spinner>
+                </div>
+                
+                <div class="card" v-for="cart in carts" :key="cart.id">
+                  <div class="card-body card-split p2">
+                    <div
+                      class="d-flex justify-content-center align-items-center"
+                    >
+                      <img
+                        src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1610416577-vans-1610416571.jpg"
+                        style="
+                          height: 150px;
+                          width: 120px;
+                          object-fit: contain;
+                        "
+                        alt="" srcset="" class="p-0 m-0"
+                      />
+                    </div>
 
-                  <div class="card-details-holder">
-                    <h6>
-                      <b>{{ cart.item_code }}</b>
-                    </h6>
-                    <p>{{ cart.specification }}</p>
-                    <div class="card-detail-list">
-                      <ul>
-                        <li>
-                          Item Codes:<span>{{ cart.item_code }}</span>
-                        </li>
-                        <li>Category:<span>{{ cart.type }}</span></li>
-                        <li>Sub Category:<span>{{ cart.group_description }}</span></li>
-                        <li>
-                          Brand:<span>{{ cart.brand }}</span>
-                        </li>
-                      </ul>
+                    <div class="card-details-holder">
+                      <h6>
+                        <b>{{ cart.item_code }}</b>
+                      </h6>
+                      <p>{{ cart.specification }}</p>
+                      <div class="card-detail-list">
+                        <ul>
+                          <li>
+                            Item Code:<span>{{ cart.item_code }}</span>
+                          </li>
+                          <li>Category:<span>{{ cart.type }}</span></li>
+                          <li>Sub Category:<span>{{ cart.group_description }}</span></li>
+                          <li>
+                            Brand:<span>{{ cart.brand }}</span>
+                          </li>
+                        </ul>
 
-                      <ul>
-                        <li>
-                          UoM<span>{{ cart.cart_uom_name }}</span>
-                        </li>
-                        <li>
-                          SKU<span>{{ cart.SKU }}</span>
-                        </li>
-                        <!-- <li>On Hand:<span>test</span></li> -->
-                        <li>
-                          Order Qty:<span>{{ cart.cart_quantity }}</span>
-                        </li>
-                      </ul>
+                        <ul>
+                          <li>
+                            UoM<span>{{ cart.cart_uom_name }}</span>
+                          </li>
+                          <li>
+                            SKU<span>{{ cart.SKU }}</span>
+                          </li>
+                          <li>
+                            Order Qty:<span>{{ cart.cart_quantity }}</span>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
             <!-- /.Checkout list -->
 
             <div class="card mt-4" v-if="counter === 1">
@@ -406,8 +427,108 @@
               </div>
             </div>
 
+            <!-- The Attachments -->
+            <div v-if="this.counter === 2"
+              class="
+                position-relative
+                mt-4
+                text-center
+              "
+              id="app"
+            >
+            
+                <div
+                  class="pt-2 col-md-12 rounded uploadContainer"
+                  @dragover="dragover"
+                  @dragleave="dragleave"
+                  @drop="drop"
+                >
+                  <input
+                    type="file"
+                    multiple
+                    name="fields[assetsFieldHandle][]"
+                    id="assetsFieldHandle"
+                    class="w-25 h-25 overflow-hidden"
+                    @change="onFileSelected"
+                    ref="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                  />
+
+                  <label
+                    for="assetsFieldHandle"
+                    style="width: 100%; cursor: pointer"
+                    class="block pt-3 cursor-pointer"
+                  >
+                    <span class="text-secondary">Click here or drop file(s)</span>
+                  </label>
+
+                    <ul class="text-decoration-none ulUpload" v-cloak>
+                      <li
+                        class="text-sm mt-2"
+                        v-for="file in selectedDBFile"
+                        :key="file.newFilename"
+                      >
+                        <div class="row d-flex justify-content-center">
+                          <div class="col-md-4 d-flex">
+                            <div class="col text-left">
+                              <span
+                                ><label>{{ file.filename }}</label></span
+                              >
+                            </div>
+
+                            <div>
+                              <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                            </div>
+                            <div class="ml-1">
+                              <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                            </div>
+
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+
+                    <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
+                      <li
+                        class="text-sm mt-2"
+                        v-for="file in selectedFile"
+                        :key="file.name"
+                      >
+                        <div class="row d-flex justify-content-center">
+                          <div class="col-md-4 d-flex">
+                            <div class="col text-left">
+                              <span><label>{{ file.name }}</label></span>
+                            </div>
+                            <div>
+                              <button
+                                class="btn btn-danger btn-sm px-13"
+                                type="button"
+                                @click="remove(selectedFile.indexOf(file))"
+                                title="Remove file"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                            <div class="ml-1">
+                              <button
+                                @click="preview(selectedFile.indexOf(file))"
+                                class="btn btn-secondary btn-sm"
+                              >
+                                Preview
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                </div>
+            
+            
+            </div>
+            <!-- / The Attachments -->
+
             <!-- Request Details Review -->
-            <div v-if="counter === 2">
+            <div v-if="counter === 3">
               <div class="card mt-4">
                 <div class="card-header">
                   <h3 class="card-title font-weight-bold">Request Details</h3>
@@ -487,7 +608,7 @@
               <!-- Request Form Review -->
               <div class="card mt-4">
                 <div class="card-header">
-                  <h3 class="card-title font-weight-bold">Checkout Details</h3>
+                  <h3 class="card-title font-weight-bold">Requested Items</h3>
 
                   <div class="card-tools">
                     <button
@@ -515,16 +636,13 @@
                             height: 150px;
                             width: 120px;
                             object-fit: contain;
-                          "
-                          alt=""
-                          srcset=""
-                          class="p-0 m-0"
+                          " alt="" srcset="" class="p-0 m-0"
                         />
                       </div>
 
                       <div class="card-details-holder">
                         <h6>
-                          <b>{{ cart.description }}</b>
+                          <b>{{ cart.item_code }}</b>
                         </h6>
                         <p>{{ cart.specification }}</p>
                         <div class="card-detail-list">
@@ -532,11 +650,11 @@
                             <li>
                               Item Code:<span>{{ cart.item_code }}</span>
                             </li>
+                            <li>Category:<span>{{ cart.type }}</span></li>
+                            <li>Sub Category:<span>{{ cart.group_description }}</span></li>
                             <li>
                               Brand:<span>{{ cart.brand }}</span>
                             </li>
-                            <li>Model:<span>test</span></li>
-                            <li>Category:<span>test</span></li>
                           </ul>
 
                           <ul>
@@ -546,7 +664,6 @@
                             <li>
                               SKU<span>{{ cart.SKU }}</span>
                             </li>
-                            <li>On Hand:<span>test</span></li>
                             <li>
                               Order Qty:<span>{{ cart.cart_quantity }}</span>
                             </li>
@@ -562,7 +679,56 @@
                 <!-- /.card-body -->
               </div>
               <!-- /.Request Form Review -->
+
+              <!-- Attachments Review -->
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title font-weight-bold">Attachments</h3>
+
+                  <div class="card-tools">
+                    <button
+                      type="button"
+                      class="btn btn-tool"
+                      data-card-widget="collapse"
+                    >
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body p-0">
+                  <table
+                    class="table table-sm table-bordered table-hover table-striped"
+                  >
+                    <thead>
+                      <tr>
+                        <th style="width: 80%">Filename</th>
+                        <th style="width: 20%">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="file in selectedDBFile" :key="file.newFilename">
+                        <td>{{ file.filename }}</td>
+                        <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                          <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                          <a class="btn btn-secondary btn-sm ml-1" :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                        </td>
+                      </tr>
+                      <tr v-for="file in selectedFile" :key="file.filename">
+                        <td>{{ file.name }}</td>
+                        <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                          <a class="btn btn-danger btn-sm px-13" @click="remove(selectedFile.indexOf(file))">Remove</a>
+                          <a class="btn btn-secondary btn-sm ml-1"  @click="preview(selectedFile.indexOf(file))">Preview</a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <!-- /. Attachments Review -->
             </div>
+
             <!-- /.Request Details Review -->
 
             <!-- Checkout Footer -->
@@ -599,7 +765,7 @@
               </button>
 
               <button
-                v-if="counter <= 1"
+                v-if="counter <= 2"
                 type="button"
                 @click="next()"
                 class="btn ml-1 btn-primary btn-sm"
@@ -676,7 +842,7 @@ export default {
           } else if (newValue.code === 2) {
             this.TypeList = [
               { code: 5, name: "Asset Request Project", type: "Project", process_type: "Sales Order" },
-              { code: 6, name: "Asset Request Deliver", type: "Deliver", process_type: "Sales Order" },
+              { code: 6, name: "Asset Request Delivery", type: "Deliver", process_type: "Sales Order" },
               { code: 7, name: "Asset Request Demo", type: "Demo", process_type: "Sales Order" },
               { code: 8, name: "Asset Request POC", type: "POC", process_type: "Sales Order" },
               { code: 9, name: "Asset Request Internal", type: "Stocking", process_type: "Internal Process" },
@@ -701,6 +867,8 @@ export default {
     },
     costCenter(newValue) {
       this.getClient(newValue.code);
+      // this.getAttachments(1760);
+      this.getAttachments(newValue.code);
     },
   },
   computed: {
@@ -719,6 +887,9 @@ export default {
     },
     classC() {
       return { active: this.counter >= 2 };
+    },
+    classD() {
+      return { active: this.counter >= 3 };
     },
     missingMrfShortText() {
       if (this.mrfShortText === undefined || this.mrfShortText == "")
@@ -813,12 +984,14 @@ export default {
       attemptNext: false,
       isLoading: false,
       cartList: [],
+      selectedFile: [],
+      selectedDBFile: [],
       referenceNumber : 'MRF',
       classList: [
         { code: 1, name: "Material Request" },
         { code: 2, name: "Asset Request" },
         { code: 3, name: "Supplies Request" },
-        { code: 4, name: "RMA Request" },
+        // { code: 4, name: "RMA Request" },
       ],
       processTypeList : [
         { code: 1, name: "Warehouse Supplies"},
@@ -843,7 +1016,7 @@ export default {
       this.$router.replace("/the-cart");
     },
     next() {
-      if (this.counter === 1) {
+      if (this.counter === 1 || this.counter === 2) {
         this.attemptNext = true;
       }
 
@@ -866,6 +1039,9 @@ export default {
         ) {
           this.counter++;
         }
+      }
+      else if (counter === 2) {
+        this.counter++;
       }
     },
 
@@ -906,8 +1082,11 @@ export default {
     async getProjects() {
       this.isLoading = true;
 
+      const compid = this.companyId;
+
       const response = await fetch(
-        "http://127.0.0.1:8000/api/general-projects",
+        `http://127.0.0.1:8000/api/general-getprojects/${compid}`,
+
         {
           method: "GET",
           headers: {
@@ -932,10 +1111,101 @@ export default {
         const request = {
           code: responseData[key].project_id,
           name: responseData[key].project_name,
+          soid: responseData[key].SOID,
         };
         project.push(request);
       }
       this.project = project;
+    },
+
+    async getAttachments(soid) {
+      this.isLoading = true;
+
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/get-attachments-by-soid/${soid}`,
+
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        const error = new Error(
+          responseData.message || "Failed to fetch Projects."
+        );
+        throw error;
+      }
+
+      // console.log(responseData);
+      this.selectedDBFile = responseData
+
+      this.isLoading = false;
+    },
+
+    // The Attachments
+    onFileSelected(event) {
+      let selectedFiles = event.target.files;
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.selectedFile.push(selectedFiles[i]);
+      }
+      this.filePreview();
+
+    },
+    onInputChange(event) {
+      let selectedFiles = event.dataTransfer.files;
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.selectedFile.push(selectedFiles[i]);
+      }
+      this.filePreview();
+    },
+    remove(i) {
+      this.selectedFile.splice(i, 1);
+      this.filePreview();
+    },
+    preview(i) {
+      // console.log(i)
+      const url = this.filespreview[i].link;
+      window.open(url, "_blank", "resizable=yes");
+    },
+
+    dragover(event) {
+      event.preventDefault();
+      // Add some visual fluff to show the user can drop its files
+      if (!event.currentTarget.classList.contains("bg-white")) {
+        event.currentTarget.classList.remove("bg-light");
+        event.currentTarget.classList.add("bg-white");
+      }
+    },
+    dragleave(event) {
+      // Clean up
+      event.currentTarget.classList.add("bg-light");
+      event.currentTarget.classList.remove("bg-white");
+    },
+    drop(event) {
+      event.preventDefault();
+      this.onInputChange(event); // Trigger the onChange event manually
+
+      // Clean up
+      event.currentTarget.classList.add("bg-light");
+      event.currentTarget.classList.remove("bg-white");
+    },
+
+    filePreview() {
+      let files = this.selectedFile;
+      const fileContainer = [];
+      for (let i = 0; i < files.length; i++) {
+        let tmppath = URL.createObjectURL(files[i]);
+        const thisFiles = {
+          link: tmppath,
+        };
+        fileContainer.push(thisFiles);
+      }
+      this.filespreview = fileContainer;
     },
 
     async getClient(id) {
@@ -1000,31 +1270,40 @@ export default {
     },
 
     async purchase() {
-      this.processType = this.processType == 1 ? 'Warehouse Supplies' : 'Office Supplies'
-      const data = {
-        "requisition_no" : this.referenceNumber+ '/' +this.todaysYear,
-        "trans_type" : this.referenceNumber,
-        "delivery_date" : this.actualDeliveryDate,
-        "planned_delivery_date" : this.plannedDeliveryDate,
-        "requested_date" : this.requestedDate,
-        "remarks" : this.remarks,
-        "userid" : this.loggedUserId,
-        "clientid" : this.clientId,
-        "costid" : this.costCenter.code,
-        "costname" : this.costCenter.name,
-        "clientname" : this.clientName,
-        "short_text" : this.mrfShortText,
-        "companyId" : this.companyId,
-        "req_person_id" : this.employeeId,
-        "rmid" : this.reportingManagerItem.code,
-        "type" : this.TypeSelected.type,
-        "procss_type" : this.TypeSelected.process_type == "" ? this.processType : this.TypeSelected.process_type
+      const fd = new FormData();
+      let requisition_no = this.referenceNumber+ '/' +this.todaysYear
+      let procss_type = this.TypeSelected.process_type == "" ? this.processType : this.TypeSelected.process_type
+
+      for (let i = 0; i < this.selectedFile.length; i++) {
+        fd.append("file[]", this.selectedFile[i]);
       }
 
-      // console.log(data);
+      fd.append("trans_type", this.referenceNumber);
+      fd.append("companyId", this.companyId);
+      fd.append("userid", this.loggedUserId);
+      fd.append("requisition_no", requisition_no);
+      fd.append("delivery_date", this.actualDeliveryDate);
+      fd.append("planned_delivery_date", this.plannedDeliveryDate);
+      fd.append("requested_date", this.requestedDate);
+      fd.append("remarks", this.remarks);
+      fd.append("user_fname", this.loggedUserFirstName);
+      fd.append("user_lname", this.loggedUserLastName);
+      fd.append("user_department", this.loggedUserDepartment);
+      fd.append("user_company", this.companyName);
+      fd.append("clientid", this.clientId);
+      fd.append("costid", this.costCenter.code);
+      fd.append("costname", this.costCenter.name);
+      fd.append("clientname", this.clientName);
+      fd.append("short_text", this.mrfShortText);
+      fd.append("req_person_id", this.employeeId);
+      fd.append("rmid", this.reportingManagerItem.code);
+      fd.append("reporting_manager", this.reportingManagerItem.name);
+      fd.append("type", this.TypeSelected.type);
+      fd.append("type_category", this.TypeSelected.name);
+      fd.append("procss_type", procss_type);
 
       try {
-        const res = await axios.post("http://127.0.0.1:8000/api/cart-purchase", data);
+        const res = await axios.post("http://127.0.0.1:8000/api/cart-purchase", fd);
         this.openToast("top-right", "success", res.data);
 
         this.actualDeliveryDate = "",
@@ -1036,10 +1315,11 @@ export default {
         this.classSelected = {},
         this.TypeSelected = {}
         this.remarks = ""
-        // console.log(res.data);
+
+        this.$router.push('the-cart')
       } catch (err) {
         console.log(err);
-        this.openToast("top-right", "success", err);
+        this.openToast("top-right", "error", err);
       }
     },
     // Request Details
@@ -1105,6 +1385,11 @@ export default {
   line-height: 5px;
 }
 
+.px-13 {
+  padding-left: 13px;
+  padding-right: 13px;
+}
+
 .textbar span {
   color: lightgray;
 }
@@ -1123,7 +1408,7 @@ export default {
   cursor: pointer;
 }
 
-#uploadContainer {
+.uploadContainer {
   background-color: #f8f9f9;
   border-width: 5px;
   border-style: dashed;
