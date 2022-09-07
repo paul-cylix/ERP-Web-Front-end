@@ -256,55 +256,55 @@
               <tbody>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">MRF Number</td>
-                  <td class="col-md-9 px-3">{{mrf_number}}</td>
+                  <td class="col-md-9 px-3">{{ mrf_number }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Department</td>
-                  <td class="col-md-9 px-3">{{department}}</td>
+                  <td class="col-md-9 px-3">{{ department }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Full Name</td>
-                  <td class="col-md-9 px-3">{{full_name}}</td>
+                  <td class="col-md-9 px-3">{{ full_name }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Reporting Manager</td>
-                  <td class="col-md-9 px-3">{{reporting_manager}}</td>
+                  <td class="col-md-9 px-3">{{ reporting_manager }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">MRF Short Text</td>
-                  <td class="col-md-9 px-3">{{mrf_short_text}}</td>
+                  <td class="col-md-9 px-3">{{ mrf_short_text }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Date Requested</td>
-                  <td class="col-md-9 px-3">{{date_requested}}</td>
+                  <td class="col-md-9 px-3">{{ date_requested }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Planned Delivery Date</td>
-                  <td class="col-md-9 px-3">{{planned_delivery_date}}</td>
+                  <td class="col-md-9 px-3">{{ planned_delivery_date }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Actual Delivery Date</td>
-                  <td class="col-md-9 px-3">{{actual_delivery_date}}</td>
+                  <td class="col-md-9 px-3">{{ actual_delivery_date }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Cost Center</td>
-                  <td class="col-md-9 px-3">{{cost_center}}</td>
+                  <td class="col-md-9 px-3">{{ cost_center }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Client Name</td>
-                  <td class="col-md-9 px-3">{{client_name}}</td>
+                  <td class="col-md-9 px-3">{{ client_name }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Materials Request Class</td>
-                  <td class="col-md-9 px-3">{{materials_request_class}}</td>
+                  <td class="col-md-9 px-3">{{ materials_request_class }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Materials Request Type</td>
-                  <td class="col-md-9 px-3">{{materials_request_type}}</td>
+                  <td class="col-md-9 px-3">{{ materials_request_type }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Remarks</td>
-                  <td class="col-md-9 px-3">{{remarks}}</td>
+                  <td class="col-md-9 px-3">{{ remarks }}</td>
                 </tr>
               </tbody>
             </table>
@@ -339,8 +339,12 @@
                 </tr>
               </thead>
               <tbody>
-                <tr class="row p-0 m-0" v-for="(file) in selectedFileSOF" :key="file.id">
-                  <td class="col-md-9 px-3">{{file.filename}}</td>
+                <tr
+                  class="row p-0 m-0"
+                  v-for="file in selectedFileSOF"
+                  :key="file.id"
+                >
+                  <td class="col-md-9 px-3">{{ file.filename }}</td>
                   <td
                     class="
                       col-md-3
@@ -352,12 +356,26 @@
                       align-items-center
                     "
                   >
-                    <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                    <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                    <a
+                      class="btn btn-info btn-sm"
+                      :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`"
+                      target="_blank"
+                      >Download</a
+                    >
+                    <a
+                      class="btn btn-secondary btn-sm ml-1"
+                      :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`"
+                      target="_blank"
+                      >Preview</a
+                    >
                   </td>
                 </tr>
-                <tr class="row p-0 m-0" v-for="(file) in selectedFileMRF" :key="file.id">
-                  <td class="col-md-9 px-3">{{file.filename}}</td>
+                <tr
+                  class="row p-0 m-0"
+                  v-for="file in selectedFileMRF"
+                  :key="file.id"
+                >
+                  <td class="col-md-9 px-3">{{ file.filename }}</td>
                   <td
                     class="
                       col-md-3
@@ -369,13 +387,20 @@
                       align-items-center
                     "
                   >
-                    <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                    <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                    <a
+                      class="btn btn-info btn-sm"
+                      :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`"
+                      target="_blank"
+                      >Download</a
+                    >
+                    <a
+                      class="btn btn-secondary btn-sm ml-1"
+                      :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`"
+                      target="_blank"
+                      >Preview</a
+                    >
                   </td>
                 </tr>
-
-
-
               </tbody>
             </table>
           </div>
@@ -401,12 +426,16 @@
             </div>
           </div>
           <!-- /.card-header -->
-          <div class="card-body anyClass scroll-bar" >
+          <div class="card-body anyClass scroll-bar">
             <!-- Checkout list -->
             <!-- Request Details -->
             <!-- Checkout loop -->
 
-            <div class="card py-0" v-for="(item) in requested_items" :key="item.req_dtls_id">
+            <div
+              class="card py-0"
+              v-for="item in requested_items"
+              :key="item.req_dtls_id"
+            >
               <div class="row py-2">
                 <div
                   class="
@@ -434,21 +463,43 @@
 
                 <div class="col-md-9 p-3">
                   <strong class="ellipsis">{{ item.description }}</strong>
-                  <p class="card--description ellipsis">{{ item.specification }}</p>
+                  <p class="card--description ellipsis">
+                    {{ item.specification }}
+                  </p>
                   <ul class="card--details">
-                    <li><span class="light">Item Code:</span><span class="dark">{{item.item_code}}</span></li>
-                    <li><span class="light">UoM:</span><span class="dark"></span>{{item.uom}}</li>
-                    <li><span class="light">Category:</span><span class="dark">{{item.category_name}}</span></li>
-                    <li><span class="light">SKU:</span><span class="dark">{{item.sku}}</span></li>
-                    <li><span class="light">Sub Category:</span><span class="dark">{{item.sub_category_name}}</span></li>
-                    <li><span class="light">Order Qty:</span><span class="dark">{{item.order_qty}}</span></li>
-                    <li><span class="light">Brand:</span><span class="dark">{{item.brand_name}}</span></li>
+                    <li>
+                      <span class="light">Item Code:</span
+                      ><span class="dark">{{ item.item_code }}</span>
+                    </li>
+                    <li>
+                      <span class="light">UoM:</span><span class="dark"></span
+                      >{{ item.uom }}
+                    </li>
+                    <li>
+                      <span class="light">Category:</span
+                      ><span class="dark">{{ item.category_name }}</span>
+                    </li>
+                    <li>
+                      <span class="light">SKU:</span
+                      ><span class="dark">{{ item.sku }}</span>
+                    </li>
+                    <li>
+                      <span class="light">Sub Category:</span
+                      ><span class="dark">{{ item.sub_category_name }}</span>
+                    </li>
+                    <li>
+                      <span class="light">Order Qty:</span
+                      ><span class="dark">{{ item.order_qty }}</span>
+                    </li>
+                    <li>
+                      <span class="light">Brand:</span
+                      ><span class="dark">{{ item.brand_name }}</span>
+                    </li>
                   </ul>
                 </div>
               </div>
             </div>
 
-          
             <!-- /.Checkout loop -->
             <!-- /.Request Details -->
             <!-- /.Checkout list -->
@@ -478,13 +529,38 @@
 
           <div class="col-md-6 text-right">
             <button
-              class="btn ml-1 btn-warning btn-sm"
+              type="button"
+              class="btn btn-success ml-1 btn-sm"
               data-toggle="modal"
               data-target="#modal-default"
+              @click="setTitle('Approve')"
             >
-              Withdraw
+              Approve
             </button>
-            <button class="btn ml-1 btn-danger btn-sm" @click="close()" >Close</button>
+
+            <button
+              type="button"
+              class="btn btn-danger ml-1 btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Reject')"
+            >
+              Reject
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-warning ml-1 btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Clarify')"
+            >
+              Clarify
+            </button>
+
+            <button class="btn ml-1 btn-danger btn-sm" @click="close()">
+              Close
+            </button>
           </div>
           <!-- /. Buttons -->
         </div>
@@ -506,7 +582,7 @@
           </div>
 
           <div class="modal-header">
-            <h6 class="modal-title"><b>Withdraw Request</b></h6>
+            <h6 class="modal-title"><b>{{ title }} Request</b></h6>
             <button
               type="button"
               id="modalCloseButton"
@@ -534,8 +610,12 @@
           </div>
           <div class="modal-footer justify-content-end">
             <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-            <button type="button" @click="withdrawn()" class="btn btn-primary btn-sm">
-              Withdrawn
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              @click="submit()"
+            >
+              Submit
             </button>
           </div>
         </div>
@@ -553,10 +633,7 @@ import axios from "axios";
 import VsToast from "@vuesimple/vs-toast";
 export default {
   created() {
-    this.getMrf(
-      this.$route.params.id,
-      localStorage.getItem("companyId")
-    );
+    this.getMrf(this.$route.params.id, localStorage.getItem("companyId"));
   },
   watch: {
     counter() {
@@ -565,11 +642,8 @@ export default {
     },
 
     async $route(newRoute) {
-      this.getMrf(
-      newRoute.params.id,
-      localStorage.getItem("companyId")
-    );
-    }
+      this.getMrf(newRoute.params.id, localStorage.getItem("companyId"));
+    },
   },
   data() {
     return {
@@ -578,23 +652,23 @@ export default {
       isLoadingModal: false,
       done_approving: false,
 
-
-      withdrawRemarks: '',
+      title: '',
+      withdrawRemarks: "",
 
       // Request Details Card
-      mrf_number: '',
-      department: '',
-      full_name: '',
-      reporting_manager: '',
-      mrf_short_text: '',
-      date_requested: '',
-      planned_delivery_date: '',
-      actual_delivery_date: '',
-      cost_center: '',
-      client_name: '',
-      materials_request_class: '',
-      materials_request_type: '',
-      remarks: '',
+      mrf_number: "",
+      department: "",
+      full_name: "",
+      reporting_manager: "",
+      mrf_short_text: "",
+      date_requested: "",
+      planned_delivery_date: "",
+      actual_delivery_date: "",
+      cost_center: "",
+      client_name: "",
+      materials_request_class: "",
+      materials_request_type: "",
+      remarks: "",
 
       // Attachments Card
       selectedFileSOF: [],
@@ -602,7 +676,6 @@ export default {
 
       // Requested Items Card
       requested_items: [],
-
 
       // Logged User Data
       loggedUserId: localStorage.getItem("id"),
@@ -613,20 +686,18 @@ export default {
       loggedUserPosition: localStorage.getItem("positionName"),
       companyId: localStorage.getItem("companyId"),
       companyName: localStorage.getItem("companyName"),
-
-
-      
-   };
+    };
   },
 
   methods: {
-    async getMrf(id ,companyId) {
+    async getMrf(id, companyId) {
       this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/get-mrf/${id}/${companyId}`
         );
         
+
         this.isLoading = false;
 
         // Request Details Card
@@ -639,20 +710,20 @@ export default {
         this.planned_delivery_date = resp.data.request.planned_delivery_date;
         this.actual_delivery_date = resp.data.request.planned_delivery_date;
         this.cost_center = resp.data.request.project_name;
-        this.client_name = resp.data.request.client_name
-        this.materials_request_class = resp.data.request.materials_request_class;
+        this.client_name = resp.data.request.client_name;
+        this.materials_request_class =
+          resp.data.request.materials_request_class;
         this.materials_request_type = resp.data.request.materials_request_type;
         this.remarks = resp.data.request.remarks;
 
-        // Attachments Card
-        this.selectedFileSOF = resp.data.attachmentsSOF
-        this.selectedFileMRF = resp.data.attachmentsMRF
-
         this.done_approving = resp.data.request.done_approving
 
-        // Requested Items Card
-        this.requested_items = resp.data.request.requisition_details
+        // Attachments Card
+        this.selectedFileSOF = resp.data.attachmentsSOF;
+        this.selectedFileMRF = resp.data.attachmentsMRF;
 
+        // Requested Items Card
+        this.requested_items = resp.data.request.requisition_details;
       } catch (err) {
         // Handle Error Here
         console.error(err);
@@ -661,47 +732,60 @@ export default {
     },
 
     close() {
-      this.$router.replace("/inprogress");
+      this.$router.replace("/approvals");
     },
 
-    async withdrawn(){
-      this.isLoadingModal = true;
+    async submit() {
+      // this.isLoadingModal = true;
       const fd = new FormData();
       const frmClass = this.$route.params.frmClass;
       const reqId = this.$route.params.id;
       const form = this.$route.params.frmName;
 
-      fd.append("loggedUserId", localStorage.getItem("id"))
-      fd.append("loggedUserFirstName", localStorage.getItem("fname"))
-      fd.append("loggedUserLastName", localStorage.getItem("lname"))
-      fd.append("loggedUserDepartment", localStorage.getItem("department"))
-      fd.append("loggedUserPosition", localStorage.getItem("positionName"))
-      fd.append("companyId", localStorage.getItem("companyId"))
-      fd.append("companyName", localStorage.getItem("companyName"))
+      fd.append("loggedUserId", localStorage.getItem("id"));
+      fd.append("loggedUserFirstName", localStorage.getItem("fname"));
+      fd.append("loggedUserLastName", localStorage.getItem("lname"));
+      fd.append("loggedUserDepartment", localStorage.getItem("department"));
+      fd.append("loggedUserPosition", localStorage.getItem("positionName"));
+      fd.append("companyId", localStorage.getItem("companyId"));
+      fd.append("companyName", localStorage.getItem("companyName"));
 
-      fd.append("frmstatus",'withdrawn')
-      fd.append("frmClass",frmClass)
-      fd.append("processId",reqId)
-      fd.append("frmClass",form)
-      fd.append("withdrawRemarks",this.withdrawRemarks)
+      let frmstatus = null;
+      if (this.title === 'Approve') {
+        frmstatus = 'approved'
+      } else if (this.title === 'Reject') {
+        frmstatus = 'rejected'
+      } else if(this.title === 'Clarify') {
+        frmstatus = 'clarify'
+      }
 
-        try {
+      fd.append("frmstatus",frmstatus)
+      fd.append("frmClass", frmClass);
+      fd.append("processId", reqId);
+      fd.append("frmName", form);
+      fd.append("withdrawRemarks", this.withdrawRemarks);
+      fd.append("done_approving", this.done_approving);
+
+
+      try {
         const resp = await axios.post(
           "http://127.0.0.1:8000/api/mrf-change-status",
           fd
         );
 
-          this.isLoadingModal = false;
-          this.openToast("top-right", "success", resp.data.message);
-          document.getElementById("modalCloseButton").click();
-          this.$router.replace("/inprogress");
-    
-
+        this.isLoadingModal = false;
+        this.openToast("top-right", "success", resp.data.message);
+        document.getElementById("modalCloseButton").click();
+        this.$router.replace("/approvals");
       } catch (err) {
         // Handle Error Here
         console.error(err);
         this.isLoadingModal = false;
-        this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+        this.openToast(
+          "top-right",
+          "error",
+          "Internal Server Error! Please inform the administrator!"
+        );
       }
     },
 
@@ -714,6 +798,10 @@ export default {
         position,
       });
     },
+
+    setTitle(title){
+      this.title = title
+    }
   },
 
   computed: {

@@ -118,6 +118,12 @@ import SofRejected from "./pages/workflow/rejected/SofRejected.vue";
 
 
 import MrfInprogress from "./pages/workflow/inprogress/MrfInprogress.vue";
+import MrfWithdrawn from "./pages/workflow/withdrawn/MrfWithdrawn.vue";
+import MrfApproval from "./pages/workflow/approval/MrfApproval.vue";
+import MrfRejected from "./pages/workflow/rejected/MrfRejected.vue";
+
+
+
 
 
 import TheMrf from "./pages/supplychain/TheMrf.vue";
@@ -335,6 +341,13 @@ const routes = [
             props: true,
             meta: { requiresAuth: true },
           },
+          {
+            path: ":id",
+            name: "supplychainmrf-approval",
+            component: MrfApproval,
+            props: true,
+            meta: { requiresAuth: true },
+          },
 
         ],
         meta: { requiresAuth: true },
@@ -473,7 +486,7 @@ const routes = [
           // MRF
           {
             path: ":id",
-            name: "Asset Request Delivery-inprogress",
+            name: "supplychainmrf-inprogress",
             component: MrfInprogress,
             props: true,
             meta: { requiresAuth: true },
@@ -667,6 +680,13 @@ const routes = [
             props: true,
             meta: { requiresAuth: true },
           },
+          {
+            path: ":id",
+            name: "supplychainmrf-withdrawn",
+            component: MrfWithdrawn,
+            props: true,
+            meta: { requiresAuth: true },
+          },
         ],
         meta: { requiresAuth: true },
       },
@@ -727,6 +747,13 @@ const routes = [
             path: ":id",
             name: "sales_order_frm-rejected",
             component: SofRejected,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "supplychainmrf-rejected",
+            component: MrfRejected,
             props: true,
             meta: { requiresAuth: true },
           },

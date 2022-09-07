@@ -51,12 +51,13 @@ export default {
                 
                 console.log(this.data)
 
-                if (frmclass === 'sales_order_frm') {                    
+                const frms = ['sales_order_frm','supplychainmrf'];
+
+                if (frms.includes(frmclass)) {                    
                     this.$router.push({name: name2, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
-                    // alert('if')
-                } else {
+                } 
+                else {
                     this.$router.push({name: name, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
-                    // alert('else')
                 }
             }
 

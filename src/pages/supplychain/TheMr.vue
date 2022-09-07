@@ -876,7 +876,7 @@ export default {
     costCenter(newValue) {
       this.getClient(newValue.code);
       // this.getAttachments(1760);
-      this.getAttachments(newValue.code);
+      this.getAttachments(newValue.soid);
     },
   },
   computed: {
@@ -1114,6 +1114,7 @@ export default {
       }
 
       this.isLoading = false;
+      console.warn(responseData)
 
       const project = [];
       for (const key in responseData) {
@@ -1129,6 +1130,8 @@ export default {
 
     async getAttachments(soid) {
       this.isLoading = true;
+      console.log(soid )
+      console.log('getAttachments')
 
       const response = await fetch(
         `http://127.0.0.1:8000/api/get-attachments-by-soid/${soid}`,
@@ -1152,9 +1155,12 @@ export default {
 
       // console.log(responseData);
       this.selectedDBFile = responseData
+      console.log(responseData)
 
       this.isLoading = false;
     },
+
+
 
     // The Attachments
     onFileSelected(event) {

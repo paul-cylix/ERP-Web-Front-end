@@ -477,13 +477,13 @@
           </div>
 
           <div class="col-md-6 text-right">
-            <button
+            <!-- <button
               class="btn ml-1 btn-warning btn-sm"
               data-toggle="modal"
               data-target="#modal-default"
             >
               Withdraw
-            </button>
+            </button> -->
             <button class="btn ml-1 btn-danger btn-sm" @click="close()" >Close</button>
           </div>
           <!-- /. Buttons -->
@@ -576,8 +576,6 @@ export default {
       counter: 3,
       isLoading: false,
       isLoadingModal: false,
-      done_approving: false,
-
 
       withdrawRemarks: '',
 
@@ -648,7 +646,6 @@ export default {
         this.selectedFileSOF = resp.data.attachmentsSOF
         this.selectedFileMRF = resp.data.attachmentsMRF
 
-        this.done_approving = resp.data.request.done_approving
 
         // Requested Items Card
         this.requested_items = resp.data.request.requisition_details
@@ -661,7 +658,7 @@ export default {
     },
 
     close() {
-      this.$router.replace("/inprogress");
+      this.$router.replace("/withdrawn");
     },
 
     async withdrawn(){
@@ -679,7 +676,6 @@ export default {
       fd.append("companyId", localStorage.getItem("companyId"))
       fd.append("companyName", localStorage.getItem("companyName"))
 
-      fd.append("frmstatus",'withdrawn')
       fd.append("frmClass",frmClass)
       fd.append("processId",reqId)
       fd.append("frmClass",form)
@@ -687,7 +683,7 @@ export default {
 
         try {
         const resp = await axios.post(
-          "http://127.0.0.1:8000/api/mrf-change-status",
+          "http://127.0.0.1:8000/api/mrf-withdraw",
           fd
         );
 
