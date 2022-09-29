@@ -549,7 +549,7 @@
               v-else
               type="button"
               class="btn ml-1 btn-success btn-sm"
-              @click="submit()"
+              @click="validate()"
             >
               Submit
             </button>
@@ -774,6 +774,14 @@ export default {
         variant,
         position,
       });
+    },
+
+    validate() {
+      if(this.clientName.length === 0) {
+        this.openToast("top-right", "error", "Complete required fields!");
+        } else {
+        this.submit();
+      }
     },
 
     async submit() {
