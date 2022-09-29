@@ -776,6 +776,14 @@ export default {
       });
     },
 
+    validate() {
+      if(this.clientName.length === 0) {
+        this.openToast("top-right", "error", "Complete required fields");
+        } else {
+        this.submit();
+      }
+    },
+
     async submit() {
       // alert('test')
       this.isLoading = true;
