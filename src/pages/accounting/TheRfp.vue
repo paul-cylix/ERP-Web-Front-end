@@ -561,8 +561,6 @@ export default {
   },
   async created() {
     // Request Details
-    // this.getProjects();
-    // this.getReportingManager(this.loggedUserId);
     this.isLoading = true;
     await this.todaysDate();
     await this.rfpInitiate();
@@ -845,30 +843,6 @@ export default {
       }
 
 
-
-
-      // axios
-      //   .post("http://127.0.0.1:8000/api/rfp", fd)
-      //   .then((res) => {
-      //     // handle success
-      //     console.log(res);
-      //     this.isLoading = false;
-      //     this.openToast("top-right", "success", res.data.message);
-      //     this.$router.replace("/inprogress");
-      //   })
-      //   .catch(function (error) {
-      //     // handle error
-      //     console.log(error.data);
-      //     this.isLoading = false;
-      //     this.openToast(
-      //       "top-right",
-      //       "error",
-      //       "Please Contact the administrator! and try again later"
-      //     );
-      //   })
-      //   .then(function () {
-      //     // always executed
-      //   });
     },
 
     // Request Details
@@ -890,40 +864,6 @@ export default {
       this.requestDate = todaysDate;
     },
 
-    async getProjects() {
-      this.isLoading = true;
-
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/general-getprojects/${localStorage.getItem("companyId")}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-
-      const responseData = await response.json();
-      if (!response.ok) {
-        const error = new Error(
-          responseData.message || "Failed to fetch Projects."
-        );
-        throw error;
-      }
-
-      this.isLoading = false;
-
-      const project = [];
-      for (const key in responseData) {
-        const request = {
-          code: responseData[key].project_id,
-          name: responseData[key].project_name,
-        };
-        project.push(request);
-      }
-      this.project = project;
-    },
 
     getProjects2(){
       return axios.get(`http://127.0.0.1:8000/api/general-getprojects/${localStorage.getItem("companyId")}`);
@@ -970,8 +910,6 @@ export default {
         );
       });
 
-
-
     },
 
     async getClient(id) {
@@ -1005,41 +943,6 @@ export default {
       this.clientName = client[0].clientName;
       this.clientId = client[0].clientId;
       this.mainId = client[0].mainId;
-    },
-
-    async getReportingManager(loggedUserId) {
-      this.isLoading = true;
-
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/reporting-manager/${loggedUserId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-
-      const responseData = await response.json();
-      if (!response.ok) {
-        const error = new Error(
-          responseData.message || "Failed to fetch Reporting Manager."
-        );
-        throw error;
-      }
-      this.isLoading = false;
-
-      const reportingManager = [];
-      for (const key in responseData) {
-        const request = {
-          code: responseData[key].RMID,
-          name: responseData[key].RMName,
-        };
-        reportingManager.push(request);
-      }
-      this.reportingManager = reportingManager;
-      // console.log(this.reportingManager);
     },
 
     // The Attachments
