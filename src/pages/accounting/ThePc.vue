@@ -574,8 +574,9 @@ export default {
   async created() {
     // Request Details
     this.isLoading = true
-    await this.getProjects();
-    await this.getReportingManager(this.loggedUserId);
+    // await this.getProjects();
+    // await this.getReportingManager(this.loggedUserId);
+    await this.pcInitiate();
     await this.todaysDate();
     this.isLoading = false
 
@@ -725,6 +726,53 @@ export default {
   },
 
   methods: {
+    getProjects2(){
+      return axios.get(`http://127.0.0.1:8000/api/general-getprojects/${localStorage.getItem("companyId")}`);
+    },
+
+    getReportingManager2(){
+      return axios.get(`http://127.0.0.1:8000/api/reporting-manager/${localStorage.getItem("id")}`);
+    },
+
+    async pcInitiate(){
+
+      await Promise.all([this.getProjects2(), this.getReportingManager2()])
+      .then((results) => {
+        const projects = results[0];
+        const managers = results[1];
+
+      let project = [];
+      for (const key in projects.data) {
+        const request = {
+          code: projects.data[key].project_id,
+          name: projects.data[key].project_name,
+        };
+        project.push(request);
+      }
+      this.project = project;
+
+      const reportingManager = [];
+      for (const key in managers.data) {
+        const request = {
+          code: managers.data[key].RMID,
+          name: managers.data[key].RMName,
+        };
+        reportingManager.push(request);
+      }
+      this.reportingManager = reportingManager;
+      })
+      
+      .catch(error => {
+        console.error(error);
+        this.openToast(
+            "top-right",
+            "error",
+            "Please Contact the administrator! and try again later"
+        );
+      });
+
+    },
+
     next() {
       if (this.counter === 0) {
         this.attemptNext = true;
