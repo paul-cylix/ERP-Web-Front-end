@@ -578,13 +578,18 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
+  async created() {
+    this.isLoading = true;
+
     // Request Details
-    this.getReportingManager(this.loggedUserId);
-    this.getEmployees(this.companyId);
-    this.getMediumOfReport();
-    this.getLeaveType();
+    // this.getReportingManager(this.loggedUserId);
+    // this.getEmployees(this.companyId);
+    // this.getMediumOfReport();
+    // this.getLeaveType();
     this.todaysDate();
+    await this.lafInitiate();
+    this.isLoading = false;
+
   },
   watch: {},
   computed: {
@@ -735,6 +740,82 @@ export default {
   },
 
   methods: {
+    getReportingManager2(){
+      return axios.get(`http://127.0.0.1:8000/api/reporting-manager/${localStorage.getItem("id")}`);
+    },
+
+    getEmployees2(){
+      return axios.get(`http://127.0.0.1:8000/api/get-employees/${localStorage.getItem("companyId")}`);
+    },
+
+    getMediumOfReport2(){
+      return axios.get(`http://127.0.0.1:8000/api/get-reports`);
+    },
+
+    getLeaveType2(){
+      return axios.get(`http://127.0.0.1:8000/api/get-leavetype`);
+    },
+
+    async lafInitiate(){
+      await Promise.all([this.getReportingManager2(), this.getEmployees2(), this.getMediumOfReport2(), this.getLeaveType2()])
+      .then((results) => {
+        const managers = results[0];
+        const employees = results[1];
+        const reports = results[2];
+        const leaveTypes = results[3];
+
+      const reportingManager = [];
+      for (const key in managers.data) {
+        const request = {
+          code: managers.data[key].RMID,
+          name: managers.data[key].RMName,
+        };
+        reportingManager.push(request);
+      }
+      this.reportingManager = reportingManager;
+
+      const employeeName = [];
+      for (const key in employees.data) {
+        const request = {
+          code: employees.data[key].SysPK_Empl,
+          name: employees.data[key].Name_Empl,
+        };
+        employeeName.push(request);
+      }
+      this.employee = employeeName;
+
+      const reports_array = [];
+      for (const key in reports.data) {
+        const request = {
+          code: reports.data[key].id,
+          name: reports.data[key].item,
+        };
+        reports_array.push(request);
+      }
+      this.report = reports_array;
+
+      const leave_array = [];
+      for (const key in leaveTypes.data) {
+        const request = {
+          code: leaveTypes.data[key].id,
+          name: leaveTypes.data[key].item,
+        };
+        leave_array.push(request);
+      }
+      this.leaveType = leave_array;
+
+      })
+      
+      .catch(error => {
+        console.error(error);
+        this.openToast(
+            "top-right",
+            "error",
+            "Please Contact the administrator! and try again later"
+        );
+      });
+    },
+
     closeModal() {
       this.resetModal();
       this.resetAlert();
