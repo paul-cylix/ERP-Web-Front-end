@@ -477,9 +477,10 @@ export default {
   async created() {
     // Request Details
     this.isLoading = true;
-    await this.getBusinessList(this.companyId);
-    await this.getReportingManager(this.loggedUserId);
+    // await this.getBusinessList(this.companyId);
+    // await this.getReportingManager(this.loggedUserId);
     await this.todaysDate();
+    await this.itfInitiate();
     this.isLoading = false;
   },
   watch: {},
@@ -609,6 +610,51 @@ export default {
   },
 
   methods: {
+    getBusinesses2(){
+      return axios.get(`http://127.0.0.1:8000/api/general-businesses/${localStorage.getItem("companyId")}`);
+    },
+
+    getReportingManager2(){
+      return axios.get(`http://127.0.0.1:8000/api/reporting-manager/${localStorage.getItem("id")}`);
+    },
+
+    async itfInitiate() {
+      await Promise.all([this.getBusinesses2(), this.getReportingManager2()])
+      .then((results) => {
+        const businesses = results[0];
+        const managers = results[1];
+
+      const client = [];
+      for (const key in businesses.data) {
+        const request = {
+          code: businesses.data[key].businessNumber,
+          name: businesses.data[key].businessName,
+        };
+        client.push(request);
+      }
+      this.client = client;
+
+      const reportingManager = [];
+      for (const key in managers.data) {
+        const request = {
+          code: managers.data[key].RMID,
+          name: managers.data[key].RMName,
+        };
+        reportingManager.push(request);
+      }
+      this.reportingManager = reportingManager;
+      })
+      
+      .catch(error => {
+        console.error(error);
+        this.openToast(
+            "top-right",
+            "error",
+            "Please Contact the administrator! and try again later"
+        );
+      });
+    },
+
     next() {
       if (this.counter === 0) {
         this.attemptNext = true;

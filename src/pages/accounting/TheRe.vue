@@ -1614,12 +1614,6 @@ export default {
         const expenses = results[3];
         const transpo = results[4];
 
-        console.log(projects)
-        console.log(managers)
-        console.log(businesses)
-        console.log(expenses)
-        console.log(transpo)
-
       let project = [];
       for (const key in projects.data) {
         const request = {
