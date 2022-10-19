@@ -892,11 +892,11 @@ export default {
 
       const reportingManager = [];
       for (const key in managers.data) {
-        const request2 = {
+        const request = {
           code: managers.data[key].RMID,
           name: managers.data[key].RMName,
         };
-        reportingManager.push(request2);
+        reportingManager.push(request);
       }
       this.reportingManager = reportingManager;
       })

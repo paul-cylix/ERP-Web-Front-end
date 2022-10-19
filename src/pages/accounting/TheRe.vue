@@ -1222,12 +1222,14 @@ export default {
   async created() {
     // Request Details
     this.isLoading = true
-    await this.getProjects();
-    await this.getReportingManager();
+    // await this.getProjects();
+    // await this.getReportingManager();
     await this.todaysDate();
-    await this.getBusinesses();
-    await this.getexpenseType();
-    await this.gettranspoSetup();
+    // await this.getBusinesses();
+    // await this.getexpenseType();
+    // await this.gettranspoSetup();
+
+    await this.reInitiate();
     this.isLoading = false
 
   },
@@ -1583,6 +1585,118 @@ export default {
   },
 
   methods: {
+
+    getProjects2(){
+      return axios.get(`http://127.0.0.1:8000/api/general-getprojects/${localStorage.getItem("companyId")}`);
+    },
+
+    getReportingManager2(){
+      return axios.get(`http://127.0.0.1:8000/api/reporting-manager/${localStorage.getItem("id")}`);
+    },
+
+    getBusinesses2(){
+      return axios.get(`http://127.0.0.1:8000/api/general-businesses/${localStorage.getItem("companyId")}`);
+    },
+
+    getexpenseType2(){
+      return axios.get(`http://127.0.0.1:8000/api/get-expenseType`);
+    },
+    gettranspoSetup2(){
+      return axios.get(`http://127.0.0.1:8000/api/get-transpoSetup`);
+    },
+
+    async reInitiate() {
+      await Promise.all([this.getProjects2(), this.getReportingManager2(), this.getBusinesses2(), this.getexpenseType2(), this.gettranspoSetup2()])
+      .then((results) => {
+        const projects = results[0];
+        const managers = results[1];
+        const businesses = results[2];
+        const expenses = results[3];
+        const transpo = results[4];
+
+        console.log(projects)
+        console.log(managers)
+        console.log(businesses)
+        console.log(expenses)
+        console.log(transpo)
+
+      let project = [];
+      for (const key in projects.data) {
+        const request = {
+          code: projects.data[key].project_id,
+          name: projects.data[key].project_name,
+        };
+        project.push(request);
+      }
+      this.project = project;
+
+      const reportingManager = [];
+      for (const key in managers.data) {
+        const request = {
+          code: managers.data[key].RMID,
+          name: managers.data[key].RMName,
+        };
+        reportingManager.push(request);
+      }
+      this.reportingManager = reportingManager;
+
+
+      const client = [];
+      for (const key in businesses.data) {
+        const request = {
+          code: businesses.data[key].businessNumber,
+          name: businesses.data[key].businessName,
+        };
+        client.push(request);
+      }
+      this.modalclient = client;
+
+      const modalExpenseType = [];
+      for (const key in expenses.data[0]) {
+        const request = {
+          code: expenses.data[0][key].type,
+          name: expenses.data[0][key].type,
+        };
+        modalExpenseType.push(request);
+      }
+      this.modalExpenseType = modalExpenseType;
+
+      const transpoSetup = [];
+      for (const key in transpo.data[0]) {
+        const request = {
+          code: transpo.data[0][key].MODE,
+          name: transpo.data[0][key].MODE,
+        };
+        transpoSetup.push(request);
+      }
+      this.transpoSetup = transpoSetup;
+      
+
+
+
+      })
+      
+      .catch(error => {
+        console.error(error);
+        this.openToast(
+            "top-right",
+            "error",
+            "Please Contact the administrator! and try again later"
+        );
+      });
+    },
+
+
+
+
+
+
+
+
+
+
+
+
     re_totalAmount() {
       let xp_totalAmt = 0;
       let td_totalAmt = 0;
@@ -2207,6 +2321,8 @@ export default {
         client.push(request);
       }
       this.modalclient = client;
+
+
     },
 
     async getProjects() {
