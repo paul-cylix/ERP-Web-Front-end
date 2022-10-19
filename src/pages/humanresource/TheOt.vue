@@ -693,12 +693,16 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
+  async created() {
     // Request Details
-    this.getProjects();
-    this.getReportingManager();
-    this.todaysDate();
-    this.getEmployees(this.companyId);
+    // this.getProjects();
+    // this.getReportingManager();
+    this.isLoading = true;
+    await this.todaysDate();
+    await this.otInitiate();
+    this.isLoading = false;
+
+    // this.getEmployees(this.companyId);
   },
   watch: {
     itemModalProjectName(newValue) {
@@ -859,6 +863,70 @@ export default {
   },
 
   methods: {
+    getProjects2(){
+      return axios.get(`http://127.0.0.1:8000/api/general-getprojects/${localStorage.getItem("companyId")}`);
+    },
+
+    getReportingManager2(){
+      return axios.get(`http://127.0.0.1:8000/api/reporting-manager/${localStorage.getItem("id")}`);
+    },
+
+    getEmployees2(){
+      return axios.get(`http://127.0.0.1:8000/api/get-employees/${localStorage.getItem("companyId")}`);
+    },
+
+    async otInitiate(){
+      await Promise.all([this.getProjects2(), this.getReportingManager2(), this.getEmployees2()])
+      .then((results) => {
+        const projects = results[0];
+        const managers = results[1];
+        const employees = results[2];
+
+
+
+      let project = [];
+      for (const key in projects.data) {
+        const request = {
+          code: projects.data[key].project_id,
+          name: projects.data[key].project_name,
+        };
+        project.push(request);
+      }
+      this.projectName = project;
+
+      const reportingManager = [];
+      for (const key in managers.data) {
+        const request = {
+          code: managers.data[key].RMID,
+          name: managers.data[key].RMName,
+        };
+        reportingManager.push(request);
+      }
+      this.reportingManager = reportingManager;
+
+      const employeeName = [];
+      for (const key in employees.data) {
+        const request = {
+          code: employees.data[key].SysPK_Empl,
+          name: employees.data[key].Name_Empl,
+        };
+        employeeName.push(request);
+      }
+      this.employeeName = employeeName;
+
+      
+      })
+      
+      .catch(error => {
+        console.error(error);
+        this.openToast(
+            "top-right",
+            "error",
+            "Please Contact the administrator! and try again later"
+        );
+      });
+    },
+
     validateEmptyFields() {
       if (
         !this.missingModalProject &&
