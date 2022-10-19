@@ -429,13 +429,16 @@ export default {
   components: {
     ModelListSelect,
   },
-  created() {
+  async created() {
     // Request Details
+    this.isLoading = true
 
-    this.getReportingManager();
     this.todaysDate();
-    this.getEmployees(this.companyId);
+    await this.cafInitiate();
+    this.isLoading = false
+
   },
+
   watch: {},
   computed: {
     classA() {
@@ -572,6 +575,52 @@ export default {
   },
 
   methods: {
+    getEmployees2(){
+      return axios.get(`http://127.0.0.1:8000/api/get-employees/${localStorage.getItem("companyId")}`);
+    },
+
+    getReportingManager2(){
+      return axios.get(`http://127.0.0.1:8000/api/reporting-manager/${localStorage.getItem("id")}`);
+    },
+
+    async cafInitiate(){
+      await Promise.all([this.getEmployees2(), this.getReportingManager2()])
+      .then((results) => {
+        const employees = results[0];
+        const managers = results[1];
+
+      const employeeName = [];
+      for (const key in employees.data) {
+        const request = {
+          code: employees.data[key].SysPK_Empl,
+          name: employees.data[key].Name_Empl,
+        };
+        employeeName.push(request);
+      }
+      this.employee = employeeName;
+
+
+      const reportingManager = [];
+      for (const key in managers.data) {
+        const request = {
+          code: managers.data[key].RMID,
+          name: managers.data[key].RMName,
+        };
+        reportingManager.push(request);
+      }
+      this.reportingManager = reportingManager;
+      })
+      
+      .catch(error => {
+        console.error(error);
+        this.openToast(
+            "top-right",
+            "error",
+            "Please Contact the administrator! and try again later"
+        );
+      });
+    },
+
     async submit() {
       this.isLoading = true;
       const fd = new FormData();
@@ -741,8 +790,9 @@ export default {
             };
             employeeName.push(request);
           }
-
           this.employee = employeeName;
+
+
         }
       } catch (err) {
         this.isLoading = false;
