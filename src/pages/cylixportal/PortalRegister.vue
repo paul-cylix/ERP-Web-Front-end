@@ -147,17 +147,35 @@ export default {
   watch: {
     // Request Details
     selectedEmployee(newValue) {
+      this.userId = newValue.employee_user_id
       this.email = newValue.employee_email;
+      this.companyId = newValue.employee_company_id;
+      this.companyName = newValue.employee_company_name;
+      this.positionId = newValue.employee_position_id;
+      this.positionName = newValue.employee_position_name;
+      this.departmentId = newValue.employee_department_id;
+      this.departmentName = newValue.employee_department_name;
+
+
+
+      console.log(newValue)
     },
   },
 
   data() {
     return {
+      userId: "",
       employees: [],
       selectedEmployee: {},
       email: "",
       password: "",
       confirmPassword: "",
+      companyId: "",
+      companyName: "",
+      positionId: "",
+      positionName: "",
+      departmentId: "",
+      departmentName: "",
 
       ranks: [
         { code: 0, name: "Employee" },
@@ -255,7 +273,7 @@ export default {
     async register() {
       
         this.isLoading = true;
-
+        const userId = this.userId;
         const selectedEmployee = this.selectedEmployee.employee_fullname
         const selectedEmployeeId = this.selectedEmployee.employee_id
         const email = this.email
@@ -264,8 +282,18 @@ export default {
         const selectedRank = this.selectedRank.name
         const selectedManager = this.selectedManager.id
 
-      
+        const companyId = this.companyId;
+        const companyName = this.companyName;
+        const positionId = this.positionId;
+        const positionName = this.positionName;
+        const departmentId = this.departmentId;
+        const departmentName = this.departmentName;
+
+
+        
+
         const data = {
+          userId: userId,
           username: email,
           fullname: selectedEmployee,
           employeeId: selectedEmployeeId,
@@ -274,12 +302,20 @@ export default {
           password_confirmation: confirmPassword,
           rank: selectedRank,
           managerId: selectedManager,
+          companyId : companyId,
+          companyName : companyName,
+          positionId : positionId,
+          positionName : positionName,
+          departmentId : departmentId,
+          departmentName : departmentName,
         }
+
+        console.warn(data);
       
 
     try {
         const resp = await axios.post(
-          "http://127.0.0.1:8000/api/save-user-attendance",
+          "http://portal.cylix.ph/ctiportal/public/api/register",
           data
         );
         
@@ -304,6 +340,12 @@ export default {
             "top-right",
             "warning",
             obj.exist
+          );
+        } else if (status === 'failed') {
+          this.openToast(
+            "top-right",
+            "warning",
+            "The email has already been taken."
           );
         }
 
@@ -346,12 +388,21 @@ export default {
         const employees = payload.employees;
         const managers = payload.managers;
 
+        console.error(employees)
+
         const employeesArray = [];
         for (const key in employees) {
           const request = {
+            employee_user_id: employees[key].user_id,
             employee_id: employees[key].employee_id,
             employee_fullname: employees[key].employee_fullname,
             employee_email: employees[key].employee_email,
+            employee_company_id: employees[key].company_id,
+            employee_company_name: employees[key].company_name,
+            employee_position_id: employees[key].position_id,
+            employee_position_name: employees[key].position_name,
+            employee_department_id: employees[key].department_id,
+            employee_department_name: employees[key].department_name
           };
           employeesArray.push(request);
         }
