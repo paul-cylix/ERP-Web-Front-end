@@ -161,7 +161,9 @@
 
                     <button
                       class="btn btn-sm btn-danger m-0 ml-1"
-                      @click="trash(overtime.indexOf(item), item.id)"
+                      @click="totrash(overtime.indexOf(item), item.id)"
+                      data-toggle="modal"
+                      data-target="#modal-confirm"
                     >
                       <i class="fas fa-trash"></i>
                     </button>
@@ -403,6 +405,41 @@
           <!-- /.Form Review Attachments -->
         </aside>
         <!-- / Form Review -->
+
+        <!-- Modal confirm-->
+        <div
+          class="modal fade"
+          id="modal-confirm"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h6 class="modal-title">Delete Item</h6>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                  id="modal-confirm--close-btn"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                Are you sure want to delete this item?
+              </div>
+              <div class="modal-footer justify-content-end">
+                <button type="button" @click="trash()" class="btn btn-success btn-sm">Yes</button>
+                <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">No</button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal confirm -->
 
         <!-- Modal -->
         <div
@@ -777,7 +814,7 @@
             <button
               v-if="this.counter <= 1"
               type="button"
-              @click="counter++"
+              @click="validateNext()"
               class="btn mr-1 btn-primary btn-sm"
             >
               Next
@@ -794,6 +831,7 @@
             "
           >
             <button
+              v-if="this.counter > 1"
               type="button"
               class="btn btn-success ml-1 btn-sm"
               data-toggle="modal"
@@ -872,7 +910,7 @@ export default {
       this.isLoading = false;
     },
   },
-    watch: {
+  watch: {
     itemModalProjectName(newValue) {
       if (newValue.code > 0) {
         this.getClient(newValue.code);
@@ -893,8 +931,11 @@ export default {
     totalOTHours() {
       if (this.overtime.length > 0) {
         const total = this.overtime
-          .map((overtime) => parseFloat(overtime.ot_totalhrs))
+          .map((overtime) => parseFloat(overtime.ot_totalhrs_actual))
           .reduce((acc, overtime) => overtime + acc);
+
+      
+
         return total;
       } else {
         return 0;
@@ -1067,10 +1108,26 @@ export default {
 
       // soft delete ot row by id
       otId: [],
+
+      // to trash
+      totrashIndex: null,
+      totrashotId: null,
     };
   },
 
   methods: {
+    validateNext() {
+      if (this.counter === 0) {
+        this.counter++
+      } else {
+        if (this.overtime.length) {
+          this.counter++
+        } else {
+          this.openToast("top-right", "warning", 'Overtime table is required!');
+        }
+      }
+    },
+
     async getClient(id) {
       const response = await fetch(
         `http://127.0.0.1:8000/api/business-client/${id}`,
@@ -1104,9 +1161,18 @@ export default {
       this.mainId = client[0].mainId;
     },
 
-    trash(index, id) {
-      this.overtime.splice(index, 1);
-      this.otId.push(id);
+    trash() {
+      this.overtime.splice(this.totrashIndex, 1);
+      this.otId.push(this.totrashotId);
+      document.getElementById("modal-confirm--close-btn").click();
+      this.openToast("top-right", "success", 'Overtime item deleted successfully!');
+      this.totrashIndex = null;
+      this.totrashotId = null;
+    },
+
+    totrash(index, id) {
+      this.totrashIndex = index
+      this.totrashotId = id
     },
 
     async update() {
@@ -1203,7 +1269,7 @@ export default {
 
       // this.overtime.splice(index, 1);
 
-      console.log(this.editOvertime);
+      // console.log(this.editOvertime);
 
       this.itemEmployeeName = {
         code: selectedOvertime.employee_id,
@@ -1217,6 +1283,8 @@ export default {
         name: selectedOvertime.PRJNAME,
       };
 
+      // console.log(selectedOvertime)
+
       this.id = selectedOvertime.id;
       this.overtimeDate = selectedOvertime.overtime_date;
       this.authTimeStart = this.convertTimeAndDate(selectedOvertime.ot_in);
@@ -1224,7 +1292,7 @@ export default {
       this.authOThrs = selectedOvertime.ot_totalhrs;
       this.actualTimeStart = this.convertTimeAndDate(selectedOvertime.ot_in);
       this.actualTimeEnd = this.convertTimeAndDate(selectedOvertime.ot_out);
-      this.actualOthrs = selectedOvertime.ot_totalhrs;
+      this.actualOthrs = selectedOvertime.ot_totalhrs_actual;
       this.modalPurpose = selectedOvertime.purpose;
       this.clientName = selectedOvertime.cust_id;
       this.clientId = selectedOvertime.cust_name;
@@ -1430,8 +1498,6 @@ export default {
       fd.append("loggedUserDepartment", this.loggedUserDepartment);
       fd.append("overtimeData", JSON.stringify(this.overtime));
       fd.append("otId", JSON.stringify(this.otId));
-
- 
 
       if (type === "Approve") {
         try {

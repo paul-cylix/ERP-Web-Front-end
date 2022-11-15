@@ -94,7 +94,7 @@
                   class="form-control form-control-sm py-3"
                   id="reference"
                   disabled
-                  :value="'RE-' + todaysYear"
+                  v-model="referenceNumber"
                 />
               </div>
             </div>
