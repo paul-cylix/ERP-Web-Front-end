@@ -158,6 +158,13 @@
                     >
                       <i class="fas fa-edit"></i>
                     </button>
+
+                    <button
+                      class="btn btn-sm btn-danger m-0 ml-1"
+                      @click="trash(overtime.indexOf(item), item.id)"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
                   </aside>
                 </td>
               </tr>
@@ -516,23 +523,28 @@
                         ><label for="projectName">Project Name</label></small
                       >
 
-                      <input
+                      <!-- <input
                         type="text"
                         disabled
                         class="form-control py-3 form-control-sm"
                         v-model="itemModalProjectName.name"
-                      />
+                      /> -->
 
-                      <!-- <model-list-select
+                      <model-list-select
                         :list="projectName"
                         v-model="itemModalProjectName"
                         option-value="code"
                         option-text="name"
-                        :isDisabled="true"
                         placeholder="Select Project Name"
                         style="padding: 9px"
                       >
-                      </model-list-select> -->
+                      </model-list-select>
+
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalProject && attemptUpdate"
+                        >Auth Start is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -592,14 +604,18 @@
                       >
                       <date-picker
                         v-model="authTimeStart"
-                        @change="setTime"
+                        @change="setTimeAuth"
                         :minute-step="5"
                         format="MM/DD/YYYY hh:mm A"
-                        :disabled="true"
                         value-type="format"
                         type="datetime"
                         style="display: block; width: 100%; line-height: 20px"
                       ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalAuthStart && attemptUpdate"
+                        >Auth Start is required!</small
+                      >
                     </div>
                   </div>
 
@@ -612,14 +628,18 @@
                       >
                       <date-picker
                         v-model="authTimeEnd"
-                        @change="setTime"
+                        @change="setTimeAuth"
                         :minute-step="5"
                         format="MM/DD/YYYY hh:mm A"
                         value-type="format"
-                        :disabled="true"
                         type="datetime"
                         style="display: block; width: 100%; line-height: 20px"
                       ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalAuthEnd && attemptUpdate"
+                        >Auth End is required!</small
+                      >
                     </div>
                   </div>
 
@@ -705,10 +725,15 @@
                       <textarea
                         class="form-control"
                         id="purpose"
-                        disabled
                         rows="3"
                         v-model="modalPurpose"
                       ></textarea>
+
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalPurpose && attemptUpdate"
+                        >Auth Start is required!</small
+                      >
                     </div>
                   </div>
                 </div>
@@ -731,64 +756,70 @@
 
         <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
-            
-              <button
-                v-show="counter"
-                type="button"
-                @click="counter--"
-                class="btn mr-1 btn-secondary btn-sm"
-              >
-                Previous
-              </button>
-       
+          <aside
+            class="
+              col-lg-6
+              d-flex
+              justify-content-start
+              align-items-center
+              flex-nowrap
+            "
+          >
+            <button
+              v-show="counter"
+              type="button"
+              @click="counter--"
+              class="btn mr-1 btn-secondary btn-sm"
+            >
+              Previous
+            </button>
 
-     
-              <button
-                v-if="this.counter <= 1"
-                type="button"
-                @click="counter++"
-                class="btn mr-1 btn-primary btn-sm"
-              >
-                Next
-              </button>
-        
+            <button
+              v-if="this.counter <= 1"
+              type="button"
+              @click="counter++"
+              class="btn mr-1 btn-primary btn-sm"
+            >
+              Next
+            </button>
           </aside>
 
-          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
-            
-              <button
-                type="button"
-                class="btn btn-success ml-1 btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Approve')"
-              >
-                Approve
-              </button>
-            
+          <aside
+            class="
+              col-lg-6
+              d-flex
+              justify-content-end
+              align-items-center
+              flex-nowrap
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-success ml-1 btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Approve')"
+            >
+              Approve
+            </button>
 
-            
-              <button
-                type="button"
-                class="btn btn-warning ml-1 btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Withdrawn')"
-              >
-                Withdrawn
-              </button>
-            
+            <button
+              type="button"
+              class="btn btn-warning ml-1 btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Withdrawn')"
+            >
+              Withdrawn
+            </button>
 
-            
-              <button
-                type="button"
-                class="btn btn-danger ml-1 btn-sm"
-                @click="close()"
-              >
-                Close
-              </button>
-            
+            <button
+              type="button"
+              class="btn btn-danger ml-1 btn-sm"
+              @click="close()"
+            >
+              Close
+            </button>
           </aside>
         </div>
         <!-- / Buttons -->
@@ -815,7 +846,10 @@ export default {
     await this.getProjects();
 
     await this.getActualOtMain(this.$route.params.id);
-    await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+    await this.getAttachments(
+      this.$route.params.id,
+      this.$route.params.frmName
+    );
     await this.getEmployees(this.companyId);
     this.isLoading = false;
   },
@@ -827,8 +861,8 @@ export default {
 
     async $route(newRoute) {
       this.isLoading = true;
-      this.counter = 0
-      this.withdrawRemarks = ''
+      this.counter = 0;
+      this.withdrawRemarks = "";
       console.log(newRoute);
       await this.getProjects();
 
@@ -836,6 +870,13 @@ export default {
       await this.getAttachments(newRoute.params.id, newRoute.params.frmName);
       await this.getEmployees(this.companyId);
       this.isLoading = false;
+    },
+  },
+    watch: {
+    itemModalProjectName(newValue) {
+      if (newValue.code > 0) {
+        this.getClient(newValue.code);
+      }
     },
   },
   computed: {
@@ -868,6 +909,29 @@ export default {
       }
     },
 
+    missingModalProject() {
+      if (this.itemModalProjectName.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalAuthStart() {
+      if (this.authTimeStart === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalAuthEnd() {
+      if (this.authTimeEnd === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     missingModalActualStart() {
       if (this.actualTimeStart === null) {
         return true;
@@ -877,6 +941,14 @@ export default {
     },
     missingModalActualEnd() {
       if (this.actualTimeEnd === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalPurpose() {
+      if (this.modalPurpose.length === 0) {
         return true;
       } else {
         return false;
@@ -895,7 +967,7 @@ export default {
   },
   data() {
     return {
-      counter: 0,
+      counter: 1,
       attemptUpdate: false,
       // Request Details
       referenceNumber: "",
@@ -983,8 +1055,8 @@ export default {
       mainId: "",
 
       overtimeDate: "",
-      authTimeStart: "",
-      authTimeEnd: "",
+      authTimeStart: null,
+      authTimeEnd: null,
       authOThrs: "",
       modalPurpose: "",
       actualTimeStart: null,
@@ -992,10 +1064,51 @@ export default {
       actualOthrs: "",
 
       index: "",
+
+      // soft delete ot row by id
+      otId: [],
     };
   },
 
   methods: {
+    async getClient(id) {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/business-client/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        const error = new Error(
+          responseData.message || "Failed to fetch Reporting Manager."
+        );
+        throw error;
+      }
+      const client = [];
+      for (const key in responseData) {
+        const request = {
+          clientId: responseData[key].clientID,
+          clientName: responseData[key].clientName,
+          mainId: responseData[key].mainID,
+        };
+        client.push(request);
+      }
+      this.clientName = client[0].clientName;
+      this.clientId = client[0].clientId;
+      this.mainId = client[0].mainId;
+    },
+
+    trash(index, id) {
+      this.overtime.splice(index, 1);
+      this.otId.push(id);
+    },
+
     async update() {
       this.isLoadingModal = true;
       this.attemptUpdate = true;
@@ -1005,7 +1118,13 @@ export default {
         this.actualTimeStart,
         this.actualTimeEnd
       );
-      if (validated && isGreaterThan) {
+
+      const isGreaterThanAuth = this.validateStartEndDate(
+        this.authTimeStart,
+        this.authTimeEnd
+      );
+
+      if (validated && isGreaterThan && isGreaterThanAuth) {
         const addData = {
           id: this.id,
           overtime_date: this.overtimeDate,
@@ -1020,6 +1139,7 @@ export default {
           purpose: this.modalPurpose,
           cust_id: this.clientId,
           cust_name: this.clientName,
+          main_Id: this.mainId,
           PRJID: this.itemModalProjectName.code,
           PRJNAME: this.itemModalProjectName.name,
         };
@@ -1053,16 +1173,25 @@ export default {
           // Handle Error Here
           console.error(err);
         }
-      } else if (isGreaterThan === false && validated) {
-        this.isLoadingModal = false;
-        this.addAlert(
-          "Failed",
-          "Actual Time End must be greater than Actual Time Start!",
-          "false"
-        );
       } else {
-        this.isLoadingModal = false;
-        this.addAlert("Failed", "Please complete required fields!", "false");
+        if (isGreaterThanAuth === false && validated) {
+          this.isLoadingModal = false;
+          this.addAlert(
+            "Failed",
+            "Auth Time End must be greater than Auth Time Start!",
+            "false"
+          );
+        } else if (isGreaterThan === false && validated) {
+          this.isLoadingModal = false;
+          this.addAlert(
+            "Failed",
+            "Actual Time End must be greater than Actual Time Start!",
+            "false"
+          );
+        } else {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", "Please complete required fields!", "false");
+        }
       }
     },
 
@@ -1102,7 +1231,14 @@ export default {
     },
 
     validateEmptyFields() {
-      if (!this.missingModalActualStart && !this.missingModalActualEnd) {
+      if (
+        !this.missingModalProject &&
+        !this.missingModalAuthStart &&
+        !this.missingModalAuthEnd &&
+        !this.missingModalActualStart &&
+        !this.missingModalActualEnd &&
+        !this.missingModalPurpose
+      ) {
         return true;
       } else {
         return false;
@@ -1174,6 +1310,26 @@ export default {
       this.resetModal();
     },
 
+    setTimeAuth() {
+      const time_start = new Date(this.authTimeStart);
+      const time_end = new Date(this.authTimeEnd);
+
+      let time_total = (time_end - time_start) / 1000 / 60 / 60;
+
+      let f = Math.floor(time_total);
+      if (time_total - f < 0.5) {
+        time_total = Math.floor(time_total);
+        // console.log(time_total);
+        this.authOThrs = time_total;
+        // $('#authtime_totalHrs').val(time_total);
+      } else {
+        time_total = f + 0.5;
+        // console.log(time_total);
+        this.authOThrs = time_total;
+        // $('#authtime_totalHrs').val(time_total);
+      }
+    },
+
     setTime() {
       const time_start = new Date(this.actualTimeStart);
       const time_end = new Date(this.actualTimeEnd);
@@ -1196,7 +1352,9 @@ export default {
 
     async getProjects() {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/general-projects",
+        `http://127.0.0.1:8000/api/general-getprojects/${localStorage.getItem(
+          "companyId"
+        )}`,
         {
           method: "GET",
           headers: {
@@ -1222,6 +1380,8 @@ export default {
         project.push(request);
       }
       this.projectName = project;
+
+      // console.warn(project)
     },
 
     async getEmployees(companyId) {
@@ -1269,6 +1429,9 @@ export default {
       fd.append("class", "OT");
       fd.append("loggedUserDepartment", this.loggedUserDepartment);
       fd.append("overtimeData", JSON.stringify(this.overtime));
+      fd.append("otId", JSON.stringify(this.otId));
+
+ 
 
       if (type === "Approve") {
         try {
@@ -1280,15 +1443,15 @@ export default {
           this.isLoadingModal = false;
           document.getElementById("modalCloseButton").click();
           if (resp.status === 200) {
-            // console.log(resp.data);
+            console.log(resp.data);
             this.openToast("top-right", "success", resp.data.message);
             this.$router.replace("/approvals");
           }
 
-          // if (resp.status === 202) {
-          //   // console.log(resp.data);
-          //   this.openToast("top-right", "error", resp.data.message);
-          // }
+          if (resp.status >= 400 && resp.status < 500) {
+            console.log(resp.data);
+            this.openToast("top-right", "error", resp.data.message);
+          }
         } catch (err) {
           // Handle Error Here
           console.error(err);
@@ -1355,18 +1518,17 @@ export default {
     },
 
     preview(mimeType, imageBytes) {
-      if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
-      {
+      if (mimeType === "image/jpeg" || mimeType === "image/png") {
         var newTab = window.open();
         newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      } else if (mimeType === "application/pdf") {
+        let pdfWindow = window.open("#");
+        pdfWindow.document.write(
+          `<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +
+            encodeURI(imageBytes) +
+            "'></iframe>"
+        );
       }
-
-      else if (mimeType === 'application/pdf')
-      {
-        let pdfWindow = window.open('#')
-        pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
-      }
-    
     },
 
     async getAttachments(id, form) {
@@ -1385,7 +1547,6 @@ export default {
     },
 
     async getActualOtMain(id) {
-      
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/actual-ot-main/${id}`
@@ -1397,12 +1558,24 @@ export default {
           this.requestedDate = resp.data[0].request_date;
           this.reportingManagerName = resp.data[0].reporting_manager;
 
+          // this.overtime = resp.data;
+          let objOT = resp.data;
+
+          objOT.forEach((element) => {
+            element["ot_in"] = this.convertTimeAndDate(element["ot_in"]);
+            element["ot_out"] = this.convertTimeAndDate(element["ot_out"]);
+            element["ot_in_actual"] = this.convertTimeAndDate(
+              element["ot_in_actual"]
+            );
+            element["ot_out_actual"] = this.convertTimeAndDate(
+              element["ot_out_actual"]
+            );
+          });
           this.overtime = resp.data;
         }
       } catch (err) {
         // Handle Error Here
         console.error(err);
-        
       }
     },
 
