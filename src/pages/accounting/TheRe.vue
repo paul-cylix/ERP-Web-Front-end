@@ -458,12 +458,11 @@
           "
           id="app"
         >
-          <div
-            class="pt-2 col-md-12 rounded"
+        `  <div
+            class="pt-2 col-md-12 rounded uploadContainer"
             @dragover="dragover"
             @dragleave="dragleave"
             @drop="drop"
-            id="uploadContainer"
           >
             <input
               type="file"
@@ -483,46 +482,77 @@
             >
               <span class="text-secondary">Click here or drop file(s)</span>
             </label>
-            <small
-              class="text-danger p-0 m-0"
-              v-if="missingAttachments && attemptNextThree"
-              >Attachments is required!</small
-            >
 
-            <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-              <li
-                class="text-sm mt-2"
-                v-for="file in selectedFile"
-                :key="file.name"
-              >
-                <div class="row d-flex justify-content-center">
-                  <div class="col-md-4 d-flex">
-                    <div class="col text-left">
-                      <span><label>{{ file.name }}</label></span>
-                    </div>
-                    <div class="co-2">
-                      <button
-                        class="btn btn-danger btn-sm"
-                        type="button"
-                        @click="remove(selectedFile.indexOf(file))"
-                        title="Remove file"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <div class="col-2">
-                      <button
-                        @click="preview(selectedFile.indexOf(file))"
-                        class="btn btn-secondary btn-sm"
-                      >
-                        Preview
-                      </button>
+              <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
+                <li
+                  class="text-sm mt-2"
+                  v-for="file in selectedDBFile"
+                  :key="file.newFilename"
+                >
+                  <div class="row d-flex justify-content-center">
+                    <div class="col-md-4 d-flex">
+                      <div class="col text-left">
+                        <span
+                          ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
+                        >
+                      </div>
+
+                      <div>
+                        <button
+                          class="btn btn-danger btn-sm px-13"
+                          type="button"
+                          @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
+                          title="Remove file"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <div class="ml-1">
+                        <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                      </div>
+                      <div class="ml-1">
+                        <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                      </div>
+
                     </div>
                   </div>
-                </div>
-              </li>
-            </ul>
-          </div>
+                </li>
+              </ul>
+
+              <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
+                <li
+                  class="text-sm mt-2"
+                  v-for="file in selectedFile"
+                  :key="file.name"
+                >
+                  <div class="row d-flex justify-content-center">
+                    <div class="col-md-4 d-flex">
+                      <div class="col text-left">
+                        <span><label>{{ file.name }}</label></span>
+                      </div>
+                      <div>
+                        <button
+                          class="btn btn-danger btn-sm px-13"
+                          type="button"
+                          @click="remove(selectedFile.indexOf(file))"
+                          title="Remove file"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <div class="ml-1">
+                        <button
+                          @click="preview(selectedFile.indexOf(file))"
+                          class="btn btn-secondary btn-sm"
+                        >
+                          Preview
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+          </div>`
         </div>
         <!-- / The Attachments -->
 
@@ -768,21 +798,18 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="file in selectedFile" :key="file.name">
+                  <tr v-for="file in selectedDBFile" :key="file.id">
+                    <td>{{ file.filename }}</td>
+                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                      <a class="btn btn-secondary btn-sm ml-1" :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                    </td>
+                  </tr>
+                  <tr v-for="file in selectedFile" :key="file.filename">
                     <td>{{ file.name }}</td>
-                    <td class="pl-2 pr-2 text-center">
-                      <button
-                        @click="remove(selectedFile.indexOf(file))"
-                        class="btn btn-danger btn-sm"
-                      >
-                        Delete
-                      </button>
-                      <button
-                        @click="preview(selectedFile.indexOf(file))"
-                        class="btn btn-secondary btn-sm ml-1"
-                      >
-                        Preview
-                      </button>
+                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                      <a class="btn btn-danger btn-sm px-13" @click="remove(selectedFile.indexOf(file))">Remove</a>
+                      <a class="btn btn-secondary btn-sm ml-1"  @click="preview(selectedFile.indexOf(file))">Preview</a>
                     </td>
                   </tr>
                 </tbody>
@@ -1138,10 +1165,6 @@
                 </div>
               </div>
               <div class="modal-footer justify-content-end">
-                <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-
-                <!-- <button @click="test()">test</button> -->
-
                 <button
                   v-if="isButton"
                   type="button"
@@ -1169,39 +1192,101 @@
 
         <!-- / Main Form -->
 
-        <!-- Buttons -->
-        <div class="row d-flex justify-content-end mt-3 align-items-center flex-nowrap m-1">
-          
-            <button
-              v-show="counter"
-              type="button"
-              @click="counter--"
-              class="btn btn-secondary btn-sm"
-            >
-              Previous
-            </button>
-         
-       
-       
-            <button
-              v-if="this.counter <= 4"
-              type="button"
-              @click="next()"
-              class="btn ml-1 btn-primary btn-sm"
-            >
-              Next
-            </button>
-        
+        <!-- Modal Confirmation of saving as draft  -->
+        <div
+          class="modal fade"
+          id="modal-save-as-draft"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
 
-         
-            <button
-              v-else
-              type="button"
-              class="btn ml-1 btn-success btn-sm"
-              @click="submit()"
-            >
-              Submit
-            </button>
+              <div class="modal-header">
+                <button
+                  type="button"
+                  id="modalCloseButton"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                  ref="refSaveDraftCloseBtn"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body">
+                <h5 class="text-center"> Are you sure you want to draft the request?</h5>
+              </div>
+              <div class="modal-footer justify-content-end">
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  Close
+                </button>
+
+                <button v-show="!isSpinner" type="button" class="btn btn-success btn-sm" @click="saveDraft()">Save</button>
+
+                <div v-show="isSpinner">
+                  <button disabled type="button" class="btn btn-success btn-sm" @click="saveDraft()">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                    Saving...
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+        <!-- end of Modal Confirmation of saving as draft  -->
+
+        <!-- Buttons -->
+        <div class="row d-flex justify-content-between mt-3 align-items-center flex-nowrap m-1">
+            <div>
+              <button
+                type="button"
+                class="btn btn-warning btn-sm"
+                data-toggle="modal"
+                data-target="#modal-save-as-draft"
+              >
+                Save as draft
+              </button>
+            </div>
+
+            <div>
+              <button
+                v-show="counter"
+                type="button"
+                @click="counter--"
+                class="btn btn-secondary btn-sm"
+              >
+                Previous
+              </button>
+          
+              <button
+                v-if="this.counter <= 4"
+                type="button"
+                @click="next()"
+                class="btn ml-1 btn-primary btn-sm"
+              >
+                Next
+              </button>
+          
+              <button
+                v-else
+                type="button"
+                class="btn ml-1 btn-success btn-sm"
+                @click="submit()"
+              >
+                Submit
+              </button>
+            </div>
          
         </div>
         <!-- / Buttons -->
@@ -1222,6 +1307,7 @@ export default {
   async created() {
     // Request Details
     this.isLoading = true
+    await this.getREbyUserID();
     // await this.getProjects();
     // await this.getReportingManager();
     await this.todaysDate();
@@ -1331,7 +1417,7 @@ export default {
     },
 
     missingAttachments() {
-      if (this.selectedFile.length === 0) {
+      if (this.selectedFile.length === 0 && this.selectedDBFile.length === 0) {
         return true;
       } else {
         return false;
@@ -1567,6 +1653,8 @@ export default {
 
       transpoSetup_Data: [],
       transpoSetup_EditData: [],
+      selectedDBFile : [],
+      idOfAttachmentsToDelete : [],
 
       // Logged User Data
       loggedUserId: localStorage.getItem("id"),
@@ -1578,6 +1666,7 @@ export default {
       companyName: localStorage.getItem("companyName"),
 
       isLoading: false,
+      isSpinner: false,
 
       
 
@@ -1721,10 +1810,6 @@ export default {
       this.realAmount = realAmount;
     },
 
-    test() {
-      console.log(this.missingExpenses);
-    },
-
     addAlert(header, message, type) {
       this.isAlert = true;
       this.header = header;
@@ -1747,7 +1832,7 @@ export default {
         this.attemptNext = false;
         this.attemptNextOne = true;
       } else if (this.counter === 2) {
-        console.log("expense details");
+        // console.log("expense details");
       } else if (this.counter === 3) {
         this.attemptNextOne = false;
         this.attemptNextTwo = true;
@@ -1830,6 +1915,174 @@ export default {
       });
     },
 
+    async getREbyUserID() {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/getREbyUserID/${this.loggedUserId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      
+      if(responseData.length >= 1) {
+        // console.log(responseData);
+        this.dateNeeded = responseData[0].TRANS_DATE
+        this.purpose = responseData[0].DESCRIPTION
+        this.payeeName = responseData[0].PAYEE
+
+        const reportingManager = {
+          code: responseData[0].reportingManagerID,
+          name: responseData[0].REPORTING_MANAGER
+        };
+        const project = {
+          code: responseData[0].PRJID,
+          name: responseData[0].PROJECT
+        };
+
+        this.reportingManagerItem = reportingManager
+        this.projectItem = project
+
+        this.getReExpenseByREID(responseData[0]['id'])
+        this.getReTranspoByREID(responseData[0]['id'])
+        this.getREAttachmentsByREQID(responseData[0]['id'])
+      }
+    },
+
+    async getReExpenseByREID(reid) {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/get-ReExpense/${reid}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      if(responseData.length >= 1) {
+        // console.log(responseData);
+        this.expenseType_Data = responseData
+      }
+    },
+
+    async getReTranspoByREID(reid) {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/get-ReTranspo/${reid}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      if(responseData.length >= 1) {
+        // console.log(responseData);
+        this.transpoSetup_Data = responseData
+      }
+    },
+
+    async getREAttachmentsByREQID(reqid) {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/getReGeneralAttachmentsByReqid/${reqid}/${this.loggedUserId}`,
+
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      if(responseData.length >= 1) {
+        // console.log(responseData);
+        this.selectedDBFile = responseData
+      }
+    },
+
+    removeReAttachments(id, i) {
+      console.log(id);
+      this.selectedDBFile.splice(i, 1);
+      this.idOfAttachmentsToDelete.push(id)
+      // console.log(this.idOfAttachmentsToDelete);
+    },
+
+    async saveDraft() {
+      this.isLoading = true;
+      this.isSpinner = true;
+      this.$refs.refSaveDraftCloseBtn.click()
+
+      const fd = new FormData();
+      for (let i = 0; i < this.selectedFile.length; i++) {
+        fd.append("file[]", this.selectedFile[i]);
+      }
+
+      fd.append("reportingManagerId", this.reportingManagerItem.code);
+      fd.append("reportingManagerName", this.reportingManagerItem.name);
+      fd.append("projectName", this.projectItem.name);
+      fd.append("projectId", this.projectItem.code);
+      fd.append("dateNeeded", this.dateNeeded);
+      fd.append("clientName", this.clientName);
+      fd.append("clientId", this.clientId);
+      fd.append("mainId", this.mainId);
+      fd.append("purpose", this.purpose);
+
+      fd.append("payeeName", this.payeeName);
+      fd.append("amount", this.amount);
+      fd.append("MOP", this.modeOfPaymentItem.name);
+      fd.append("currency", this.currencyItem.name);
+      fd.append("class", "RE");
+      fd.append("form", "Reimbursement Request");
+
+      fd.append("loggedUserId", this.loggedUserId);
+      fd.append("loggedUserFirstName", this.loggedUserFirstName);
+      fd.append("loggedUserLastName", this.loggedUserLastName);
+      fd.append("loggedUserDepartment", this.loggedUserDepartment);
+      fd.append("loggedUserPosition", this.loggedUserPosition);
+      fd.append("companyId", this.companyId);
+      fd.append("companyName", this.companyName);
+
+      fd.append("expenseType_Data", JSON.stringify(this.expenseType_Data));
+      fd.append("transpoSetup_Data", JSON.stringify(this.transpoSetup_Data));
+      fd.append("idOfAttachmentsToDelete", JSON.stringify(this.idOfAttachmentsToDelete));
+
+      try {
+        const resp = await axios.post(
+          "http://127.0.0.1:8000/api/saveDraftRe",
+          fd
+        );
+
+        if (resp.status >= 200) {
+          this.isLoading = false;
+          this.openToast("top-right", "success", resp.data.message);
+          this.$router.replace("/dashboard");
+        }
+
+        // console.log(resp.data);
+        this.isSpinner = false;
+      } catch (err) {
+        this.isSpinner = false;
+        console.error(err);
+          this.isLoading = false;
+          this.openToast(
+            "top-right",
+            "error",
+            "Please Contact the administrator! and try again later"
+          );
+      }
+    },
+
     async submit() {
       this.isLoading = true;
       const fd = new FormData();
@@ -1897,6 +2150,7 @@ export default {
       fd.append("expenseType_Data", JSON.stringify(this.expenseType_Data));
       fd.append("transpoSetup_Data", JSON.stringify(this.transpoSetup_Data));
 
+      fd.append("idOfAttachmentsToDelete", JSON.stringify(this.idOfAttachmentsToDelete));
 
 
 
@@ -2761,7 +3015,7 @@ export default {
   cursor: pointer;
 }
 
-#uploadContainer {
+.uploadContainer {
   background-color: #f8f9f9;
   border-width: 5px;
   border-style: dashed;
@@ -2779,5 +3033,9 @@ export default {
   padding: 0;
   margin: 0;
   text-decoration: none;
+}
+.px-13 {
+  padding-left: 13px;
+  padding-right: 13px;
 }
 </style>
