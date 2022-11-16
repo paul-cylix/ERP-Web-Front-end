@@ -1700,7 +1700,7 @@ export default {
 
         fd.append("liquidation", JSON.stringify(this.liquidation));
         fd.append("removedFiles", JSON.stringify(this.removedAttachedFilesId));
-
+        fd.append("class", "RFP");
 
 
           try {
