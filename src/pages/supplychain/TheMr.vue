@@ -830,7 +830,7 @@ export default {
   },
   watch: {
     TypeSelected(newValue) {
-      if(newValue.name == 'Supplies Request Internal') return this.isSuppliesRequestInternal = true
+      if(newValue.name == 'Supplies Request - Internal') return this.isSuppliesRequestInternal = true
       this.isSuppliesRequestInternal = false
     },
     classSelected(newValue) {
@@ -841,25 +841,25 @@ export default {
 
           if (newValue.code === 1) {
             this.TypeList = [
-              { code: 1, name: "Material Request Project", type: "Project", process_type: "Sales Order" },
-              { code: 2, name: "Material Request Delivery", type: "Delivery", process_type: "Sales Order" },
-              { code: 3, name: "Material Request Demo", type: "Demo", process_type: "Sales Order" },
-              { code: 4, name: "Material Request POC", type: "POC", process_type: "Sales Order" },
+              { code: 1, name: "Material Request - Project", type: "Project", process_type: "Sales Order" },
+              { code: 2, name: "Material Request - Delivery", type: "Delivery", process_type: "Sales Order" },
+              { code: 3, name: "Material Request - Demo", type: "Demo", process_type: "Sales Order" },
+              { code: 4, name: "Material Request - POC", type: "POC", process_type: "Sales Order" },
             ];
             this.referenceNumber = 'MRF'
           } else if (newValue.code === 2) {
             this.TypeList = [
-              { code: 5, name: "Asset Request Project", type: "Project", process_type: "Sales Order" },
-              { code: 6, name: "Asset Request Delivery", type: "Deliver", process_type: "Sales Order" },
-              { code: 7, name: "Asset Request Demo", type: "Demo", process_type: "Sales Order" },
-              { code: 8, name: "Asset Request POC", type: "POC", process_type: "Sales Order" },
-              { code: 9, name: "Asset Request Internal", type: "Stocking", process_type: "Internal Process" },
+              { code: 5, name: "Asset Request - Project", type: "Project", process_type: "Sales Order" },
+              { code: 6, name: "Asset Request - Delivery", type: "Deliver", process_type: "Sales Order" },
+              { code: 7, name: "Asset Request - Demo", type: "Demo", process_type: "Sales Order" },
+              { code: 8, name: "Asset Request - POC", type: "POC", process_type: "Sales Order" },
+              { code: 9, name: "Asset Request - Internal", type: "Stocking", process_type: "Internal Process" },
             ];
             this.referenceNumber = 'ARF'
           } else if (newValue.code === 3) {
             this.TypeList = [
-              { code: 10, name: "Supplies Request Project", type: "Project", process_type: "Sales Order" },
-              { code: 11, name: "Supplies Request Internal", type: "Stocking", process_type: "" },
+              { code: 10, name: "Supplies Request - Project", type: "Project", process_type: "Sales Order" },
+              { code: 11, name: "Supplies Request - Internal", type: "Stocking", process_type: "" },
             ];
             this.referenceNumber = 'SURF'
           }
