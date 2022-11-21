@@ -39,11 +39,13 @@ export default {
            
 
             
-            // this is use exclusively for sales order request
+            // this is use exclusively for sales order request and mrf
             const name2 = frmclass+'-'+this.data.workflow; // inprogressbyId
 
 
             const companyId = this.companyId;
+
+            const name3 = 'supplychainmrf-'+this.data.workflow; // inprogressbyId
         
       
 
@@ -51,11 +53,17 @@ export default {
                 
                 console.log(this.data)
 
-                const frms = ['sales_order_frm','supplychainmrf'];
+                const frms = ['sales_order_frm'];
+                const mrfs = ['supplychainmrf','frmarf1','frmmrf','frmsurf1'];
 
-                if (frms.includes(frmclass)) {                    
+                if (frms.includes(frmclass)) {    
                     this.$router.push({name: name2, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
                 } 
+                
+                else if (mrfs.includes(frmclass)) {
+                    this.$router.push({name: name3, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
+                }
+                
                 else {
                     this.$router.push({name: name, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
                 }

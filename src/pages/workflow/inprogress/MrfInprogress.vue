@@ -255,7 +255,7 @@
             >
               <tbody>
                 <tr class="row p-0 m-0">
-                  <td class="col-md-3 px-3">MRF Number</td>
+                  <td class="col-md-3 px-3">Reference Number</td>
                   <td class="col-md-9 px-3">{{mrf_number}}</td>
                 </tr>
                 <tr class="row p-0 m-0">
