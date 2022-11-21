@@ -9,9 +9,6 @@ export default {
       // console.log(this.dataDisplayed);
       await this.$store.dispatch('dtr/dataDisplayed',this.dataDisplayed);
     }
-
-
-
   },
   watch: {
     dataDisplayed: {

@@ -3,13 +3,13 @@
     <router-view></router-view>
     <div class="col-md-12 mt-3">
       <div class="card card-secondary">
-                      <div
-        class="overlay"
-        style="background-color: white !important"
-        v-show="isLoadingSpinner"
-      >
-        <loading-spinner></loading-spinner>
-      </div>
+        <div
+          class="overlay"
+          style="background-color: white !important"
+          v-show="isLoadingSpinner"
+        >
+          <loading-spinner></loading-spinner>
+        </div>
         <div class="card-header">
           <h3 class="card-title">In Progress Requests</h3>
         </div>
@@ -19,13 +19,8 @@
       </div>
     </div>
 
-  <modal-remarks :remarks="remarks"></modal-remarks>
-  <modal-status :status="status"></modal-status>
-
-
-
-
-
+    <modal-remarks :remarks="remarks"></modal-remarks>
+    <modal-status :status="status"></modal-status>
   </aside>
 </template>
 <script>
@@ -46,7 +41,7 @@ export default {
     parametersTable1() {
       return {
         data: this.requestArray,
-        
+
         tableClass:
           "table table-sm table-striped table-bordered small table-hover",
         columns: [
@@ -91,43 +86,38 @@ export default {
       };
     },
 
-    getRemarks(){
+    getRemarks() {
       return this.$store.getters["remarks/getRemarks"];
     },
 
-    getStatus(){
+    getStatus() {
       return this.$store.getters["status/getStatus"];
     },
-    
   },
 
   watch: {
     //Navigate
     $route(newRoute) {
-      if(newRoute.name === undefined) {
-      this.getInProgress();
-      console.log(newRoute);
+      if (newRoute.name === undefined) {
+        this.getInProgress();
+        console.log(newRoute);
       }
     },
 
     getRemarks(newValue) {
-      this.remarks = newValue
+      this.remarks = newValue;
     },
 
     getStatus(newValue) {
-      this.status = newValue
+      this.status = newValue;
     },
-
-
   },
   methods: {
     async getInProgress() {
-          this.isLoadingSpinner = true    
+      this.isLoadingSpinner = true;
 
       const loggedUserId = localStorage.getItem("id");
       const companyId = localStorage.getItem("companyId");
-
-
 
       const response = await fetch(
         `http://127.0.0.1:8000/api/getInProgress/${loggedUserId}/${companyId}`,
@@ -149,18 +139,17 @@ export default {
       }
 
       this.requestArray = responseData.data;
-    this.isLoadingSpinner = false   
+      this.isLoadingSpinner = false;
 
       // const wfCount = responseData.data.length
       // const wfName = 'inprogress'
-      
+
       // const wfData = {
       //   wfCount: responseData.data.length,
       //   wfName: 'inprogress'
       // }
 
       // await this.$store.dispatch('status/setWorkflowCount', wfData);
-
     },
 
     // activateAction(button){
@@ -169,8 +158,7 @@ export default {
   },
 
   created() {
-   this.getInProgress();
-
+    this.getInProgress();
   },
 };
 </script>

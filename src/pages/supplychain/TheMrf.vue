@@ -436,6 +436,7 @@ export default {
       if (bottomOfWindow) {
         this.isLastPage = false;
         this.isShow = true;
+        console.log('on scroll')
         await this.fetchSupplies(this.page++,false, {is_SearchSubmitted: this.isSearchSubmitted, actual_search: this.actualSearch, is_filtered: this.isFiltered, filtered_data: this.filteredData});
         this.isShow = false;
       }

@@ -29,6 +29,7 @@ import TheLaf from "./pages/humanresource/TheLaf.vue";
 import TheDtr from "./pages/humanresource/TheDtr.vue";
 import TheSof from "./pages/salesorder/TheSof.vue";
 import TheAex from "./pages/humanresource/TheAex.vue"; // The Attendance Export
+import ThePr from "./pages/purchasing/ThePr.vue";
 
 
 
@@ -786,6 +787,7 @@ const routes = [
       { path: "/the-dtr", component: TheDtr, meta: { requiresAuth: true } },
       { path: "/the-sof", component: TheSof, meta: { requiresAuth: true } },
       { path: "/the-aex", component: TheAex, meta: { requiresAuth: true } },
+      { path: "/the-pr", component: ThePr, meta: { requiresAuth: true } },
 
       
 
