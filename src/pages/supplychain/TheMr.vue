@@ -988,7 +988,8 @@ export default {
       TypeSelected: {},
       TypeList: [],
       isTypeSelected: false,
-      processType: '',
+      // processType: '',
+      processType: {},
       counter: 0,
       attemptNext: false,
       isLoading: false,
@@ -1288,7 +1289,7 @@ export default {
       this.isSpinner = true
       const fd = new FormData();
       let requisition_no = this.referenceNumber+ '/' +this.todaysYear
-      let procss_type = this.TypeSelected.process_type == "" ? this.processType : this.TypeSelected.process_type
+      let procss_type = this.TypeSelected.process_type == "" ? this.processType.name : this.TypeSelected.process_type
 
       for (let i = 0; i < this.selectedFile.length; i++) {
         fd.append("file[]", this.selectedFile[i]);
