@@ -441,7 +441,7 @@
                     <li><span class="light">Category:</span><span class="dark">{{item.category_name}}</span></li>
                     <li><span class="light">SKU:</span><span class="dark">{{item.sku}}</span></li>
                     <li><span class="light">Sub Category:</span><span class="dark">{{item.sub_category_name}}</span></li>
-                    <li><span class="light">Order Qty:</span><span class="dark">{{item.order_qty}}</span></li>
+                    <li><span class="light">PR Qty:</span><span class="dark">{{item.order_qty}}</span></li>
                     <li><span class="light">Brand:</span><span class="dark">{{item.brand_name}}</span></li>
                   </ul>
                 </div>

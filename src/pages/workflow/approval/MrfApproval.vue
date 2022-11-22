@@ -553,6 +553,7 @@
               class="btn btn-warning ml-1 btn-sm"
               data-toggle="modal"
               data-target="#modal-default"
+              disabled
               @click="setTitle('Clarify')"
             >
               Clarify
@@ -697,6 +698,7 @@ export default {
           `http://127.0.0.1:8000/api/get-mrf/${id}/${companyId}`
         );
         
+        console.log(resp.data)
 
         this.isLoading = false;
 

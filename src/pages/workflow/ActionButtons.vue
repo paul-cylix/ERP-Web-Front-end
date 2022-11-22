@@ -56,15 +56,19 @@ export default {
                 const frms = ['sales_order_frm'];
                 const mrfs = ['supplychainmrf','frmarf1','frmmrf','frmsurf1'];
 
-                if (frms.includes(frmclass)) {    
+                if (frms.includes(frmclass)) {  
+                    console.log(1)  
                     this.$router.push({name: name2, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
                 } 
                 
                 else if (mrfs.includes(frmclass)) {
+                    console.log(2)  
                     this.$router.push({name: name3, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
                 }
                 
                 else {
+                    console.log(3)  
+
                     this.$router.push({name: name, params: { id: id, workflow:workflow,frmClass:frmclass, frmName:frmName }})
                 }
             }

@@ -658,7 +658,7 @@ export default {
     },
 
     close() {
-      this.$router.replace("/rejected");
+      this.$router.replace("/inputs");
     },
 
     async withdrawn(){

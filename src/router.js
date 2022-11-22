@@ -116,10 +116,13 @@ import SofWithdrawn from "./pages/workflow/withdrawn/SofWithdrawn.vue";
 import SofRejected from "./pages/workflow/rejected/SofRejected.vue";
 
 
-
-import MrfInprogress from "./pages/workflow/inprogress/MrfInprogress.vue";
-import MrfWithdrawn from "./pages/workflow/withdrawn/MrfWithdrawn.vue";
+import MrfParticipant from "./pages/workflow/participant/MrfParticipant.vue";
+import MrfInput from "./pages/workflow/input/MrfInput.vue";
 import MrfApproval from "./pages/workflow/approval/MrfApproval.vue";
+import MrfInprogress from "./pages/workflow/inprogress/MrfInprogress.vue";
+import MrfClarification from "./pages/workflow/clarification/MrfClarification.vue";
+import MrfApproved from "./pages/workflow/approved/MrfApproved.vue";
+import MrfWithdrawn from "./pages/workflow/withdrawn/MrfWithdrawn.vue";
 import MrfRejected from "./pages/workflow/rejected/MrfRejected.vue";
 
 
@@ -223,6 +226,13 @@ const routes = [
             props: true,
             meta: { requiresAuth: true },
           },
+          {
+            path: ":id",
+            name: "supplychainmrf-participant",
+            component: MrfParticipant,
+            props: true,
+            meta: { requiresAuth: true },
+          },
 
         ],
         meta: { requiresAuth: true },
@@ -273,12 +283,16 @@ const routes = [
             props: true,
             meta: { requiresAuth: true },
           },
+          {
+            path: ":id",
+            name: "supplychainmrf-input",
+            component: MrfInput,
+            props: true,
+            meta: { requiresAuth: true },
+          },
         ],
         meta: { requiresAuth: true },
       },
-
-
-
 
 
       {
@@ -554,6 +568,13 @@ const routes = [
             props: true,
             meta: { requiresAuth: true },
           },
+          {
+            path: ":id",
+            name: "supplychainmrf-clarification",
+            component: MrfClarification,
+            props: true,
+            meta: { requiresAuth: true },
+          },
         ],
         meta: { requiresAuth: true },
       },
@@ -614,6 +635,13 @@ const routes = [
             path: ":id",
             name: "sales_order_frm-approved",
             component: SofApproved,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "supplychainmrf-approved",
+            component: MrfApproved,
             props: true,
             meta: { requiresAuth: true },
           },
