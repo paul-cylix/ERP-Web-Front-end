@@ -396,10 +396,15 @@ export default {
       const return_data = await this.$store.dispatch("sc/fetchSupplies", payload);
 
       if (return_data.is_available) {
+        
+        if(this.$route.fullPath === '/the-mrf'){
         const supplies = await this.$store.getters["sc/getSupplies"];
         this.supplies = supplies;
         this.isLastPage = false;
         console.log(supplies);
+        console.log(this.$route.fullPath)
+        }
+
       } else {
 
         if (return_data.first_attempt) {

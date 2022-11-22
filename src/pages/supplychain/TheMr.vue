@@ -164,9 +164,9 @@
                           <li>
                             SKU<span>{{ cart.SKU }}</span>
                           </li>
-                          <li>
-                            Order Qty:<span>{{ cart.cart_quantity }}</span>
-                          </li>
+                          <!-- <li>
+                            PR Qty:<span>{{ cart.cart_quantity }}</span>
+                          </li> -->
                         </ul>
                       </div>
                     </div>
@@ -670,7 +670,7 @@
                               SKU<span>{{ cart.SKU }}</span>
                             </li>
                             <li>
-                              Order Qty:<span>{{ cart.cart_quantity }}</span>
+                              PR Qty:<span>{{ cart.cart_quantity }}</span>
                             </li>
                           </ul>
                         </div>
