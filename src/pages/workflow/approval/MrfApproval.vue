@@ -634,7 +634,7 @@ import axios from "axios";
 import VsToast from "@vuesimple/vs-toast";
 export default {
   created() {
-    this.getMrf(this.$route.params.id, localStorage.getItem("companyId"));
+    this.getMrf(this.$route.params.id, localStorage.getItem("companyId"), this.$route.params.frmName);
   },
   watch: {
     counter() {
@@ -643,7 +643,7 @@ export default {
     },
 
     async $route(newRoute) {
-      this.getMrf(newRoute.params.id, localStorage.getItem("companyId"));
+      this.getMrf(newRoute.params.id, localStorage.getItem("companyId"), newRoute.params.id);
     },
   },
   data() {
@@ -691,11 +691,11 @@ export default {
   },
 
   methods: {
-    async getMrf(id, companyId) {
+    async getMrf(id, companyId, frmname) {
       this.isLoading = true;
       try {
         const resp = await axios.get(
-          `http://127.0.0.1:8000/api/get-mrf/${id}/${companyId}`
+          `http://127.0.0.1:8000/api/get-mrf/${id}/${companyId}/${frmname}`
         );
         
         console.log(resp.data)
