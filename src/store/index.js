@@ -11,6 +11,7 @@ import statusModule from './modules/general/workflow/status.js';
 import SalesOrderModule from './modules/salesorder/sof.js';
 import actualSign from './modules/general/workflow/actualsign.js';
 import SupplyChainModule from './modules/supplychain/sc.js';
+import purchasingModule from './modules/purchasing/pr.js';
 
 
 
@@ -29,7 +30,7 @@ const store = new Vuex.Store({
     sof: SalesOrderModule,
     actualSign: actualSign,
     sc:SupplyChainModule,
-
+    pr: purchasingModule,
   },
 
 })

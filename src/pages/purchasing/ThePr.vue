@@ -2,6 +2,15 @@
   <div class="col-md-12 mt-3">
     <!-- Form Element sizes -->
     <div class="card card-secondary">
+      <!-- Spinner -->
+      <div
+        class="overlay"
+        style="background-color: white !important"
+        v-show="isLoading"
+      >
+        <loading-spinner></loading-spinner>
+      </div>
+      <!-- /.Spinner -->
       <div class="card-header">
         <h3 class="card-title">Purchase Request</h3>
       </div>
@@ -56,14 +65,59 @@
 
         <!-- Main Form -->
 
+        <!-- Buttons -->
+        <div class="row d-flex justify-content-between mb-0 mt-3">
+          <aside
+            class="
+              col-lg-6
+              d-flex
+              justify-content-start
+              align-items-center
+              flex-nowrap
+            "
+          >
+            <button
+              v-show="counter"
+              type="button"
+              class="btn mr-1 btn-secondary btn-sm"
+              @click="counter--"
+            >
+              Previous
+            </button>
+
+            <button
+              type="button"
+              class="btn mr-1 btn-primary btn-sm"
+              @click="next()"
+            >
+              Next
+            </button>
+          </aside>
+
+          <aside
+            class="
+              col-lg-6
+              d-flex
+              justify-content-end
+              align-items-center
+              flex-nowrap
+            "
+          >
+            <button type="button" class="btn ml-1 btn-danger btn-sm">
+              Close
+            </button>
+          </aside>
+        </div>
+        <!-- / Buttons -->
+
         <!-- Select Request -->
-        <aside class="container-fluid mt-3" v-if="this.counter === 0">
+        <aside class="container-fluid mt-0 px-0" v-if="this.counter === 0">
           <data-table v-bind="parametersTable1" />
         </aside>
         <!-- /.Select Request -->
 
         <!-- Item Details -->
-        <aside class="container-fluid mt-3" v-if="this.counter === 1">
+        <aside class="container-fluid mt-3 px-0" v-if="this.counter === 1">
           <div class="card card-secondary">
             <div class="card-header">
               <h3 class="card-title">Items Table</h3>
@@ -93,8 +147,8 @@
                     <th class="text-center"><small>Images</small></th>
                     <th class="text-center"><small>Item Code</small></th>
                     <th class="text-center"><small>Brand</small></th>
-                    <th class="text-center"><small>SKU</small></th>
                     <th class="text-center"><small>Model</small></th>
+                    <th class="text-center"><small>SKU</small></th>
                     <th class="text-center"><small>Description</small></th>
                     <th class="text-center"><small>For PR Qty.</small></th>
                     <th class="text-center"><small>UOM</small></th>
@@ -117,8 +171,8 @@
                     <td>Lorem ipsum dolor sit, amet consectetur adipisicing</td>
                     <td>Lorem, ipsum.</td>
                     <td>Samsung</td>
-                    <td>123891484</td>
                     <td>M21-T70 Series</td>
+                    <td>SDA1213</td>
                     <td>
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                       Fugiat, voluptatibus!
@@ -168,7 +222,7 @@
         <!-- /.Item Details -->
 
         <!-- Request Details -->
-        <aside class="container-fluid mt-3" v-if="this.counter === 2">
+        <aside class="container-fluid mt-3 px-0" v-if="this.counter === 2">
           <div class="row">
             <div class="col-md-3">
               <div class="form-group">
@@ -281,8 +335,7 @@
         <!-- /.Request Details -->
 
         <!-- Form Review -->
-        <aside class="container-fluid mt-3" v-if="this.counter === 3">
-
+        <aside class="container-fluid mt-3 px-0" v-if="this.counter === 3">
           <!-- Request Details - Form Review -->
           <div class="card card-secondary">
             <div class="card-header">
@@ -464,7 +517,7 @@
             </div>
             <!-- /.card-body -->
           </div>
-          
+
           <!-- Related Attachemnts = Form Review -->
           <div class="card card-secondary">
             <div class="card-header">
@@ -495,16 +548,8 @@
                   <tr>
                     <td>Lorem ipsum dolor sit.</td>
                     <td class="pl-2 pr-2 text-center">
-                      <button
-            
-                        class="btn btn-danger btn-sm"
-                      >
-                        Remove
-                      </button>
-                      <button
-     
-                        class="btn btn-secondary btn-sm ml-1"
-                      >
+                      <button class="btn btn-danger btn-sm">Remove</button>
+                      <button class="btn btn-secondary btn-sm ml-1">
                         Preview
                       </button>
                     </td>
@@ -514,53 +559,11 @@
             </div>
             <!-- /.card-body -->
           </div>
-
-
         </aside>
         <!-- /.Form Review -->
 
         <!-- / Main Form -->
 
-        <!-- Buttons -->
-        <div class="row d-flex justify-content-between mt-3">
-          <aside
-            class="
-              col-lg-6
-              d-flex
-              justify-content-start
-              align-items-center
-              flex-nowrap
-            "
-          >
-            <button
-              v-show="counter"
-              type="button"
-              class="btn mr-1 btn-secondary btn-sm"
-              @click="counter--"
-            >
-              Previous
-            </button>
-
-            <button type="button" class="btn mr-1 btn-primary btn-sm" @click="counter++">
-              Next
-            </button>
-          </aside>
-
-          <aside
-            class="
-              col-lg-6
-              d-flex
-              justify-content-end
-              align-items-center
-              flex-nowrap
-            "
-          >
-            <button type="button" class="btn ml-1 btn-danger btn-sm">
-              Close
-            </button>
-          </aside>
-        </div>
-        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->
@@ -583,6 +586,10 @@ export default {
     counter() {
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
+    },
+
+    listRequest(newValue) {
+      this.requestArray = newValue;
     },
   },
   computed: {
@@ -655,145 +662,16 @@ export default {
         ],
       };
     },
+
+    listRequest() {
+      return this.$store.getters["pr/listRequest"];
+    },
   },
   data() {
     return {
       counter: 0,
-      isLoadingSpinner: false,
-      requestArray: [
-        {
-          id: 1,
-          selected: false,
-          reference: "banana",
-          requestDate: 3,
-          soNum: 12,
-          requestor: "string",
-          type: "string2",
-          projectName: "strings3",
-          clientName: "string4",
-        },
-        {
-          id: 2,
-          selected: false,
-          reference: "apple",
-          requestDate: 4,
-          soNum: 20,
-          requestor: "string",
-          type: "string2",
-          projectName: "strings3",
-          clientName: "string4",
-        },
-        {
-          id: 3,
-          selected: false,
-          reference: "orange",
-          requestDate: 3,
-          soNum: 15,
-          requestor: "string",
-          type: "string2",
-          projectName: "strings3",
-          clientName: "string4",
-        },
-        {
-          id: 4,
-          selected: false,
-          reference: "pineapple",
-          requestDate: 7,
-          soNum: 5,
-          requestor: "string",
-          type: "string2",
-          projectName: "strings3",
-          clientName: "string4",
-        },
-        {
-          id: 5,
-          selected: false,
-          reference: "blackberry",
-          requestDate: 4.1,
-          soNum: 13,
-          requestor: "string",
-          type: "string2",
-          projectName: "strings3",
-          clientName: "string4",
-        },
-        {
-          id: 6,
-          selected: false,
-          reference: "lemon",
-          requestDate: 1.5,
-          soNum: 15,
-          requestor: "string",
-          type: "string2",
-          projectName: "strings3",
-          clientName: "string4",
-        },
-        {
-          id: 7,
-          selected: false,
-          reference: "avocado",
-          requestDate: 5,
-          soNum: 6,
-          requestor: "string",
-          type: "string2",
-          projectName: "strings3",
-          clientName: "string4",
-        },
-        {
-          id: 8,
-          selected: false,
-          reference: "watermelon",
-          requestDate: 8,
-          soNum: 2,
-          requestor: "string",
-          type: "string2",
-          projectName: "strings3",
-          clientName: "string4",
-        },
-        {
-          id: 9,
-          selected: false,
-          reference: "papaya",
-          requestDate: 5,
-          soNum: 5,
-          requestor: "string",
-          type: "string2",
-          projectName: "strings3",
-          clientName: "string4",
-        },
-        {
-          id: 10,
-          selected: false,
-          reference: "cocunut",
-          requestDate: 10,
-          soNum: 3,
-          requestor: "string",
-          type: "string2",
-          projectName: "strings3",
-          clientName: "string4",
-        },
-        {
-          id: 11,
-          selected: false,
-          reference: "mango",
-          requestDate: 3.3,
-          soNum: 16,
-          requestor: "string",
-          type: "string2",
-          projectName: "strings3",
-          clientName: "string4",
-        },
-        {
-          id: 12,
-          selected: false,
-          reference: "pear",
-          requestDate: 5.5,
-          soNum: 10,
-          requestor: "string",
-          type: "string2",
-          projectName: "strings3",
-          clientName: "string4",
-        },
-      ],
+      isLoading: false,
+      requestArray: [],
 
       requestDate: null,
       deliverDate: null,
@@ -809,9 +687,22 @@ export default {
 
   async created() {
     await this.todaysDate();
+    this.getRequest();
   },
 
   methods: {
+    next() {
+      const selectedPrRequest = this.$store.getters["pr/getSelectedPr"];
+      console.log(selectedPrRequest);
+
+    },
+
+    async getRequest() {
+      this.isLoading = true;
+      await this.$store.dispatch("pr/getPr");
+      this.isLoading = false;
+    },
+
     // Request Details
     todaysDate() {
       const today = new Date();
