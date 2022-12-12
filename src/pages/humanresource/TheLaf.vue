@@ -296,7 +296,7 @@
                 <tbody>
                   <tr>
                     <td>Reference Number</td>
-                    <td style="width: 80%">{{ "OTR-" + todaysYear }}</td>
+                    <td style="width: 80%">{{ "LAF-" + todaysYear }}</td>
                   </tr>
                   <tr>
                     <td>Requested Date</td>
