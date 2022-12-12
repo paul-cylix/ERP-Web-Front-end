@@ -138,9 +138,14 @@ import PortalRegister from "./pages/cylixportal/PortalRegister.vue";
 
 import store from "./store/index.js";
 
+import TheVe from "./pages/master/vendor/TheVe.vue";
+
 Vue.use(VueRouter);
 
 const routes = [
+  { path: "/the-ve", component: TheVe },
+
+
   { path: "/", redirect: "/login" },
   { path: "/login", component: UserLogin, meta: { requiresUnauth: true } },
   { path: "/register", component: UserRegister, meta: { requiresUnauth: true } },
