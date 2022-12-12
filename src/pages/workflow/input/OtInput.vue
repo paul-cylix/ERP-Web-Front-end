@@ -173,7 +173,7 @@
 
               <tr>
                 <td colspan="10"></td>
-                <td colspan="2">
+                <td colspan="3">
                   <b>Total OT Hours: {{ this.totalOTHours }}</b>
                 </td>
               </tr>
@@ -909,14 +909,14 @@ export default {
       await this.getEmployees(this.companyId);
       this.isLoading = false;
     },
-  },
-  watch: {
+
     itemModalProjectName(newValue) {
       if (newValue.code > 0) {
         this.getClient(newValue.code);
       }
     },
   },
+
   computed: {
     classA() {
       return { active: this.counter >= 0 };

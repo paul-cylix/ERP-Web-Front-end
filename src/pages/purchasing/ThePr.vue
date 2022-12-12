@@ -669,7 +669,7 @@ export default {
   },
   data() {
     return {
-      counter: 0,
+      counter: 1,
       isLoading: false,
       requestArray: [],
 

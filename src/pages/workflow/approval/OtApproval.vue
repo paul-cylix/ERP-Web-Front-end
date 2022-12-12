@@ -13,8 +13,89 @@
         <h3 class="card-title">Overtime Request</h3>
       </div>
       <div class="card-body">
+        <!-- Buttons -->
+        <div class="row d-flex justify-content-between">
+          <aside
+            class="
+              col-lg-6
+              d-flex
+              justify-content-start
+              align-items-center
+              flex-nowrap
+            "
+          >
+            <button
+              v-show="counter"
+              type="button"
+              @click="counter--"
+              class="btn mr-1 btn-secondary btn-sm"
+            >
+              Previous
+            </button>
+
+            <button
+              v-if="this.counter <= 1"
+              type="button"
+              @click="validateNext()"
+              class="btn mr-1 btn-primary btn-sm"
+            >
+              Next
+            </button>
+          </aside>
+
+          <aside
+            class="
+              col-lg-6
+              d-flex
+              justify-content-end
+              align-items-center
+              flex-nowrap
+            "
+          >
+            <button
+              v-if="this.counter === 2"
+              type="button"
+              class="btn btn-success btn-sm ml-1"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Approve')"
+            >
+              Approve
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-danger btn-sm ml-1"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Reject')"
+            >
+              Reject
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-warning btn-sm ml-1"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Clarify')"
+            >
+              Clarify
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-danger btn-sm ml-1"
+              @click="close()"
+            >
+              Close
+            </button>
+          </aside>
+        </div>
+        <!-- / Buttons -->
+
         <!-- Step Numbers -->
-        <div class="d-flex progressBarWrapper text-center">
+        <div class="d-flex progressBarWrapper text-center mt-5">
           <div class="progressbar" :class="classA">
             <span :class="classA">1</span>
           </div>
@@ -54,7 +135,7 @@
         <!-- Main Form -->
 
         <!-- Request Details -->
-        <aside v-if="this.counter === 0">
+        <aside class="container-fluid mt-0 px-0" v-if="this.counter === 0">
           <div class="row mt-4">
             <div class="col-md-3">
               <div class="form-group">
@@ -139,6 +220,14 @@
                   Actual OT Hours
                 </th>
                 <th scope="col" style="width: 20%">Purpose</th>
+                <th
+                  class="text-center"
+                  v-if="isRmApprovalBool"
+                  scope="col"
+                  style="width: 10%"
+                >
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody style="font-size: 14px">
@@ -154,13 +243,34 @@
                 <td v-if="isActual">{{ item.ot_out_actual }}</td>
                 <td v-if="isActual">{{ item.ot_totalhrs_actual }}</td>
                 <td>{{ item.purpose }}</td>
+                <td v-if="isRmApprovalBool" class="m-0">
+                  <aside class="d-flex justify-content-center">
+                    <button
+                      class="btn btn-sm btn-info m-0"
+                      @click="edit(overtime.indexOf(item))"
+                      data-toggle="modal"
+                      data-target="#modal-overtime"
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+
+                    <button
+                      class="btn btn-sm btn-danger m-0 ml-1"
+                      @click="totrash(overtime.indexOf(item), item.id)"
+                      data-toggle="modal"
+                      data-target="#modal-confirm"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </aside>
+                </td>
               </tr>
 
               <tr>
                 <!-- <td colspan="6"></td> -->
                 <td :colspan="numberActual"></td>
 
-                <td colspan="2">
+                <td colspan="3">
                   <b>Total OT Hours: {{ this.totalOTHours }}</b>
                 </td>
               </tr>
@@ -288,6 +398,41 @@
         </aside>
         <!-- / Form Review -->
 
+                <!-- Modal confirm-->
+        <div
+          class="modal fade"
+          id="modal-confirm"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h6 class="modal-title">Delete Item</h6>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                  id="modal-confirm--close-btn"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                Are you sure want to delete this item?
+              </div>
+              <div class="modal-footer justify-content-end">
+                <button type="button" @click="trash()" class="btn btn-success btn-sm">Yes</button>
+                <button type="button" class="btn btn-danger btn-sm ml-0" data-dismiss="modal">No</button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal confirm -->
+
         <!-- Modal -->
         <div
           class="modal fade"
@@ -376,81 +521,281 @@
         </div>
         <!-- /.modal -->
 
-        <!-- Buttons -->
-        <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
-          
-              <button
-                v-show="counter"
-                type="button"
-                @click="counter--"
-                class="btn mr-2 btn-secondary btn-sm"
-              >
-                Previous
-              </button>
-     
 
-            
-              <button
-                v-if="this.counter <= 1"
-                type="button"
-                @click="counter++"
-                class="btn mr-2 btn-primary btn-sm"
-              >
-                Next
-              </button>
-            
-          </aside>
 
-          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
-   
-              <button
-                type="button"
-                class="btn btn-success btn-sm ml-2"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Approve')"
-              >
-                Approve
-              </button>
-       
+        <!-- Modal Overtime-->
+        <div
+          class="modal fade"
+          id="modal-overtime"
+          data-backdrop="static"
+          data-keyboard="false"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="overlay" v-show="isLoadingModal">
+                <i class="fas fa-2x fa-sync fa-spin"></i>
+              </div>
 
-    
-              <button
-                type="button"
-                class="btn btn-danger btn-sm ml-2"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Reject')"
-              >
-                Reject
-              </button>
-    
+              <div class="modal-header">
+                <h6 class="modal-title">
+                  <b>Overtime Details</b>
+                </h6>
+                <button
+                  type="button"
+                  id="modalCloseButton"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                  @click="closeModal()"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <the-alert
+                  v-show="isAlert"
+                  v-bind:header="this.header"
+                  v-bind:message="this.message"
+                  v-bind:type="this.type"
+                ></the-alert>
 
-     
-              <button
-                type="button"
-                class="btn btn-warning btn-sm ml-2"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Clarify')"
-              >
-                Clarify
-              </button>
-     
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <small
+                        ><label for="projectName">Project Name</label></small
+                      >
 
-   
-              <button
-                type="button"
-                class="btn btn-danger btn-sm ml-2"
-                @click="close()"
-              >
-                Close
-              </button>
-        
-          </aside>
+                      <!-- <input
+                        type="text"
+                        disabled
+                        class="form-control py-3 form-control-sm"
+                        v-model="itemModalProjectName.name"
+                      /> -->
+
+                      <model-list-select
+                        :list="projectName"
+                        v-model="itemModalProjectName"
+                        option-value="code"
+                        option-text="name"
+                        placeholder="Select Project Name"
+                        style="padding: 9px"
+                      >
+                      </model-list-select>
+
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalProject && attemptUpdate"
+                        >Auth Start is required!</small
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-5">
+                    <div class="form-group">
+                      <small
+                        ><label for="overtimeDate">Overtime Date</label></small
+                      >
+                      <input
+                        type="text"
+                        disabled
+                        class="form-control py-3 form-control-sm"
+                        v-model="overtimeDate"
+                      />
+                      <!-- <date-picker
+                        valueType="format"
+                        style="display: block; width: 100%; line-height: 20px"
+                        v-model="overtimeDate"
+                      ></date-picker> -->
+                    </div>
+                  </div>
+
+                  <div class="col-md-7">
+                    <div class="form-group">
+                      <small
+                        ><label for="employeeName">Employee Name</label></small
+                      >
+                      <input
+                        type="text"
+                        disabled
+                        class="form-control py-3 form-control-sm"
+                        v-model="itemEmployeeName.name"
+                      />
+
+                      <!-- <model-list-select
+                        :list="employeeName"
+                        v-model="itemEmployeeName"
+                        option-value="code"
+                        option-text="name"
+                        placeholder="Select Employee Name"
+                        style="padding: 9px"
+                      >
+                      </model-list-select> -->
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-5">
+                    <div class="form-group">
+                      <small
+                        ><label for="authTimeStart"
+                          >Authorized Time Start</label
+                        ></small
+                      >
+                      <date-picker
+                        v-model="authTimeStart"
+                        @change="setTimeAuth"
+                        :minute-step="5"
+                        format="MM/DD/YYYY hh:mm A"
+                        value-type="format"
+                        type="datetime"
+                        style="display: block; width: 100%; line-height: 20px"
+                      ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalAuthStart && attemptUpdate"
+                        >Auth Start is required!</small
+                      >
+                    </div>
+                  </div>
+
+                  <div class="col-md-5">
+                    <div class="form-group">
+                      <small
+                        ><label for="authTimeEnd"
+                          >Authorized Time End</label
+                        ></small
+                      >
+                      <date-picker
+                        v-model="authTimeEnd"
+                        @change="setTimeAuth"
+                        :minute-step="5"
+                        format="MM/DD/YYYY hh:mm A"
+                        value-type="format"
+                        type="datetime"
+                        style="display: block; width: 100%; line-height: 20px"
+                      ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalAuthEnd && attemptUpdate"
+                        >Auth End is required!</small
+                      >
+                    </div>
+                  </div>
+
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <small><label for="authOT">Auth Hrs</label></small>
+                      <input
+                        type="text"
+                        disabled
+                        v-model="authOThrs"
+                        class="form-control py-3 form-control-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-5">
+                    <div class="form-group">
+                      <small
+                        ><label for="actualTimeStart"
+                          >Actual Time Start</label
+                        ></small
+                      >
+                      <date-picker
+                        v-model="actualTimeStart"
+                        @change="setTime"
+                        :minute-step="5"
+                        format="MM/DD/YYYY hh:mm A"
+                        value-type="format"
+                        type="datetime"
+                        style="display: block; width: 100%; line-height: 20px"
+                      ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalActualStart && attemptUpdate"
+                        >Actual Start is required!</small
+                      >
+                    </div>
+                  </div>
+
+                  <div class="col-md-5">
+                    <div class="form-group">
+                      <small
+                        ><label for="actualTimeEnd"
+                          >Actual Time End</label
+                        ></small
+                      >
+                      <date-picker
+                        v-model="actualTimeEnd"
+                        @change="setTime"
+                        :minute-step="5"
+                        format="MM/DD/YYYY hh:mm A"
+                        value-type="format"
+                        type="datetime"
+                        style="display: block; width: 100%; line-height: 20px"
+                      ></date-picker>
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalActualEnd && attemptUpdate"
+                        >Actual Start is required!</small
+                      >
+                    </div>
+                  </div>
+
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <small><label for="actualOthrs">Actual Hrs</label></small>
+                      <input
+                        type="text"
+                        disabled
+                        v-model="actualOthrs"
+                        class="form-control py-3 form-control-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <small><label for="purpose">Purpose</label></small>
+                      <textarea
+                        class="form-control"
+                        id="purpose"
+                        rows="3"
+                        v-model="modalPurpose"
+                      ></textarea>
+
+                      <small
+                        class="text-danger p-0 m-0"
+                        v-if="missingModalPurpose && attemptUpdate"
+                        >Auth Start is required!</small
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer justify-content-end">
+                <button
+                  type="button"
+                  @click="update()"
+                  class="btn btn-success btn-sm"
+                >
+                  Update
+                </button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
         </div>
-        <!-- / Buttons -->
+        <!-- /.modal Ovetime -->
 
         <!-- / Main Form -->
       </div>
@@ -472,14 +817,22 @@ export default {
   async created() {
     this.isLoading = true;
     await this.getOtMain(this.$route.params.id);
-    await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
-    await this.getInprogressId(this.$route.params.id, this.$route.params.frmName);
+    await this.getAttachments(
+      this.$route.params.id,
+      this.$route.params.frmName
+    );
+    await this.getInprogressId(
+      this.$route.params.id,
+      this.$route.params.frmName
+    );
     await this.getRecipients(
       this.$route.params.id,
       this.loggedUserId,
       this.companyId,
       this.form
     );
+    await this.isRmApproval(this.$route.params.id, this.companyId);
+    await this.getProjects();
     this.isLoading = false;
   },
   watch: {
@@ -491,19 +844,31 @@ export default {
     async $route(newRoute) {
       console.warn(newRoute);
       this.isLoading = true;
-      this.counter = 0
-      this.withdrawRemarks = ''
-      this.remarks = ''
+      this.counter = 0;
+      this.withdrawRemarks = "";
+      this.remarks = "";
       await this.getOtMain(newRoute.params.id);
       await this.getAttachments(newRoute.params.id, newRoute.params.frmName);
-      await this.getInprogressId(newRoute.params.id, this.companyId, newRoute.params.frmName);
+      await this.getInprogressId(
+        newRoute.params.id,
+        this.companyId,
+        newRoute.params.frmName
+      );
       await this.getRecipients(
         newRoute.params.id,
         this.loggedUserId,
         this.companyId,
         newRoute.params.frmName
       );
+      await this.isRmApproval(newRoute.params.id, this.companyId);
+      await this.getProjects();
       this.isLoading = false;
+    },
+
+    itemModalProjectName(newValue) {
+      if (newValue.code > 0) {
+        this.getClient(newValue.code);
+      }
     },
   },
   computed: {
@@ -529,7 +894,9 @@ export default {
     },
 
     numberActual() {
-      if (this.isActual === true) {
+      if (this.isActual === true && this.isRmApprovalBool === 0) {
+        return 8;
+      } else if (this.isActual === true && this.isRmApprovalBool === 1) {
         return 9;
       } else {
         return 6;
@@ -537,8 +904,10 @@ export default {
     },
 
     headerActual() {
-      if (this.isActual === true) {
+      if (this.isActual === true && this.isRmApprovalBool === 0) {
         return 11;
+      } else if (this.isActual === true && this.isRmApprovalBool === 1) {
+        return 12;
       } else {
         return 8;
       }
@@ -546,6 +915,52 @@ export default {
 
     isForClarity() {
       if (this.title === "Clarify") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalProject() {
+      if (this.itemModalProjectName.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalAuthStart() {
+      if (this.authTimeStart === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalAuthEnd() {
+      if (this.authTimeEnd === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalActualStart() {
+      if (this.actualTimeStart === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    missingModalActualEnd() {
+      if (this.actualTimeEnd === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingModalPurpose() {
+      if (this.modalPurpose.length === 0) {
         return true;
       } else {
         return false;
@@ -572,7 +987,8 @@ export default {
   },
   data() {
     return {
-      counter: 2,
+      counter: 1,
+      attemptUpdate: false,
       attemptClarify: false,
       // Request Details
       referenceNumber: "",
@@ -647,10 +1063,391 @@ export default {
       header: "", // Syccess or Failed
       message: "", // added successfully
       type: "", // true or false
+
+      isRmApprovalBool: 0, // Check if this is 3rd approval
+
+      // MODAL UPDATE
+      // Overtime Modal Details - cust name / cust id
+      id: "", // primary key in hr.ot
+      projectName: [],
+      itemModalProjectName: {},
+      employeeName: [],
+      itemEmployeeName: {},
+      clientName: "",
+      clientId: "",
+      mainId: "",
+
+      overtimeDate: "",
+      authTimeStart: null,
+      authTimeEnd: null,
+      authOThrs: "",
+      modalPurpose: "",
+      actualTimeStart: null,
+      actualTimeEnd: null,
+      actualOthrs: "",
+
+      index: null,
+
+      // soft delete ot row by id
+      otId: [],
+
+      // to trash
+      totrashIndex: null,
+      totrashotId: null,
     };
   },
 
   methods: {
+    validateNext() {
+      if (this.counter === 0) {
+        this.counter++;
+      } else {
+        if (this.overtime.length) {
+          this.counter++;
+        } else {
+          this.openToast("top-right", "warning", "Overtime table is required!");
+        }
+      }
+    },
+
+    async getClient(id) {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/business-client/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        const error = new Error(
+          responseData.message || "Failed to fetch Reporting Manager."
+        );
+        throw error;
+      }
+      const client = [];
+      for (const key in responseData) {
+        const request = {
+          clientId: responseData[key].clientID,
+          clientName: responseData[key].clientName,
+          mainId: responseData[key].mainID,
+        };
+        client.push(request);
+      }
+      this.clientName = client[0].clientName;
+      this.clientId = client[0].clientId;
+      this.mainId = client[0].mainId;
+    },
+
+    trash() {
+      this.overtime.splice(this.totrashIndex, 1);
+      this.otId.push(this.totrashotId);
+      document.getElementById("modal-confirm--close-btn").click();
+      this.openToast(
+        "top-right",
+        "success",
+        "Overtime item deleted successfully!"
+      );
+      this.totrashIndex = null;
+      this.totrashotId = null;
+    },
+
+    totrash(index, id) {
+      this.totrashIndex = index;
+      this.totrashotId = id;
+    },
+
+    async update() {
+      this.isLoadingModal = true;
+      this.attemptUpdate = true;
+      this.resetAlert();
+      const validated = this.validateEmptyFields();
+      const isGreaterThan = this.validateStartEndDate(
+        this.actualTimeStart,
+        this.actualTimeEnd
+      );
+
+      const isGreaterThanAuth = this.validateStartEndDate(
+        this.authTimeStart,
+        this.authTimeEnd
+      );
+
+      if (validated && isGreaterThan && isGreaterThanAuth) {
+        const addData = {
+          id: this.id,
+          overtime_date: this.overtimeDate,
+          ot_in: this.authTimeStart,
+          ot_out: this.authTimeEnd,
+          ot_totalhrs: this.authOThrs,
+          ot_in_actual: this.actualTimeStart,
+          ot_out_actual: this.actualTimeEnd,
+          ot_totalhrs_actual: this.actualOthrs,
+          employee_id: this.itemEmployeeName.code,
+          employee_name: this.itemEmployeeName.name,
+          purpose: this.modalPurpose,
+          cust_id: this.clientId,
+          cust_name: this.clientName,
+          main_Id: this.mainId,
+          PRJID: this.itemModalProjectName.code,
+          PRJNAME: this.itemModalProjectName.name,
+        };
+        const otData = [];
+        otData.push(addData);
+        console.log(otData);
+        const fd = new FormData();
+        fd.append("overtimeData", JSON.stringify(otData));
+        try {
+          const resp = await axios.post(
+            "http://127.0.0.1:8000/api/validateActualOT",
+            fd
+          );
+          if (resp.status === 200) {
+            this.overtime.splice(this.index, 1);
+            this.overtime.push(addData);
+            this.isLoadingModal = false;
+            this.addAlert("Success", resp.data.message, "true");
+            this.overtime.sort(function (a, b) {
+              return a.id - b.id;
+            });
+          }
+          if (resp.status === 202) {
+            this.isLoadingModal = false;
+            this.addAlert("Failed", resp.data.message, "false");
+          }
+          console.log(resp.data);
+        } catch (err) {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", err, "false");
+          // Handle Error Here
+          console.error(err);
+        }
+      } else {
+        if (isGreaterThanAuth === false && validated) {
+          this.isLoadingModal = false;
+          this.addAlert(
+            "Failed",
+            "Auth Time End must be greater than Auth Time Start!",
+            "false"
+          );
+        } else if (isGreaterThan === false && validated) {
+          this.isLoadingModal = false;
+          this.addAlert(
+            "Failed",
+            "Actual Time End must be greater than Actual Time Start!",
+            "false"
+          );
+        } else {
+          this.isLoadingModal = false;
+          this.addAlert("Failed", "Please complete required fields!", "false");
+        }
+      }
+    },
+
+    edit(index) {
+      console.warn(index);
+      // this.isButton = false;
+      const selectedOvertime = this.overtime[index];
+      this.editOvertime = selectedOvertime;
+      this.index = index;
+
+      this.itemEmployeeName = {
+        code: selectedOvertime.employee_id,
+        name: selectedOvertime.employee_name,
+      };
+
+      this.itemModalProjectName = {
+        code: selectedOvertime.PRJID,
+        name: selectedOvertime.PRJNAME,
+      };
+
+      console.log(selectedOvertime);
+
+      this.id = selectedOvertime.id; // primary key in hr.ot
+      this.overtimeDate = selectedOvertime.overtime_date;
+      this.authTimeStart = this.convertTimeAndDate(selectedOvertime.ot_in);
+      this.authTimeEnd = this.convertTimeAndDate(selectedOvertime.ot_out);
+      this.authOThrs = selectedOvertime.ot_totalhrs;
+      this.actualTimeStart = this.convertTimeAndDate(selectedOvertime.ot_in);
+      this.actualTimeEnd = this.convertTimeAndDate(selectedOvertime.ot_out);
+      this.actualOthrs = selectedOvertime.ot_totalhrs_actual;
+      this.modalPurpose = selectedOvertime.purpose;
+      this.clientName = selectedOvertime.cust_id;
+      this.clientId = selectedOvertime.cust_name;
+    },
+
+    validateEmptyFields() {
+      if (
+        !this.missingModalProject &&
+        !this.missingModalAuthStart &&
+        !this.missingModalAuthEnd &&
+        !this.missingModalActualStart &&
+        !this.missingModalActualEnd &&
+        !this.missingModalPurpose
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    validateStartEndDate(from, to) {
+      const startDate = new Date(from);
+      const endDate = new Date(to);
+
+      const check = endDate > startDate ? true : false;
+      return check;
+    },
+
+    convertTimeAndDate(datetime) {
+      const date = new Date(datetime);
+
+      let month = date.getMonth() + 1;
+      let day = date.getDate();
+      const year = date.getFullYear();
+
+      if (month < 10) {
+        month = `0${month}`;
+      }
+
+      let hours = date.getHours();
+      let minutes = date.getMinutes();
+      const ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      hours = hours < 10 ? "0" + hours : hours;
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      day = day < 10 ? "0" + day : day;
+      const time = hours + ":" + minutes + " " + ampm;
+      const dit = `${month}/${day}/${year}`;
+      const dateTimeReal = `${dit} ${time}`;
+      return dateTimeReal;
+    },
+
+    resetAlert() {
+      this.isAlert = false;
+      this.header = "";
+      this.message = "";
+      this.type = "";
+    },
+
+    resetModal() {
+      this.overtimeDate = "";
+      this.authTimeStart = "";
+      this.authTimeEnd = "";
+      this.authOThrs = "";
+      this.itemEmployeeName = {};
+      this.modalPurpose = "";
+      // this.itemModalProjectName = {}
+      this.clientId = "";
+      this.clientName = "";
+      this.mainId = "";
+    },
+
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
+    },
+
+    closeModal() {
+      this.resetAlert();
+      this.resetModal();
+    },
+
+    setTimeAuth() {
+      const time_start = new Date(this.authTimeStart);
+      const time_end = new Date(this.authTimeEnd);
+
+      let time_total = (time_end - time_start) / 1000 / 60 / 60;
+
+      let f = Math.floor(time_total);
+      if (time_total - f < 0.5) {
+        time_total = Math.floor(time_total);
+        // console.log(time_total);
+        this.authOThrs = time_total;
+        // $('#authtime_totalHrs').val(time_total);
+      } else {
+        time_total = f + 0.5;
+        // console.log(time_total);
+        this.authOThrs = time_total;
+        // $('#authtime_totalHrs').val(time_total);
+      }
+    },
+
+    setTime() {
+      const time_start = new Date(this.actualTimeStart);
+      const time_end = new Date(this.actualTimeEnd);
+
+      let time_total = (time_end - time_start) / 1000 / 60 / 60;
+
+      let f = Math.floor(time_total);
+      if (time_total - f < 0.5) {
+        time_total = Math.floor(time_total);
+        // console.log(time_total);
+        this.actualOthrs = time_total;
+        // $('#authtime_totalHrs').val(time_total);
+      } else {
+        time_total = f + 0.5;
+        // console.log(time_total);
+        this.actualOthrs = time_total;
+        // $('#authtime_totalHrs').val(time_total);
+      }
+    },
+
+    async getProjects() {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/general-getprojects/${localStorage.getItem(
+          "companyId"
+        )}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        const error = new Error(
+          responseData.message || "Failed to fetch Projects."
+        );
+        throw error;
+      }
+      const project = [];
+      for (const key in responseData) {
+        const request = {
+          code: responseData[key].project_id,
+          name: responseData[key].project_name,
+        };
+        project.push(request);
+      }
+      this.projectName = project;
+
+      // console.warn(project)
+    },
+
+    async isRmApproval(id, companyId) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-isRmApproval-ot/${id}/${companyId}`
+        );
+
+        console.warn(resp.data.data[0].isRmApproval);
+
+        this.isRmApprovalBool = resp.data.data[0].isRmApproval;
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+      }
+    },
+
     async getInprogressId(id, companyId, form) {
       try {
         const resp = await axios.get(
@@ -683,6 +1480,9 @@ export default {
       fd.append("referenceNumber", this.referenceNumber);
       fd.append("class", "OT");
       fd.append("loggedUserDepartment", this.loggedUserDepartment);
+      fd.append("isRmApproval", this.isRmApprovalBool);
+      fd.append("overtimeData", JSON.stringify(this.overtime));
+      fd.append("otId", JSON.stringify(this.otId));
 
       if (type === "Approve") {
         try {
@@ -774,24 +1574,10 @@ export default {
       }
     },
 
-    addAlert(header, message, type) {
-      this.isAlert = true;
-      this.header = header;
-      this.message = message;
-      this.type = type;
-    },
-
-    resetAlert() {
-      this.isAlert = false;
-      this.header = "";
-      this.message = "";
-      this.type = "";
-    },
-
-    closeModalDefault(){
-      this.resetAlert()
+    closeModalDefault() {
+      this.resetAlert();
       this.attemptClarify = false;
-      this.remarks = '';
+      this.remarks = "";
     },
 
     async getRecipients(id, loggedUserId, companyId, form) {
@@ -855,18 +1641,17 @@ export default {
     },
 
     preview(mimeType, imageBytes) {
-      if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
-      {
+      if (mimeType === "image/jpeg" || mimeType === "image/png") {
         var newTab = window.open();
         newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+      } else if (mimeType === "application/pdf") {
+        let pdfWindow = window.open("#");
+        pdfWindow.document.write(
+          `<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +
+            encodeURI(imageBytes) +
+            "'></iframe>"
+        );
       }
-
-      else if (mimeType === 'application/pdf')
-      {
-        let pdfWindow = window.open('#')
-        pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
-      }
-    
     },
 
     async getAttachments(id, form) {
@@ -885,12 +1670,10 @@ export default {
     },
 
     async getOtMain(id) {
-      
       try {
         const resp = await axios.get(`http://127.0.0.1:8000/api/ot-main/${id}`);
         // console.log(resp.data);
         if (resp.status === 200) {
-          
           this.referenceNumber = resp.data[0].reference;
           this.requestedDate = resp.data[0].request_date;
           this.reportingManagerName = resp.data[0].reporting_manager;
@@ -906,7 +1689,6 @@ export default {
       } catch (err) {
         // Handle Error Here
         console.error(err);
-        
       }
     },
 
