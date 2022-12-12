@@ -236,6 +236,31 @@
     </div>
   </div>
 
+  <!-- <div class="card m-0 p-0">
+    <div class="card-header accordionheader" id="heading-5">
+      <h6 class="mb-0">
+        <a role="button" class="text-white" data-toggle="collapse" href="#collapse-5" aria-expanded="true" aria-controls="collapse-5">
+          Purchasing
+        </a>
+      </h6>
+    </div>
+    <div id="collapse-5" class="collapse" data-parent="#accordion" aria-labelledby="heading-5">
+      <div class="card-body pt-3 px-3 pb-0">
+        <div id="accordion-2">
+          <div class="card">
+            <div class="card-header accordionheaderOne" >
+              <h6 class="mb-0">
+                <a class="collapsed text-white"  @click="redirect('/the-pr')"  role="button" data-toggle="collapse" aria-expanded="false">
+                  Purchase Request
+                </a>
+              </h6>
+            </div>
+          </div>
+        </div>  
+      </div>
+    </div>
+  </div> -->
+
 
 
 

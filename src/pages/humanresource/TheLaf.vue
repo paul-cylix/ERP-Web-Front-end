@@ -64,7 +64,7 @@
                   class="form-control form-control-sm py-3"
                   id="reference"
                   disabled
-                  :value="'OTR-' + todaysYear"
+                  :value="'LAF-' + todaysYear"
                 />
               </div>
             </div>
