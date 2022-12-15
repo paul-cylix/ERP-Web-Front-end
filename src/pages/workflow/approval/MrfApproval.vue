@@ -652,6 +652,7 @@ export default {
       isLoading: false,
       isLoadingModal: false,
       done_approving: false,
+      isAcknowledgeByMM: false,
 
       title: '',
       withdrawRemarks: "",
@@ -718,7 +719,8 @@ export default {
         this.materials_request_type = resp.data.request.materials_request_type;
         this.remarks = resp.data.request.remarks;
 
-        this.done_approving = resp.data.request.done_approving
+        this.done_approving = resp.data.request.done_approving;
+        this.isAcknowledgeByMM = resp.data.request.isAcknowledgeByMM;
 
         // Attachments Card
         this.selectedFileSOF = resp.data.attachmentsSOF;
@@ -767,6 +769,8 @@ export default {
       fd.append("frmName", form);
       fd.append("withdrawRemarks", this.withdrawRemarks);
       fd.append("done_approving", this.done_approving);
+      fd.append("isAcknowledgeByMM", this.isAcknowledgeByMM);
+
 
 
       try {

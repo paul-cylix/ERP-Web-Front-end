@@ -1271,8 +1271,8 @@ export default {
       this.authTimeStart = this.convertTimeAndDate(selectedOvertime.ot_in);
       this.authTimeEnd = this.convertTimeAndDate(selectedOvertime.ot_out);
       this.authOThrs = selectedOvertime.ot_totalhrs;
-      this.actualTimeStart = this.convertTimeAndDate(selectedOvertime.ot_in);
-      this.actualTimeEnd = this.convertTimeAndDate(selectedOvertime.ot_out);
+      this.actualTimeStart = this.convertTimeAndDate(selectedOvertime.ot_in_actual);
+      this.actualTimeEnd = this.convertTimeAndDate(selectedOvertime.ot_out_actual);
       this.actualOthrs = selectedOvertime.ot_totalhrs_actual;
       this.modalPurpose = selectedOvertime.purpose;
       this.clientName = selectedOvertime.cust_id;
