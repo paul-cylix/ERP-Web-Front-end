@@ -1,4 +1,4 @@
-<template>
+  <template>
     <div class="col-md-12 mt-3">
       <!-- Form Element sizes -->
       <div class="card card-secondary">
@@ -461,7 +461,7 @@
                 <tbody style="font-size: 14px">
                   <tr v-for="(item, index) in businessData" :key="item.id">
                     <td class="text-center">{{ index + 1 }}.</td>
-                    <td>{{ item.prefix }}</td>
+                    <td>{{ item.prefix_name }}</td>
                     <td>{{ item.firstName }}</td>
                     <td>{{ item.lastName }}</td>
                     <td>{{ item.suffix }}</td>
@@ -472,13 +472,13 @@
                           class="btn btn-sm btn-info m-0"
                           data-toggle="modal"
                           data-target="#modal-corporate-officer"
-                          @click="edit_ExpenseType(expenseType_Data.indexOf(item))"
+                          @click="editCorporateOfficers(businessData.indexOf(item))"
                         >
                           <i class="fas fa-edit"></i>
                         </button>
                         <button
                           class="btn btn-sm btn-danger m-0 ml-1"
-                          @click="trashBusinessData(businessData.indexOf(item))"
+                          @click="trashCorporateOfficers(businessData.indexOf(item))"
                         >
                           <i class="fas fa-trash"></i>
                         </button>
@@ -522,32 +522,34 @@
                   <th scope="col">Phone No.</th>
                   <th scope="col">Email</th>
                   <th scope="col">Fax</th>
-                  <th scope="col">Active</th>
+                  <th scope="col">Status</th>
                   <th scope="col">Action</th>
                 </tr>
               </thead>
   
               <tbody style="font-size: 14px">
-                <tr v-for="(item, index) in expenseType_Data" :key="item.id">
+                <tr v-for="(item, index) in addressData" :key="item.ID">
                   <td class="text-center">{{ index + 1 }}.</td>
-                  <td>{{ item.date_ }}</td>
-                  <td>{{ item.CLIENT_NAME }}</td>
-                  <td>{{ item.EXPENSE_TYPE }}</td>
-                  <td>{{ item.DESCRIPTION }}</td>
-                  <td>{{ item.AMOUNT }}</td>
+                  <td>{{ item.TypeOfAddress }}</td>
+                  <td>{{ item.address_line }}</td>
+                  <td>{{ item.city }}</td>
+                  <td>{{ item.PhoneNum }}</td>
+                  <td>{{ item.EmailAdd }}</td>
+                  <td>{{ item.Fax }}</td>
+                  <td>{{ item.Status }}</td>
                   <td class="pl-0 m-0">
                     <aside class="d-flex justify-content-center">
                       <button
                         class="btn btn-sm btn-info m-0"
                         data-toggle="modal"
-                        data-target="#modal-expenseType"
-                        @click="edit_ExpenseType(expenseType_Data.indexOf(item))"
+                        data-target="#modal-address"
+                        @click="editAddress(addressData.indexOf(item))"
                       >
                         <i class="fas fa-edit"></i>
                       </button>
                       <button
                         class="btn btn-sm btn-danger m-0 ml-1"
-                        @click="trash_ExpenseType(expenseType_Data.indexOf(item))"
+                        @click="trashAddress(addressData.indexOf(item), item.ID)"
                       >
                         <i class="fas fa-trash"></i>
                       </button>
@@ -595,32 +597,7 @@
               </thead>
   
               <tbody style="font-size: 14px">
-                <tr v-for="(item, index) in expenseType_Data" :key="item.id">
-                  <td class="text-center">{{ index + 1 }}.</td>
-                  <td>{{ item.date_ }}</td>
-                  <td>{{ item.CLIENT_NAME }}</td>
-                  <td>{{ item.EXPENSE_TYPE }}</td>
-                  <td>{{ item.DESCRIPTION }}</td>
-                  <td>{{ item.AMOUNT }}</td>
-                  <td class="pl-0 m-0">
-                    <aside class="d-flex justify-content-center">
-                      <button
-                        class="btn btn-sm btn-info m-0"
-                        data-toggle="modal"
-                        data-target="#modal-expenseType"
-                        @click="edit_ExpenseType(expenseType_Data.indexOf(item))"
-                      >
-                        <i class="fas fa-edit"></i>
-                      </button>
-                      <button
-                        class="btn btn-sm btn-danger m-0 ml-1"
-                        @click="trash_ExpenseType(expenseType_Data.indexOf(item))"
-                      >
-                        <i class="fas fa-trash"></i>
-                      </button>
-                    </aside>
-                  </td>
-                </tr>
+               
               </tbody>
             </table>
           </div>
@@ -645,6 +622,7 @@
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
+                    v-model="purchasing.productLine"
                   />
                 </div>
               </div>
@@ -654,6 +632,7 @@
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
+                    v-model="purchasing.services"
                   />
                 </div>
               </div>
@@ -702,6 +681,7 @@
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
+                    v-model="purchasing.contactDetails"
                   />
                 </div>
               </div>
@@ -714,6 +694,7 @@
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
+                    v-model="purchasing.ordering"
                   />
                 </div>
               </div>
@@ -723,6 +704,7 @@
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
+                    v-model="purchasing.shipping"
                   />
                 </div>
               </div>
@@ -732,6 +714,7 @@
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
+                    v-model="purchasing.documentation"
                   />
                 </div>
               </div>
@@ -741,6 +724,7 @@
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
+                    v-model="purchasing.payment"
                   />
                 </div>
               </div>
@@ -763,7 +747,7 @@
                     class="pt-2 col-md-12 rounded uploadContainer"
                     @dragover="dragover"
                     @dragleave="dragleave"
-                    @drop="drop"
+                    @drop="purchasingFileDrop"
                   >
                     <input
                       type="file"
@@ -771,7 +755,7 @@
                       name="fields[assetsFieldHandle][]"
                       id="assetsFieldHandle"
                       class="w-25 h-25 overflow-hidden"
-                      @change="onFileSelected"
+                      @change="purchasingFileOnFileSelected"
                       ref="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                     />
@@ -787,43 +771,7 @@
                     <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                       <li
                         class="text-sm mt-2"
-                        v-for="file in selectedDBFile"
-                        :key="file.newFilename"
-                      >
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-md-4 d-flex">
-                            <div class="col text-left">
-                              <span
-                                ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
-                              >
-                            </div>
-      
-                            <div>
-                              <button
-                                class="btn btn-danger btn-sm px-13"
-                                type="button"
-                                @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
-                                title="Remove file"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                            </div>
-      
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-      
-                    <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                      <li
-                        class="text-sm mt-2"
-                        v-for="file in selectedFile"
+                        v-for="file in purchasingSelectedFile"
                         :key="file.name"
                       >
                         <div class="row d-flex justify-content-center">
@@ -835,7 +783,7 @@
                               <button
                                 class="btn btn-danger btn-sm px-13"
                                 type="button"
-                                @click="remove(selectedFile.indexOf(file))"
+                                @click="purchasingFileRemove(purchasingSelectedFile.indexOf(file))"
                                 title="Remove file"
                               >
                                 Remove
@@ -843,7 +791,7 @@
                             </div>
                             <div class="ml-1">
                               <button
-                                @click="preview(selectedFile.indexOf(file))"
+                                @click="purchasingFilePreview(purchasingSelectedFile.indexOf(file))"
                                 class="btn btn-secondary btn-sm"
                               >
                                 Preview
@@ -866,7 +814,7 @@
                     class="form-control"
                     name="purpose"
                     id="purpose"
-                    v-model.trim="purpose"
+                    v-model.trim="purchasing.notes"
                     rows="3"
                   ></textarea>
                 </div>
@@ -921,7 +869,7 @@
             </div>
 
             <div class="row">
-              <div class="col-md-3">
+              <div class="col-md-6">
                 <div class="form-group">
                   <small
                     ><label for="reportingManager selextForm" id="selextForm"
@@ -931,33 +879,39 @@
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
+                    v-model="accounting.bank"
                   />
                 </div>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-6">
                 <div class="form-group">
                   <small><label for="reference">Branch</label></small>
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
+                    v-model="accounting.branch"
                   />
                 </div>
               </div>
-              <div class="col-md-3">
+            </div>
+            <div class="row">
+              <div class="col-md-6">
                 <div class="form-group">
                   <small><label for="reference">Contact Person</label></small>
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
+                    v-model="accounting.contactPerson"
                   />
                 </div>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-6">
                 <div class="form-group">
                   <small><label for="reference">Telephone Number</label></small>
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
+                    v-model="accounting.telephoneNumber"
                   />
                 </div>
               </div>
@@ -999,26 +953,28 @@
                 </thead>
     
                 <tbody style="font-size: 14px">
-                  <tr v-for="(item, index) in expenseType_Data" :key="item.id">
+                  <tr v-for="(item, index) in accountingData" :key="item.id">
                     <td class="text-center">{{ index + 1 }}.</td>
-                    <td>{{ item.date_ }}</td>
-                    <td>{{ item.CLIENT_NAME }}</td>
-                    <td>{{ item.EXPENSE_TYPE }}</td>
-                    <td>{{ item.DESCRIPTION }}</td>
-                    <td>{{ item.AMOUNT }}</td>
+                    <td>{{ item.bankName }}</td>
+                    <td>{{ item.bankAcctNumber }}</td>
+                    <td>{{ item.bankBranch }}</td>
+                    <td>{{ item.bank_currency_name }}</td>
+                    <td>{{ item.bankSwiftCode }}</td>
+                    <td>{{ item.bankPreferred }}</td>
+                    <td>checkbox here</td>
                     <td class="pl-0 m-0">
                       <aside class="d-flex justify-content-center">
                         <button
                           class="btn btn-sm btn-info m-0"
                           data-toggle="modal"
-                          data-target="#modal-expenseType"
-                          @click="edit_ExpenseType(expenseType_Data.indexOf(item))"
+                          data-target="#modal-banking-info"
+                          @click="editBankInfo(accountingData.indexOf(item))"
                         >
                           <i class="fas fa-edit"></i>
                         </button>
                         <button
                           class="btn btn-sm btn-danger m-0 ml-1"
-                          @click="trash_ExpenseType(expenseType_Data.indexOf(item))"
+                          @click="trashBankInfo(accountingData.indexOf(item))"
                         >
                           <i class="fas fa-trash"></i>
                         </button>
@@ -1041,7 +997,7 @@
                     class="form-control"
                     name="purpose"
                     id="purpose"
-                    v-model.trim="purpose"
+                    v-model.trim="technical.warrantyNote"
                     rows="3"
                   ></textarea>
                 </div>
@@ -1053,7 +1009,7 @@
                     class="form-control"
                     name="purpose"
                     id="purpose"
-                    v-model.trim="purpose"
+                    v-model.trim="technical.policyNote"
                     rows="3"
                   ></textarea>
                 </div>
@@ -1077,7 +1033,7 @@
                     class="pt-2 col-md-12 rounded uploadContainer"
                     @dragover="dragover"
                     @dragleave="dragleave"
-                    @drop="drop"
+                    @drop="technicalFileDrop"
                   >
                     <input
                       type="file"
@@ -1085,7 +1041,7 @@
                       name="fields[assetsFieldHandle][]"
                       id="assetsFieldHandle"
                       class="w-25 h-25 overflow-hidden"
-                      @change="onFileSelected"
+                      @change="technicalFileOnFileSelected"
                       ref="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                     />
@@ -1101,43 +1057,7 @@
                     <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                       <li
                         class="text-sm mt-2"
-                        v-for="file in selectedDBFile"
-                        :key="file.newFilename"
-                      >
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-md-4 d-flex">
-                            <div class="col text-left">
-                              <span
-                                ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
-                              >
-                            </div>
-      
-                            <div>
-                              <button
-                                class="btn btn-danger btn-sm px-13"
-                                type="button"
-                                @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
-                                title="Remove file"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                            </div>
-      
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-      
-                    <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                      <li
-                        class="text-sm mt-2"
-                        v-for="file in selectedFile"
+                        v-for="file in technicalSelectedFile"
                         :key="file.name"
                       >
                         <div class="row d-flex justify-content-center">
@@ -1149,7 +1069,7 @@
                               <button
                                 class="btn btn-danger btn-sm px-13"
                                 type="button"
-                                @click="remove(selectedFile.indexOf(file))"
+                                @click="technicalFileRemove(technicalSelectedFile.indexOf(file))"
                                 title="Remove file"
                               >
                                 Remove
@@ -1157,7 +1077,7 @@
                             </div>
                             <div class="ml-1">
                               <button
-                                @click="preview(selectedFile.indexOf(file))"
+                                @click="technicalFilePreview(technicalSelectedFile.indexOf(file))"
                                 class="btn btn-secondary btn-sm"
                               >
                                 Preview
@@ -1180,7 +1100,7 @@
                     class="form-control"
                     name="purpose"
                     id="purpose"
-                    v-model.trim="purpose"
+                    v-model.trim="technical.attachmentNote"
                     rows="3"
                   ></textarea>
                 </div>
@@ -1222,26 +1142,24 @@
               </thead>
   
               <tbody style="font-size: 14px">
-                <tr v-for="(item, index) in expenseType_Data" :key="item.id">
+                <tr v-for="(item, index) in relatedVendorData" :key="item.id">
                   <td class="text-center">{{ index + 1 }}.</td>
-                  <td>{{ item.date_ }}</td>
-                  <td>{{ item.CLIENT_NAME }}</td>
-                  <td>{{ item.EXPENSE_TYPE }}</td>
-                  <td>{{ item.DESCRIPTION }}</td>
-                  <td>{{ item.AMOUNT }}</td>
+                  <td>{{ item.vendor_relationship_name }}</td>
+                  <td>{{ item.vendor_code }}</td>
+                  <td>{{ item.vendor_name }}</td>
                   <td class="pl-0 m-0">
                     <aside class="d-flex justify-content-center">
                       <button
                         class="btn btn-sm btn-info m-0"
                         data-toggle="modal"
-                        data-target="#modal-expenseType"
-                        @click="edit_ExpenseType(expenseType_Data.indexOf(item))"
+                        data-target="#modal-related-vendor"
+                        @click="editRelatedVendor(relatedVendorData.indexOf(item))"
                       >
                         <i class="fas fa-edit"></i>
                       </button>
                       <button
                         class="btn btn-sm btn-danger m-0 ml-1"
-                        @click="trash_ExpenseType(expenseType_Data.indexOf(item))"
+                        @click="trashRelatedVendor(relatedVendorData.indexOf(item))"
                       >
                         <i class="fas fa-trash"></i>
                       </button>
@@ -1282,26 +1200,24 @@
               </thead>
   
               <tbody style="font-size: 14px">
-                <tr v-for="(item, index) in expenseType_Data" :key="item.id">
+                <tr v-for="(item, index) in relatedCustomerData" :key="item.id">
                   <td class="text-center">{{ index + 1 }}.</td>
-                  <td>{{ item.date_ }}</td>
-                  <td>{{ item.CLIENT_NAME }}</td>
-                  <td>{{ item.EXPENSE_TYPE }}</td>
-                  <td>{{ item.DESCRIPTION }}</td>
-                  <td>{{ item.AMOUNT }}</td>
+                  <td>{{ item.customer_relationship_name }}</td>
+                  <td>{{ item.customer_code }}</td>
+                  <td>{{ item.customer_name }}</td>
                   <td class="pl-0 m-0">
                     <aside class="d-flex justify-content-center">
                       <button
                         class="btn btn-sm btn-info m-0"
                         data-toggle="modal"
-                        data-target="#modal-expenseType"
-                        @click="edit_ExpenseType(expenseType_Data.indexOf(item))"
+                        data-target="#modal-related-customer"
+                        @click="editRelatedCustomer(relatedCustomerData.indexOf(item))"
                       >
                         <i class="fas fa-edit"></i>
                       </button>
                       <button
                         class="btn btn-sm btn-danger m-0 ml-1"
-                        @click="trash_ExpenseType(expenseType_Data.indexOf(item))"
+                        @click="trashRelatedCustomer(relatedCustomerData.indexOf(item))"
                       >
                         <i class="fas fa-trash"></i>
                       </button>
@@ -1313,7 +1229,7 @@
           </div>
           <!-- /. Related To -->
 
-          <!-- Attachments -->
+          <!-- Attachments  -->
           <div class="mt-4" v-else-if="(this.counter === 7)">
             <div class="row mt-4">
               <div class="col-md-12">
@@ -1332,21 +1248,21 @@
                     class="pt-2 col-md-12 rounded uploadContainer"
                     @dragover="dragover"
                     @dragleave="dragleave"
-                    @drop="drop"
+                    @drop="attachmentOneFileDrop"
                   >
                     <input
                       type="file"
                       multiple
                       name="fields[assetsFieldHandle][]"
-                      id="assetsFieldHandle"
+                      id="assetsFieldHandle1"
                       class="w-25 h-25 overflow-hidden"
-                      @change="onFileSelected"
+                      @change="attachmentOneFileOnFileSelected"
                       ref="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                     />
         
                     <label
-                      for="assetsFieldHandle"
+                      for="assetsFieldHandle1"
                       style="width: 100%; cursor: pointer"
                       class="block pt-3 cursor-pointer"
                     >
@@ -1356,43 +1272,7 @@
                     <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                       <li
                         class="text-sm mt-2"
-                        v-for="file in selectedDBFile"
-                        :key="file.newFilename"
-                      >
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-md-4 d-flex">
-                            <div class="col text-left">
-                              <span
-                                ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
-                              >
-                            </div>
-      
-                            <div>
-                              <button
-                                class="btn btn-danger btn-sm px-13"
-                                type="button"
-                                @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
-                                title="Remove file"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                            </div>
-      
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-      
-                    <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                      <li
-                        class="text-sm mt-2"
-                        v-for="file in selectedFile"
+                        v-for="file in attachmentOneSelectedFile"
                         :key="file.name"
                       >
                         <div class="row d-flex justify-content-center">
@@ -1404,7 +1284,7 @@
                               <button
                                 class="btn btn-danger btn-sm px-13"
                                 type="button"
-                                @click="remove(selectedFile.indexOf(file))"
+                                @click="attachmentOneFileRemove(attachmentOneSelectedFile.indexOf(file))"
                                 title="Remove file"
                               >
                                 Remove
@@ -1412,7 +1292,7 @@
                             </div>
                             <div class="ml-1">
                               <button
-                                @click="preview(selectedFile.indexOf(file))"
+                                @click="attachmentOneFilePreview(attachmentOneSelectedFile.indexOf(file))"
                                 class="btn btn-secondary btn-sm"
                               >
                                 Preview
@@ -1427,7 +1307,7 @@
               </div>
             </div>
 
-            <div class="row mt-5">
+            <div class="row mt-4">
               <div class="col-md-12">
                 <small><label for="purpose">Business Registration</label></small>
                 <div 
@@ -1444,21 +1324,21 @@
                     class="pt-2 col-md-12 rounded uploadContainer"
                     @dragover="dragover"
                     @dragleave="dragleave"
-                    @drop="drop"
+                    @drop="attachmentTwoFileDrop"
                   >
                     <input
                       type="file"
                       multiple
                       name="fields[assetsFieldHandle][]"
-                      id="assetsFieldHandle"
+                      id="assetsFieldHandle2"
                       class="w-25 h-25 overflow-hidden"
-                      @change="onFileSelected"
+                      @change="attachmentTwoFileOnFileSelected"
                       ref="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                     />
         
                     <label
-                      for="assetsFieldHandle"
+                      for="assetsFieldHandle2"
                       style="width: 100%; cursor: pointer"
                       class="block pt-3 cursor-pointer"
                     >
@@ -1468,43 +1348,7 @@
                     <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                       <li
                         class="text-sm mt-2"
-                        v-for="file in selectedDBFile"
-                        :key="file.newFilename"
-                      >
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-md-4 d-flex">
-                            <div class="col text-left">
-                              <span
-                                ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
-                              >
-                            </div>
-      
-                            <div>
-                              <button
-                                class="btn btn-danger btn-sm px-13"
-                                type="button"
-                                @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
-                                title="Remove file"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                            </div>
-      
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-      
-                    <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                      <li
-                        class="text-sm mt-2"
-                        v-for="file in selectedFile"
+                        v-for="file in attachmentTwoSelectedFile"
                         :key="file.name"
                       >
                         <div class="row d-flex justify-content-center">
@@ -1516,7 +1360,7 @@
                               <button
                                 class="btn btn-danger btn-sm px-13"
                                 type="button"
-                                @click="remove(selectedFile.indexOf(file))"
+                                @click="attachmentTwoFileRemove(attachmentTwoSelectedFile.indexOf(file))"
                                 title="Remove file"
                               >
                                 Remove
@@ -1524,7 +1368,7 @@
                             </div>
                             <div class="ml-1">
                               <button
-                                @click="preview(selectedFile.indexOf(file))"
+                                @click="attachmentTwoFilePreview(attachmentTwoSelectedFile.indexOf(file))"
                                 class="btn btn-secondary btn-sm"
                               >
                                 Preview
@@ -1539,7 +1383,7 @@
               </div>
             </div>
 
-            <div class="row mt-5">
+            <div class="row mt-4">
               <div class="col-md-12">
                 <small><label for="purpose">Updated Business Permit</label></small>
                 <div 
@@ -1556,21 +1400,21 @@
                     class="pt-2 col-md-12 rounded uploadContainer"
                     @dragover="dragover"
                     @dragleave="dragleave"
-                    @drop="drop"
+                    @drop="attachmentThreeFileDrop"
                   >
                     <input
                       type="file"
                       multiple
                       name="fields[assetsFieldHandle][]"
-                      id="assetsFieldHandle"
+                      id="assetsFieldHandle3"
                       class="w-25 h-25 overflow-hidden"
-                      @change="onFileSelected"
+                      @change="attachmentThreeFileOnFileSelected"
                       ref="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                     />
         
                     <label
-                      for="assetsFieldHandle"
+                      for="assetsFieldHandle3"
                       style="width: 100%; cursor: pointer"
                       class="block pt-3 cursor-pointer"
                     >
@@ -1580,43 +1424,7 @@
                     <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                       <li
                         class="text-sm mt-2"
-                        v-for="file in selectedDBFile"
-                        :key="file.newFilename"
-                      >
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-md-4 d-flex">
-                            <div class="col text-left">
-                              <span
-                                ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
-                              >
-                            </div>
-      
-                            <div>
-                              <button
-                                class="btn btn-danger btn-sm px-13"
-                                type="button"
-                                @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
-                                title="Remove file"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                            </div>
-      
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-      
-                    <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                      <li
-                        class="text-sm mt-2"
-                        v-for="file in selectedFile"
+                        v-for="file in attachmentThreeSelectedFile"
                         :key="file.name"
                       >
                         <div class="row d-flex justify-content-center">
@@ -1628,7 +1436,7 @@
                               <button
                                 class="btn btn-danger btn-sm px-13"
                                 type="button"
-                                @click="remove(selectedFile.indexOf(file))"
+                                @click="attachmentThreeFileRemove(attachmentThreeSelectedFile.indexOf(file))"
                                 title="Remove file"
                               >
                                 Remove
@@ -1636,7 +1444,7 @@
                             </div>
                             <div class="ml-1">
                               <button
-                                @click="preview(selectedFile.indexOf(file))"
+                                @click="attachmentThreeFilePreview(attachmentThreeSelectedFile.indexOf(file))"
                                 class="btn btn-secondary btn-sm"
                               >
                                 Preview
@@ -1651,7 +1459,7 @@
               </div>
             </div>
 
-            <div class="row mt-5">
+            <div class="row mt-4">
               <div class="col-md-12">
                 <small><label for="purpose">BIR Certificate of Registration: BIR 2303 form</label></small>
                 <div 
@@ -1668,21 +1476,21 @@
                     class="pt-2 col-md-12 rounded uploadContainer"
                     @dragover="dragover"
                     @dragleave="dragleave"
-                    @drop="drop"
+                    @drop="attachmentFourFileDrop"
                   >
                     <input
                       type="file"
                       multiple
                       name="fields[assetsFieldHandle][]"
-                      id="assetsFieldHandle"
+                      id="assetsFieldHandle4"
                       class="w-25 h-25 overflow-hidden"
-                      @change="onFileSelected"
+                      @change="attachmentFourFileOnFileSelected"
                       ref="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                     />
         
                     <label
-                      for="assetsFieldHandle"
+                      for="assetsFieldHandle4"
                       style="width: 100%; cursor: pointer"
                       class="block pt-3 cursor-pointer"
                     >
@@ -1692,43 +1500,7 @@
                     <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                       <li
                         class="text-sm mt-2"
-                        v-for="file in selectedDBFile"
-                        :key="file.newFilename"
-                      >
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-md-4 d-flex">
-                            <div class="col text-left">
-                              <span
-                                ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
-                              >
-                            </div>
-      
-                            <div>
-                              <button
-                                class="btn btn-danger btn-sm px-13"
-                                type="button"
-                                @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
-                                title="Remove file"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                            </div>
-      
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-      
-                    <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                      <li
-                        class="text-sm mt-2"
-                        v-for="file in selectedFile"
+                        v-for="file in attachmentFourSelectedFile"
                         :key="file.name"
                       >
                         <div class="row d-flex justify-content-center">
@@ -1740,7 +1512,7 @@
                               <button
                                 class="btn btn-danger btn-sm px-13"
                                 type="button"
-                                @click="remove(selectedFile.indexOf(file))"
+                                @click="attachmentFourFileRemove(attachmentFourSelectedFile.indexOf(file))"
                                 title="Remove file"
                               >
                                 Remove
@@ -1748,7 +1520,7 @@
                             </div>
                             <div class="ml-1">
                               <button
-                                @click="preview(selectedFile.indexOf(file))"
+                                @click="attachmentFourFilePreview(attachmentFourSelectedFile.indexOf(file))"
                                 class="btn btn-secondary btn-sm"
                               >
                                 Preview
@@ -1763,7 +1535,7 @@
               </div>
             </div>
 
-            <div class="row mt-5">
+            <div class="row mt-4">
               <div class="col-md-12">
                 <small><label for="purpose">Sample of Delivery Receipt, Sales Invoice, Official Receipt</label></small>
                 <div 
@@ -1780,21 +1552,21 @@
                     class="pt-2 col-md-12 rounded uploadContainer"
                     @dragover="dragover"
                     @dragleave="dragleave"
-                    @drop="drop"
+                    @drop="attachmentFiveFileDrop"
                   >
                     <input
                       type="file"
                       multiple
                       name="fields[assetsFieldHandle][]"
-                      id="assetsFieldHandle"
+                      id="assetsFieldHandle5"
                       class="w-25 h-25 overflow-hidden"
-                      @change="onFileSelected"
+                      @change="attachmentFiveFileOnFileSelected"
                       ref="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                     />
         
                     <label
-                      for="assetsFieldHandle"
+                      for="assetsFieldHandle5"
                       style="width: 100%; cursor: pointer"
                       class="block pt-3 cursor-pointer"
                     >
@@ -1804,43 +1576,7 @@
                     <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                       <li
                         class="text-sm mt-2"
-                        v-for="file in selectedDBFile"
-                        :key="file.newFilename"
-                      >
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-md-4 d-flex">
-                            <div class="col text-left">
-                              <span
-                                ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
-                              >
-                            </div>
-      
-                            <div>
-                              <button
-                                class="btn btn-danger btn-sm px-13"
-                                type="button"
-                                @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
-                                title="Remove file"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                            </div>
-      
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-      
-                    <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                      <li
-                        class="text-sm mt-2"
-                        v-for="file in selectedFile"
+                        v-for="file in attachmentFiveSelectedFile"
                         :key="file.name"
                       >
                         <div class="row d-flex justify-content-center">
@@ -1852,7 +1588,7 @@
                               <button
                                 class="btn btn-danger btn-sm px-13"
                                 type="button"
-                                @click="remove(selectedFile.indexOf(file))"
+                                @click="attachmentFiveFileRemove(attachmentFiveSelectedFile.indexOf(file))"
                                 title="Remove file"
                               >
                                 Remove
@@ -1860,7 +1596,7 @@
                             </div>
                             <div class="ml-1">
                               <button
-                                @click="preview(selectedFile.indexOf(file))"
+                                @click="attachmentFiveFilePreview(attachmentFiveSelectedFile.indexOf(file))"
                                 class="btn btn-secondary btn-sm"
                               >
                                 Preview
@@ -1875,7 +1611,7 @@
               </div>
             </div>
 
-            <div class="row mt-5">
+            <div class="row mt-4">
               <div class="col-md-12">
                 <small><label for="purpose">Company/Business Profile</label></small>
                 <div 
@@ -1892,21 +1628,21 @@
                     class="pt-2 col-md-12 rounded uploadContainer"
                     @dragover="dragover"
                     @dragleave="dragleave"
-                    @drop="drop"
+                    @drop="attachmentSixFileDrop"
                   >
                     <input
                       type="file"
                       multiple
                       name="fields[assetsFieldHandle][]"
-                      id="assetsFieldHandle"
+                      id="assetsFieldHandle6"
                       class="w-25 h-25 overflow-hidden"
-                      @change="onFileSelected"
+                      @change="attachmentSixFileOnFileSelected"
                       ref="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                     />
         
                     <label
-                      for="assetsFieldHandle"
+                      for="assetsFieldHandle6"
                       style="width: 100%; cursor: pointer"
                       class="block pt-3 cursor-pointer"
                     >
@@ -1916,43 +1652,7 @@
                     <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                       <li
                         class="text-sm mt-2"
-                        v-for="file in selectedDBFile"
-                        :key="file.newFilename"
-                      >
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-md-4 d-flex">
-                            <div class="col text-left">
-                              <span
-                                ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
-                              >
-                            </div>
-      
-                            <div>
-                              <button
-                                class="btn btn-danger btn-sm px-13"
-                                type="button"
-                                @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
-                                title="Remove file"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                            </div>
-      
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-      
-                    <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                      <li
-                        class="text-sm mt-2"
-                        v-for="file in selectedFile"
+                        v-for="file in attachmentSixSelectedFile"
                         :key="file.name"
                       >
                         <div class="row d-flex justify-content-center">
@@ -1964,7 +1664,7 @@
                               <button
                                 class="btn btn-danger btn-sm px-13"
                                 type="button"
-                                @click="remove(selectedFile.indexOf(file))"
+                                @click="attachmentSixFileRemove(attachmentSixSelectedFile.indexOf(file))"
                                 title="Remove file"
                               >
                                 Remove
@@ -1972,7 +1672,7 @@
                             </div>
                             <div class="ml-1">
                               <button
-                                @click="preview(selectedFile.indexOf(file))"
+                                @click="attachmentSixFilePreview(attachmentSixSelectedFile.indexOf(file))"
                                 class="btn btn-secondary btn-sm"
                               >
                                 Preview
@@ -1987,7 +1687,7 @@
               </div>
             </div>
 
-            <div class="row mt-5">
+            <div class="row mt-4">
               <div class="col-md-12">
                 <small><label for="purpose">Latest Audited Financial Statements</label></small>
                 <div 
@@ -2004,21 +1704,21 @@
                     class="pt-2 col-md-12 rounded uploadContainer"
                     @dragover="dragover"
                     @dragleave="dragleave"
-                    @drop="drop"
+                    @drop="attachmentSevenFileDrop"
                   >
                     <input
                       type="file"
                       multiple
                       name="fields[assetsFieldHandle][]"
-                      id="assetsFieldHandle"
+                      id="assetsFieldHandle7"
                       class="w-25 h-25 overflow-hidden"
-                      @change="onFileSelected"
+                      @change="attachmentSevenFileOnFileSelected"
                       ref="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                     />
         
                     <label
-                      for="assetsFieldHandle"
+                      for="assetsFieldHandle7"
                       style="width: 100%; cursor: pointer"
                       class="block pt-3 cursor-pointer"
                     >
@@ -2028,43 +1728,7 @@
                     <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                       <li
                         class="text-sm mt-2"
-                        v-for="file in selectedDBFile"
-                        :key="file.newFilename"
-                      >
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-md-4 d-flex">
-                            <div class="col text-left">
-                              <span
-                                ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
-                              >
-                            </div>
-      
-                            <div>
-                              <button
-                                class="btn btn-danger btn-sm px-13"
-                                type="button"
-                                @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
-                                title="Remove file"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                            </div>
-      
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-      
-                    <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                      <li
-                        class="text-sm mt-2"
-                        v-for="file in selectedFile"
+                        v-for="file in attachmentSevenSelectedFile"
                         :key="file.name"
                       >
                         <div class="row d-flex justify-content-center">
@@ -2076,7 +1740,7 @@
                               <button
                                 class="btn btn-danger btn-sm px-13"
                                 type="button"
-                                @click="remove(selectedFile.indexOf(file))"
+                                @click="attachmentSevenFileRemove(attachmentSevenSelectedFile.indexOf(file))"
                                 title="Remove file"
                               >
                                 Remove
@@ -2084,7 +1748,7 @@
                             </div>
                             <div class="ml-1">
                               <button
-                                @click="preview(selectedFile.indexOf(file))"
+                                @click="attachmentSevenFilePreview(attachmentSevenSelectedFile.indexOf(file))"
                                 class="btn btn-secondary btn-sm"
                               >
                                 Preview
@@ -2098,6 +1762,7 @@
                 </div>
               </div>
             </div>
+
           </div>
           <!-- / Attachments -->
 
@@ -2117,7 +1782,7 @@
                         <button
                           class="btn btn-sm btn-success m-0"
                           data-toggle="modal"
-                          data-target="#modal-related-vendor"
+                          data-target="#modal-distribution-agreement"
                           @click="setButton()"
                         >
                           <i class="fas fa-plus"></i>
@@ -2142,26 +1807,26 @@
                 </thead>
     
                 <tbody style="font-size: 14px">
-                  <tr v-for="(item, index) in expenseType_Data" :key="item.id">
+                  <tr v-for="(item, index) in distributionAgreementData" :key="item.id">
                     <td class="text-center">{{ index + 1 }}.</td>
-                    <td>{{ item.date_ }}</td>
-                    <td>{{ item.CLIENT_NAME }}</td>
-                    <td>{{ item.EXPENSE_TYPE }}</td>
-                    <td>{{ item.DESCRIPTION }}</td>
-                    <td>{{ item.AMOUNT }}</td>
+                    <td>{{ item.monthStart }}</td>
+                    <td>{{ item.monthEnd }}</td>
+                    <td>{{ item.annualTarget }}</td>
+                    <td>{{ item.currency_name }}</td>
+                    <td>{{ item.totalOrder }}</td>
                     <td class="pl-0 m-0">
                       <aside class="d-flex justify-content-center">
                         <button
                           class="btn btn-sm btn-info m-0"
                           data-toggle="modal"
-                          data-target="#modal-expenseType"
-                          @click="edit_ExpenseType(expenseType_Data.indexOf(item))"
+                          data-target="#modal-distribution-agreement"
+                          @click="editDistributionAgreement(distributionAgreementData.indexOf(item))"
                         >
                           <i class="fas fa-edit"></i>
                         </button>
                         <button
                           class="btn btn-sm btn-danger m-0 ml-1"
-                          @click="trash_ExpenseType(expenseType_Data.indexOf(item))"
+                          @click="trashDistributionAgreement(distributionAgreementData.indexOf(item))"
                         >
                           <i class="fas fa-trash"></i>
                         </button>
@@ -2190,21 +1855,21 @@
                     class="pt-2 col-md-12 rounded uploadContainer"
                     @dragover="dragover"
                     @dragleave="dragleave"
-                    @drop="drop"
+                    @drop="distributionOneFileDrop"
                   >
                     <input
                       type="file"
                       multiple
                       name="fields[assetsFieldHandle][]"
-                      id="assetsFieldHandle"
+                      id="assetsFieldHandle1"
                       class="w-25 h-25 overflow-hidden"
-                      @change="onFileSelected"
+                      @change="distributionOneFileOnFileSelected"
                       ref="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                     />
         
                     <label
-                      for="assetsFieldHandle"
+                      for="assetsFieldHandle1"
                       style="width: 100%; cursor: pointer"
                       class="block pt-3 cursor-pointer"
                     >
@@ -2214,43 +1879,7 @@
                     <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                       <li
                         class="text-sm mt-2"
-                        v-for="file in selectedDBFile"
-                        :key="file.newFilename"
-                      >
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-md-4 d-flex">
-                            <div class="col text-left">
-                              <span
-                                ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
-                              >
-                            </div>
-      
-                            <div>
-                              <button
-                                class="btn btn-danger btn-sm px-13"
-                                type="button"
-                                @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
-                                title="Remove file"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                            </div>
-      
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-      
-                    <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                      <li
-                        class="text-sm mt-2"
-                        v-for="file in selectedFile"
+                        v-for="file in distributionOneSelectedFile"
                         :key="file.name"
                       >
                         <div class="row d-flex justify-content-center">
@@ -2262,7 +1891,7 @@
                               <button
                                 class="btn btn-danger btn-sm px-13"
                                 type="button"
-                                @click="remove(selectedFile.indexOf(file))"
+                                @click="distributionOneFileRemove(distributionOneSelectedFile.indexOf(file))"
                                 title="Remove file"
                               >
                                 Remove
@@ -2270,7 +1899,7 @@
                             </div>
                             <div class="ml-1">
                               <button
-                                @click="preview(selectedFile.indexOf(file))"
+                                @click="distributionOneFilePreview(distributionOneSelectedFile.indexOf(file))"
                                 class="btn btn-secondary btn-sm"
                               >
                                 Preview
@@ -2302,21 +1931,21 @@
                     class="pt-2 col-md-12 rounded uploadContainer"
                     @dragover="dragover"
                     @dragleave="dragleave"
-                    @drop="drop"
+                    @drop="distributionTwoFileDrop"
                   >
                     <input
                       type="file"
                       multiple
                       name="fields[assetsFieldHandle][]"
-                      id="assetsFieldHandle"
+                      id="assetsFieldHandle2"
                       class="w-25 h-25 overflow-hidden"
-                      @change="onFileSelected"
+                      @change="distributionTwoFileOnFileSelected"
                       ref="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                     />
         
                     <label
-                      for="assetsFieldHandle"
+                      for="assetsFieldHandle2"
                       style="width: 100%; cursor: pointer"
                       class="block pt-3 cursor-pointer"
                     >
@@ -2326,43 +1955,7 @@
                     <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                       <li
                         class="text-sm mt-2"
-                        v-for="file in selectedDBFile"
-                        :key="file.newFilename"
-                      >
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-md-4 d-flex">
-                            <div class="col text-left">
-                              <span
-                                ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
-                              >
-                            </div>
-      
-                            <div>
-                              <button
-                                class="btn btn-danger btn-sm px-13"
-                                type="button"
-                                @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
-                                title="Remove file"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                            </div>
-      
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-      
-                    <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                      <li
-                        class="text-sm mt-2"
-                        v-for="file in selectedFile"
+                        v-for="file in distributionTwoSelectedFile"
                         :key="file.name"
                       >
                         <div class="row d-flex justify-content-center">
@@ -2374,7 +1967,7 @@
                               <button
                                 class="btn btn-danger btn-sm px-13"
                                 type="button"
-                                @click="remove(selectedFile.indexOf(file))"
+                                @click="distributionTwoFileRemove(distributionTwoSelectedFile.indexOf(file))"
                                 title="Remove file"
                               >
                                 Remove
@@ -2382,7 +1975,7 @@
                             </div>
                             <div class="ml-1">
                               <button
-                                @click="preview(selectedFile.indexOf(file))"
+                                @click="distributionTwoFilePreview(distributionTwoSelectedFile.indexOf(file))"
                                 class="btn btn-secondary btn-sm"
                               >
                                 Preview
@@ -2414,21 +2007,21 @@
                     class="pt-2 col-md-12 rounded uploadContainer"
                     @dragover="dragover"
                     @dragleave="dragleave"
-                    @drop="drop"
+                    @drop="distributionThreeFileDrop"
                   >
                     <input
                       type="file"
                       multiple
                       name="fields[assetsFieldHandle][]"
-                      id="assetsFieldHandle"
+                      id="assetsFieldHandle3"
                       class="w-25 h-25 overflow-hidden"
-                      @change="onFileSelected"
+                      @change="distributionThreeFileOnFileSelected"
                       ref="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                     />
         
                     <label
-                      for="assetsFieldHandle"
+                      for="assetsFieldHandle3"
                       style="width: 100%; cursor: pointer"
                       class="block pt-3 cursor-pointer"
                     >
@@ -2438,43 +2031,7 @@
                     <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                       <li
                         class="text-sm mt-2"
-                        v-for="file in selectedDBFile"
-                        :key="file.newFilename"
-                      >
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-md-4 d-flex">
-                            <div class="col text-left">
-                              <span
-                                ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
-                              >
-                            </div>
-      
-                            <div>
-                              <button
-                                class="btn btn-danger btn-sm px-13"
-                                type="button"
-                                @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
-                                title="Remove file"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                            </div>
-      
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-      
-                    <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                      <li
-                        class="text-sm mt-2"
-                        v-for="file in selectedFile"
+                        v-for="file in distributionThreeSelectedFile"
                         :key="file.name"
                       >
                         <div class="row d-flex justify-content-center">
@@ -2486,7 +2043,7 @@
                               <button
                                 class="btn btn-danger btn-sm px-13"
                                 type="button"
-                                @click="remove(selectedFile.indexOf(file))"
+                                @click="distributionThreeFileRemove(distributionThreeSelectedFile.indexOf(file))"
                                 title="Remove file"
                               >
                                 Remove
@@ -2494,7 +2051,7 @@
                             </div>
                             <div class="ml-1">
                               <button
-                                @click="preview(selectedFile.indexOf(file))"
+                                @click="distributionThreeFilePreview(distributionThreeSelectedFile.indexOf(file))"
                                 class="btn btn-secondary btn-sm"
                               >
                                 Preview
@@ -2512,7 +2069,6 @@
             <h4 class="mt-5 text-center font-weight-bold">Other Attachments</h4>
             <div class="row">
               <div class="col-md-12">
-                <small><label for="purpose">Attachments</label></small>
                 <div 
                   class="
                     d-flex
@@ -2527,21 +2083,21 @@
                     class="pt-2 col-md-12 rounded uploadContainer"
                     @dragover="dragover"
                     @dragleave="dragleave"
-                    @drop="drop"
+                    @drop="distributionFourFileDrop"
                   >
                     <input
                       type="file"
                       multiple
                       name="fields[assetsFieldHandle][]"
-                      id="assetsFieldHandle"
+                      id="assetsFieldHandle4"
                       class="w-25 h-25 overflow-hidden"
-                      @change="onFileSelected"
+                      @change="distributionFourFileOnFileSelected"
                       ref="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                     />
         
                     <label
-                      for="assetsFieldHandle"
+                      for="assetsFieldHandle4"
                       style="width: 100%; cursor: pointer"
                       class="block pt-3 cursor-pointer"
                     >
@@ -2551,43 +2107,7 @@
                     <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
                       <li
                         class="text-sm mt-2"
-                        v-for="file in selectedDBFile"
-                        :key="file.newFilename"
-                      >
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-md-4 d-flex">
-                            <div class="col text-left">
-                              <span
-                                ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
-                              >
-                            </div>
-      
-                            <div>
-                              <button
-                                class="btn btn-danger btn-sm px-13"
-                                type="button"
-                                @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
-                                title="Remove file"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                            </div>
-                            <div class="ml-1">
-                              <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                            </div>
-      
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-      
-                    <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                      <li
-                        class="text-sm mt-2"
-                        v-for="file in selectedFile"
+                        v-for="file in distributionFourSelectedFile"
                         :key="file.name"
                       >
                         <div class="row d-flex justify-content-center">
@@ -2599,7 +2119,7 @@
                               <button
                                 class="btn btn-danger btn-sm px-13"
                                 type="button"
-                                @click="remove(selectedFile.indexOf(file))"
+                                @click="distributionFourFileRemove(distributionFourSelectedFile.indexOf(file))"
                                 title="Remove file"
                               >
                                 Remove
@@ -2607,7 +2127,7 @@
                             </div>
                             <div class="ml-1">
                               <button
-                                @click="preview(selectedFile.indexOf(file))"
+                                @click="distributionFourFilePreview(distributionFourSelectedFile.indexOf(file))"
                                 class="btn btn-secondary btn-sm"
                               >
                                 Preview
@@ -2630,7 +2150,7 @@
                     class="form-control"
                     name="purpose"
                     id="purpose"
-                    v-model.trim="purpose"
+                    v-model.trim="distribution.notes"
                     rows="3"
                   ></textarea>
                 </div>
@@ -2641,9 +2161,10 @@
   
           <!--  Form Review -->
           <aside v-else-if="(this.counter === 9)">
+            <!-- General Review -->
             <div class="card card-secondary mt-4">
               <div class="card-header">
-                <h3 class="card-title">Request Details</h3>
+                <h3 class="card-title">General</h3>
   
                 <div class="card-tools">
                   <button
@@ -2662,76 +2183,136 @@
                 >
                   <tbody>
                     <tr>
-                      <td>Reference Number</td>
-                      <td style="width: 80%">{{ "RE-" + todaysYear }}</td>
+                      <td>Website</td>
+                      <td style="width: 80%">{{ general.website }}</td>
                     </tr>
                     <tr>
-                      <td>Requested Date</td>
-                      <td>{{ this.requestDate }}</td>
+                      <td>Vendor Type</td>
+                      <td>{{ general.vendorTypeSelected }}</td>
                     </tr>
                     <tr>
-                      <td>Date Needed</td>
-                      <td>{{ this.dateNeeded }}</td>
+                      <td>In Business Since</td>
+                      <td>{{ general.inBusinessSince }}</td>
                     </tr>
                     <tr>
-                      <td>Reporting Manager</td>
-                      <td>{{ this.reportingManagerItem.name }}</td>
+                      <td>Payment Terms</td>
+                      <td>{{ paymentTermsSelected.name }}</td>
                     </tr>
                     <tr>
-                      <td>Project Name</td>
-                      <td>{{ this.projectItem.name }}</td>
-                    </tr>
-                    <tr>
-                      <td>Client Name</td>
-                      <td>{{ this.clientName }}</td>
-                    </tr>
-                    <tr>
-                      <td>Purpose</td>
-                      <td>{{ this.purpose }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-  
-            <!-- Payment Details -->
-            <div class="card card-secondary">
-              <div class="card-header">
-                <h3 class="card-title">Payment Details</h3>
-  
-                <div class="card-tools">
-                  <button
-                    type="button"
-                    class="btn btn-tool"
-                    data-card-widget="collapse"
-                  >
-                    <i class="fas fa-minus"></i>
-                  </button>
-                </div>
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body p-0">
-                <table
-                  class="table table-sm table-bordered table-hover table-striped"
-                >
-                  <tbody>
-                    <tr>
-                      <td>Payee Name</td>
-                      <td style="width: 80%">{{ this.payeeName }}</td>
-                    </tr>
-                    <tr>
-                      <td>Mode of Payment</td>
-                      <td>{{ this.modeOfPaymentItem.name }}</td>
+                      <td>Credit Limit</td>
+                      <td>{{ general.creditLimit }}</td>
                     </tr>
                     <tr>
                       <td>Currency</td>
-                      <td>{{ this.currencyItem.name }}</td>
+                      <td>{{ currenciesSelected.name }}</td>
                     </tr>
                     <tr>
-                      <td>Amount</td>
-                      <td>{{ this.amount }}</td>
+                      <td>Last Update Date</td>
+                      <td>{{ requestDate }}</td>
+                    </tr>
+                    <tr>
+                      <td>Last Update By</td>
+                      <td>{{ general.lastUpdateBy }}</td>
+                    </tr>
+                    <tr>
+                      <td>VAT Status</td>
+                      <td>{{ businessTaxStatusSelected.name }}</td>
+                    </tr>
+                    <tr>
+                      <td>TIN Number</td>
+                      <td>{{ general.tinNumber }}</td>
+                    </tr>
+                    <tr>
+                      <td>2303#</td>
+                      <td>{{ general.twentyThreeZeroThree }}</td>
+                    </tr>
+                    <tr>
+                      <td>Sec#</td>
+                      <td>{{ general.secNumber }}</td>
+                    </tr>
+                    <tr>
+                      <td>Notes</td>
+                      <td>{{ general.notes }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+              <!-- /.card -->
+            </div>
+            <!-- /.General Review -->
+
+            <!-- Business Review -->
+            <div class="card card-secondary">
+              <div class="card-header">
+                <h3 class="card-title">Business</h3>
+  
+                <div class="card-tools">
+                  <button
+                    type="button"
+                    class="btn btn-tool"
+                    data-card-widget="collapse"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body p-0">
+                <table
+                  class="table table-sm table-bordered table-hover table-striped"
+                >
+                  <tbody>
+                    <tr>
+                      <td>Type of Business</td>
+                      <td style="width: 80%">{{ businessTypeSelected.name }}</td>
+                    </tr>
+                    <tr>
+                      <td>Nature of Business</td>
+                      <td>{{ businessNatureSelected.name }}</td>
+                    </tr>
+                    <tr>
+                      <td>Authorized Capital Stock</td>
+                      <td>{{ business.authorizedCapitalStock }}</td>
+                    </tr>
+                    <tr>
+                      <td>Paid-Up Capital Stock</td>
+                      <td>{{ business.paidUpCapitalStock }}</td>
+                    </tr>
+                    <tr>
+                      <td>Description of Line of Business</td>
+                      <td>{{ business.notes }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <table class="table table-sm mt-5 table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th colspan="7" scope="col">
+                        <aside class="d-flex align-items-center">
+                          <span class="mb-1">Corporate Officers</span>
+                        </aside>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th scope="col" class="text-center">#</th>
+                      <th scope="col">Prefix</th>
+                      <th scope="col">First Name</th>
+                      <th scope="col">Last Name</th>
+                      <th scope="col">Sufix</th>
+                      <th scope="col">Designation</th>
+                    </tr>
+                  </thead>
+      
+                  <tbody style="font-size: 14px">
+                    <tr v-for="(item, index) in businessData" :key="item.id">
+                      <td class="text-center">{{ index + 1 }}.</td>
+                      <td>{{ item.prefix_name }}</td>
+                      <td>{{ item.firstName }}</td>
+                      <td>{{ item.lastName }}</td>
+                      <td>{{ item.suffix }}</td>
+                      <td>{{ item.designation }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -2739,12 +2320,16 @@
               <!-- /.card-body -->
             </div>
             <!-- /.card -->
-            <!-- /.Payment Details -->
+            <!-- /.Business Review -->
   
-            <!-- Expense Details Review -->
+            <!-- Contact and Address Review -->
+            
+            <!-- /.Contact and Address Review -->
+  
+            <!-- Purchasing Review -->
             <div class="card card-secondary">
               <div class="card-header">
-                <h3 class="card-title">Expense Table</h3>
+                <h3 class="card-title">Purchasing</h3>
   
                 <div class="card-tools">
                   <button
@@ -2761,45 +2346,83 @@
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
+                  <tbody>
+                    <tr>
+                      <td>Brand</td>
+                      <td style="width: 80%">{{ purchasing.brand }}</td>
+                    </tr>
+                    <tr>
+                      <td>Product Line</td>
+                      <td>{{ purchasing.productLine }}</td>
+                    </tr>
+                    <tr>
+                      <td>Services</td>
+                      <td>{{ purchasing.services }}</td>
+                    </tr>
+                    <tr>
+                      <td>Contact Person</td>
+                      <td>{{  }}</td>
+                    </tr>
+                    <tr>
+                      <td>PO to be sent via</td>
+                      <td>{{ poToBeSentSelected.name }}</td>
+                    </tr>
+                    <tr>
+                      <td>Contact Details</td>
+                      <td>{{ purchasing.contactDetails }}</td>
+                    </tr>
+                    <tr>
+                      <td>Ordering Preferences</td>
+                      <td>{{ purchasing.ordering }}</td>
+                    </tr>
+                    <tr>
+                      <td>Delivery/Shipping Preferences</td>
+                      <td>{{ purchasing.shipping }}</td>
+                    </tr>
+                    <tr>
+                      <td>Documentation Preferences</td>
+                      <td>{{ purchasing.documentation }}</td>
+                    </tr>
+                    <tr>
+                      <td>Payment Preferences</td>
+                      <td>{{ purchasing.payment }}</td>
+                    </tr>
+                    <tr>
+                      <td>Attachment short notes</td>
+                      <td>{{ purchasing.notes }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h5 class="mt-5 ml-3 font-weight-bold">Attachments</h5>
+                <table
+                  class="table table-sm table-bordered table-hover table-striped"
+                >
                   <thead>
                     <tr>
-                      <th style="width: 5%">#</th>
-                      <th style="width: 10%">Date</th>
-                      <th style="width: 20%">Client Name</th>
-                      <th style="width: 20%">Expense Type</th>
-                      <th style="width: 30%">Remarks</th>
-                      <th style="width: 10%">Amount</th>
-  
-                      <!-- <th style="width: 10%">Action</th> -->
+                      <th style="width: 20%">Filename</th>
+                      <th style="width: 20%">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(item, index) in expenseType_Data" :key="item.id">
-                      <td>{{ index + 1 }}</td>
-                      <td>{{ item.date_ }}</td>
-                      <td>{{ item.CLIENT_NAME }}</td>
-                      <td>{{ item.EXPENSE_TYPE }}</td>
-                      <td>{{ item.DESCRIPTION }}</td>
-                      <td>{{ item.AMOUNT }}</td>
-                    </tr>
-  
-                    <tr>
-                      <td colspan="5"></td>
-                      <b class="px-1"
-                        >Total: {{ this.expenseType_totalAmount }}</b
-                      >
+                    <tr v-for="file in purchasingSelectedFile" :key="file.filename">
+                      <td>{{ file.name }}</td>
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                        <a class="btn btn-danger btn-sm px-13" @click="purchasingFileRemove(purchasingSelectedFile.indexOf(file))">Remove</a>
+                        <a class="btn btn-secondary btn-sm ml-1"  @click="purchasingFilePreview(purchasingSelectedFile.indexOf(file))">Preview</a>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
               <!-- /.card-body -->
             </div>
-            <!-- /.Expense Details Review -->
-  
-            <!-- Transportation Details Review -->
+            <!-- /.Purchasing Review -->
+            
+            <!-- Accounting Review -->
             <div class="card card-secondary">
               <div class="card-header">
-                <h3 class="card-title">Transporation Expense Table</h3>
+                <h3 class="card-title">Accounting</h3>
   
                 <div class="card-tools">
                   <button
@@ -2816,44 +2439,214 @@
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
+                  <tbody>
+                    <tr>
+                      <td>ATC</td>
+                      <td style="width: 80%">{{ AccountATCSelected.atc }}</td>
+                    </tr>
+                    <tr>
+                      <td>Nature of Income Payment</td>
+                      <td>{{ AccountDescSelected }}</td>
+                    </tr>
+                    <tr>
+                      <td>Tax Rate</td>
+                      <td>{{ AccountRateSelected }}</td>
+                    </tr>
+                    <tr>
+                      <td>Bank</td>
+                      <td>{{ accounting.bank }}</td>
+                    </tr>
+                    <tr>
+                      <td>Branch</td>
+                      <td>{{ accounting.branch }}</td>
+                    </tr>
+                    <tr>
+                      <td>Contact Person</td>
+                      <td>{{ accounting.contactPerson }}</td>
+                    </tr>
+                    <tr>
+                      <td>Telephone Number</td>
+                      <td>{{ accounting.telephoneNumber }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <table class="table table-sm mt-5 table-bordered table-striped">
                   <thead>
                     <tr>
-                      <th style="width: 5%">#</th>
-                      <th style="width: 10%">Date</th>
-                      <th style="width: 15%">Client Name</th>
-                      <th style="width: 10%">Destination From</th>
-                      <th style="width: 10%">Destination To</th>
-                      <th style="width: 20%">Mode of Transportation</th>
-                      <th style="width: 10%">Remarks</th>
-                      <th style="width: 10%">Amount</th>
-                      <!-- <th style="width: 10%">Action</th> -->
+                      <th colspan="8" scope="col">
+                        <aside class="d-flex align-items-center">
+                          <span class="mb-1">Banking Information</span>
+                        </aside>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th scope="col" class="text-center">#</th>
+                      <th scope="col">Bank Name</th>
+                      <th scope="col">Bank Account Number</th>
+                      <th scope="col">Bank Branch</th>
+                      <th scope="col">Account Currency</th>
+                      <th scope="col">Swift Code</th>
+                      <th scope="col">Preferred Bank Account</th>
+                      <th scope="col">Active</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr v-for="(item, index) in transpoSetup_Data" :key="item.id">
-                      <td>{{ index + 1 }}</td>
-                      <td>{{ item.date_ }}</td>
-                      <td>{{ item.CLIENT_NAME }}</td>
-                      <td>{{ item.DESTINATION_FRM }}</td>
-                      <td>{{ item.DESTINATION_TO }}</td>
-                      <td>{{ item.MOT }}</td>
-                      <td>{{ item.DESCRIPTION }}</td>
-                      <td>{{ item.AMT_SPENT }}</td>
-                    </tr>
-  
-                    <tr>
-                      <td colspan="7"></td>
-                      <b class="px-1"
-                        >Total: {{ this.transpoSetup_totalAmount }}</b
-                      >
+      
+                  <tbody style="font-size: 14px">
+                    <tr v-for="(item, index) in accountingData" :key="item.id">
+                      <td class="text-center">{{ index + 1 }}.</td>
+                      <td>{{ item.bankName }}</td>
+                      <td>{{ item.bankAcctNumber }}</td>
+                      <td>{{ item.bankBranch }}</td>
+                      <td>{{ item.bank_currency_name }}</td>
+                      <td>{{ item.bankSwiftCode }}</td>
+                      <td>{{ item.bankPreferred }}</td>
+                      <td>checkbox here</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
               <!-- /.card-body -->
             </div>
-            <!-- /.Transportation Details Review -->
+            <!-- /.Accounting Review -->
+
+            <!-- Technical and Support Review -->
+            <div class="card card-secondary">
+              <div class="card-header">
+                <h3 class="card-title">Technical and Support</h3>
   
+                <div class="card-tools">
+                  <button
+                    type="button"
+                    class="btn btn-tool"
+                    data-card-widget="collapse"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body p-0">
+                <table
+                  class="table table-sm table-bordered table-hover table-striped"
+                >
+                  <tbody>
+                    <tr>
+                      <td>Warranty Information</td>
+                      <td style="width: 80%">{{ technical.warrantyNote }}</td>
+                    </tr>
+                    <tr>
+                      <td>RMA Policy and Note</td>
+                      <td style="width: 80%">{{ technical.policyNote }}</td>
+                    </tr>
+                    <tr>
+                      <td>Attachment Short Name</td>
+                      <td style="width: 80%">{{ technical.attachmentNote }}</td>
+                    </tr>
+                    
+                  </tbody>
+                </table>
+
+                <h5 class="mt-5 ml-3 font-weight-bold">Attachments</h5>
+                <table
+                  class="table table-sm table-bordered table-hover table-striped"
+                >
+                  <thead>
+                    <tr>
+                      <th style="width: 20%">Filename</th>
+                      <th style="width: 20%">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="file in technicalSelectedFile" :key="file.filename">
+                      <td>{{ file.name }}</td>
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                        <a class="btn btn-danger btn-sm px-13" @click="technicalFileRemove(technicalSelectedFile.indexOf(file))">Remove</a>
+                        <a class="btn btn-secondary btn-sm ml-1"  @click="technicalFilePreview(technicalSelectedFile.indexOf(file))">Preview</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.Technical and Support Review -->
+
+            <!-- Related To Review -->
+            <div class="card card-secondary">
+              <div class="card-header">
+                <h3 class="card-title">Related To</h3>
+  
+                <div class="card-tools">
+                  <button
+                    type="button"
+                    class="btn btn-tool"
+                    data-card-widget="collapse"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body p-0">
+                <table class="table table-sm table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th colspan="7" scope="col">
+                        <aside class="d-flex align-items-center">
+                          <span class="mb-1">Related Vendors</span>
+                        </aside>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th scope="col" class="text-center">#</th>
+                      <th scope="col">Relationship</th>
+                      <th scope="col">Vendor Code</th>
+                      <th scope="col">Vendor Name</th>
+                    </tr>
+                  </thead>
+      
+                  <tbody style="font-size: 14px">
+                    <tr v-for="(item, index) in relatedVendorData" :key="item.id">
+                      <td class="text-center">{{ index + 1 }}.</td>
+                      <td>{{ item.vendor_relationship_name }}</td>
+                      <td>{{ item.vendor_code }}</td>
+                      <td>{{ item.vendor_name }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <table class="table table-sm mt-5 table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th colspan="7" scope="col">
+                        <aside class="d-flex align-items-center">
+                          <span class="mb-1">Related Customers</span>
+                        </aside>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th scope="col" class="text-center">#</th>
+                      <th scope="col">Relationship</th>
+                      <th scope="col">Customer Code</th>
+                      <th scope="col">Customer Name</th>
+                    </tr>
+                  </thead>
+      
+                  <tbody style="font-size: 14px">
+                    <tr v-for="(item, index) in relatedCustomerData" :key="item.id">
+                      <td class="text-center">{{ index + 1 }}.</td>
+                      <td>{{ item.customer_relationship_name }}</td>
+                      <td>{{ item.customer_code }}</td>
+                      <td>{{ item.customer_name }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.Related To Review -->
+            
             <!-- Attachments Review -->
             <div class="card card-secondary">
               <div class="card-header">
@@ -2871,28 +2664,148 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body p-0">
+                <h5 class="mt-2 ml-3 font-weight-bold">Accomplished Vendor Information Sheet</h5>
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
                   <thead>
                     <tr>
-                      <th style="width: 80%">Filename</th>
+                      <th style="width: 20%">Filename</th>
                       <th style="width: 20%">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="file in selectedDBFile" :key="file.id">
-                      <td>{{ file.filename }}</td>
-                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
-                        <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                        <a class="btn btn-secondary btn-sm ml-1" :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                      </td>
-                    </tr>
-                    <tr v-for="file in selectedFile" :key="file.filename">
+                    <tr v-for="file in attachmentOneSelectedFile" :key="file.filename">
                       <td>{{ file.name }}</td>
                       <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
-                        <a class="btn btn-danger btn-sm px-13" @click="remove(selectedFile.indexOf(file))">Remove</a>
-                        <a class="btn btn-secondary btn-sm ml-1"  @click="preview(selectedFile.indexOf(file))">Preview</a>
+                        <a class="btn btn-danger btn-sm px-13" @click="attachmentOneFileRemove(attachmentOneSelectedFile.indexOf(file))">Remove</a>
+                        <a class="btn btn-secondary btn-sm ml-1"  @click="attachmentOneFilePreview(attachmentOneSelectedFile.indexOf(file))">Preview</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h5 class="mt-5 ml-3 font-weight-bold">Business Registration</h5>
+                <table
+                  class="table table-sm table-bordered table-hover table-striped"
+                >
+                  <thead>
+                    <tr>
+                      <th style="width: 20%">Filename</th>
+                      <th style="width: 20%">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="file in attachmentTwoSelectedFile" :key="file.filename">
+                      <td>{{ file.name }}</td>
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                        <a class="btn btn-danger btn-sm px-13" @click="attachmentTwoFileRemove(attachmentTwoSelectedFile.indexOf(file))">Remove</a>
+                        <a class="btn btn-secondary btn-sm ml-1"  @click="attachmentTwoFilePreview(attachmentTwoSelectedFile.indexOf(file))">Preview</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h5 class="mt-5 ml-3 font-weight-bold">Updated Business Permit</h5>
+                <table
+                  class="table table-sm table-bordered table-hover table-striped"
+                >
+                  <thead>
+                    <tr>
+                      <th style="width: 20%">Filename</th>
+                      <th style="width: 20%">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="file in attachmentThreeSelectedFile" :key="file.filename">
+                      <td>{{ file.name }}</td>
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                        <a class="btn btn-danger btn-sm px-13" @click="attachmentThreeFileRemove(attachmentThreeSelectedFile.indexOf(file))">Remove</a>
+                        <a class="btn btn-secondary btn-sm ml-1"  @click="attachmentThreeFilePreview(attachmentThreeSelectedFile.indexOf(file))">Preview</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h5 class="mt-5 ml-3 font-weight-bold">BIR Certificate of Registration: BIR 2303 form</h5>
+                <table
+                  class="table table-sm table-bordered table-hover table-striped"
+                >
+                  <thead>
+                    <tr>
+                      <th style="width: 20%">Filename</th>
+                      <th style="width: 20%">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="file in attachmentFourSelectedFile" :key="file.filename">
+                      <td>{{ file.name }}</td>
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                        <a class="btn btn-danger btn-sm px-13" @click="attachmentFourFileRemove(attachmentFourSelectedFile.indexOf(file))">Remove</a>
+                        <a class="btn btn-secondary btn-sm ml-1"  @click="attachmentFourFilePreview(attachmentFourSelectedFile.indexOf(file))">Preview</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h5 class="mt-5 ml-3 font-weight-bold">Sample of Delivery Receipt, Sales Invoice, Official Receipt</h5>
+                <table
+                  class="table table-sm table-bordered table-hover table-striped"
+                >
+                  <thead>
+                    <tr>
+                      <th style="width: 20%">Filename</th>
+                      <th style="width: 20%">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="file in attachmentFiveSelectedFile" :key="file.filename">
+                      <td>{{ file.name }}</td>
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                        <a class="btn btn-danger btn-sm px-13" @click="attachmentFiveFileRemove(attachmentFiveSelectedFile.indexOf(file))">Remove</a>
+                        <a class="btn btn-secondary btn-sm ml-1"  @click="attachmentFiveFilePreview(attachmentFiveSelectedFile.indexOf(file))">Preview</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h5 class="mt-5 ml-3 font-weight-bold">Company/Business Profile</h5>
+                <table
+                  class="table table-sm table-bordered table-hover table-striped"
+                >
+                  <thead>
+                    <tr>
+                      <th style="width: 20%">Filename</th>
+                      <th style="width: 20%">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="file in attachmentSixSelectedFile" :key="file.filename">
+                      <td>{{ file.name }}</td>
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                        <a class="btn btn-danger btn-sm px-13" @click="attachmentSixFileRemove(attachmentSixSelectedFile.indexOf(file))">Remove</a>
+                        <a class="btn btn-secondary btn-sm ml-1"  @click="attachmentSixFilePreview(attachmentSixSelectedFile.indexOf(file))">Preview</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h5 class="mt-5 ml-3 font-weight-bold">Latest Audited Financial Statements</h5>
+                <table
+                  class="table table-sm table-bordered table-hover table-striped"
+                >
+                  <thead>
+                    <tr>
+                      <th style="width: 20%">Filename</th>
+                      <th style="width: 20%">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="file in attachmentSevenSelectedFile" :key="file.filename">
+                      <td>{{ file.name }}</td>
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                        <a class="btn btn-danger btn-sm px-13" @click="attachmentSevenFileRemove(attachmentSevenSelectedFile.indexOf(file))">Remove</a>
+                        <a class="btn btn-secondary btn-sm ml-1"  @click="attachmentSevenFilePreview(attachmentSevenSelectedFile.indexOf(file))">Preview</a>
                       </td>
                     </tr>
                   </tbody>
@@ -2900,12 +2813,158 @@
               </div>
               <!-- /.card-body -->
             </div>
-            <!-- /.card -->
             <!-- ./Attachments Review -->
+
+            <!-- Distribution and Agreement Review -->
+            <div class="card card-secondary">
+              <div class="card-header">
+                <h3 class="card-title">Distribution and Agreement</h3>
+  
+                <div class="card-tools">
+                  <button
+                    type="button"
+                    class="btn btn-tool"
+                    data-card-widget="collapse"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body p-0">
+                <table class="table table-sm table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th colspan="6" scope="col">
+                        <aside class="d-flex align-items-center">
+                          <span class="mb-1">Sales Target</span>
+                        </aside>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th scope="col" class="text-center">#</th>
+                      <th scope="col">Month Start</th>
+                      <th scope="col">Month End</th>
+                      <th scope="col">Annual Target</th>
+                      <th scope="col">Currency</th>
+                      <th scope="col">Total Order</th>
+                    </tr>
+                  </thead>
+      
+                  <tbody style="font-size: 14px">
+                    <tr v-for="(item, index) in distributionAgreementData" :key="item.id">
+                      <td class="text-center">{{ index + 1 }}.</td>
+                      <td>{{ item.monthStart }}</td>
+                      <td>{{ item.monthEnd }}</td>
+                      <td>{{ item.annualTarget }}</td>
+                      <td>{{ item.currency_name }}</td>
+                      <td>{{ item.totalOrder }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h5 class="mt-5 ml-3 font-weight-bold">Agreement</h5>
+                <table
+                  class="table table-sm table-bordered table-hover table-striped"
+                >
+                  <thead>
+                    <tr>
+                      <th style="width: 20%">Filename</th>
+                      <th style="width: 20%">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="file in distributionOneSelectedFile" :key="file.filename">
+                      <td>{{ file.name }}</td>
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                        <a class="btn btn-danger btn-sm px-13" @click="distributionOneFileRemove(distributionOneSelectedFile.indexOf(file))">Remove</a>
+                        <a class="btn btn-secondary btn-sm ml-1"  @click="distributionOneFilePreview(distributionOneSelectedFile.indexOf(file))">Preview</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h5 class="mt-5 ml-3 font-weight-bold">NDA</h5>
+                <table
+                  class="table table-sm table-bordered table-hover table-striped"
+                >
+                  <thead>
+                    <tr>
+                      <th style="width: 20%">Filename</th>
+                      <th style="width: 20%">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="file in distributionTwoSelectedFile" :key="file.filename">
+                      <td>{{ file.name }}</td>
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                        <a class="btn btn-danger btn-sm px-13" @click="distributionTwoFileRemove(distributionTwoSelectedFile.indexOf(file))">Remove</a>
+                        <a class="btn btn-secondary btn-sm ml-1"  @click="distributionTwoFilePreview(distributionTwoSelectedFile.indexOf(file))">Preview</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h5 class="mt-5 ml-3 font-weight-bold">Distributor Certificate</h5>
+                <table
+                  class="table table-sm table-bordered table-hover table-striped"
+                >
+                  <thead>
+                    <tr>
+                      <th style="width: 20%">Filename</th>
+                      <th style="width: 20%">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="file in distributionThreeSelectedFile" :key="file.filename">
+                      <td>{{ file.name }}</td>
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                        <a class="btn btn-danger btn-sm px-13" @click="distributionThreeFileRemove(distributionThreeSelectedFile.indexOf(file))">Remove</a>
+                        <a class="btn btn-secondary btn-sm ml-1"  @click="distributionThreeFilePreview(distributionThreeSelectedFile.indexOf(file))">Preview</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h5 class="mt-5 ml-3 font-weight-bold">Other Attachments</h5>
+                <table
+                  class="table table-sm table-bordered table-hover table-striped"
+                >
+                  <thead>
+                    <tr>
+                      <th style="width: 20%">Filename</th>
+                      <th style="width: 20%">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="file in distributionFourSelectedFile" :key="file.filename">
+                      <td>{{ file.name }}</td>
+                      <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
+                        <a class="btn btn-danger btn-sm px-13" @click="distributionFourFileRemove(distributionFourSelectedFile.indexOf(file))">Remove</a>
+                        <a class="btn btn-secondary btn-sm ml-1"  @click="distributionFourFilePreview(distributionFourSelectedFile.indexOf(file))">Preview</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <table
+                  class="table table-sm mt-5 table-bordered table-hover table-striped"
+                >
+                  <tbody>
+                    <tr>
+                      <td>Attachment Short Name</td>
+                      <td style="width: 80%">{{ distribution.notes }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.Distribution and Agreement Review -->
           </aside>
           <!-- / Form Review -->
   
-          <!-- Modal Corporate Officer jomel -->
+          <!-- Modal Corporate Officer -->
           <div
             class="modal fade"
             id="modal-corporate-officer"
@@ -3025,7 +3084,7 @@
                     v-else
                     type="button"
                     class="btn btn-success btn-sm"
-                    @click="update_ExpenseType()"
+                    @click="updateCorporateOfficers()"
                   >
                     Update
                   </button>
@@ -3037,8 +3096,290 @@
           </div>
           <!-- /. Modal Corporate Officer -->
 
-          <!-- Modal Contact -->
+          <!-- Modal Address -->
           <div
+            class="modal fade"
+            id="modal-address"
+            data-backdrop="static"
+            data-keyboard="false"
+          >
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h6 class="modal-title">
+                    <b>Address</b>
+                  </h6>
+                  <button
+                    type="button"
+                    id="modalCloseButton"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                    @click="closeModal()"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <the-alert
+                    v-show="isAlert"
+                    v-bind:header="this.header"
+                    v-bind:message="this.message"
+                    v-bind:type="this.type"
+                  ></the-alert>
+  
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <small><label for="reference">Address Type</label></small>
+  
+                        <model-list-select
+                          :list="addressTypeList"
+                          v-model="addressTypeSelected"
+                          option-value="name"
+                          option-text="name"
+                          placeholder="select item"
+                          style="padding: 9px"
+                        >
+                        </model-list-select>
+                       
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Address Short Name</label></small
+                        >
+                        <input
+                          type="text"
+                          class="form-control form-control-sm py-3"
+                          v-model="address.shortName"
+                        />
+                      </div>
+                    </div>
+                  </div>
+  
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Address Line</label></small
+                        >
+                        <input
+                          type="text"
+                          class="form-control form-control-sm py-3"
+                          v-model="address.line1"
+                        />
+                      </div>
+                    </div>
+  
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Address Line 2</label></small
+                        >
+                        <input
+                          type="text"
+                          class="form-control form-control-sm py-3"
+                          v-model="address.line2"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">City</label></small
+                        >
+                        <input
+                          type="text"
+                          class="form-control form-control-sm py-3"
+                          v-model="address.city"
+                        />
+                      </div>
+                    </div>
+  
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Region/Province</label></small
+                        >
+                        <input
+                          type="text"
+                          class="form-control form-control-sm py-3"
+                          v-model="address.province"
+                        />
+                      </div>
+                    </div>
+                  </div>
+  
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Zip Code</label></small
+                        >
+                        <input
+                          type="text"
+                          class="form-control form-control-sm py-3"
+                          v-model="address.zipcode"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Country</label></small
+                        >
+                        <model-list-select
+                          :list="countriesList"
+                          v-model="countriesSelected"
+                          option-value="name"
+                          option-text="name"
+                          placeholder="select item"
+                          style="padding: 9px"
+                        >
+                        </model-list-select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <!-- <div class="col-md-6">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Status</label></small
+                        >
+                        <model-list-select
+                          :list="addressStatusList"
+                          v-model="addressStatusSelected"
+                          option-value="code"
+                          option-text="name"
+                          placeholder="select item"
+                          style="padding: 9px"
+                        >
+                        </model-list-select>
+                      </div>
+                    </div> -->
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Phone No.</label></small
+                        >
+                        <input
+                          type="text"
+                          class="form-control form-control-sm py-3"
+                          v-model="address.phoneNumber"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Business Hours</label></small
+                        >
+                        <input
+                          type="text"
+                          class="form-control form-control-sm py-3"
+                          v-model="address.businessHours"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Email</label></small
+                        >
+                        <input
+                          type="text"
+                          class="form-control form-control-sm py-3"
+                          v-model="address.email"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Fax</label></small
+                        >
+                        <input
+                          type="text"
+                          class="form-control form-control-sm py-3"
+                          v-model="address.fax"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="billingAddressCheckbox" v-model="address.preferredBilling">
+                        <label class="form-check-label" for="billingAddressCheckbox">
+                          Preferred Billing Address
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="billingShippingCheckbox" v-model="address.preferredShipping">
+                        <label class="form-check-label" for="billingShippingCheckbox">
+                          Preferred Shipping Address
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <small><label for="purpose">Notes</label></small>
+                        <textarea
+                          class="form-control"
+                          name="purpose"
+                          id="purpose"
+                          v-model.trim="address.notes"
+                          rows="5"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="modal-footer justify-content-end">
+                  <button
+                    v-if="isButton"
+                    type="button"
+                    class="btn btn-success btn-sm"
+                    @click="insertAddress()"
+                  >
+                    insert
+                  </button>
+  
+                  <button
+                    v-else
+                    type="button"
+                    class="btn btn-success btn-sm"
+                    @click="updateAddress()"
+                  >
+                    Update
+                  </button>
+                </div>
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </div>
+          <!-- /. Modal Address -->
+
+           <!-- Modal Contact -->
+           <div
             class="modal fade"
             id="modal-contact"
             data-backdrop="static"
@@ -3075,8 +3416,8 @@
                         <small><label for="reference">Prefix</label></small>
   
                         <model-list-select
-                          :list="modalclient"
-                          v-model="itemclientName"
+                          :list="prefixesList"
+                          v-model="contactPrefixesSelected"
                           option-value="code"
                           option-text="name"
                           placeholder="select item"
@@ -3094,6 +3435,7 @@
                         <input
                           type="text"
                           class="form-control form-control-sm py-3"
+                          v-model="contact.firstName"
                         />
                       </div>
                     </div>
@@ -3108,6 +3450,7 @@
                         <input
                           type="text"
                           class="form-control form-control-sm py-3"
+                          v-model="contact.lastName"
                         />
                       </div>
                     </div>
@@ -3115,11 +3458,12 @@
                     <div class="col-md-6">
                       <div class="form-group">
                         <small
-                          ><label for="projectName">Sufix</label></small
+                          ><label for="projectName">Suffix</label></small
                         >
                         <input
                           type="text"
                           class="form-control form-control-sm py-3"
+                          v-model="contact.suffix"
                         />
                       </div>
                     </div>
@@ -3134,6 +3478,7 @@
                         <input
                           type="text"
                           class="form-control form-control-sm py-3"
+                          v-model="contact.nickName"
                         />
                       </div>
                     </div>
@@ -3146,6 +3491,7 @@
                         <input
                           type="text"
                           class="form-control form-control-sm py-3"
+                          v-model="contact.designation"
                         />
                       </div>
                     </div>
@@ -3160,6 +3506,7 @@
                         <input
                           type="text"
                           class="form-control form-control-sm py-3"
+                          v-model="contact.department"
                         />
                       </div>
                     </div>
@@ -3169,9 +3516,9 @@
                           ><label for="projectName">Work From</label></small
                         >
                         <model-list-select
-                          :list="contactStatusList"
-                          v-model="contactStatusSelected"
-                          option-value="code"
+                          :list="addressWorkFromList"
+                          v-model="addressWorkFromSelected"
+                          option-value="name"
                           option-text="name"
                           placeholder="select item"
                           style="padding: 9px"
@@ -3225,12 +3572,13 @@
                         <input
                           type="text"
                           class="form-control form-control-sm py-3"
+                          v-model="contact.mobileNumber"
                         />
                       </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-check" style="margin-top: 2.3rem;">
-                          <input class="form-check-input" type="checkbox" value="" id="mobileNumberSubscribedCheckbox">
+                          <input class="form-check-input" type="checkbox" value="" id="mobileNumberSubscribedCheckbox" v-model="contact.mobileNumberCheckbox">
                           <label class="form-check-label" for="mobileNumberSubscribedCheckbox">
                             Mobile No. Subscribed
                           </label>
@@ -3247,12 +3595,13 @@
                         <input
                           type="text"
                           class="form-control form-control-sm py-3"
+                          v-model="contact.email"
                         />
                       </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-check" style="margin-top: 2.3rem;">
-                          <input class="form-check-input" type="checkbox" value="" id="emailAddressSubscribedCheckbox">
+                          <input class="form-check-input" type="checkbox" value="" id="emailAddressSubscribedCheckbox" v-model="contact.emailCheckbox">
                           <label class="form-check-label" for="emailAddressSubscribedCheckbox">
                             Email Address Subscribed
                           </label>
@@ -3268,7 +3617,7 @@
                           class="form-control"
                           name="purpose"
                           id="purpose"
-                          v-model.trim="purpose"
+                          v-model.trim="contact.notes"
                           rows="5"
                         ></textarea>
                       </div>
@@ -3281,7 +3630,7 @@
                     v-if="isButton"
                     type="button"
                     class="btn btn-success btn-sm"
-                    @click="insert_ExpenseType()"
+                    @click="insertContact()"
                   >
                     insert
                   </button>
@@ -3290,7 +3639,7 @@
                     v-else
                     type="button"
                     class="btn btn-success btn-sm"
-                    @click="update_ExpenseType()"
+                    @click="updateContact()"
                   >
                     Update
                   </button>
@@ -3301,280 +3650,6 @@
             <!-- /.modal-dialog -->
           </div>
           <!-- /. Modal Contact -->
-
-          <!-- Modal Address -->
-          <div
-            class="modal fade"
-            id="modal-address"
-            data-backdrop="static"
-            data-keyboard="false"
-          >
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h6 class="modal-title">
-                    <b>Address</b>
-                  </h6>
-                  <button
-                    type="button"
-                    id="modalCloseButton"
-                    class="close"
-                    data-dismiss="modal"
-                    aria-label="Close"
-                    @click="closeModal()"
-                  >
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <the-alert
-                    v-show="isAlert"
-                    v-bind:header="this.header"
-                    v-bind:message="this.message"
-                    v-bind:type="this.type"
-                  ></the-alert>
-  
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small><label for="reference">Address Type</label></small>
-  
-                        <model-list-select
-                          :list="addressTypeList"
-                          v-model="addressTypeSelected"
-                          option-value="code"
-                          option-text="name"
-                          placeholder="select item"
-                          style="padding: 9px"
-                        >
-                        </model-list-select>
-                       
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Address Short Name</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                        />
-                      </div>
-                    </div>
-                  </div>
-  
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Address Line</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                        />
-                      </div>
-                    </div>
-  
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Address Line 2</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">City</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                        />
-                      </div>
-                    </div>
-  
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Region/Province</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                        />
-                      </div>
-                    </div>
-                  </div>
-  
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Zip Code</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Country</label></small
-                        >
-                        <model-list-select
-                          :list="countriesList"
-                          v-model="countriesSelected"
-                          option-value="code"
-                          option-text="name"
-                          placeholder="select item"
-                          style="padding: 9px"
-                        >
-                        </model-list-select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Status</label></small
-                        >
-                        <model-list-select
-                          :list="addressStatusList"
-                          v-model="addressStatusSelected"
-                          option-value="code"
-                          option-text="name"
-                          placeholder="select item"
-                          style="padding: 9px"
-                        >
-                        </model-list-select>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Phone No.</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Email</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Fax</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-12">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Business Hours</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-12">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="billingAddressCheckbox">
-                        <label class="form-check-label" for="billingAddressCheckbox">
-                          Preferred Billing Address
-                        </label>
-                      </div>
-                    </div>
-                    <div class="col-md-12">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="billingShippingCheckbox">
-                        <label class="form-check-label" for="billingShippingCheckbox">
-                          Preferred Shipping Address
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-12">
-                      <div class="form-group">
-                        <small><label for="purpose">Notes</label></small>
-                        <textarea
-                          class="form-control"
-                          name="purpose"
-                          id="purpose"
-                          v-model.trim="purpose"
-                          rows="5"
-                        ></textarea>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-                <div class="modal-footer justify-content-end">
-                  <button
-                    v-if="isButton"
-                    type="button"
-                    class="btn btn-success btn-sm"
-                    @click="insert_ExpenseType()"
-                  >
-                    insert
-                  </button>
-  
-                  <button
-                    v-else
-                    type="button"
-                    class="btn btn-success btn-sm"
-                    @click="update_ExpenseType()"
-                  >
-                    Update
-                  </button>
-                </div>
-              </div>
-              <!-- /.modal-content -->
-            </div>
-            <!-- /.modal-dialog -->
-          </div>
-          <!-- /. Modal Address -->
 
           <!-- Modal Banking Information -->
           <div
@@ -3616,6 +3691,7 @@
                         <input
                           type="text"
                           class="form-control form-control-sm py-3"
+                          v-model="accounting.bankName"
                         />
                        
                       </div>
@@ -3628,6 +3704,7 @@
                         <input
                           type="text"
                           class="form-control form-control-sm py-3"
+                          v-model="accounting.bankAcctNumber"
                         />
                       </div>
                     </div>
@@ -3642,6 +3719,7 @@
                         <input
                           type="text"
                           class="form-control form-control-sm py-3"
+                          v-model="accounting.bankBranch"
                         />
                       </div>
                     </div>
@@ -3653,7 +3731,7 @@
                         >
                         <model-list-select
                           :list="currenciesList"
-                          v-model="currenciesSelected"
+                          v-model="AccountCurrenciesSelected"
                           option-value="code"
                           option-text="name"
                           placeholder="select item"
@@ -3673,6 +3751,7 @@
                         <input
                           type="text"
                           class="form-control form-control-sm py-3"
+                          v-model="accounting.bankSwiftCode"
                         />
                       </div>
                     </div>
@@ -3685,6 +3764,7 @@
                         <input
                           type="text"
                           class="form-control form-control-sm py-3"
+                          v-model="accounting.bankPreferred"
                         />
                       </div>
                     </div>
@@ -3696,7 +3776,7 @@
                     v-if="isButton"
                     type="button"
                     class="btn btn-success btn-sm"
-                    @click="insert_ExpenseType()"
+                    @click="insertBankInfo()"
                   >
                     insert
                   </button>
@@ -3705,7 +3785,7 @@
                     v-else
                     type="button"
                     class="btn btn-success btn-sm"
-                    @click="update_ExpenseType()"
+                    @click="updateBankInfo()"
                   >
                     Update
                   </button>
@@ -3757,7 +3837,7 @@
                         >
                         <model-list-select
                           :list="relationshipList"
-                          v-model="relationshipSelected"
+                          v-model="vendorRelationshipSelected"
                           option-value="code"
                           option-text="name"
                           placeholder="select item"
@@ -3803,7 +3883,7 @@
                     v-if="isButton"
                     type="button"
                     class="btn btn-success btn-sm"
-                    @click="insert_ExpenseType()"
+                    @click="insertRelatedVendor()"
                   >
                     insert
                   </button>
@@ -3812,7 +3892,7 @@
                     v-else
                     type="button"
                     class="btn btn-success btn-sm"
-                    @click="update_ExpenseType()"
+                    @click="updateRelatedVendor()"
                   >
                     Update
                   </button>
@@ -3864,7 +3944,7 @@
                         >
                         <model-list-select
                           :list="relationshipList"
-                          v-model="relationshipSelected"
+                          v-model="customerRelationshipSelected"
                           option-value="code"
                           option-text="name"
                           placeholder="select item"
@@ -3910,7 +3990,7 @@
                     v-if="isButton"
                     type="button"
                     class="btn btn-success btn-sm"
-                    @click="insert_ExpenseType()"
+                    @click="insertRelatedCustomer()"
                   >
                     insert
                   </button>
@@ -3919,7 +3999,7 @@
                     v-else
                     type="button"
                     class="btn btn-success btn-sm"
-                    @click="update_ExpenseType()"
+                    @click="updateRelatedCustomer()"
                   >
                     Update
                   </button>
@@ -3930,6 +4010,132 @@
             <!-- /.modal-dialog -->
           </div>
           <!-- /. Modal Related Customers -->
+
+          <!-- Modal Distribution and Agreement -->
+          <div
+            class="modal fade"
+            id="modal-distribution-agreement"
+            data-backdrop="static"
+            data-keyboard="false"
+          >
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h6 class="modal-title">
+                    <b>Distribution and Agreement</b>
+                  </h6>
+                  <button
+                    type="button"
+                    id="modalCloseButton"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                    @click="closeModal()"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <the-alert
+                    v-show="isAlert"
+                    v-bind:header="this.header"
+                    v-bind:message="this.message"
+                    v-bind:type="this.type"
+                  ></the-alert>
+  
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Month Start</label></small
+                        >
+                        <date-picker
+                          valueType="format"
+                          style="display: block; width: 100%; line-height: 20px"
+                          v-model="distribution.monthStart"
+                        ></date-picker>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Month End</label></small
+                        >
+                        <date-picker
+                          valueType="format"
+                          style="display: block; width: 100%; line-height: 20px"
+                          v-model="distribution.monthEnd"
+                        ></date-picker>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Annual Target</label></small
+                        >
+                        <input
+                          type="text"
+                          class="form-control form-control-sm py-3"
+                          v-model="distribution.annualTarget"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Currency</label></small
+                        >
+                        <model-list-select
+                          :list="currenciesList"
+                          v-model="distributionCurrenciesSelected"
+                          option-value="code"
+                          option-text="name"
+                          placeholder="select item"
+                          style="padding: 9px"
+                        >
+                        </model-list-select>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <small
+                          ><label for="projectName">Total Order</label></small
+                        >
+                        <input
+                          type="text"
+                          class="form-control form-control-sm py-3"
+                          v-model="distribution.totalOrder"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="modal-footer justify-content-end">
+                  <button
+                    v-if="isButton"
+                    type="button"
+                    class="btn btn-success btn-sm"
+                    @click="insertDistributionAgreement()"
+                  >
+                    insert
+                  </button>
+  
+                  <button
+                    v-else
+                    type="button"
+                    class="btn btn-success btn-sm"
+                    @click="updateDistributionAgreement()"
+                  >
+                    Update
+                  </button>
+                </div>
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </div>
+          <!-- /. Modal Distribution and Agreement -->
   
           <!-- / Main Form -->
   
@@ -3963,14 +4169,10 @@
       await this.getRelationship()
       await this.getRelatedSupplier()
       await this.getRelatedCustomer()
+      await this.getDraftVendorByUserID(this.loggedUserId)
 
-
-
-
-      await this.getREbyUserID();
       await this.todaysDate();
-  
-      await this.reInitiate();
+      // await this.reInitiate();
       this.isLoading = false
   
     },
@@ -3986,6 +4188,8 @@
         this.relatedCustomerNameSelected = newValue.name
       },
       vendorSelected(newValue) {
+          //Step1
+          this.general.vendorTypeSelected = newValue.name
           console.log(newValue.name);
           console.log(this.general.website);
           console.log(this.general.inBusinessSince);
@@ -3999,31 +4203,53 @@
           console.log(this.general.twentyThreeZeroThree);
           console.log(this.general.secNumber);
           console.log(this.general.notes);
+
+          //Step2
           console.log(this.businessTypeSelected.name);
           console.log(this.businessNatureSelected.name);
           console.log(this.business.authorizedCapitalStock);
           console.log(this.business.paidUpCapitalStock);
           console.log(this.business.notes);
+
+          //Step 4
+          console.log(this.purchasing.brand);
+          console.log(this.purchasing.productLine);
+          console.log(this.purchasing.services);
+          console.log(this.purchasing.contactDetails);
+          console.log(this.purchasing.ordering);
+          console.log(this.purchasing.shipping);
+          console.log(this.purchasing.documentation);
+          console.log(this.purchasing.payment);
+          console.log(this.purchasing.notes);
+          console.log(this.poToBeSentSelected.code);
+          console.log(this.poToBeSentSelected.name);
+
+          // Step5
+          console.log(this.AccountATCSelected.code);
+          console.log(this.AccountATCSelected.atc);
+          console.log(this.AccountDescSelected);
+          console.log(this.AccountRateSelected);
+          console.log(this.accounting.bank);
+          console.log(this.accounting.branch);
+          console.log(this.accounting.contactPerson);
+          console.log(this.accounting.telephoneNumber);
+          console.log(this.accounting.bankName);
+          console.log(this.accounting.bankAcctNumber);
+          console.log(this.accounting.bankBranch);
+          console.log(this.accounting.bankSwiftCode);
+          console.log(this.accounting.bankPreferred);
+
+          //Step 6
+          console.log(this.technical.warrantyNote);
+          console.log(this.technical.policyNote);
+          console.log(this.technical.attachmentNote);
       },
-      VATselected(newValue) {
-          console.log(newValue.name);
-      },
-      // Request Details
-      projectItem(newValue) {
-        this.getClient(newValue.code);
-      },
-  
+
       counter() {
         document.body.scrollTop = 0;
         document.documentElement.scrollTop = 0;
       },
   
-      expenseType_totalAmount() {
-        this.re_totalAmount();
-      },
-      transpoSetup_totalAmount() {
-        this.re_totalAmount();
-      },
     },
     computed: {
       classA() {
@@ -4057,304 +4283,31 @@
         return { active: this.counter >= 9 };
       },
   
-      // Calendaer
-      todaysYear() {
-        const today = new Date();
-        // const dd = today.getDate();
-        // const mm = today.getMonth() + 1;
-        const yyyy = today.getFullYear();
-        // const todaysDate = yyyy + "-" + mm + "-" + dd;
-        return yyyy;
-      },
-  
       // Validation
-      missingDateNeeded() {
-        if (this.dateNeeded === null) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingReportingManager() {
-        if (this.reportingManagerItem.code === undefined) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingProjectItem() {
-        if (this.projectItem.code === undefined) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingPurpose() {
-        if (this.purpose.length === 0) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingPayeeName() {
-        if (this.payeeName.length === 0) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingAmount() {
-        if (this.amount.length === 0 || parseFloat(this.amount) < 1) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingAttachments() {
-        if (this.selectedFile.length === 0 && this.selectedDBFile.length === 0) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingXPDateNeeded() {
-        if (this.expenseType_Date === null) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingXPClientItem() {
-        if (this.itemclientName.code === undefined) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingXPAmount() {
-        if (
-          this.expenseType_Amount.length === 0 ||
-          parseFloat(this.expenseType_Amount) < 1
-        ) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingXPType() {
-        if (this.itemmodalExpenseType.code === undefined) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingXPRemarks() {
-        if (this.expenseType_Remarks.length === 0) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingTDDateNeeded() {
-        if (this.transpoSetup_Date === null) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingTDClientItem() {
-        if (this.itemclientName.code === undefined) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingTDMot() {
-        if (this.itemtranspoSetup.code === undefined) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingTDAmount() {
-        if (
-          this.transpoSetup_Amount.length === 0 ||
-          parseFloat(this.transpoSetup_Amount) < 1
-        ) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingTDFrom() {
-        if (this.transpoSetup_From.length === 0) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingTDTo() {
-        if (this.transpoSetup_to.length === 0) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingTDRemarks() {
-        if (this.transpoSetup_Remarks.length === 0) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      missingExpenses() {
-        if (
-          this.transpoSetup_Data.length > 0 ||
-          this.expenseType_Data.length > 0
-        ) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      // Sum of all amount spend in liquidation
-      expenseType_totalAmount() {
-        if (this.expenseType_Data.length > 0) {
-          let total = this.expenseType_Data
-            .map((expenseType_Data) =>
-              // convert money type string to float
-              parseFloat(expenseType_Data.AMOUNT.replace(/,/g, ""))
-            )
-            .reduce((acc, expenseType_Data) => expenseType_Data + acc);
-          // convert to money type
-          return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
-        } else {
-          return 0;
-        }
-      },
-  
-      // sum of all amount spend in transportation
-      transpoSetup_totalAmount() {
-        if (this.transpoSetup_Data.length > 0) {
-          let total = this.transpoSetup_Data
-            .map((transpoSetup_Data) =>
-              // convert money type string to float
-              parseFloat(transpoSetup_Data.AMT_SPENT.replace(/,/g, ""))
-            )
-            .reduce((acc, transpoSetup_Data) => transpoSetup_Data + acc);
-          // convert to money type
-          return total.toLocaleString(undefined, { minimumFractionDigits: 2 });
-        } else {
-          return 0;
-        }
-      },
+     
     },
     data() {
       return {
         counter: 0,
         setIndex: 0,
+        i: 0,
+        isButton: true,
+        requestDate: "",
+        isLoading: false,
+        isSpinner: false,
+
+        draftID: "",
   
         attemptNext: false,
         attemptNextOne: false,
         attemptNextTwo: false,
         attemptNextThree: false,
   
-        attemptXpSubmit: false,
-        attemptTdSubmit: false,
-  
-        // Request Details
-        reportingManager: [],
-        reportingManagerItem: {},
-        referenceNumber: "",
-        requestDate: "",
-        project: [],
-        projectItem: {},
-        dateNeeded: null,
-        clientName: "",
-        clientId: "",
-        mainId: "",
-        purpose: "",
-  
-        // Payment Details
-        modeOfPayment: [
-          { code: "Cash", name: "Cash" },
-          { code: "Check", name: "Check" },
-          { code: "Credit to Account", name: "Credit to Account" },
-        ],
-        modeOfPaymentItem: {code: "Cash", name: "Cash"},
-        currency: [
-          { code: "PHP", name: "PHP" },
-          { code: "AUD", name: "AUD" },
-          { code: "CAD", name: "CAD" },
-          { code: "EUR", name: "EUR" },
-          { code: "USD", name: "USD" },
-        ],
-        currencyItem: { code: "PHP", name: "PHP" },
-        payeeName: "",
-        amount: "",
-        realAmount: "",
-  
-        // expense data modal
-        modalclient: [],
-        itemclientName: {},
-        modalExpenseType: [],
-        itemmodalExpenseType: {},
-        expenseType_Date: null,
-        expenseType_Amount: "",
-        expenseType_RealAmount: "",
-        expenseType_Remarks: "",
-  
-        // The Attachments
-        selectedFile: [],
-        filespreview: [],
-  
-        isButton: true,
-  
-        // data for expense type
-        expenseType_Data: [],
-        expenseType_EditData: [],
-        i: 0,
-  
         // The Alert
         isAlert: false,
         header: "", // Syccess or Failed
         message: "", // added successfully
         type: "", // true or false
-  
-        // data for transportation
-        transpoSetup: [],
-        itemtranspoSetup: {},
-        transpoSetup_Date: null,
-        transpoSetup_Amount: "",
-        transpoSetup_RealAmount: "",
-        transpoSetup_From: "",
-        transpoSetup_to: "",
-        transpoSetup_Remarks: "",
-  
-        transpoSetup_Data: [],
-        transpoSetup_EditData: [],
-        selectedDBFile : [],
-        idOfAttachmentsToDelete : [],
   
         // Logged User Data
         loggedUserId: localStorage.getItem("id"),
@@ -4364,18 +4317,6 @@
         loggedUserPosition: localStorage.getItem("positionName"),
         companyId: localStorage.getItem("companyId"),
         companyName: localStorage.getItem("companyName"),
-  
-        isLoading: false,
-        isSpinner: false,
-  
-        
-        VATselected: {},
-        
-        VATlist: [
-            { code: 1, name: "Non-Vat" },
-            { code: 2, name: "Zero Rated" },
-            { code: 3, name: "Vatable" }
-        ],
 
         // general
         vendorSelected: {},
@@ -4398,6 +4339,7 @@
           twentyThreeZeroThree: '',
           secNumber: '',
           notes: '',
+          vendorTypeSelected: '',
         },
 
         // business 
@@ -4411,6 +4353,7 @@
           designation : '',
         },
         businessData : [],
+        businessEditData : [],
         businessTypeList : [],
         businessTypeSelected : {},
         businessNatureList : [],
@@ -4431,6 +4374,38 @@
           { code: 7, name: "Recipient" },
         ],
 
+        addressStatusSelected: {},
+        addressStatusList: [
+          { code: 1, name: "Active" },
+          { code: 2, name: "Inactive" }
+        ],
+
+        addressWorkFromList : [],
+        addressWorkFromSelected : {},
+
+        countriesList : [],
+        countriesSelected : {},
+
+        address: {
+          shortName : '',
+          line1 : '',
+          line2 : '',
+          city : '',
+          province : '',
+          zipcode : '',
+          country : '',
+          phoneNumber : '',
+          email : '',
+          fax : '',
+          businessHours : '',
+          preferredBilling : '',
+          preferredShipping : '',
+          notes : '',
+        },
+
+        addressData : [],
+        addressEditData : [],
+
         contactLinkToSelected: {},
         contactLinkToList: [
           { code: 1, name: "Sales" },
@@ -4439,24 +4414,42 @@
           { code: 4, name: "Management" }
         ],
 
-        addressStatusSelected: {},
-        addressStatusList: [
-          { code: 1, name: "Active" },
-          { code: 2, name: "Inactive" }
-        ],
-
         contactStatusSelected: {},
         contactStatusList: [
           { code: 1, name: "Active" },
           { code: 2, name: "Inactive" }
         ],
 
-        countriesList : [],
-        countriesSelected : {},
+        contactPrefixesSelected : {},
+        contact: {
+          firstName : '',
+          lastName : '',
+          suffix : '',
+          nickName : '',
+          designation : '',
+          department : '',
+          mobileNumber : '',
+          email : '',
+          mobileNumberCheckbox : '',
+          emailCheckbox : '',
+          notes : '',
+        },
+
+        contactData : [],
+        contactEditData : [],
 
         //purchasing
         purchasing: {
-          brand: ''
+          brand: '',
+          productLine: '',
+          services: '',
+          sentVia: '',
+          contactDetails: '',
+          ordering: '',
+          shipping: '',
+          documentation: '',
+          payment: '',
+          notes: '',
         },
         poToBeSentSelected: {},
         poToBeSentList: [
@@ -4467,16 +4460,48 @@
           { code: 5, name: "WeChat" },
           { code: 6, name: "Others" }
         ],
+        purchasingSelectedFile: [],
+        purchasingFilespreview: [],
 
         // accounting
         AccountATCList : [],
         AccountATCSelected : {},
         AccountDescSelected : '',
         AccountRateSelected : '',
+        AccountCurrenciesSelected : {},
+        accountingData : [],
+        accountingEditData : [],
+        accounting: {
+          bank : '',
+          branch : '',
+          contactPerson : '',
+          telephoneNumber : '',
+          bankName : '',
+          bankAcctNumber : '',
+          bankBranch : '',
+          bankSwiftCode : '',
+          bankPreferred : '',
+        },
+
+        //Technical and Support
+        technical: {
+          warrantyNote: '',
+          policyNote: '',
+          attachmentNote: '',
+        },
+        technicalSelectedFile: [],
+        technicalFilespreview: [],
         
         // Related To
+        relatedVendorData : [],
+        relatedVendorEditData : [],
+
+        relatedCustomerData : [],
+        relatedCustomerEditData : [],
+
         relationshipList : [],
-        relationshipSelected : {},
+        vendorRelationshipSelected : {},
+        customerRelationshipSelected : {},
 
         relatedSupplierList : [],
         relatedSupplierCodeSelected : {},
@@ -4485,30 +4510,1134 @@
         relatedCustomerList : [],
         relatedCustomerCodeSelected : {},
         relatedCustomerNameSelected : '',
+
+        // Attachments
+        attachmentOneSelectedFile: [],
+        attachmentOneFilespreview: [],
+        attachmentTwoSelectedFile: [],
+        attachmentTwoFilespreview: [],
+        attachmentThreeSelectedFile: [],
+        attachmentThreeFilespreview: [],
+        attachmentFourSelectedFile: [],
+        attachmentFourFilespreview: [],
+        attachmentFiveSelectedFile: [],
+        attachmentFiveFilespreview: [],
+        attachmentSixSelectedFile: [],
+        attachmentSixFilespreview: [],
+        attachmentSevenSelectedFile: [],
+        attachmentSevenFilespreview: [],
+
+        // Distribution and Agreement
+        distribution: {
+          monthStart : '',
+          monthEnd : '',
+          annualTarget : '',
+          totalOrder : '',
+          notes : '',
+        },
+        distributionCurrenciesSelected : {},
+        distributionAgreementData : [],         
+        distributionAgreementEditData : [],
+
+        distributionOneSelectedFile: [],
+        distributionOneFilespreview: [],
+        distributionTwoSelectedFile: [],
+        distributionTwoFilespreview: [],
+        distributionThreeSelectedFile: [],
+        distributionThreeFilespreview: [],
+        distributionFourSelectedFile: [],
+        distributionFourFilespreview: [],
+
       };
     },
   
     methods: {
-      trashBusinessData(index) {
-        this.businessData.splice(index, 1);
+
+      // Step 2
+      editCorporateOfficers(index) {
+          this.isButton = false;
+          const businessEditData = this.businessData[index];
+          this.businessEditData = businessEditData;
+          this.setIndex = index;
+
+          this.business.firstName = businessEditData.firstName
+          this.business.lastName = businessEditData.lastName
+          this.business.suffix = businessEditData.suffix
+          this.business.designation = businessEditData.designation
+  
+          this.prefixesSelected = {
+              code: businessEditData.prefix_id,
+              name: businessEditData.prefix_name,
+          };
+      },
+      trashCorporateOfficers(index) {
+          this.businessData.splice(index, 1);
+      },
+      updateCorporateOfficers() {
+          this.resetAlert();
+
+          const updateData = {
+              id: this.businessEditData.id,
+              prefix_name: this.prefixesSelected.name,
+              prefix_id: this.prefixesSelected.code,
+              firstName: this.business.firstName,
+              lastName: this.business.lastName,
+              suffix: this.business.suffix,
+              designation: this.business.designation
+          };
+
+          this.businessData.push(updateData);
+          this.businessEditData = "";
+          this.businessData.splice(this.setIndex, 1);
+
+          this.businessData.sort(function (a, b) {
+              return a.id - b.id;
+          });
+          this.clearCorporateOfficers()
       },
       insertCorporateOfficers() {
+          this.resetAlert();
+  
+          const addData = {
+              id: this.i++,
+              prefix_name: this.prefixesSelected.name,
+              prefix_id: this.prefixesSelected.code,
+              firstName: this.business.firstName,
+              lastName: this.business.lastName,
+              suffix: this.business.suffix,
+              designation: this.business.designation
+          };
+          this.businessData.push(addData);
+          this.clearCorporateOfficers()
+
+          // this.addAlert("Success", "Expense details added successfully!", "true");
+          // this.addAlert("Failed", "Please complete required fields!", "false");
+      },
+      clearCorporateOfficers() {
+        this.prefixesSelected = {};
+        this.business.firstName = "";
+        this.business.lastName = "";
+        this.business.suffix = "";
+        this.business.designation = "";
+      },
+      //EO Step 2
+
+      //Step3
+      async insertAddress() {
+        this.resetAlert();
+  
+        const addData = {
+          shortName: this.address.shortName,
+          line1: this.address.line1,
+          line2: this.address.line2,
+          city: this.address.city,
+          province: this.address.province,
+          zipcode: this.address.zipcode,
+          phoneNumber: this.address.phoneNumber,
+          email: this.address.email,
+          fax: this.address.fax,
+          businessHours: this.address.businessHours,
+          preferredBilling: this.address.preferredBilling == '' ? 'False' : 'True',
+          preferredShipping: this.address.preferredShipping == '' ? 'False' : 'True',
+          notes: this.address.notes,
+
+          addressType_id: this.addressTypeSelected.code,
+          addressType_name: this.addressTypeSelected.name,
+          // addressStatus_id: this.addressStatusSelected.code,
+          // addressStatus_name: this.addressStatusSelected.name,
+          countries_id: this.countriesSelected.code,
+          countries_name: this.countriesSelected.name,
+          draftID: this.draftID,
+        };
+        this.clearAddress()
+
+        try {
+          const resp = await axios.post("http://127.0.0.1:8000/api/saveBusinessListDetail", addData);
+          console.log(resp.data);
+          // this.openToast("top-right", "success", resp.data.message);
+          
+        } catch (err) {
+          console.error(err);
+          this.openToast("top-right","error","Please Contact the administrator! and try again later");
+        }
+        this.getAddressByBusinessNumber(this.draftID)
+        this.getAddressWorkFromByBusinessNumber(this.draftID)
+      },
+      async trashAddress(index, id) {
+        this.addressData.splice(index, 1);
+        try {
+          const resp = await axios.post("http://127.0.0.1:8000/api/deleteAddressByID", {id : id});
+          console.log(resp.data);
+          // this.openToast("top-right", "success", resp.data.message);
+          
+        } catch (err) {
+          console.error(err);
+          this.openToast("top-right","error","Please Contact the administrator! and try again later");
+        }
+      },
+      editAddress(index) {
+          this.isButton = false;
+          const addressEditData = this.addressData[index];
+          this.addressEditData = addressEditData;
+          this.setIndex = index;
+
+          this.address.shortName = addressEditData.short_name
+          this.address.line1 = addressEditData.address_line
+          this.address.line2 = addressEditData.address_line2
+          this.address.city = addressEditData.city
+          this.address.province = addressEditData.province
+          this.address.zipcode = addressEditData.zip
+          this.address.country = addressEditData.country
+          this.address.phoneNumber = addressEditData.PhoneNum
+          this.address.email = addressEditData.EmailAdd
+          this.address.fax = addressEditData.Fax
+          this.address.businessHours = addressEditData.business_hours
+          this.address.preferredBilling = addressEditData.Preferred_Billing
+          this.address.preferredShipping = addressEditData.Preferred_Shippping
+          this.address.notes = addressEditData.Notes
+
+          this.addressTypeSelected = {
+              name: addressEditData.TypeOfAddress,
+          };
+          this.countriesSelected = {
+              name: addressEditData.country,
+          };
+
+          // this.addressStatusSelected = {
+          //     code: addressEditData.addressStatus_id,
+          //     name: addressEditData.addressStatus_name,
+          // };
+         
+      },
+      clearAddress() {
+        this.address.shortName = '',
+        this.address.line1 = '',
+        this.address.line2 = '',
+        this.address.city = '',
+        this.address.province = '',
+        this.address.zipcode = '',
+        this.address.country = '',
+        this.address.phoneNumber = '',
+        this.address.email = '',
+        this.address.fax = '',
+        this.address.businessHours = '',
+        this.address.preferredBilling = '',
+        this.address.preferredShipping = '',
+        this.address.notes = ''
+        this.addressTypeSelected = {},
+        this.addressStatusSelected = {},
+        this.countriesSelected = {}
+      },
+      async updateAddress() {
+          this.resetAlert();
+
+          const updateData = {
+            id: this.addressEditData.ID,
+            shortName: this.address.shortName,
+            line1: this.address.line1,
+            line2: this.address.line2,
+            city: this.address.city,
+            province: this.address.province,
+            zipcode: this.address.zipcode,
+            phoneNumber: this.address.phoneNumber,
+            email: this.address.email,
+            fax: this.address.fax,
+            businessHours: this.address.businessHours,
+            preferredBilling: this.address.preferredBilling == '' ? 'False' : 'True',
+            preferredShipping: this.address.preferredShipping == '' ? 'False' : 'True',
+            notes: this.address.notes,
+
+            addressType_id: this.addressTypeSelected.code,
+            addressType_name: this.addressTypeSelected.name,
+            // addressStatus_id: this.addressStatusSelected.code,
+            // addressStatus_name: this.addressStatusSelected.name,
+            countries_id: this.countriesSelected.code,
+            countries_name: this.countriesSelected.name,
+            draftID: this.draftID,
+          };
+          this.clearAddress()
+
+          // console.log(updateData);
+
+          try {
+            const resp = await axios.post("http://127.0.0.1:8000/api/updateBusinessListDetail", updateData);
+            console.log(resp.data);
+            // this.openToast("top-right", "success", resp.data.message);
+            
+          } catch (err) {
+            console.error(err);
+            this.openToast("top-right","error","Please Contact the administrator! and try again later");
+          }
+          this.getAddressByBusinessNumber(this.draftID)
+      },
+
+
+
+
+      insertContact() {
         this.resetAlert();
   
         const addData = {
           id: this.i++,
-          prefix: this.prefixesSelected.name,
-          firstName: this.business.firstName,
-          lastName: this.business.lastName,
-          suffix: this.business.suffix,
-          designation: this.business.designation
+          firstName: this.contact.firstName,
+          lastName: this.contact.lastName,
+          suffix: this.contact.suffix,
+          nickName: this.contact.nickName,
+          designation: this.contact.designation,
+          department: this.contact.department,
+          mobileNumber: this.contact.mobileNumber,
+          email: this.contact.email,
+          mobileNumberCheckbox: this.contact.mobileNumberCheckbox,
+          emailCheckbox: this.contact.emailCheckbox,
+          notes: this.contact.notes,
+          prefix_id: this.contactPrefixesSelected.code,
+          prefix_name: this.contactPrefixesSelected.name,
+          linkTo_id: this.contactLinkToSelected.code,
+          linkTo_name: this.contactLinkToSelected.name,
+          status_id: this.contactStatusSelected.code,
+          status_name: this.contactStatusSelected.name,
         };
         console.log(addData);
-        this.businessData.push(addData);
-
-        // this.addAlert("Success", "Expense details added successfully!", "true");
-        // this.addAlert("Failed", "Please complete required fields!", "false");
       },
+      //EO Step3
+
+      //Step 4 
+      purchasingFileOnFileSelected(event) {
+        let selectedFiles = event.target.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.purchasingSelectedFile.push(selectedFiles[i]);
+        }
+        this.purchasingFilePreviews();
+      },
+      purchasingFileOnInputChange(event) {
+        let selectedFiles = event.dataTransfer.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.purchasingSelectedFile.push(selectedFiles[i]);
+        }
+        this.purchasingFilePreviews();
+      },
+      purchasingFileRemove(i) {
+        this.purchasingSelectedFile.splice(i, 1);
+        this.purchasingFilePreviews();
+      },
+      purchasingFilePreview(i) {
+        const url = this.purchasingFilespreview[i].link;
+        window.open(url, "_blank", "resizable=yes");
+      },
+      purchasingFileDrop(event) {
+        event.preventDefault();
+        this.onInputChange(event); // Trigger the onChange event manually
+
+        // Clean up
+        event.currentTarget.classList.add("bg-light");
+        event.currentTarget.classList.remove("bg-white");
+      },
+      purchasingFilePreviews() {
+        let files = this.purchasingSelectedFile;
+        const fileContainer = [];
+        for (let i = 0; i < files.length; i++) {
+          let tmppath = URL.createObjectURL(files[i]);
+          const thisFiles = {
+            link: tmppath,
+          };
+          fileContainer.push(thisFiles);
+        }
+        this.purchasingFilespreview = fileContainer;
+      },
+      //EO Step 4
+
+      //Step 5 
+      insertBankInfo() {
+          this.resetAlert();
+  
+          const addData = {
+              id: this.i++,
+              bankName: this.accounting.bankName,
+              bankAcctNumber: this.accounting.bankAcctNumber,
+              bankBranch: this.accounting.bankBranch,
+              bankSwiftCode: this.accounting.bankSwiftCode,
+              bankPreferred: this.accounting.bankPreferred,
+              bank_currency_code: this.AccountCurrenciesSelected.code,
+              bank_currency_name: this.AccountCurrenciesSelected.name,
+          };
+          this.accountingData.push(addData);
+          this.clearBankInfo()
+
+          // this.addAlert("Success", "Expense details added successfully!", "true");
+          // this.addAlert("Failed", "Please complete required fields!", "false");
+      },
+      editBankInfo(index) {
+          this.isButton = false;
+          const accountingEditData = this.accountingData[index];
+          this.accountingEditData = accountingEditData;
+          this.setIndex = index;
+
+          this.accounting.bankName = accountingEditData.bankName
+          this.accounting.bankAcctNumber = accountingEditData.bankAcctNumber
+          this.accounting.bankBranch = accountingEditData.bankBranch
+          this.accounting.bankSwiftCode = accountingEditData.bankSwiftCode
+          this.accounting.bankPreferred = accountingEditData.bankPreferred
+  
+          this.AccountCurrenciesSelected = {
+              code: accountingEditData.bank_currency_code,
+              name: accountingEditData.bank_currency_name,
+          };
+      },
+      clearBankInfo() {
+        this.AccountCurrenciesSelected = {};
+        this.accounting.bankName = "";
+        this.accounting.bankAcctNumber = "";
+        this.accounting.bankBranch = "";
+        this.accounting.bankSwiftCode = "";
+        this.accounting.bankPreferred = "";
+      },
+      trashBankInfo(index) {
+          this.accountingData.splice(index, 1);
+      },
+      updateBankInfo() {
+          this.resetAlert();
+
+          const updateData = {
+              id: this.accountingEditData.id,
+              bankName: this.accounting.bankName,
+              bankAcctNumber: this.accounting.bankAcctNumber,
+              bankBranch: this.accounting.bankBranch,
+              bankSwiftCode: this.accounting.bankSwiftCode,
+              bankPreferred: this.accounting.bankPreferred,
+              bank_currency_code: this.AccountCurrenciesSelected.code,
+              bank_currency_name: this.AccountCurrenciesSelected.name,
+          };
+
+          this.accountingData.push(updateData);
+          this.accountingEditData = "";
+          this.accountingData.splice(this.setIndex, 1);
+
+          this.accountingData.sort(function (a, b) {
+              return a.id - b.id;
+          });
+          this.clearBankInfo()
+      },
+      // EO Step 5
+
+      //Step 6
+      technicalFileOnFileSelected(event) {
+        let selectedFiles = event.target.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.technicalSelectedFile.push(selectedFiles[i]);
+        }
+        this.technicalFilePreviews();
+      },
+      technicalFileOnInputChange(event) {
+        let selectedFiles = event.dataTransfer.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.technicalSelectedFile.push(selectedFiles[i]);
+        }
+        this.technicalFilePreviews();
+      },
+      technicalFileRemove(i) {
+        this.technicalSelectedFile.splice(i, 1);
+        this.technicalFilePreviews();
+      },
+      technicalFilePreview(i) {
+        const url = this.technicalFilespreview[i].link;
+        window.open(url, "_blank", "resizable=yes");
+      },
+      technicalFileDrop(event) {
+        event.preventDefault();
+        this.onInputChange(event); // Trigger the onChange event manually
+
+        // Clean up
+        event.currentTarget.classList.add("bg-light");
+        event.currentTarget.classList.remove("bg-white");
+      },
+      technicalFilePreviews() {
+        let files = this.technicalSelectedFile;
+        const fileContainer = [];
+        for (let i = 0; i < files.length; i++) {
+          let tmppath = URL.createObjectURL(files[i]);
+          const thisFiles = {
+            link: tmppath,
+          };
+          fileContainer.push(thisFiles);
+        }
+        this.technicalFilespreview = fileContainer;
+      },
+      //EO Step 6
+
+      //Step 7
+      insertRelatedVendor() {
+          this.resetAlert();
+  
+          const addData = {
+              id: this.i++,
+              vendor_relationship_code: this.vendorRelationshipSelected.code,
+              vendor_relationship_name: this.vendorRelationshipSelected.name,
+              vendor_code: this.relatedSupplierCodeSelected.code,
+              vendor_name: this.relatedSupplierCodeSelected.name,
+          };
+          this.relatedVendorData.push(addData);
+          this.clearRelatedVendor()
+
+          // this.addAlert("Success", "Expense details added successfully!", "true");
+          // this.addAlert("Failed", "Please complete required fields!", "false");
+      },
+      editRelatedVendor(index) {
+          this.isButton = false;
+          const relatedVendorEditData = this.relatedVendorData[index];
+          this.relatedVendorEditData = relatedVendorEditData;
+          this.setIndex = index;
+  
+          this.vendorRelationshipSelected = {
+              code: relatedVendorEditData.vendor_relationship_code,
+              name: relatedVendorEditData.vendor_relationship_name,
+          };
+          this.relatedSupplierCodeSelected = {
+              code: relatedVendorEditData.vendor_code,
+              name: relatedVendorEditData.vendor_name,
+          };
+      },
+      updateRelatedVendor() {
+          this.resetAlert();
+
+          const updateData = {
+              id: this.relatedVendorEditData.id,
+              vendor_relationship_code: this.vendorRelationshipSelected.code,
+              vendor_relationship_name: this.vendorRelationshipSelected.name,
+              vendor_code: this.relatedSupplierCodeSelected.code,
+              vendor_name: this.relatedSupplierCodeSelected.name,
+          };
+
+          this.relatedVendorData.push(updateData);
+          this.relatedVendorEditData = "";
+          this.relatedVendorData.splice(this.setIndex, 1);
+
+          this.relatedVendorData.sort(function (a, b) {
+              return a.id - b.id;
+          });
+          this.clearRelatedVendor()
+      },
+      clearRelatedVendor() {
+        this.vendorRelationshipSelected = {};
+        this.relatedSupplierCodeSelected = {};
+      },
+      trashRelatedVendor(index) {
+          this.relatedVendorData.splice(index, 1);
+      },
+
+      insertRelatedCustomer() {
+          this.resetAlert();
+  
+          const addData = {
+              id: this.i++,
+              customer_relationship_code: this.customerRelationshipSelected.code,
+              customer_relationship_name: this.customerRelationshipSelected.name,
+              customer_code: this.relatedCustomerCodeSelected.code,
+              customer_name: this.relatedCustomerCodeSelected.name,
+          };
+          this.relatedCustomerData.push(addData);
+          this.clearRelatedCustomer()
+
+          // this.addAlert("Success", "Expense details added successfully!", "true");
+          // this.addAlert("Failed", "Please complete required fields!", "false");
+      },
+      updateRelatedCustomer() {
+          this.resetAlert();
+
+          const updateData = {
+              id: this.relatedCustomerEditData.id,
+              customer_relationship_code: this.customerRelationshipSelected.code,
+              customer_relationship_name: this.customerRelationshipSelected.name,
+              customer_code: this.relatedCustomerCodeSelected.code,
+              customer_name: this.relatedCustomerCodeSelected.name,
+          };
+
+          this.relatedCustomerData.push(updateData);
+          this.relatedCustomerEditData = "";
+          this.relatedCustomerData.splice(this.setIndex, 1);
+
+          this.relatedCustomerData.sort(function (a, b) {
+              return a.id - b.id;
+          });
+          this.clearRelatedVendor()
+      },
+      clearRelatedCustomer() {
+        this.customerRelationshipSelected = {};
+        this.relatedCustomerCodeSelected = {};
+      },
+      trashRelatedCustomer(index) {
+          this.relatedCustomerData.splice(index, 1);
+      },
+      editRelatedCustomer(index) {
+          this.isButton = false;
+          const relatedCustomerEditData = this.relatedCustomerData[index];
+          this.relatedCustomerEditData = relatedCustomerEditData;
+          this.setIndex = index;
+  
+          this.customerRelationshipSelected = {
+              code: relatedCustomerEditData.customer_relationship_code,
+              name: relatedCustomerEditData.customer_relationship_name,
+          };
+          this.relatedCustomerCodeSelected = {
+              code: relatedCustomerEditData.customer_code,
+              name: relatedCustomerEditData.customer_name,
+          };
+      },
+      //EO Step 7
+
+      // Step8 
+      // 1. Accomplished Vendor Information Sheet
+      attachmentOneFileOnFileSelected(event) {
+        let selectedFiles = event.target.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.attachmentOneSelectedFile.push(selectedFiles[i]);
+        }
+        this.attachmentOneFilePreviews();
+      },
+      attachmentOneFileOnInputChange(event) {
+        let selectedFiles = event.dataTransfer.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.attachmentOneSelectedFile.push(selectedFiles[i]);
+        }
+        this.attachmentOneFilePreviews();
+      },
+      attachmentOneFileRemove(i) {
+        this.attachmentOneSelectedFile.splice(i, 1);
+        this.attachmentOneFilePreviews();
+      },
+      attachmentOneFilePreview(i) {
+        const url = this.attachmentOneFilespreview[i].link;
+        window.open(url, "_blank", "resizable=yes");
+      },
+      attachmentOneFileDrop(event) {
+        event.preventDefault();
+        this.onInputChange(event); // Trigger the onChange event manually
+
+        // Clean up
+        event.currentTarget.classList.add("bg-light");
+        event.currentTarget.classList.remove("bg-white");
+      },
+      attachmentOneFilePreviews() {
+        let files = this.attachmentOneSelectedFile;
+        const fileContainer = [];
+        for (let i = 0; i < files.length; i++) {
+          let tmppath = URL.createObjectURL(files[i]);
+          const thisFiles = {
+            link: tmppath,
+          };
+          fileContainer.push(thisFiles);
+        }
+        this.attachmentOneFilespreview = fileContainer;
+      },
+
+      // 2. Business Registration
+      attachmentTwoFileOnFileSelected(event) {
+        let selectedFiles = event.target.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.attachmentTwoSelectedFile.push(selectedFiles[i]);
+        }
+        this.attachmentTwoFilePreviews();
+      },
+      attachmentTwoFileOnInputChange(event) {
+        let selectedFiles = event.dataTransfer.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.attachmentTwoSelectedFile.push(selectedFiles[i]);
+        }
+        this.attachmentTwoFilePreviews();
+      },
+      attachmentTwoFileRemove(i) {
+        this.attachmentTwoSelectedFile.splice(i, 1);
+        this.attachmentTwoFilePreviews();
+      },
+      attachmentTwoFilePreview(i) {
+        const url = this.attachmentTwoFilespreview[i].link;
+        window.open(url, "_blank", "resizable=yes");
+      },
+      attachmentTwoFileDrop(event) {
+        event.preventDefault();
+        this.onInputChange(event); // Trigger the onChange event manually
+
+        // Clean up
+        event.currentTarget.classList.add("bg-light");
+        event.currentTarget.classList.remove("bg-white");
+      },
+      attachmentTwoFilePreviews() {
+        let files = this.attachmentTwoSelectedFile;
+        const fileContainer = [];
+        for (let i = 0; i < files.length; i++) {
+          let tmppath = URL.createObjectURL(files[i]);
+          const thisFiles = {
+            link: tmppath,
+          };
+          fileContainer.push(thisFiles);
+        }
+        this.attachmentTwoFilespreview = fileContainer;
+      },
+
+      // 3. Updated Business Permit
+      attachmentThreeFileOnFileSelected(event) {
+        let selectedFiles = event.target.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.attachmentThreeSelectedFile.push(selectedFiles[i]);
+        }
+        this.attachmentThreeFilePreviews();
+      },
+      attachmentThreeFileOnInputChange(event) {
+        let selectedFiles = event.dataTransfer.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.attachmentThreeSelectedFile.push(selectedFiles[i]);
+        }
+        this.attachmentThreeFilePreviews();
+      },
+      attachmentThreeFileRemove(i) {
+        this.attachmentThreeSelectedFile.splice(i, 1);
+        this.attachmentThreeFilePreviews();
+      },
+      attachmentThreeFilePreview(i) {
+        const url = this.attachmentThreeFilespreview[i].link;
+        window.open(url, "_blank", "resizable=yes");
+      },
+      attachmentThreeFileDrop(event) {
+        event.preventDefault();
+        this.onInputChange(event); // Trigger the onChange event manually
+
+        // Clean up
+        event.currentTarget.classList.add("bg-light");
+        event.currentTarget.classList.remove("bg-white");
+      },
+      attachmentThreeFilePreviews() {
+        let files = this.attachmentThreeSelectedFile;
+        const fileContainer = [];
+        for (let i = 0; i < files.length; i++) {
+          let tmppath = URL.createObjectURL(files[i]);
+          const thisFiles = {
+            link: tmppath,
+          };
+          fileContainer.push(thisFiles);
+        }
+        this.attachmentThreeFilespreview = fileContainer;
+      },
+
+      // 4. BIR Certificate of Registration: BIR 2303 form
+      attachmentFourFileOnFileSelected(event) {
+        let selectedFiles = event.target.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.attachmentFourSelectedFile.push(selectedFiles[i]);
+        }
+        this.attachmentFourFilePreviews();
+      },
+      attachmentFourFileOnInputChange(event) {
+        let selectedFiles = event.dataTransfer.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.attachmentFourSelectedFile.push(selectedFiles[i]);
+        }
+        this.attachmentFourFilePreviews();
+      },
+      attachmentFourFileRemove(i) {
+        this.attachmentFourSelectedFile.splice(i, 1);
+        this.attachmentFourFilePreviews();
+      },
+      attachmentFourFilePreview(i) {
+        const url = this.attachmentFourFilespreview[i].link;
+        window.open(url, "_blank", "resizable=yes");
+      },
+      attachmentFourFileDrop(event) {
+        event.preventDefault();
+        this.onInputChange(event); // Trigger the onChange event manually
+
+        // Clean up
+        event.currentTarget.classList.add("bg-light");
+        event.currentTarget.classList.remove("bg-white");
+      },
+      attachmentFourFilePreviews() {
+        let files = this.attachmentFourSelectedFile;
+        const fileContainer = [];
+        for (let i = 0; i < files.length; i++) {
+          let tmppath = URL.createObjectURL(files[i]);
+          const thisFiles = {
+            link: tmppath,
+          };
+          fileContainer.push(thisFiles);
+        }
+        this.attachmentFourFilespreview = fileContainer;
+      },
+
+      // 5. Sample of Delivery Receipt, Sales Invoice, Official Receipt
+      attachmentFiveFileOnFileSelected(event) {
+        let selectedFiles = event.target.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.attachmentFiveSelectedFile.push(selectedFiles[i]);
+        }
+        this.attachmentFiveFilePreviews();
+      },
+      attachmentFiveFileOnInputChange(event) {
+        let selectedFiles = event.dataTransfer.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.attachmentFiveSelectedFile.push(selectedFiles[i]);
+        }
+        this.attachmentFiveFilePreviews();
+      },
+      attachmentFiveFileRemove(i) {
+        this.attachmentFiveSelectedFile.splice(i, 1);
+        this.attachmentFiveFilePreviews();
+      },
+      attachmentFiveFilePreview(i) {
+        const url = this.attachmentFiveFilespreview[i].link;
+        window.open(url, "_blank", "resizable=yes");
+      },
+      attachmentFiveFileDrop(event) {
+        event.preventDefault();
+        this.onInputChange(event); // Trigger the onChange event manually
+
+        // Clean up
+        event.currentTarget.classList.add("bg-light");
+        event.currentTarget.classList.remove("bg-white");
+      },
+      attachmentFiveFilePreviews() {
+        let files = this.attachmentFiveSelectedFile;
+        const fileContainer = [];
+        for (let i = 0; i < files.length; i++) {
+          let tmppath = URL.createObjectURL(files[i]);
+          const thisFiles = {
+            link: tmppath,
+          };
+          fileContainer.push(thisFiles);
+        }
+        this.attachmentFiveFilespreview = fileContainer;
+      },
+
+      // 6. Company/Business Profile
+      attachmentSixFileOnFileSelected(event) {
+        let selectedFiles = event.target.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.attachmentSixSelectedFile.push(selectedFiles[i]);
+        }
+        this.attachmentSixFilePreviews();
+      },
+      attachmentSixFileOnInputChange(event) {
+        let selectedFiles = event.dataTransfer.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.attachmentSixSelectedFile.push(selectedFiles[i]);
+        }
+        this.attachmentSixFilePreviews();
+      },
+      attachmentSixFileRemove(i) {
+        this.attachmentSixSelectedFile.splice(i, 1);
+        this.attachmentSixFilePreviews();
+      },
+      attachmentSixFilePreview(i) {
+        const url = this.attachmentSixFilespreview[i].link;
+        window.open(url, "_blank", "resizable=yes");
+      },
+      attachmentSixFileDrop(event) {
+        event.preventDefault();
+        this.onInputChange(event); // Trigger the onChange event manually
+
+        // Clean up
+        event.currentTarget.classList.add("bg-light");
+        event.currentTarget.classList.remove("bg-white");
+      },
+      attachmentSixFilePreviews() {
+        let files = this.attachmentSixSelectedFile;
+        const fileContainer = [];
+        for (let i = 0; i < files.length; i++) {
+          let tmppath = URL.createObjectURL(files[i]);
+          const thisFiles = {
+            link: tmppath,
+          };
+          fileContainer.push(thisFiles);
+        }
+        this.attachmentSixFilespreview = fileContainer;
+      },
+
+      // 7. Latest Audited Financial Statements
+      attachmentSevenFileOnFileSelected(event) {
+        let selectedFiles = event.target.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.attachmentSevenSelectedFile.push(selectedFiles[i]);
+        }
+        this.attachmentSevenFilePreviews();
+      },
+      attachmentSevenFileOnInputChange(event) {
+        let selectedFiles = event.dataTransfer.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.attachmentSevenSelectedFile.push(selectedFiles[i]);
+        }
+        this.attachmentSevenFilePreviews();
+      },
+      attachmentSevenFileRemove(i) {
+        this.attachmentSevenSelectedFile.splice(i, 1);
+        this.attachmentSevenFilePreviews();
+      },
+      attachmentSevenFilePreview(i) {
+        const url = this.attachmentSevenFilespreview[i].link;
+        window.open(url, "_blank", "resizable=yes");
+      },
+      attachmentSevenFileDrop(event) {
+        event.preventDefault();
+        this.onInputChange(event); // Trigger the onChange event manually
+
+        // Clean up
+        event.currentTarget.classList.add("bg-light");
+        event.currentTarget.classList.remove("bg-white");
+      },
+      attachmentSevenFilePreviews() {
+        let files = this.attachmentSevenSelectedFile;
+        const fileContainer = [];
+        for (let i = 0; i < files.length; i++) {
+          let tmppath = URL.createObjectURL(files[i]);
+          const thisFiles = {
+            link: tmppath,
+          };
+          fileContainer.push(thisFiles);
+        }
+        this.attachmentSevenFilespreview = fileContainer;
+      },
+      // EO Step8
+
+      // Step 9
+      insertDistributionAgreement() {
+          this.resetAlert();
+  
+          const addData = {
+              id: this.i++,
+              monthStart: this.distribution.monthStart,
+              monthEnd: this.distribution.monthEnd,
+              annualTarget: this.distribution.annualTarget,
+              totalOrder: this.distribution.totalOrder,
+              currency_code: this.distributionCurrenciesSelected.code,
+              currency_name: this.distributionCurrenciesSelected.name,
+          };
+          this.distributionAgreementData.push(addData);
+          this.clearDistributionAgreement()
+
+          // this.addAlert("Success", "Expense details added successfully!", "true");
+          // this.addAlert("Failed", "Please complete required fields!", "false");
+      },
+      updateDistributionAgreement() {
+          this.resetAlert();
+
+          const updateData = {
+              id: this.distributionAgreementEditData.id,
+              monthStart: this.distribution.monthStart,
+              monthEnd: this.distribution.monthEnd,
+              annualTarget: this.distribution.annualTarget,
+              totalOrder: this.distribution.totalOrder,
+              currency_code: this.distributionCurrenciesSelected.code,
+              currency_name: this.distributionCurrenciesSelected.name,
+          };
+
+          this.distributionAgreementData.push(updateData);
+          this.distributionAgreementEditData = "";
+          this.distributionAgreementData.splice(this.setIndex, 1);
+
+          this.distributionAgreementData.sort(function (a, b) {
+              return a.id - b.id;
+          });
+          this.clearDistributionAgreement()
+      },
+      editDistributionAgreement(index) {
+          this.isButton = false;
+          const distributionAgreementEditData = this.distributionAgreementData[index];
+          this.distributionAgreementEditData = distributionAgreementEditData;
+          this.setIndex = index;
+  
+          this.distributionCurrenciesSelected = {
+              code: distributionAgreementEditData.currency_code,
+              name: distributionAgreementEditData.currency_name,
+          };
+          this.distribution.monthStart = distributionAgreementEditData.monthStart
+          this.distribution.monthEnd = distributionAgreementEditData.monthEnd
+          this.distribution.annualTarget = distributionAgreementEditData.annualTarget
+          this.distribution.totalOrder = distributionAgreementEditData.totalOrder
+      },
+      trashDistributionAgreement(index) {
+          this.distributionAgreementData.splice(index, 1);
+      },
+      clearDistributionAgreement() {
+        this.distributionCurrenciesSelected = {};
+        this.distribution.monthStart = '';
+        this.distribution.monthEnd = '';
+        this.distribution.annualTarget = '';
+        this.distribution.totalOrder = '';
+      },
+
+      // 1. Agreement
+      distributionOneFileOnFileSelected(event) {
+        let selectedFiles = event.target.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.distributionOneSelectedFile.push(selectedFiles[i]);
+        }
+        this.distributionOneFilePreviews();
+      },
+      distributionOneFileOnInputChange(event) {
+        let selectedFiles = event.dataTransfer.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.distributionOneSelectedFile.push(selectedFiles[i]);
+        }
+        this.distributionOneFilePreviews();
+      },
+      distributionOneFileRemove(i) {
+        this.distributionOneSelectedFile.splice(i, 1);
+        this.distributionOneFilePreviews();
+      },
+      distributionOneFilePreview(i) {
+        const url = this.distributionOneFilespreview[i].link;
+        window.open(url, "_blank", "resizable=yes");
+      },
+      distributionOneFileDrop(event) {
+        event.preventDefault();
+        this.onInputChange(event); // Trigger the onChange event manually
+
+        // Clean up
+        event.currentTarget.classList.add("bg-light");
+        event.currentTarget.classList.remove("bg-white");
+      },
+      distributionOneFilePreviews() {
+        let files = this.distributionOneSelectedFile;
+        const fileContainer = [];
+        for (let i = 0; i < files.length; i++) {
+          let tmppath = URL.createObjectURL(files[i]);
+          const thisFiles = {
+            link: tmppath,
+          };
+          fileContainer.push(thisFiles);
+        }
+        this.distributionOneFilespreview = fileContainer;
+      },
+
+      // 2. NDA
+      distributionTwoFileOnFileSelected(event) {
+        let selectedFiles = event.target.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.distributionTwoSelectedFile.push(selectedFiles[i]);
+        }
+        this.distributionTwoFilePreviews();
+      },
+      distributionTwoFileOnInputChange(event) {
+        let selectedFiles = event.dataTransfer.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.distributionTwoSelectedFile.push(selectedFiles[i]);
+        }
+        this.distributionTwoFilePreviews();
+      },
+      distributionTwoFileRemove(i) {
+        this.distributionTwoSelectedFile.splice(i, 1);
+        this.distributionTwoFilePreviews();
+      },
+      distributionTwoFilePreview(i) {
+        const url = this.distributionTwoFilespreview[i].link;
+        window.open(url, "_blank", "resizable=yes");
+      },
+      distributionTwoFileDrop(event) {
+        event.preventDefault();
+        this.onInputChange(event); // Trigger the onChange event manually
+
+        // Clean up
+        event.currentTarget.classList.add("bg-light");
+        event.currentTarget.classList.remove("bg-white");
+      },
+      distributionTwoFilePreviews() {
+        let files = this.distributionTwoSelectedFile;
+        const fileContainer = [];
+        for (let i = 0; i < files.length; i++) {
+          let tmppath = URL.createObjectURL(files[i]);
+          const thisFiles = {
+            link: tmppath,
+          };
+          fileContainer.push(thisFiles);
+        }
+        this.distributionTwoFilespreview = fileContainer;
+      },
+
+      // 3. Distributor Certificate
+      distributionThreeFileOnFileSelected(event) {
+        let selectedFiles = event.target.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.distributionThreeSelectedFile.push(selectedFiles[i]);
+        }
+        this.distributionThreeFilePreviews();
+      },
+      distributionThreeFileOnInputChange(event) {
+        let selectedFiles = event.dataTransfer.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.distributionThreeSelectedFile.push(selectedFiles[i]);
+        }
+        this.distributionThreeFilePreviews();
+      },
+      distributionThreeFileRemove(i) {
+        this.distributionThreeSelectedFile.splice(i, 1);
+        this.distributionThreeFilePreviews();
+      },
+      distributionThreeFilePreview(i) {
+        const url = this.distributionThreeFilespreview[i].link;
+        window.open(url, "_blank", "resizable=yes");
+      },
+      distributionThreeFileDrop(event) {
+        event.preventDefault();
+        this.onInputChange(event); // Trigger the onChange event manually
+
+        // Clean up
+        event.currentTarget.classList.add("bg-light");
+        event.currentTarget.classList.remove("bg-white");
+      },
+      distributionThreeFilePreviews() {
+        let files = this.distributionThreeSelectedFile;
+        const fileContainer = [];
+        for (let i = 0; i < files.length; i++) {
+          let tmppath = URL.createObjectURL(files[i]);
+          const thisFiles = {
+            link: tmppath,
+          };
+          fileContainer.push(thisFiles);
+        }
+        this.distributionThreeFilespreview = fileContainer;
+      },
+
+      // 4. Attachments
+      distributionFourFileOnFileSelected(event) {
+        let selectedFiles = event.target.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.distributionFourSelectedFile.push(selectedFiles[i]);
+        }
+        this.distributionFourFilePreviews();
+      },
+      distributionFourFileOnInputChange(event) {
+        let selectedFiles = event.dataTransfer.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+          this.distributionFourSelectedFile.push(selectedFiles[i]);
+        }
+        this.distributionFourFilePreviews();
+      },
+      distributionFourFileRemove(i) {
+        this.distributionFourSelectedFile.splice(i, 1);
+        this.distributionFourFilePreviews();
+      },
+      distributionFourFilePreview(i) {
+        const url = this.distributionFourFilespreview[i].link;
+        window.open(url, "_blank", "resizable=yes");
+      },
+      distributionFourFileDrop(event) {
+        event.preventDefault();
+        this.onInputChange(event); // Trigger the onChange event manually
+
+        // Clean up
+        event.currentTarget.classList.add("bg-light");
+        event.currentTarget.classList.remove("bg-white");
+      },
+      distributionFourFilePreviews() {
+        let files = this.distributionFourSelectedFile;
+        const fileContainer = [];
+        for (let i = 0; i < files.length; i++) {
+          let tmppath = URL.createObjectURL(files[i]);
+          const thisFiles = {
+            link: tmppath,
+          };
+          fileContainer.push(thisFiles);
+        }
+        this.distributionFourFilespreview = fileContainer;
+      },
+      // EO Step 9 
+
       async getPaymentTerms() {
         const response = await fetch(
           `http://127.0.0.1:8000/api/getBusinessTerms`,
@@ -4797,241 +5926,100 @@
           this.relatedCustomerList = data
         }
       }, 
-  
-      getProjects2(){
-        return axios.get(`http://127.0.0.1:8000/api/general-getprojects/${localStorage.getItem("companyId")}`);
-      },
-  
-      getReportingManager2(){
-        return axios.get(`http://127.0.0.1:8000/api/reporting-manager/${localStorage.getItem("id")}`);
-      },
-  
-      getBusinesses2(){
-        return axios.get(`http://127.0.0.1:8000/api/general-businesses/${localStorage.getItem("companyId")}`);
-      },
-  
-      getexpenseType2(){
-        return axios.get(`http://127.0.0.1:8000/api/get-expenseType`);
-      },
-      gettranspoSetup2(){
-        return axios.get(`http://127.0.0.1:8000/api/get-transpoSetup`);
-      },
-  
-      async reInitiate() {
-        await Promise.all([this.getProjects2(), this.getReportingManager2(), this.getBusinesses2(), this.getexpenseType2(), this.gettranspoSetup2()])
-        .then((results) => {
-          const projects = results[0];
-          const managers = results[1];
-          const businesses = results[2];
-          const expenses = results[3];
-          const transpo = results[4];
-  
-        let project = [];
-        for (const key in projects.data) {
-          const request = {
-            code: projects.data[key].project_id,
-            name: projects.data[key].project_name,
-          };
-          project.push(request);
+      async getDraftVendorByUserID(userid) {
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/getDraftVendorByUserID/${userid}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          }
+        );
+        const responseData = await response.json();
+        this.draftID = responseData.draftID
+      }, 
+      async getAddressByBusinessNumber(draftID) {
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/getAddressByBusinessNumber/${draftID}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          }
+        );
+        const responseData = await response.json();
+        this.addressData = responseData
+      }, 
+      async getAddressWorkFromByBusinessNumber(draftID) {
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/getAddressWorkFromByBusinessNumber/${draftID}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          }
+        );
+        const responseData = await response.json();
+
+        if(responseData.length >= 1) {
+          let workFromData = [];
+          for (const key in responseData) {
+            const request = {
+              name: responseData[key].workfrom
+            };
+            workFromData.push(request);
+          }
+          this.addressWorkFromList = workFromData
         }
-        this.project = project;
-  
-        const reportingManager = [];
-        for (const key in managers.data) {
-          const request = {
-            code: managers.data[key].RMID,
-            name: managers.data[key].RMName,
-          };
-          reportingManager.push(request);
+      }, 
+
+      // The Attachments 
+      dragover(event) {
+        event.preventDefault();
+        // Add some visual fluff to show the user can drop its files
+        if (!event.currentTarget.classList.contains("bg-white")) {
+          event.currentTarget.classList.remove("bg-light");
+          event.currentTarget.classList.add("bg-white");
         }
-        this.reportingManager = reportingManager;
-  
-  
-        const client = [];
-        for (const key in businesses.data) {
-          const request = {
-            code: businesses.data[key].businessNumber,
-            name: businesses.data[key].businessName,
-          };
-          client.push(request);
-        }
-        this.modalclient = client;
-  
-        const modalExpenseType = [];
-        for (const key in expenses.data[0]) {
-          const request = {
-            code: expenses.data[0][key].type,
-            name: expenses.data[0][key].type,
-          };
-          modalExpenseType.push(request);
-        }
-        this.modalExpenseType = modalExpenseType;
-  
-        const transpoSetup = [];
-        for (const key in transpo.data[0]) {
-          const request = {
-            code: transpo.data[0][key].MODE,
-            name: transpo.data[0][key].MODE,
-          };
-          transpoSetup.push(request);
-        }
-        this.transpoSetup = transpoSetup;
-        
-  
-  
-  
-        })
-        
-        .catch(error => {
-          console.error(error);
-          this.openToast(
-              "top-right",
-              "error",
-              "Please Contact the administrator! and try again later"
-          );
-        });
       },
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-      re_totalAmount() {
-        let xp_totalAmt = 0;
-        let td_totalAmt = 0;
-  
-        if (this.expenseType_totalAmount === 0) {
-          xp_totalAmt = 0;
-        } else {
-          xp_totalAmt = parseFloat(this.expenseType_totalAmount.replace(/,/g, ""))
-        }
-  
-        if (this.transpoSetup_totalAmount === 0) {
-          td_totalAmt = 0;
-        } else {
-          td_totalAmt = parseFloat(this.transpoSetup_totalAmount.replace(/,/g, ""))
-        }
-  
-        const float_total = xp_totalAmt + td_totalAmt;
-  
-        const string_total = float_total.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-        });
-  
-        this.changeAmount(string_total, float_total);
+      dragleave(event) {
+        // Clean up
+        event.currentTarget.classList.add("bg-light");
+        event.currentTarget.classList.remove("bg-white");
       },
-  
-      changeAmount(amount, realAmount) {
-        this.amount = amount;
-        this.realAmount = realAmount;
+      submit() {
+        console.log('submitted');
       },
+
   
+      
+      next() {
+        this.counter++;
+      },
+      setButton() {
+        this.isButton = true;
+      },
+      closeModal() {
+        this.resetAlert();
+      },
       addAlert(header, message, type) {
         this.isAlert = true;
         this.header = header;
         this.message = message;
         this.type = type;
       },
-  
       resetAlert() {
         this.isAlert = false;
         this.header = "";
         this.message = "";
         this.type = "";
       },
-
-      next() {
-        this.counter++;
-      },
-  
-      // step by step validation
-      next_orig() {
-        if (this.counter === 0) {
-          this.attemptNext = true;
-        } else if (this.counter === 1) {
-          this.attemptNext = false;
-          this.attemptNextOne = true;
-        } else if (this.counter === 2) {
-          // console.log("expense details");
-        } else if (this.counter === 3) {
-          this.attemptNextOne = false;
-          this.attemptNextTwo = true;
-          // attachments
-        } else if (this.counter === 4) {
-          this.attemptNextTwo = false;
-          this.attemptNextThree = true;
-        }
-  
-        this.validateCurrentTab(this.counter);
-      },
-  
-      validateCurrentTab(counter) {
-        // Request Details
-        if (counter === 0) {
-          if (
-            !this.missingDateNeeded &&
-            !this.missingReportingManager &&
-            !this.missingProjectItem &&
-            !this.missingPurpose
-          ) {
-            this.counter++;
-          }
-          // Payment Details
-        } else if (counter === 1) {
-          if (
-            !this.missingPayeeName &&
-            !this.missingModeOfPayment &&
-            !this.missingCurrency
-            // !this.missingAmount
-          ) {
-            this.counter++;
-          }
-          // Expense Details
-        } else if (counter === 2) {
-          this.counter++;
-          // Transpo Details
-        } else if (counter === 3) {
-          if (this.missingExpenses) {
-            this.counter++;
-          } else {
-            this.openToast(
-              "top-right",
-              "warning",
-              "Please provide your expenses!"
-            );
-          }
-        } else if (counter === 4) {
-          if (!this.missingAttachments) {
-            this.counter++;
-          } else {
-            this.openToast(
-              "top-right",
-              "warning",
-              "Please provide an attachments!"
-            );
-          }
-        }
-      },
-  
-      setButton() {
-        this.isButton = true;
-      },
-  
-      closeModal() {
-        this.clear_expenseType();
-        this.clear_transpo();
-        this.resetAlert();
-        this.attemptXpInsert = false;
-        this.attemptTdInsert = false;
-      },
-  
       openToast(position, variant, message) {
         const toastTitle = variant.charAt(0).toUpperCase() + variant.slice(1);
         VsToast.show({
@@ -5041,545 +6029,6 @@
           position,
         });
       },
-  
-      async getREbyUserID() {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/getREbyUserID/${this.loggedUserId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        
-        if(responseData.length >= 1) {
-          // console.log(responseData);
-          this.dateNeeded = responseData[0].TRANS_DATE
-          this.purpose = responseData[0].DESCRIPTION
-          this.payeeName = responseData[0].PAYEE
-  
-          const reportingManager = {
-            code: responseData[0].reportingManagerID,
-            name: responseData[0].REPORTING_MANAGER
-          };
-          const project = {
-            code: responseData[0].PRJID,
-            name: responseData[0].PROJECT
-          };
-  
-          this.reportingManagerItem = reportingManager
-          this.projectItem = project
-  
-          this.getReExpenseByREID(responseData[0]['id'])
-          this.getReTranspoByREID(responseData[0]['id'])
-          this.getREAttachmentsByREQID(responseData[0]['id'])
-        }
-      },
-  
-      async getReExpenseByREID(reid) {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/get-ReExpense/${reid}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        if(responseData.length >= 1) {
-          // console.log(responseData);
-          this.expenseType_Data = responseData
-        }
-      },
-  
-      async getReTranspoByREID(reid) {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/get-ReTranspo/${reid}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        if(responseData.length >= 1) {
-          // console.log(responseData);
-          this.transpoSetup_Data = responseData
-        }
-      },
-  
-      async getREAttachmentsByREQID(reqid) {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/getReGeneralAttachmentsByReqid/${reqid}/${this.loggedUserId}`,
-  
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        if(responseData.length >= 1) {
-          // console.log(responseData);
-          this.selectedDBFile = responseData
-        }
-      },
-  
-      removeReAttachments(id, i) {
-        console.log(id);
-        this.selectedDBFile.splice(i, 1);
-        this.idOfAttachmentsToDelete.push(id)
-        // console.log(this.idOfAttachmentsToDelete);
-      },
-  
-      async saveDraft() {
-        this.isLoading = true;
-        this.isSpinner = true;
-        this.$refs.refSaveDraftCloseBtn.click()
-  
-        const fd = new FormData();
-        for (let i = 0; i < this.selectedFile.length; i++) {
-          fd.append("file[]", this.selectedFile[i]);
-        }
-  
-        fd.append("reportingManagerId", this.reportingManagerItem.code);
-        fd.append("reportingManagerName", this.reportingManagerItem.name);
-        fd.append("projectName", this.projectItem.name);
-        fd.append("projectId", this.projectItem.code);
-        fd.append("dateNeeded", this.dateNeeded);
-        fd.append("clientName", this.clientName);
-        fd.append("clientId", this.clientId);
-        fd.append("mainId", this.mainId);
-        fd.append("purpose", this.purpose);
-  
-        fd.append("payeeName", this.payeeName);
-        fd.append("amount", this.amount);
-        fd.append("MOP", this.modeOfPaymentItem.name);
-        fd.append("currency", this.currencyItem.name);
-        fd.append("class", "RE");
-        fd.append("form", "Reimbursement Request");
-  
-        fd.append("loggedUserId", this.loggedUserId);
-        fd.append("loggedUserFirstName", this.loggedUserFirstName);
-        fd.append("loggedUserLastName", this.loggedUserLastName);
-        fd.append("loggedUserDepartment", this.loggedUserDepartment);
-        fd.append("loggedUserPosition", this.loggedUserPosition);
-        fd.append("companyId", this.companyId);
-        fd.append("companyName", this.companyName);
-  
-        fd.append("expenseType_Data", JSON.stringify(this.expenseType_Data));
-        fd.append("transpoSetup_Data", JSON.stringify(this.transpoSetup_Data));
-        fd.append("idOfAttachmentsToDelete", JSON.stringify(this.idOfAttachmentsToDelete));
-  
-        try {
-          const resp = await axios.post(
-            "http://127.0.0.1:8000/api/saveDraftRe",
-            fd
-          );
-  
-          if (resp.status >= 200) {
-            this.isLoading = false;
-            this.openToast("top-right", "success", resp.data.message);
-            this.$router.replace("/dashboard");
-          }
-  
-          // console.log(resp.data);
-          this.isSpinner = false;
-        } catch (err) {
-          this.isSpinner = false;
-          console.error(err);
-            this.isLoading = false;
-            this.openToast(
-              "top-right",
-              "error",
-              "Please Contact the administrator! and try again later"
-            );
-        }
-      },
-  
-      async submit() {
-        this.isLoading = true;
-        const fd = new FormData();
-  
-        for (let i = 0; i < this.selectedFile.length; i++) {
-          fd.append("file[]", this.selectedFile[i]);
-        }
-  
-        // console.log(this.reportingManagerItem.code)
-        // console.log(this.reportingManagerItem.name)
-        // // console.log(this.referenceNumber)
-        // console.log(this.requestDate)
-        // console.log(this.projectItem.name)
-        // console.log(this.projectItem.code)
-        // console.log(this.dateNeeded)
-        // console.log(this.clientName)
-        // console.log(this.clientId)
-        // console.log(this.mainId)
-        // console.log(this.purpose)
-  
-        // console.log(this.payeeName)
-        // console.log(this.amount)
-        // console.log(this.modeOfPaymentItem.name)
-        // console.log(this.currencyItem.name)
-  
-        // console.log(loggedUserId)
-        // console.log(loggedUserFirstName)
-        // console.log(loggedUserLastName)
-        // console.log(loggedUserDepartment)
-        // console.log(loggedUserPosition)
-        // console.log(companyId)
-        // console.log(companyName)
-  
-        fd.append("reportingManagerId", this.reportingManagerItem.code);
-        fd.append("reportingManagerName", this.reportingManagerItem.name);
-        // fd.append("",this.referenceNumber)
-        // fd.append("",this.requestDate)
-        fd.append("projectName", this.projectItem.name);
-        fd.append("projectId", this.projectItem.code);
-        fd.append("dateNeeded", this.dateNeeded);
-        fd.append("clientName", this.clientName);
-        fd.append("clientId", this.clientId);
-        fd.append("mainId", this.mainId);
-        fd.append("purpose", this.purpose);
-  
-        fd.append("payeeName", this.payeeName);
-        fd.append("amount", this.amount);
-        fd.append("MOP", this.modeOfPaymentItem.name);
-        fd.append("currency", this.currencyItem.name);
-        fd.append("class", "RE");
-        fd.append("form", "Reimbursement Request");
-  
-  
-        
-        
-  
-        fd.append("loggedUserId", this.loggedUserId);
-        fd.append("loggedUserFirstName", this.loggedUserFirstName);
-        fd.append("loggedUserLastName", this.loggedUserLastName);
-        fd.append("loggedUserDepartment", this.loggedUserDepartment);
-        fd.append("loggedUserPosition", this.loggedUserPosition);
-        fd.append("companyId", this.companyId);
-        fd.append("companyName", this.companyName);
-  
-        fd.append("expenseType_Data", JSON.stringify(this.expenseType_Data));
-        fd.append("transpoSetup_Data", JSON.stringify(this.transpoSetup_Data));
-  
-        fd.append("idOfAttachmentsToDelete", JSON.stringify(this.idOfAttachmentsToDelete));
-  
-  
-  
-        try {
-          const resp = await axios.post(
-            "http://127.0.0.1:8000/api/saveRe",
-            fd
-          );
-  
-          if (resp.status >= 200 && resp.status <= 399) {
-            this.isLoading = false;
-            this.openToast("top-right", "success", resp.data.message);
-            this.$router.replace("/inprogress");
-          }
-  
-          console.log(resp.data);
-        } catch (err) {
-          // Handle Error Here
-          console.error(err);
-            this.isLoading = false;
-            this.openToast(
-              "top-right",
-              "error",
-              "Please Contact the administrator! and try again later"
-            );
-        }
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-        // axios
-        //   .post("http://127.0.0.1:8000/api/saveRe", fd)
-        //   .then((res) => {
-        //     // handle success
-        //     // console.log(res.data.message)
-        //     this.isLoading = false;
-  
-        //     if (res.status === 200) {
-        //       this.openToast("top-right", "success", res.data.message);
-        //       this.$router.replace("/inprogress");
-        //     }
-  
-        //     if (res.status === 202) {
-        //       // console.log(res)
-        //       this.openToast("top-right", "error", res.data.message);
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     // handle error
-        //     console.log(error.data);
-        //     this.isLoading = false;
-        //     this.openToast(
-        //       "top-right",
-        //       "error",
-        //       "Please Contact the administrator! and try again later"
-        //     );
-        //   })
-        //   .then(() => {
-        //     // always executed
-        //   });
-      },
-  
-      insert_transpoSetup() {
-        this.attemptTdSubmit = true;
-        const validated = this.validate_Transpo();
-        this.resetAlert();
-  
-        if (validated) {
-          const addData = {
-            id: this.i++,
-            CLIENT_NAME: this.itemclientName.name,
-            DESTINATION_FRM: this.transpoSetup_From,
-            DESTINATION_TO: this.transpoSetup_to,
-            DESCRIPTION: this.transpoSetup_Remarks,
-            AMT_SPENT: this.transpoSetup_Amount,
-            MOT: this.itemtranspoSetup.name,
-            CLIENT_ID: this.itemclientName.code,
-            date_: this.transpoSetup_Date,
-          };
-          this.transpoSetup_Data.push(addData);
-          this.clear_expenseType();
-          this.clear_transpo();
-          this.attemptTdSubmit = false;
-          this.addAlert("Success", "Expense details added successfully!", "true");
-        } else {
-          this.addAlert("Failed", "Please complete required fields!", "false");
-        }
-  
-        // console.log(this.transpoSetup_Data);
-      },
-  
-      update_transpoSetup() {
-        this.attemptTdSubmit = true;
-        const validated = this.validate_Transpo();
-        this.resetAlert();
-  
-        if (validated) {
-          const addData = {
-            id: this.transpoSetup_Data.id,
-            CLIENT_NAME: this.itemclientName.name,
-            DESTINATION_FRM: this.transpoSetup_From,
-            DESTINATION_TO: this.transpoSetup_to,
-            DESCRIPTION: this.transpoSetup_Remarks,
-            AMT_SPENT: this.transpoSetup_Amount,
-            MOT: this.itemtranspoSetup.name,
-            CLIENT_ID: this.itemclientName.code,
-            date_: this.transpoSetup_Date,
-          };
-  
-          this.transpoSetup_Data.splice(this.setIndex, 1);
-          this.transpoSetup_Data.push(addData);
-          this.transpoSetup_EditData = "";
-  
-          this.transpoSetup_Data.sort(function (a, b) {
-            return a.id - b.id;
-          });
-          this.clear_expenseType();
-          this.clear_transpo();
-          this.attemptTdSubmit = false;
-          this.addAlert(
-            "Success",
-            "Transportation details added successfully!",
-            "true"
-          );
-        } else {
-          this.addAlert("Failed", "Please complete required fields!", "false");
-        }
-      },
-  
-      edit_transpoSetup(index) {
-        this.isButton = false;
-        const transpoSetup_Data = this.transpoSetup_Data[index];
-        this.transpoSetup_EditData = transpoSetup_Data;
-        this.setIndex = index;
-  
-        console.log(transpoSetup_Data);
-  
-        this.itemclientName = {
-          code: transpoSetup_Data.CLIENT_ID,
-          name: transpoSetup_Data.CLIENT_NAME,
-        };
-  
-        this.itemtranspoSetup = {
-          code: transpoSetup_Data.MOT,
-          name: transpoSetup_Data.MOT,
-        };
-  
-        this.transpoSetup_Amount = transpoSetup_Data.AMT_SPENT;
-        this.transpoSetup_From = transpoSetup_Data.DESTINATION_FRM;
-        this.transpoSetup_to = transpoSetup_Data.DESTINATION_TO;
-        this.transpoSetup_Remarks = transpoSetup_Data.DESCRIPTION;
-        this.transpoSetup_Date = transpoSetup_Data.date_;
-  
-        // console.log(index)
-      },
-  
-      trash_transpoSetup(index) {
-        this.transpoSetup_Data.splice(index, 1);
-        // console.log(index)
-      },
-  
-      validate_expenseType() {
-        if (
-          !this.missingXPDateNeeded &&
-          !this.missingXPClientItem &&
-          !this.missingXPAmount &&
-          !this.missingXPType &&
-          !this.missingXPRemarks
-        ) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      validate_Transpo() {
-        if (
-          !this.missingTDDateNeeded &&
-          !this.missingTDClientItem &&
-          !this.missingTDMot &&
-          !this.missingTDAmount &&
-          !this.missingTDFrom &&
-          !this.missingTDTo &&
-          !this.missingTDRemarks
-        ) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-  
-      clear_expenseType() {
-        this.expenseType_Date = null;
-        this.itemclientName = {};
-        this.expenseType_Amount = "";
-        this.itemmodalExpenseType = {};
-        this.expenseType_RealAmount = "";
-        this.expenseType_Remarks = "";
-      },
-  
-      clear_transpo() {
-        this.transpoSetup_Date = null;
-        this.itemclientName = {};
-        this.itemtranspoSetup = {};
-        this.transpoSetup_Amount = "";
-        this.transpoSetup_RealAmount = "";
-        this.transpoSetup_From = "";
-        this.transpoSetup_to = "";
-        this.transpoSetup_Remarks = "";
-      },
-  
-      insert_ExpenseType() {
-        // when close false
-        this.attemptXpSubmit = true;
-        const validated = this.validate_expenseType();
-        this.resetAlert();
-  
-        if (validated) {
-          const addData = {
-            id: this.i++,
-            CLIENT_NAME: this.itemclientName.name,
-            DESCRIPTION: this.expenseType_Remarks,
-            AMOUNT: this.expenseType_Amount,
-            CLIENT_ID: this.itemclientName.code,
-            EXPENSE_TYPE: this.itemmodalExpenseType.name,
-            date_: this.expenseType_Date,
-          };
-          this.expenseType_Data.push(addData);
-          this.clear_expenseType();
-          this.attemptXpSubmit = false;
-  
-          this.addAlert("Success", "Expense details added successfully!", "true");
-        } else {
-          this.addAlert("Failed", "Please complete required fields!", "false");
-        }
-      },
-  
-      update_ExpenseType() {
-        // when close false
-        this.attemptXpSubmit = true;
-        const validated = this.validate_expenseType();
-        this.resetAlert();
-  
-        if (validated) {
-          const addData = {
-            id: this.expenseType_EditData.id,
-            CLIENT_NAME: this.itemclientName.name,
-            DESCRIPTION: this.expenseType_Remarks,
-            AMOUNT: this.expenseType_Amount,
-            CLIENT_ID: this.itemclientName.code,
-            EXPENSE_TYPE: this.itemmodalExpenseType.name,
-            date_: this.expenseType_Date,
-          };
-  
-          this.expenseType_Data.push(addData);
-          this.expenseType_EditData = "";
-          this.expenseType_Data.splice(this.setIndex, 1);
-  
-          // this.liquidation.push(this.editliquidation)
-          this.expenseType_Data.sort(function (a, b) {
-            return a.id - b.id;
-          });
-          this.clear_expenseType();
-          this.attemptXpSubmit = false;
-  
-          this.addAlert("Success", "Expense details added successfully!", "true");
-        } else {
-          this.addAlert("Failed", "Please complete required fields!", "false");
-        }
-      },
-  
-      edit_ExpenseType(index) {
-        this.isButton = false;
-        const expenseType_Data = this.expenseType_Data[index];
-        this.expenseType_EditData = expenseType_Data;
-        this.setIndex = index;
-  
-        this.itemclientName = {
-          code: expenseType_Data.CLIENT_ID,
-          name: expenseType_Data.CLIENT_NAME,
-        };
-        this.itemmodalExpenseType = {
-          code: expenseType_Data.EXPENSE_TYPE,
-          name: expenseType_Data.EXPENSE_TYPE,
-        };
-  
-        this.expenseType_Date = expenseType_Data.date_;
-        this.expenseType_Amount = expenseType_Data.AMOUNT;
-        this.expenseType_Remarks = expenseType_Data.DESCRIPTION;
-      },
-      trash_ExpenseType(index) {
-        // console.log('1'+ index)
-        this.expenseType_Data.splice(index, 1);
-      },
-  
-      // Request Details
       todaysDate() {
         const today = new Date();
         let dd = today.getDate();
@@ -5597,496 +6046,10 @@
         const todaysDate = yyyy + "-" + mm + "-" + dd;
         this.requestDate = todaysDate;
       },
-  
-      async gettranspoSetup() {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/get-transpoSetup",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-  
-        // console.log(responseData);
-        if (!response.ok) {
-          const error = new Error(
-            responseData.message || "Failed to fetch modal ExpenseType Type."
-          );
-          throw error;
-        }
-        const transpoSetup = [];
-        for (const key in responseData[0]) {
-          // console.log(key)
-          const request = {
-            code: responseData[0][key].MODE,
-            name: responseData[0][key].MODE,
-          };
-          transpoSetup.push(request);
-        }
-        this.transpoSetup = transpoSetup;
-        // console.log(responseData[0].businessNumber)
-      },
-  
-      async getexpenseType() {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/get-expenseType",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-  
-        // console.log(responseData);
-        if (!response.ok) {
-          const error = new Error(
-            responseData.message || "Failed to fetch modal ExpenseType Type."
-          );
-          throw error;
-        }
-        const modalExpenseType = [];
-        for (const key in responseData[0]) {
-          // console.log(key)
-          const request = {
-            code: responseData[0][key].type,
-            name: responseData[0][key].type,
-          };
-          modalExpenseType.push(request);
-        }
-        this.modalExpenseType = modalExpenseType;
-        // console.log(responseData[0].businessNumber)
-      },
-  
-      async getBusinesses() {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/general-businesses/1",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        // console.log(responseData)
-        if (!response.ok) {
-          const error = new Error(
-            responseData.message || "Failed to fetch Businesses."
-          );
-          throw error;
-        }
-        const client = [];
-        for (const key in responseData) {
-          // console.log(key)
-          const request = {
-            code: responseData[key].businessNumber,
-            name: responseData[key].businessName,
-          };
-          client.push(request);
-        }
-        this.modalclient = client;
-  
-  
-      },
-  
-      async getProjects() {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/general-projects",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        if (!response.ok) {
-          const error = new Error(
-            responseData.message || "Failed to fetch Projects."
-          );
-          throw error;
-        }
-        const project = [];
-        for (const key in responseData) {
-          const request = {
-            code: responseData[key].project_id,
-            name: responseData[key].project_name,
-          };
-          project.push(request);
-        }
-        this.project = project;
-      },
-  
-      async getClient(id) {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/business-client/${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        if (!response.ok) {
-          const error = new Error(
-            responseData.message || "Failed to fetch Reporting Manager."
-          );
-          throw error;
-        }
-        const client = [];
-        for (const key in responseData) {
-          const request = {
-            clientId: responseData[key].clientID,
-            clientName: responseData[key].clientName,
-            mainId: responseData[key].mainID,
-          };
-          client.push(request);
-        }
-        this.clientName = client[0].clientName;
-        this.clientId = client[0].clientId;
-        this.mainId = client[0].mainId;
-      },
-  
-      async getReportingManager() {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/reporting-manager/${this.loggedUserId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        if (!response.ok) {
-          const error = new Error(
-            responseData.message || "Failed to fetch Reporting Manager."
-          );
-          throw error;
-        }
-  
-        const reportingManager = [];
-        for (const key in responseData) {
-          const request = {
-            code: responseData[key].RMID,
-            name: responseData[key].RMName,
-          };
-          reportingManager.push(request);
-        }
-        this.reportingManager = reportingManager;
-        // console.log(this.reportingManager);
-      },
-  
-      // The Attachments
-      onFileSelected(event) {
-        let selectedFiles = event.target.files;
-        for (let i = 0; i < selectedFiles.length; i++) {
-          this.selectedFile.push(selectedFiles[i]);
-        }
-        this.filePreview();
-  
-        console.log(this.selectedFile);
-      },
-      onInputChange(event) {
-        let selectedFiles = event.dataTransfer.files;
-        for (let i = 0; i < selectedFiles.length; i++) {
-          this.selectedFile.push(selectedFiles[i]);
-        }
-        this.filePreview();
-      },
-      remove(i) {
-        this.selectedFile.splice(i, 1);
-        this.filePreview();
-      },
-      preview(i) {
-        // console.log(i)
-        const url = this.filespreview[i].link;
-        window.open(url, "_blank", "resizable=yes");
-      },
-  
-      dragover(event) {
-        event.preventDefault();
-        // Add some visual fluff to show the user can drop its files
-        if (!event.currentTarget.classList.contains("bg-white")) {
-          event.currentTarget.classList.remove("bg-light");
-          event.currentTarget.classList.add("bg-white");
-        }
-      },
-      dragleave(event) {
-        // Clean up
-        event.currentTarget.classList.add("bg-light");
-        event.currentTarget.classList.remove("bg-white");
-      },
-      drop(event) {
-        event.preventDefault();
-        this.onInputChange(event); // Trigger the onChange event manually
-  
-        // Clean up
-        event.currentTarget.classList.add("bg-light");
-        event.currentTarget.classList.remove("bg-white");
-      },
-  
-      filePreview() {
-        let files = this.selectedFile;
-        const fileContainer = [];
-        for (let i = 0; i < files.length; i++) {
-          let tmppath = URL.createObjectURL(files[i]);
-          const thisFiles = {
-            link: tmppath,
-          };
-          fileContainer.push(thisFiles);
-        }
-        this.filespreview = fileContainer;
-      },
-  
-      // Amount aldrin script
-  
+      
       formatNumber(n) {
-        // format number 1000000 to 1,234,567
+      // format number 1000000 to 1,234,567
         return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      },
-  
-      formatCurrency(input, blur) {
-        // appends $ to value, validates decimal side
-        // and puts cursor back in right position.
-  
-        // get input value
-        let input_val = this.amount;
-  
-        // don't validate empty input
-        if (input_val === "") {
-          return;
-        }
-  
-        // original length
-        let original_len = input_val.length;
-  
-        // initial caret position
-        let caret_pos = input.target.selectionStart;
-  
-        // check for decimal
-        if (input_val.indexOf(".") >= 0) {
-          // get position of first decimal
-          // this prevents multiple decimals from
-          // being entered
-          let decimal_pos = input_val.indexOf(".");
-  
-          // split number by decimal point
-          let left_side = input_val.substring(0, decimal_pos);
-          let right_side = input_val.substring(decimal_pos);
-  
-          // add commas to left side of number
-          left_side = this.formatNumber(left_side);
-  
-          // validate right side
-          right_side = this.formatNumber(right_side);
-  
-          // On blur make sure 2 numbers after decimal
-          if (blur === "blur") {
-            right_side += "00";
-          }
-  
-          // Limit decimal to only 2 digits
-          right_side = right_side.substring(0, 2);
-  
-          // join number by .
-          input_val = left_side + "." + right_side;
-        } else {
-          // no decimal entered
-          // add commas to number
-          // remove all non-digits
-          input_val = this.formatNumber(input_val);
-          // input_val = input_val;
-  
-          // final formatting
-          if (blur === "blur") {
-            input_val += ".00";
-          }
-        }
-  
-        // send updated string to input
-        this.amount = input_val;
-        input.target.value = input_val;
-  
-        let realAmount = input_val;
-        if (realAmount.indexOf(",") !== -1) {
-          realAmount = realAmount.replace(/,/g, "");
-        }
-        this.realAmount = realAmount;
-        console.log(this.realAmount);
-  
-        // put caret back in the right position
-        let updated_len = input_val.length;
-        caret_pos = updated_len - original_len + caret_pos;
-        input.target.setSelectionRange(caret_pos, caret_pos);
-      },
-  
-      formatCurrencyExpense(input, blur) {
-        // appends $ to value, validates decimal side
-        // and puts cursor back in right position.
-  
-        // get input value
-        let input_val = this.expenseType_Amount;
-  
-        // don't validate empty input
-        if (input_val === "") {
-          return;
-        }
-  
-        // original length
-        let original_len = input_val.length;
-  
-        // initial caret position
-        let caret_pos = input.target.selectionStart;
-  
-        // check for decimal
-        if (input_val.indexOf(".") >= 0) {
-          // get position of first decimal
-          // this prevents multiple decimals from
-          // being entered
-          let decimal_pos = input_val.indexOf(".");
-  
-          // split number by decimal point
-          let left_side = input_val.substring(0, decimal_pos);
-          let right_side = input_val.substring(decimal_pos);
-  
-          // add commas to left side of number
-          left_side = this.formatNumber(left_side);
-  
-          // validate right side
-          right_side = this.formatNumber(right_side);
-  
-          // On blur make sure 2 numbers after decimal
-          if (blur === "blur") {
-            right_side += "00";
-          }
-  
-          // Limit decimal to only 2 digits
-          right_side = right_side.substring(0, 2);
-  
-          // join number by .
-          input_val = left_side + "." + right_side;
-        } else {
-          // no decimal entered
-          // add commas to number
-          // remove all non-digits
-          input_val = this.formatNumber(input_val);
-          // input_val = input_val;
-  
-          // final formatting
-          if (blur === "blur") {
-            input_val += ".00";
-          }
-        }
-  
-        // send updated string to input
-        this.expenseType_Amount = input_val;
-        input.target.value = input_val;
-  
-        let realAmount = input_val;
-        if (realAmount.indexOf(",") !== -1) {
-          realAmount = realAmount.replace(/,/g, "");
-        }
-        this.expenseType_RealAmount = realAmount;
-        console.log(this.expenseType_RealAmount);
-  
-        // put caret back in the right position
-        let updated_len = input_val.length;
-        caret_pos = updated_len - original_len + caret_pos;
-        input.target.setSelectionRange(caret_pos, caret_pos);
-      },
-  
-      formatCurrencyTranspo(input, blur) {
-        // appends $ to value, validates decimal side
-        // and puts cursor back in right position.
-  
-        // get input value
-        let input_val = this.transpoSetup_Amount;
-  
-        // don't validate empty input
-        if (input_val === "") {
-          return;
-        }
-  
-        // original length
-        let original_len = input_val.length;
-  
-        // initial caret position
-        let caret_pos = input.target.selectionStart;
-  
-        // check for decimal
-        if (input_val.indexOf(".") >= 0) {
-          // get position of first decimal
-          // this prevents multiple decimals from
-          // being entered
-          let decimal_pos = input_val.indexOf(".");
-  
-          // split number by decimal point
-          let left_side = input_val.substring(0, decimal_pos);
-          let right_side = input_val.substring(decimal_pos);
-  
-          // add commas to left side of number
-          left_side = this.formatNumber(left_side);
-  
-          // validate right side
-          right_side = this.formatNumber(right_side);
-  
-          // On blur make sure 2 numbers after decimal
-          if (blur === "blur") {
-            right_side += "00";
-          }
-  
-          // Limit decimal to only 2 digits
-          right_side = right_side.substring(0, 2);
-  
-          // join number by .
-          input_val = left_side + "." + right_side;
-        } else {
-          // no decimal entered
-          // add commas to number
-          // remove all non-digits
-          input_val = this.formatNumber(input_val);
-          // input_val = input_val;
-  
-          // final formatting
-          if (blur === "blur") {
-            input_val += ".00";
-          }
-        }
-  
-        // send updated string to input
-        this.transpoSetup_Amount = input_val;
-        input.target.value = input_val;
-  
-        let realAmount = input_val;
-        if (realAmount.indexOf(",") !== -1) {
-          realAmount = realAmount.replace(/,/g, "");
-        }
-        this.transpoSetup_RealAmount = realAmount;
-        // console.log(this.transpoSetup_RealAmount);
-  
-        // put caret back in the right position
-        let updated_len = input_val.length;
-        caret_pos = updated_len - original_len + caret_pos;
-        input.target.setSelectionRange(caret_pos, caret_pos);
       },
     },
   };
@@ -6132,7 +6095,7 @@
     color: black;
   }
   
-  #assetsFieldHandle {
+  #assetsFieldHandle, #assetsFieldHandle1, #assetsFieldHandle2, #assetsFieldHandle3, #assetsFieldHandle4, #assetsFieldHandle5, #assetsFieldHandle6, #assetsFieldHandle7 {
     opacity: 0;
     position: absolute;
     overflow: hidden;
