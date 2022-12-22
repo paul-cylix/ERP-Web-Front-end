@@ -1647,11 +1647,13 @@ export default {
         if (this.selectedFile.length || this.selectedFileNew.length) {
           this.counter++;
         } else {
-            this.openToast(
-              "top-right",
-              "warning",
-              "Please provide your attachments!"
-            );
+            // this.openToast(
+            //   "top-right",
+            //   "warning",
+            //   "Please provide your attachments!"
+            // );
+
+            this.counter++;
         }
         }
       } else if (counter === 3 && this.isLiquidation) {
