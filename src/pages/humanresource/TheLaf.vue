@@ -13,6 +13,48 @@
         <h3 class="card-title">Leave Request</h3>
       </div>
       <div class="card-body">
+
+        <!-- Buttons -->
+        <div
+          class="
+            row
+            d-flex
+            justify-content-end
+            align-items-center
+            flex-nowrap
+            m-1
+            mb-4
+          "
+        >
+          <button
+            v-show="counter"
+            type="button"
+            @click="counter--"
+            class="btn btn-secondary btn-sm"
+          >
+            Previous
+          </button>
+
+          <button
+            v-if="this.counter <= 1"
+            type="button"
+            @click="next()"
+            class="btn ml-1 btn-primary btn-sm"
+          >
+            Next
+          </button>
+
+          <button
+            v-else
+            type="button"
+            class="btn ml-1 btn-success btn-sm"
+            @click="submit()"
+          >
+            Submit
+          </button>
+        </div>
+        <!-- / Buttons -->
+
         <!-- Step Numbers -->
         <div class="d-flex progressBarWrapper text-center">
           <div class="progressbar" :class="classA">
@@ -191,6 +233,40 @@
 
         <!-- Leave Details -->
         <div class="row mt-4" v-else-if="this.counter === 1">
+            <div class="col-md-12">
+              <h6 class="font-weight-bold">Leave Balance</h6>
+            </div>
+
+            <div class="ml-2 mr-4">
+              <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"
+                  ><i class="fas fa-umbrella-beach"></i
+                ></span>
+
+                <div class="info-box-content">
+                  <span class="info-box-text font-italic">Vacation Leave</span>
+                  <span class="info-box-number h3 m-0 p-0">{{ vl }}</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+
+            <div class="">
+              <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"
+                  ><i class="fas fa-hand-holding-medical"></i
+                ></span>
+
+                <div class="info-box-content">
+                  <span class="info-box-text font-italic">Sick Leave</span>
+                  <span class="info-box-number h3 m-0 p-0">{{ sl }}</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+
           <table class="table table-sm table-bordered table-striped mx-2">
             <thead>
               <tr>
@@ -528,40 +604,7 @@
         </div>
         <!-- /. Modal Expense Type -->
 
-        <!-- Buttons -->
-        <div class="row d-flex justify-content-end mt-3 align-items-center flex-nowrap m-1">
-          
-            <button
-              v-show="counter"
-              type="button"
-              @click="counter--"
-              class="btn  btn-secondary btn-sm"
-            >
-              Previous
-            </button>
-     
-            <button
-              v-if="this.counter <= 1"
-              type="button"
-              @click="next()"
-              class="btn ml-1 btn-primary btn-sm"
-            >
-              Next
-            </button>
-         
 
-   
-            <button
-              v-else
-              type="button"
-              class="btn ml-1 btn-success btn-sm"
-              @click="submit()"
-            >
-              Submit
-            </button>
-          
-        </div>
-        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->
@@ -589,7 +632,6 @@ export default {
     this.todaysDate();
     await this.lafInitiate();
     this.isLoading = false;
-
   },
   watch: {},
   computed: {
@@ -736,84 +778,147 @@ export default {
 
       isLoading: false,
       isLoadingModal: false,
+
+      vl: 0,
+      tempVL: 0,
+      sl: 0,
+      tempSL: 0,
+      
+      
     };
   },
 
   methods: {
-    getReportingManager2(){
-      return axios.get(`http://127.0.0.1:8000/api/reporting-manager/${localStorage.getItem("id")}`);
+    sumOfLeave(arr){
+        const laf = {
+          vlSum: 0,
+          slSum: 0,
+        }
+
+        arr.forEach(function (leave) {
+            if (leave['leave_type'] === "Vacation Leave" && leave['leave_paytype'] === "wp") {
+                laf['vlSum'] += leave['num_days'];
+            } else if (leave['leave_type'] === "Sick Leave" && leave['leave_paytype'] === "wp") {
+                laf['slSum'] += leave['num_days'];
+            }
+        })
+
+          this.vl = this.tempvL - laf['vlSum'];
+          this.sl = this.tempSL - laf['slSum'];
+      
     },
 
-    getEmployees2(){
-      return axios.get(`http://127.0.0.1:8000/api/get-employees/${localStorage.getItem("companyId")}`);
+    async getLeaveBalance(employeeId) {
+      this.isLoading = true;
+
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-getLeaveBalance/${employeeId}`
+        );
+        if (resp.status === 200) {
+          this.isLoading = false;
+          this.sl = resp.data.data[0]['SL'] ? resp.data.data[0]['SL'] : 0;
+          this.vl = resp.data.data[0]['VL'] ? resp.data.data[0]['VL'] : 0;
+          this.tempSL = this.sl;
+          this.tempvL = this.vl;
+
+          console.log(this.tempSL, this.tempvL);
+          this.counter++;
+        }
+      } catch (err) {
+        this.isLoading = false;
+        // Handle Error Here
+        this.openToast("top-right", "error", "Please contact the Administrator!");
+        console.error(err);
+      }
     },
 
-    getMediumOfReport2(){
+    getReportingManager2() {
+      return axios.get(
+        `http://127.0.0.1:8000/api/reporting-manager/${localStorage.getItem(
+          "id"
+        )}`
+      );
+    },
+
+    getEmployees2() {
+      return axios.get(
+        `http://127.0.0.1:8000/api/get-employees/${localStorage.getItem(
+          "companyId"
+        )}`
+      );
+    },
+
+    getMediumOfReport2() {
       return axios.get(`http://127.0.0.1:8000/api/get-reports`);
     },
 
-    getLeaveType2(){
+    getLeaveType2() {
       return axios.get(`http://127.0.0.1:8000/api/get-leavetype`);
     },
 
-    async lafInitiate(){
-      await Promise.all([this.getReportingManager2(), this.getEmployees2(), this.getMediumOfReport2(), this.getLeaveType2()])
-      .then((results) => {
-        const managers = results[0];
-        const employees = results[1];
-        const reports = results[2];
-        const leaveTypes = results[3];
+    async lafInitiate() {
+      await Promise.all([
+        this.getReportingManager2(),
+        this.getEmployees2(),
+        this.getMediumOfReport2(),
+        this.getLeaveType2(),
+      ])
+        .then((results) => {
+          const managers = results[0];
+          const employees = results[1];
+          const reports = results[2];
+          const leaveTypes = results[3];
 
-      const reportingManager = [];
-      for (const key in managers.data) {
-        const request = {
-          code: managers.data[key].RMID,
-          name: managers.data[key].RMName,
-        };
-        reportingManager.push(request);
-      }
-      this.reportingManager = reportingManager;
+          const reportingManager = [];
+          for (const key in managers.data) {
+            const request = {
+              code: managers.data[key].RMID,
+              name: managers.data[key].RMName,
+            };
+            reportingManager.push(request);
+          }
+          this.reportingManager = reportingManager;
 
-      const employeeName = [];
-      for (const key in employees.data) {
-        const request = {
-          code: employees.data[key].SysPK_Empl,
-          name: employees.data[key].Name_Empl,
-        };
-        employeeName.push(request);
-      }
-      this.employee = employeeName;
+          const employeeName = [];
+          for (const key in employees.data) {
+            const request = {
+              code: employees.data[key].SysPK_Empl,
+              name: employees.data[key].Name_Empl,
+            };
+            employeeName.push(request);
+          }
+          this.employee = employeeName;
 
-      const reports_array = [];
-      for (const key in reports.data) {
-        const request = {
-          code: reports.data[key].id,
-          name: reports.data[key].item,
-        };
-        reports_array.push(request);
-      }
-      this.report = reports_array;
+          const reports_array = [];
+          for (const key in reports.data) {
+            const request = {
+              code: reports.data[key].id,
+              name: reports.data[key].item,
+            };
+            reports_array.push(request);
+          }
+          this.report = reports_array;
 
-      const leave_array = [];
-      for (const key in leaveTypes.data) {
-        const request = {
-          code: leaveTypes.data[key].id,
-          name: leaveTypes.data[key].item,
-        };
-        leave_array.push(request);
-      }
-      this.leaveType = leave_array;
+          const leave_array = [];
+          for (const key in leaveTypes.data) {
+            const request = {
+              code: leaveTypes.data[key].id,
+              name: leaveTypes.data[key].item,
+            };
+            leave_array.push(request);
+          }
+          this.leaveType = leave_array;
+        })
 
-      })
-      
-      .catch(error => {
-        console.error(error);
-        this.openToast(
+        .catch((error) => {
+          console.error(error);
+          this.openToast(
             "top-right",
             "error",
             "Please Contact the administrator! and try again later"
-        );
-      });
+          );
+        });
     },
 
     closeModal() {
@@ -850,12 +955,25 @@ export default {
           !this.missingReportTime &&
           !this.missingPurpose
         ) {
-          this.counter++;
+          this.getLeaveBalance(this.employeeItem.code)
+          // this.counter++;
         }
         // Payment Details
       } else if (counter === 1) {
         if (this.leaveData.length > 0) {
-          this.counter++;
+          if (this.sl < 0 && this.vl < 0) {
+          this.openToast("top-right", "warning", "Insufficient remaining leave balance.");
+            
+          } else if (this.sl < 0) {
+          this.openToast("top-right", "warning", `You've exceeded ${Math.abs(this.sl)} paid sick leave.`);
+            
+          } else if (this.vl < 0) {
+          this.openToast("top-right", "warning", `You've exceeded ${Math.abs(this.vl)} paid vacation leave.`);
+
+          } else {
+            this.counter++;
+          }
+
         } else {
           this.openToast("top-right", "warning", "Please add your Leave data!");
         }
@@ -1064,11 +1182,24 @@ export default {
         let newDate = startActual.setDate(startActual.getDate() + 1);
         startActual = new Date(newDate);
       }
+
+      this.sumOfLeave(this.leaveData);
     },
 
     // table functions
     trash(index) {
-      this.leaveData.splice(index, 1);
+      const removedLAF = this.leaveData.splice(index, 1);
+      
+      if (removedLAF[0]['leave_type'] === "Vacation Leave") {
+        if (removedLAF[0]['leave_paytype'] === "wp") {
+          this.vl += removedLAF[0]['num_days'];
+        }
+      } else {
+        if (removedLAF[0]['leave_paytype'] === "wp") {
+          this.sl += removedLAF[0]['num_days'];
+        }
+      }
+
     },
 
     checkHalfday(event, index) {
@@ -1082,6 +1213,8 @@ export default {
         this.leaveData[index].leave_halfday = "Wholeday";
         this.leaveData[index].num_days = 1;
       }
+
+      this.sumOfLeave(this.leaveData);
     },
 
     changeAmPm(event, index) {
