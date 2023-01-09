@@ -406,7 +406,7 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <small><label for="softype">Coordinatosr</label></small>
+                <small><label for="softype">Coordinator</label></small>
 
                 <model-list-select
                   :list="coordinator"
@@ -2059,8 +2059,8 @@ export default {
         // console.log(this.$route.params.frmName)
         if (frmName === "Sales Order - Project") {
           if (
-            data[4]["actual_sign"][7]["USER_GRP_IND"] === "SI Confirmation" &&
-            data[4]["actual_sign"][7]["STATUS"] === "In Progress"
+            data[4]["actual_sign"][6]["USER_GRP_IND"] === "SI Confirmation" &&
+            data[4]["actual_sign"][6]["STATUS"] === "In Progress"
           ) {
             this.isSiConfirmation = true;
           }
