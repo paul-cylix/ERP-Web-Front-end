@@ -356,7 +356,7 @@
                 <tbody>
                   <tr>
                     <td>Reference Number</td>
-                    <td style="width: 80%">{{ "OTR-" + todaysYear }}</td>
+                    <td style="width: 80%">{{ this.referenceNumber }}</td>
                   </tr>
                   <tr>
                     <td>Requested Date</td>
@@ -665,31 +665,32 @@
         <!-- Buttons -->
         <div class="row d-flex justify-content-between mt-3">
           <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
-            <div class="col-lg-2" v-show="counter">
-              <button
-                v-show="counter"
-                type="button"
-                @click="counter--"
-                class="btn btn-block btn-secondary btn-sm"
-              >
-                Previous
-              </button>
-            </div>
+
+   
+            <button
+              v-show="counter"
+              type="button"
+              @click="counter--"
+              class="btn mr-1 btn-secondary btn-sm"
+            >
+              Previous
+            </button>
+
 
             <aside  v-if="this.counter <= 1">
               <button
                 v-if="this.isInitiator"
                 type="button"
                 @click="next()"
-                class="btn ml-1 btn-primary btn-sm"
+                class="btn m-0 btn-primary btn-sm"
               >
-                NextInit
+                Next
               </button>
               <button
                 v-else
                 type="button"
                 @click="counter++"
-                class="btn ml-1 btn-primary btn-sm"
+                class="btn m-0 btn-primary btn-sm"
               >
                 Next
               </button>
