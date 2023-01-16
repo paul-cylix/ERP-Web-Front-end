@@ -406,7 +406,7 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <small><label for="softype">Coordinatosr</label></small>
+                <small><label for="softype">Coordinator</label></small>
 
                 <model-list-select
                   :list="coordinator"
@@ -2071,6 +2071,9 @@ export default {
 
         // select Coordinator -> check if its required
         // console.log(this.$route.params.frmName)
+        console.warn(data);
+
+        // check if approval of project head is in progress
         if (this.$route.params.frmName === "Sales Order - Project") {
           if (data[4]["actual_sign"][3]["STATUS"] === "In Progress") {
             this.isCoordinatorRequired = true;
@@ -2081,13 +2084,16 @@ export default {
           frmName === "Sales Order - Demo" ||
           frmName === "Sales Order - POC"
         ) {
+          // check if group ind === initiator
           if (
-            data[4]["actual_sign"][4]["USER_GRP_IND"] === "Initiator" &&
-            data[4]["actual_sign"][4]["STATUS"] === "In Progress"
+            data[4]["actual_sign"][3]["USER_GRP_IND"] === "Initiator" &&
+            data[4]["actual_sign"][3]["STATUS"] === "In Progress"
           ) {
             this.isDmoPocComplete = true;
           }
         }
+
+        console.warn(data);
 
         const queryuserId = data[1]["sales_orders"][0]["UID"];
         const userId = parseInt(this.loggedUserId);
