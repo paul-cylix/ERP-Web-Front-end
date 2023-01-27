@@ -704,6 +704,7 @@ export default {
 
       // The Attachments
       selectedFile: [],
+      
       filespreview: [],
 
       // Logged User Data

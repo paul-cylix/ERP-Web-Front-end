@@ -382,7 +382,6 @@
           <!-- /.card-body -->
         </section>
 
-        <!-- Requested Items (current active)-->
         <section
           class="card card-secondary"
           v-show="counter === 0 || counter === 3"
@@ -406,7 +405,7 @@
             <!-- Request Details -->
             <!-- Checkout loop -->
 
-            <div class="card py-0" v-for="(item) in requested_items" :key="item.req_dtls_id">
+            <!-- <div class="card py-0" v-for="(item) in requested_items" :key="item.req_dtls_id">
               <div class="row py-2">
                 <div
                   class="
@@ -444,11 +443,94 @@
                     <li><span class="light">PR Qty:</span><span class="dark">{{item.order_qty}}</span></li>
                     <li><span class="light">Brand:</span><span class="dark">{{item.brand_name}}</span></li>
                   </ul>
+
+                      <date-picker
+                  v-model="item.date_delivered"
+                  valueType="format"
+                  style="display: block; width: 100%; line-height: 20px border:red;"
+                ></date-picker>
                 </div>
               </div>
-            </div>
+            </div> -->
 
-          
+          <!-- NEW DESIGN -->
+          <div class="col-12 ">
+            <div class="card card-secondary card-outline card-outline-tabs" v-for="(item) in requested_items" :key="item.req_dtls_id">
+              <div class="card-header p-0 border-bottom-0">
+                <ul class="nav nav-tabs" :id="`tab-${item.req_dtls_id}`" role="tablist">
+                  <li class="nav-item">
+                    <a class="nav-link active" :id="`home-tab-${item.req_dtls_id}`" data-toggle="pill" :href="`#home-${item.req_dtls_id}`" role="tab" :aria-controls="`home-${item.req_dtls_id}`" aria-selected="true">Item Details</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" :id="`profile-tab-${item.req_dtls_id}`" data-toggle="pill" :href="`#profile-${item.req_dtls_id}`" role="tab" :aria-controls="`profile-${item.req_dtls_id}`" aria-selected="false">Delivery Notes</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="card-body">
+                <div class="tab-content" :id="`tabContent-${item.req_dtls_id}`">
+                  <div class="tab-pane fade show active" :id="`home-${item.req_dtls_id}`" role="tabpanel" :aria-labelledby="`home-tab-${item.req_dtls_id}`">
+                    <div class="d-flex gap-2">
+                      <img
+                      src="https://www.mouti.net/wp-content/plugins/tutor/assets/images/placeholder.svg"
+                      style="
+                        height: 8rem;
+                        display: block;
+                        width: auto;
+                        object-fit: contain;
+                      "
+                      alt=""
+                      srcset=""
+                      class="card--img"
+                    />
+                    <div class="flex-fill">
+                      <strong class="ellipsis">{{ item.description }}</strong>
+                      <p class="card--description ellipsis-2">{{ item.specification }}</p>
+                      <ul class="card--details">
+                        <li><span class="light">Item Code:</span><span class="dark">{{item.item_code}}</span></li>
+                        <li><span class="light">UoM:</span><span class="dark"></span>{{item.uom}}</li>
+                        <li><span class="light">Category:</span><span class="dark">{{item.category_name}}</span></li>
+                        <li><span class="light">SKU:</span><span class="dark">{{item.sku}}</span></li>
+                        <li><span class="light">Sub Category:</span><span class="dark">{{item.sub_category_name}}</span></li>
+                        <li><span class="light">PR Qty:</span><span class="dark">{{item.order_qty}}</span></li>
+                        <li><span class="light">Brand:</span><span class="dark">{{item.brand_name}}</span></li>
+                      </ul>
+                    </div>
+                  </div>
+
+
+         
+                  </div>
+                  <div class="tab-pane fade" :id="`profile-${item.req_dtls_id}`" role="tabpanel" :aria-labelledby="`profile-tab-${item.req_dtls_id}`">
+   
+                    <div class="form-group">
+                      <small><label for="reference">Date Delivered</label></small>
+                    <date-picker
+                      v-model="item.date_delivered"
+                      valueType="format"
+                      style="display: block; width: 100%; line-height: 20px border:red;"
+                    ></date-picker>
+                      
+                    </div>
+
+                    <div class="form-group">
+                      <small><label for="purpose">Purpose</label></small>
+                      <textarea
+                        v-model="item.notes"
+                        class="form-control"
+                        name="purpose"
+                        rows="2"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <!-- /.card -->
+            </div>
+          </div>
+
+          <!-- /. NEW DESIGN -->
+     
             <!-- /.Checkout loop -->
             <!-- /.Request Details -->
             <!-- /.Checkout list -->
@@ -462,8 +544,8 @@
             <button
               class="btn mr-1 btn-secondary btn-sm"
               v-show="counter"
-              @click="counter--"
               disabled
+              
             >
               Previous
             </button>
@@ -477,13 +559,33 @@
           </div>
 
           <div class="col-md-6 text-right">
-            <!-- <button
-              class="btn ml-1 btn-warning btn-sm"
+            <button
+              class="btn ml-1 btn-success btn-sm"
               data-toggle="modal"
               data-target="#modal-default"
+              @click="setTitle('Approve')"
             >
-              Withdraw
-            </button> -->
+              Approve
+            </button>
+
+            <button
+              class="btn btn-danger ml-1 btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Reject')"
+            >
+              Reject
+            </button>
+
+            <button
+              class="btn btn-warning ml-1 btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              disabled
+            >
+              Clarify
+            </button>
+
             <button class="btn ml-1 btn-danger btn-sm" @click="close()" >Close</button>
           </div>
           <!-- /. Buttons -->
@@ -506,7 +608,7 @@
           </div>
 
           <div class="modal-header">
-            <h6 class="modal-title"><b>Withdraw Request</b></h6>
+            <h6 class="modal-title"><b>{{ title }} Request</b></h6>
             <button
               type="button"
               id="modalCloseButton"
@@ -534,8 +636,8 @@
           </div>
           <div class="modal-footer justify-content-end">
             <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-            <button type="button" @click="withdrawn()" class="btn btn-primary btn-sm">
-              Withdrawn
+            <button type="button" @click="submit()" class="btn btn-primary btn-sm">
+              Submit
             </button>
           </div>
         </div>
@@ -570,6 +672,8 @@ export default {
       counter: 3,
       isLoading: false,
       isLoadingModal: false,
+      title: '',
+      done_approving: false,
 
       withdrawRemarks: '',
 
@@ -612,6 +716,9 @@ export default {
   },
 
   methods: {
+    setTitle(title){
+      this.title = title
+    },
     async getMrf(id, companyId, frmname) {
       this.isLoading = true;
       try {
@@ -636,6 +743,8 @@ export default {
         this.materials_request_type = resp.data.request.materials_request_type;
         this.remarks = resp.data.request.remarks;
 
+        this.done_approving = resp.data.request.done_approving;
+
         // Attachments Card
         this.selectedFileSOF = resp.data.attachmentsSOF
         this.selectedFileMRF = resp.data.attachmentsMRF
@@ -643,6 +752,7 @@ export default {
 
         // Requested Items Card
         this.requested_items = resp.data.request.requisition_details
+        console.log(resp.data.request.requisition_details)
 
       } catch (err) {
         // Handle Error Here
@@ -655,43 +765,60 @@ export default {
       this.$router.replace("/inputs");
     },
 
-    async withdrawn(){
+    async submit() {
       this.isLoadingModal = true;
       const fd = new FormData();
       const frmClass = this.$route.params.frmClass;
       const reqId = this.$route.params.id;
       const form = this.$route.params.frmName;
 
-      fd.append("loggedUserId", localStorage.getItem("id"))
-      fd.append("loggedUserFirstName", localStorage.getItem("fname"))
-      fd.append("loggedUserLastName", localStorage.getItem("lname"))
-      fd.append("loggedUserDepartment", localStorage.getItem("department"))
-      fd.append("loggedUserPosition", localStorage.getItem("positionName"))
-      fd.append("companyId", localStorage.getItem("companyId"))
-      fd.append("companyName", localStorage.getItem("companyName"))
+      fd.append("loggedUserId", localStorage.getItem("id"));
+      fd.append("loggedUserFirstName", localStorage.getItem("fname"));
+      fd.append("loggedUserLastName", localStorage.getItem("lname"));
+      fd.append("loggedUserDepartment", localStorage.getItem("department"));
+      fd.append("loggedUserPosition", localStorage.getItem("positionName"));
+      fd.append("companyId", localStorage.getItem("companyId"));
+      fd.append("companyName", localStorage.getItem("companyName"));
 
-      fd.append("frmClass",frmClass)
-      fd.append("processId",reqId)
-      fd.append("frmClass",form)
-      fd.append("withdrawRemarks",this.withdrawRemarks)
+      let frmstatus = null;
+      if (this.title === 'Approve') {
+        frmstatus = 'approved'
+      } else if (this.title === 'Reject') {
+        frmstatus = 'rejected'
+      } else if(this.title === 'Clarify') {
+        frmstatus = 'clarify'
+      }
 
-        try {
+      fd.append("frmstatus",frmstatus)
+      fd.append("frmClass", frmClass);
+      fd.append("processId", reqId);
+      fd.append("frmName", form);
+      fd.append("withdrawRemarks", this.withdrawRemarks);
+      fd.append("done_approving", false);
+      fd.append("isAcknowledgeByMM", false);
+      fd.append("input",true)
+      fd.append("requested_items", JSON.stringify(this.requested_items));
+      fd.append("done_approving", this.done_approving);
+      
+      try {
         const resp = await axios.post(
-          "http://127.0.0.1:8000/api/mrf-withdraw",
+          "http://127.0.0.1:8000/api/mrf-change-status",
           fd
         );
 
-          this.isLoadingModal = false;
-          this.openToast("top-right", "success", resp.data.message);
-          document.getElementById("modalCloseButton").click();
-          this.$router.replace("/inprogress");
-    
-
+        this.isLoadingModal = false;
+        this.openToast("top-right", "success", resp.data.message);
+        document.getElementById("modalCloseButton").click();
+        this.$router.replace("/inputs");
       } catch (err) {
         // Handle Error Here
         console.error(err);
         this.isLoadingModal = false;
-        this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+        this.openToast(
+          "top-right",
+          "error",
+          "Internal Server Error! Please inform the administrator!"
+        );
       }
     },
 
@@ -838,6 +965,14 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.ellipsis-2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
@@ -879,5 +1014,13 @@ export default {
 
 .overlay__card-body-con {
   position: relative;
+}
+
+.gap-2 {
+  gap: 20px;
+}
+
+.card--img{
+  align-self: center;
 }
 </style>

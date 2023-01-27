@@ -406,7 +406,7 @@
             <!-- Request Details -->
             <!-- Checkout loop -->
 
-            <div class="card py-0" v-for="(item) in requested_items" :key="item.req_dtls_id">
+            <!-- <div class="card py-0" v-for="(item) in requested_items" :key="item.req_dtls_id">
               <div class="row py-2">
                 <div
                   class="
@@ -446,7 +446,87 @@
                   </ul>
                 </div>
               </div>
+            </div> -->
+
+                 <!-- NEW DESIGN -->
+          <div class="col-12 ">
+            <div class="card card-secondary card-outline card-outline-tabs" v-for="(item) in requested_items" :key="item.req_dtls_id">
+              <div class="card-header p-0 border-bottom-0">
+                <ul class="nav nav-tabs" :id="`tab-${item.req_dtls_id}`" role="tablist">
+                  <li class="nav-item">
+                    <a class="nav-link active" :id="`home-tab-${item.req_dtls_id}`" data-toggle="pill" :href="`#home-${item.req_dtls_id}`" role="tab" :aria-controls="`home-${item.req_dtls_id}`" aria-selected="true">Item Details</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" :id="`profile-tab-${item.req_dtls_id}`" data-toggle="pill" :href="`#profile-${item.req_dtls_id}`" role="tab" :aria-controls="`profile-${item.req_dtls_id}`" aria-selected="false">Delivery Notes</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="card-body">
+                <div class="tab-content" :id="`tabContent-${item.req_dtls_id}`">
+                  <div class="tab-pane fade show active" :id="`home-${item.req_dtls_id}`" role="tabpanel" :aria-labelledby="`home-tab-${item.req_dtls_id}`">
+                    <div class="d-flex gap-2">
+                      <img
+                      src="https://www.mouti.net/wp-content/plugins/tutor/assets/images/placeholder.svg"
+                      style="
+                        height: 8rem;
+                        display: block;
+                        width: auto;
+                        object-fit: contain;
+                      "
+                      alt=""
+                      srcset=""
+                      class="card--img"
+                    />
+                    <div class="flex-fill">
+                      <strong class="ellipsis">{{ item.description }}</strong>
+                      <p class="card--description ellipsis-2">{{ item.specification }}</p>
+                      <ul class="card--details">
+                        <li><span class="light">Item Code:</span><span class="dark">{{item.item_code}}</span></li>
+                        <li><span class="light">UoM:</span><span class="dark"></span>{{item.uom}}</li>
+                        <li><span class="light">Category:</span><span class="dark">{{item.category_name}}</span></li>
+                        <li><span class="light">SKU:</span><span class="dark">{{item.sku}}</span></li>
+                        <li><span class="light">Sub Category:</span><span class="dark">{{item.sub_category_name}}</span></li>
+                        <li><span class="light">PR Qty:</span><span class="dark">{{item.order_qty}}</span></li>
+                        <li><span class="light">Brand:</span><span class="dark">{{item.brand_name}}</span></li>
+                      </ul>
+                    </div>
+                  </div>
+
+
+         
+                  </div>
+                  <div class="tab-pane fade" :id="`profile-${item.req_dtls_id}`" role="tabpanel" :aria-labelledby="`profile-tab-${item.req_dtls_id}`">
+   
+                    <div class="form-group">
+                      <small><label for="reference">Date Delivered</label></small>
+                    <date-picker
+                      disabled
+                      v-model="item.date_delivered"
+                      valueType="format"
+                      style="display: block; width: 100%; line-height: 20px border:red;"
+                    ></date-picker>
+                      
+                    </div>
+
+                    <div class="form-group">
+                      <small><label for="purpose">Purpose</label></small>
+                      <textarea
+                        disabled
+                        v-model="item.notes"
+                        class="form-control"
+                        name="purpose"
+                        rows="2"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <!-- /.card -->
             </div>
+          </div>
+
+          <!-- /. NEW DESIGN -->
 
           
             <!-- /.Checkout loop -->
@@ -838,6 +918,14 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.ellipsis-2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
@@ -879,5 +967,13 @@ export default {
 
 .overlay__card-body-con {
   position: relative;
+}
+
+.gap-2 {
+  gap: 20px;
+}
+
+.card--img{
+  align-self: center;
 }
 </style>

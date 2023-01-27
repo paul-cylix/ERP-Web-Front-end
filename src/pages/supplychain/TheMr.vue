@@ -125,7 +125,7 @@
                   <loading-spinner></loading-spinner>
                 </div>
                 
-                <div class="card" v-for="cart in carts" :key="cart.id">
+                <div class="card" v-for="cart in carts" :key="cart.cart_id">
                   <div class="card-body card-split p2">
                     <div
                       class="d-flex justify-content-center align-items-center"
@@ -630,7 +630,7 @@
                   <!-- Checkout list -->
                   <!-- Request Details -->
                   <!-- Checkout loop -->
-                  <div class="card" v-for="cart in carts" :key="cart.id">
+                  <div class="card" v-for="cart in carts" :key="`cart-${cart.cart_id}`">
                     <div class="card-body card-split p2">
                       <div
                         class="d-flex justify-content-center align-items-center"
