@@ -16,6 +16,7 @@ import TheClarification from "./pages/workflow/clarification/TheClarification.vu
 import TheApproved from "./pages/workflow/approved/TheApproved.vue";
 import TheWithdrawn from "./pages/workflow/withdrawn/TheWithdrawn.vue";
 import TheRejected from "./pages/workflow/rejected/TheRejected.vue";
+import TheDraft from "./pages/workflow/draft/TheDraft.vue";
 import NotFound from './pages/NotFound.vue';
 
 
@@ -52,6 +53,7 @@ import ReClarification from "./pages/workflow/clarification/ReClarification.vue"
 import ReApproved from "./pages/workflow/approved/ReApproved.vue";
 import ReRejected from "./pages/workflow/rejected/ReRejected.vue";
 import ReWithdrawn from "./pages/workflow/withdrawn/ReWithdrawn.vue";
+import ReDraft from "./pages/workflow/draft/ReDraft.vue";
 
 
 
@@ -791,6 +793,21 @@ const routes = [
             props: true,
             meta: { requiresAuth: true },
           },
+        ],
+        meta: { requiresAuth: true },
+      },
+      {
+        path: "/drafts",
+        component: TheDraft,
+        children: [
+          {
+            path: ":id",
+            name: "Reimbursement Request-draft",
+            component: ReDraft,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+
         ],
         meta: { requiresAuth: true },
       },
