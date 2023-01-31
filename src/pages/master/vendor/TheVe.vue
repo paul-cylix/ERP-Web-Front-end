@@ -11,7 +11,7 @@
         </div>
   
         <div class="card-header">
-          <h3 class="card-title">Vendor Details</h3>
+          <h3 class="card-title">Supplier Details</h3>
         </div>
         <div class="card-body">
           <!-- Buttons -->
@@ -36,6 +36,7 @@
               </button>
           
               <button
+                :disabled="isSpinner"
                 v-else
                 type="button"
                 class="btn ml-1 btn-success btn-sm"
@@ -160,7 +161,19 @@
           <!-- General -->
           <div v-if="this.counter === 0">
             <div class="row mt-4">
-              <div class="col-md-3">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <small><label for="reference">Business Name</label></small>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm py-3"
+                    v-model="general.businessName"
+                  />
+                  <small class="text-danger p-0 m-0" v-if="this.missingBusinessName && attemptNext">Business Name is required!</small>
+                </div>
+              </div>
+
+              <div class="col-md-6">
                 <div class="form-group">
                   <small><label for="reference">Website</label></small>
                   <input
@@ -170,8 +183,10 @@
                   />
                 </div>
               </div>
+            </div>
 
-              <div class="col-md-3">
+            <div class="row">
+              <div class="col-md-6">
                 <div class="form-group">
                   <small
                     ><label for="reportingManager selextForm" id="selextForm"
@@ -187,10 +202,11 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small class="text-danger p-0 m-0" v-if="this.missingGeneralVendorType && attemptNext">Please select type of vendor</small>
                 </div>
               </div>
 
-              <div class="col-md-3">
+              <div class="col-md-6">
                 <div class="form-group">
                   <small><label for="reference">In Business Since</label></small>
                   <input
@@ -198,25 +214,6 @@
                     class="form-control form-control-sm py-3"
                     v-model="general.inBusinessSince"
                   />
-                </div>
-              </div>
-
-              <div class="col-md-3">
-                <div class="form-group">
-                  <small
-                    ><label for="reportingManager selextForm" id="selextForm"
-                      >Payment Terms</label
-                    ></small
-                  >
-                  <model-list-select
-                    :list="paymentTermsList"
-                    v-model="paymentTermsSelected"
-                    option-value="code"
-                    option-text="name"
-                    placeholder="select item"
-                    style="padding: 9px"
-                  >
-                  </model-list-select>
                 </div>
               </div>
             </div>
@@ -228,6 +225,9 @@
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
+                    @keyup="formatCurrencyCreditLimit($event)"
+                    @blur="formatCurrencyCreditLimit($event, 'blur')"
+                    pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
                     v-model="general.creditLimit"
                   />
                 </div>
@@ -249,30 +249,27 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
-                </div>
-              </div>
-  
-              <div class="col-md-3">
-                <div class="form-group">
-                  <small><label for="requestDate">Last Update Date</label></small>
-                  <date-picker
-                    disabled
-                    valueType="format"
-                    style="display: block; width: 100%; line-height: 20px"
-                    v-model="requestDate"
-                  ></date-picker>
+                  <small class="text-danger p-0 m-0" v-if="this.missingGeneralCurrency && attemptNext">Please select a currency</small>
                 </div>
               </div>
 
-              <div class="col-md-3">
+              <div class="col-md-6">
                 <div class="form-group">
-                  <small><label for="reference">Last Update By</label></small>
-                  <input
-                    type="text"
-                    class="form-control form-control-sm py-3"
-                    readonly
-                    v-model="general.lastUpdateBy"
-                  />
+                  <small
+                    ><label for="reportingManager selextForm" id="selextForm"
+                      >Payment Terms</label
+                    ></small
+                  >
+                  <model-list-select
+                    :list="paymentTermsList"
+                    v-model="paymentTermsSelected"
+                    option-value="code"
+                    option-text="name"
+                    placeholder="select item"
+                    style="padding: 9px"
+                  >
+                  </model-list-select>
+                  <small class="text-danger p-0 m-0" v-if="this.missingGeneralPaymentTerms && attemptNext">Please select terms of payment</small>
                 </div>
               </div>
             </div>
@@ -294,6 +291,7 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small class="text-danger p-0 m-0" v-if="this.missingGeneralVATStatus && attemptNext">Please select VAT Status</small>
                 </div>
               </div>
 
@@ -305,6 +303,7 @@
                     class="form-control form-control-sm py-3"
                     v-model="general.tinNumber"
                   />
+                  <small class="text-danger p-0 m-0" v-if="this.missingGeneralTinNumber && attemptNext">TIN Number is required!</small>
                 </div>
               </div>
 
@@ -394,6 +393,9 @@
                   <small><label for="reference">Authorized Capital Stock</label></small>
                   <input
                     type="text"
+                    @keyup="formatCurrencyACS($event)"
+                    @blur="formatCurrencyACS($event, 'blur')"
+                    pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
                     class="form-control form-control-sm py-3"
                     v-model="business.authorizedCapitalStock"
                   />
@@ -405,6 +407,9 @@
                   <small><label for="reference">Paid-Up Capital Stock</label></small>
                   <input
                     type="text"
+                    @keyup="formatCurrencyPCS($event)"
+                    @blur="formatCurrencyPCS($event, 'blur')"
+                    pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
                     class="form-control form-control-sm py-3"
                     v-model="business.paidUpCapitalStock"
                   />
@@ -496,7 +501,7 @@
             <table class="table table-sm table-bordered table-striped mx-2 ">
               <thead>
                 <tr>
-                  <th colspan="8" scope="col">
+                  <th colspan="5" scope="col">
                     <aside class="d-flex align-items-center">
                       <span class="mb-1 ml-1"> Address</span>
                     </aside>
@@ -519,9 +524,6 @@
                   <th scope="col">Address Type</th>
                   <th scope="col">Address Line</th>
                   <th scope="col">City</th>
-                  <th scope="col">Phone No.</th>
-                  <th scope="col">Email</th>
-                  <th scope="col">Fax</th>
                   <th scope="col">Status</th>
                   <th scope="col">Action</th>
                 </tr>
@@ -533,9 +535,6 @@
                   <td>{{ item.TypeOfAddress }}</td>
                   <td>{{ item.address_line }}</td>
                   <td>{{ item.city }}</td>
-                  <td>{{ item.PhoneNum }}</td>
-                  <td>{{ item.EmailAdd }}</td>
-                  <td>{{ item.Fax }}</td>
                   <td>{{ item.Status }}</td>
                   <td class="pl-0 m-0">
                     <aside class="d-flex justify-content-center">
@@ -574,6 +573,7 @@
                         data-toggle="modal"
                         data-target="#modal-contact"
                         @click="setButton()"
+                        :disabled="this.addressData.length == 0"
                       >
                         <i class="fas fa-plus"></i>
                       </button>
@@ -591,13 +591,43 @@
                   <th scope="col">Mobile No.</th>
                   <th scope="col">Email Address</th>
                   <th scope="col">Work From</th>
-                  <th scope="col">Active</th>
+                  <th scope="col">Status</th>
                   <th scope="col">Action</th>
                 </tr>
               </thead>
   
               <tbody style="font-size: 14px">
-               
+                <tr v-for="(item, index) in contactData" :key="item.ID">
+                  <td class="text-center">{{ index + 1 }}.</td>
+                  <td>{{ item.Prefix }}</td>
+                  <td>{{ item.FirstName }}</td>
+                  <td>{{ item.LastName }}</td>
+                  <td>{{ item.Suffix }}</td>
+                  <td>{{ item.Position }} </td>
+                  <td>{{ item.Department }}</td>
+                  <td>{{ item.Number }}</td>
+                  <td>{{ item.EmailAdd }}</td>
+                  <td>{{ item.WorksFrom }}</td>
+                  <td>{{ item.Status }}</td>
+                  <td class="pl-0 m-0">
+                    <aside class="d-flex justify-content-center">
+                      <button
+                        class="btn btn-sm btn-info m-0"
+                        data-toggle="modal"
+                        data-target="#modal-contact"
+                        @click="editContact(contactData.indexOf(item))"
+                      >
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button
+                        class="btn btn-sm btn-danger m-0 ml-1"
+                        @click="trashContact(contactData.indexOf(item), item.ID)"
+                      >
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </aside>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -606,7 +636,7 @@
           <!-- Purchasing -->
           <div class="mt-4" v-else-if="this.counter === 3">
             <div class="row">
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="form-group">
                   <small><label for="reference">Brand</label></small>
                   <input
@@ -616,7 +646,7 @@
                   />
                 </div>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="form-group">
                   <small><label for="reference">Product Line</label></small>
                   <input
@@ -626,7 +656,10 @@
                   />
                 </div>
               </div>
-              <div class="col-md-4">
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
                 <div class="form-group">
                   <small><label for="reference">Services</label></small>
                   <input
@@ -636,10 +669,7 @@
                   />
                 </div>
               </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="form-group">
                   <small
                     ><label for="reportingManager selextForm" id="selextForm"
@@ -647,8 +677,8 @@
                     ></small
                   >
                   <model-list-select
-                    :list="vendorList"
-                    v-model="vendorSelected"
+                    :list="contactPersonData"
+                    v-model="contactPersonSelected"
                     option-value="code"
                     option-text="name"
                     placeholder="select item"
@@ -657,7 +687,10 @@
                   </model-list-select>
                 </div>
               </div>
-              <div class="col-md-4">
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
                 <div class="form-group">
                   <small
                     ><label for="reportingManager selextForm" id="selextForm"
@@ -675,13 +708,14 @@
                   </model-list-select>
                 </div>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="form-group">
                   <small><label for="reference">Contact Details</label></small>
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
                     v-model="purchasing.contactDetails"
+                    readonly
                   />
                 </div>
               </div>
@@ -805,28 +839,13 @@
                 </div>
               </div>
             </div>
-
-            <div class="row mt-4">
-              <div class="col-md-12">
-                <div class="form-group">
-                  <small><label for="purpose">Attachment Short Name</label></small>
-                  <textarea
-                    class="form-control"
-                    name="purpose"
-                    id="purpose"
-                    v-model.trim="purchasing.notes"
-                    rows="3"
-                  ></textarea>
-                </div>
-              </div>
-            </div>
           </div>
           <!-- /. Purchasing -->
   
           <!-- Accounting -->
           <div class="mt-4" v-else-if="this.counter === 4">
             <div class="row">
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <div class="form-group">
                   <small
                     ><label for="reportingManager selextForm" id="selextForm"
@@ -842,20 +861,10 @@
                     style="padding: 9px"
                   >
                   </model-list-select>
+                  <small class="text-danger p-0 m-0" v-if="this.missingAccountingATC && attemptNextFour">Please select an ATC</small>
                 </div>
               </div>
-              <div class="col-md-4">
-                <div class="form-group">
-                  <small><label for="reference">Nature of Income Payment</label></small>
-                  <input
-                    type="text"
-                    class="form-control form-control-sm py-3"
-                    v-model="AccountDescSelected"
-                    readonly
-                  />
-                </div>
-              </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <div class="form-group">
                   <small><label for="reference">Tax Rate</label></small>
                   <input
@@ -866,52 +875,14 @@
                   />
                 </div>
               </div>
-            </div>
-
-            <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
-                  <small
-                    ><label for="reportingManager selextForm" id="selextForm"
-                      >Bank</label
-                    ></small
-                  >
+                  <small><label for="reference">Nature of Income Payment</label></small>
                   <input
                     type="text"
                     class="form-control form-control-sm py-3"
-                    v-model="accounting.bank"
-                  />
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <small><label for="reference">Branch</label></small>
-                  <input
-                    type="text"
-                    class="form-control form-control-sm py-3"
-                    v-model="accounting.branch"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <small><label for="reference">Contact Person</label></small>
-                  <input
-                    type="text"
-                    class="form-control form-control-sm py-3"
-                    v-model="accounting.contactPerson"
-                  />
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <small><label for="reference">Telephone Number</label></small>
-                  <input
-                    type="text"
-                    class="form-control form-control-sm py-3"
-                    v-model="accounting.telephoneNumber"
+                    v-model="AccountDescSelected"
+                    readonly
                   />
                 </div>
               </div>
@@ -921,7 +892,7 @@
               <table class="table table-sm table-bordered table-striped mx-2">
                 <thead>
                   <tr>
-                    <th colspan="8" scope="col">
+                    <th colspan="7" scope="col">
                       <aside class="d-flex align-items-center">
                         <span class="mb-1 ml-1"> Banking Information</span>
                       </aside>
@@ -947,7 +918,6 @@
                     <th scope="col">Account Currency</th>
                     <th scope="col">Swift Code</th>
                     <th scope="col">Preferred Bank Account</th>
-                    <th scope="col">Active</th>
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
@@ -960,8 +930,11 @@
                     <td>{{ item.bankBranch }}</td>
                     <td>{{ item.bank_currency_name }}</td>
                     <td>{{ item.bankSwiftCode }}</td>
-                    <td>{{ item.bankPreferred }}</td>
-                    <td>checkbox here</td>
+                    <td class="text-center">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" :checked="item.bankPreferred" disabled/>
+                      </div>
+                    </td>
                     <td class="pl-0 m-0">
                       <aside class="d-flex justify-content-center">
                         <button
@@ -1092,20 +1065,6 @@
               </div>
             </div>
 
-            <div class="row mt-4">
-              <div class="col-md-12">
-                <div class="form-group">
-                  <small><label for="purpose">Attachment Short Name</label></small>
-                  <textarea
-                    class="form-control"
-                    name="purpose"
-                    id="purpose"
-                    v-model.trim="technical.attachmentNote"
-                    rows="3"
-                  ></textarea>
-                </div>
-              </div>
-            </div>
           </div>
           <!-- / Technical and Support -->
 
@@ -2142,25 +2101,17 @@
               </div>
             </div>
 
-            <div class="row mt-4">
-              <div class="col-md-12">
-                <div class="form-group">
-                  <small><label for="purpose">Attachment Short Name</label></small>
-                  <textarea
-                    class="form-control"
-                    name="purpose"
-                    id="purpose"
-                    v-model.trim="distribution.notes"
-                    rows="3"
-                  ></textarea>
-                </div>
-              </div>
-            </div>
           </div>
           <!-- Distribution and Agreement -->
   
           <!--  Form Review -->
           <aside v-else-if="(this.counter === 9)">
+            <div class="custom-modal" v-show="isSpinner">
+              <div class="custom-modal-content">
+                <loading-spinner></loading-spinner>
+              </div>
+            </div>
+            
             <!-- General Review -->
             <div class="card card-secondary mt-4">
               <div class="card-header">
@@ -2182,6 +2133,10 @@
                   class="table table-sm table-bordered table-hover table-striped"
                 >
                   <tbody>
+                    <tr>
+                      <td>Business Name</td>
+                      <td style="width: 80%">{{ general.businessName }}</td>
+                    </tr>
                     <tr>
                       <td>Website</td>
                       <td style="width: 80%">{{ general.website }}</td>
@@ -2323,7 +2278,94 @@
             <!-- /.Business Review -->
   
             <!-- Contact and Address Review -->
-            
+            <div class="card card-secondary">
+              <div class="card-header">
+                <h3 class="card-title">Contact and Address</h3>
+  
+                <div class="card-tools">
+                  <button
+                    type="button"
+                    class="btn btn-tool"
+                    data-card-widget="collapse"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body p-0">
+                <table class="table table-sm table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th colspan="8" scope="col">
+                        <aside class="d-flex align-items-center">
+                          <span class="mb-1">Address</span>
+                        </aside>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th scope="col" class="text-center">#</th>
+                      <th scope="col">Address Type</th>
+                      <th scope="col">Address Line</th>
+                      <th scope="col">City</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                  </thead>
+      
+                  <tbody style="font-size: 14px">
+                    <tr v-for="(item, index) in addressData" :key="item.ID">
+                      <td class="text-center">{{ index + 1 }}.</td>
+                      <td>{{ item.TypeOfAddress }}</td>
+                      <td>{{ item.address_line }}</td>
+                      <td>{{ item.city }}</td>
+                      <td>{{ item.Status }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <table class="table table-sm table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th colspan="11" scope="col">
+                        <aside class="d-flex align-items-center">
+                          <span class="mb-1">Contact</span>
+                        </aside>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th scope="col" class="text-center">#</th>
+                      <th scope="col">Prefix</th>
+                      <th scope="col">First Name</th>
+                      <th scope="col">Last Name</th>
+                      <th scope="col">Suffix</th>
+                      <th scope="col">Designation</th>
+                      <th scope="col">Department</th>
+                      <th scope="col">Mobile No.</th>
+                      <th scope="col">Email Address</th>
+                      <th scope="col">Work From</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                  </thead>
+      
+                  <tbody style="font-size: 14px">
+                    <tr v-for="(item, index) in contactData" :key="item.ID">
+                      <td class="text-center">{{ index + 1 }}.</td>
+                      <td>{{ item.Prefix }}</td>
+                      <td>{{ item.FirstName }}</td>
+                      <td>{{ item.LastName }}</td>
+                      <td>{{ item.Suffix }}</td>
+                      <td>{{ item.Position }} </td>
+                      <td>{{ item.Department }}</td>
+                      <td>{{ item.Number }}</td>
+                      <td>{{ item.EmailAdd }}</td>
+                      <td>{{ item.WorksFrom }}</td>
+                      <td>{{ item.Status }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
             <!-- /.Contact and Address Review -->
   
             <!-- Purchasing Review -->
@@ -2361,7 +2403,7 @@
                     </tr>
                     <tr>
                       <td>Contact Person</td>
-                      <td>{{  }}</td>
+                      <td>{{ contactPersonSelected.name }}</td>
                     </tr>
                     <tr>
                       <td>PO to be sent via</td>
@@ -2387,14 +2429,10 @@
                       <td>Payment Preferences</td>
                       <td>{{ purchasing.payment }}</td>
                     </tr>
-                    <tr>
-                      <td>Attachment short notes</td>
-                      <td>{{ purchasing.notes }}</td>
-                    </tr>
                   </tbody>
                 </table>
 
-                <h5 class="mt-5 ml-3 font-weight-bold">Attachments</h5>
+                <h6 class="mt-5 ml-3 font-weight-bold">Attachments</h6>
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
@@ -2451,22 +2489,6 @@
                     <tr>
                       <td>Tax Rate</td>
                       <td>{{ AccountRateSelected }}</td>
-                    </tr>
-                    <tr>
-                      <td>Bank</td>
-                      <td>{{ accounting.bank }}</td>
-                    </tr>
-                    <tr>
-                      <td>Branch</td>
-                      <td>{{ accounting.branch }}</td>
-                    </tr>
-                    <tr>
-                      <td>Contact Person</td>
-                      <td>{{ accounting.contactPerson }}</td>
-                    </tr>
-                    <tr>
-                      <td>Telephone Number</td>
-                      <td>{{ accounting.telephoneNumber }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -2539,15 +2561,10 @@
                       <td>RMA Policy and Note</td>
                       <td style="width: 80%">{{ technical.policyNote }}</td>
                     </tr>
-                    <tr>
-                      <td>Attachment Short Name</td>
-                      <td style="width: 80%">{{ technical.attachmentNote }}</td>
-                    </tr>
-                    
                   </tbody>
                 </table>
 
-                <h5 class="mt-5 ml-3 font-weight-bold">Attachments</h5>
+                <h6 class="mt-5 ml-3 font-weight-bold">Attachments</h6>
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
@@ -2664,7 +2681,7 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body p-0">
-                <h5 class="mt-2 ml-3 font-weight-bold">Accomplished Vendor Information Sheet</h5>
+                <h6 class="mt-2 ml-3 font-weight-bold">Accomplished Vendor Information Sheet</h6>
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
@@ -2685,7 +2702,7 @@
                   </tbody>
                 </table>
 
-                <h5 class="mt-5 ml-3 font-weight-bold">Business Registration</h5>
+                <h6 class="mt-5 ml-3 font-weight-bold">Business Registration</h6>
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
@@ -2706,7 +2723,7 @@
                   </tbody>
                 </table>
 
-                <h5 class="mt-5 ml-3 font-weight-bold">Updated Business Permit</h5>
+                <h6 class="mt-5 ml-3 font-weight-bold">Updated Business Permit</h6>
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
@@ -2727,7 +2744,7 @@
                   </tbody>
                 </table>
 
-                <h5 class="mt-5 ml-3 font-weight-bold">BIR Certificate of Registration: BIR 2303 form</h5>
+                <h6 class="mt-5 ml-3 font-weight-bold">BIR Certificate of Registration: BIR 2303 form</h6>
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
@@ -2748,7 +2765,7 @@
                   </tbody>
                 </table>
 
-                <h5 class="mt-5 ml-3 font-weight-bold">Sample of Delivery Receipt, Sales Invoice, Official Receipt</h5>
+                <h6 class="mt-5 ml-3 font-weight-bold">Sample of Delivery Receipt, Sales Invoice, Official Receipt</h6>
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
@@ -2769,7 +2786,7 @@
                   </tbody>
                 </table>
 
-                <h5 class="mt-5 ml-3 font-weight-bold">Company/Business Profile</h5>
+                <h6 class="mt-5 ml-3 font-weight-bold">Company/Business Profile</h6>
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
@@ -2790,7 +2807,7 @@
                   </tbody>
                 </table>
 
-                <h5 class="mt-5 ml-3 font-weight-bold">Latest Audited Financial Statements</h5>
+                <h6 class="mt-5 ml-3 font-weight-bold">Latest Audited Financial Statements</h6>
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
@@ -2863,7 +2880,7 @@
                   </tbody>
                 </table>
 
-                <h5 class="mt-5 ml-3 font-weight-bold">Agreement</h5>
+                <h6 class="mt-5 ml-3 font-weight-bold">Agreement</h6>
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
@@ -2884,7 +2901,7 @@
                   </tbody>
                 </table>
 
-                <h5 class="mt-5 ml-3 font-weight-bold">NDA</h5>
+                <h6 class="mt-5 ml-3 font-weight-bold">NDA</h6>
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
@@ -2905,7 +2922,7 @@
                   </tbody>
                 </table>
 
-                <h5 class="mt-5 ml-3 font-weight-bold">Distributor Certificate</h5>
+                <h6 class="mt-5 ml-3 font-weight-bold">Distributor Certificate</h6>
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
@@ -2926,7 +2943,7 @@
                   </tbody>
                 </table>
 
-                <h5 class="mt-5 ml-3 font-weight-bold">Other Attachments</h5>
+                <h6 class="mt-5 ml-3 font-weight-bold">Other Attachments</h6>
                 <table
                   class="table table-sm table-bordered table-hover table-striped"
                 >
@@ -2943,17 +2960,6 @@
                         <a class="btn btn-danger btn-sm px-13" @click="distributionFourFileRemove(distributionFourSelectedFile.indexOf(file))">Remove</a>
                         <a class="btn btn-secondary btn-sm ml-1"  @click="distributionFourFilePreview(distributionFourSelectedFile.indexOf(file))">Preview</a>
                       </td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <table
-                  class="table table-sm mt-5 table-bordered table-hover table-striped"
-                >
-                  <tbody>
-                    <tr>
-                      <td>Attachment Short Name</td>
-                      <td style="width: 80%">{{ distribution.notes }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -3004,13 +3010,12 @@
                         <model-list-select
                           :list="prefixesList"
                           v-model="prefixesSelected"
-                          option-value="code"
+                          option-value="name"
                           option-text="name"
                           placeholder="select item"
                           style="padding: 9px"
                         >
                         </model-list-select>
-                       
                       </div>
                     </div>
                     <div class="col-md-6">
@@ -3142,25 +3147,27 @@
                           style="padding: 9px"
                         >
                         </model-list-select>
-                       
+                        <small class="text-danger p-0 m-0" v-if="this.missingAddressType && attemptAddressModal">Please select type of address</small>
                       </div>
                     </div>
+
                     <div class="col-md-6">
                       <div class="form-group">
                         <small
-                          ><label for="projectName">Address Short Name</label></small
+                          ><label for="projectName">Business Hours</label></small
                         >
                         <input
                           type="text"
                           class="form-control form-control-sm py-3"
-                          v-model="address.shortName"
+                          v-model="address.businessHours"
                         />
+                        <small class="text-danger p-0 m-0" v-if="this.missingAddressBusinessHours && attemptAddressModal">Business Hours is required</small>
                       </div>
                     </div>
                   </div>
   
                   <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                       <div class="form-group">
                         <small
                           ><label for="projectName">Address Line</label></small
@@ -3170,10 +3177,13 @@
                           class="form-control form-control-sm py-3"
                           v-model="address.line1"
                         />
+                        <small class="text-danger p-0 m-0" v-if="this.missingAddressLine1 && attemptAddressModal">Address Line is required</small>
                       </div>
                     </div>
+                  </div>
   
-                    <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-md-12">
                       <div class="form-group">
                         <small
                           ><label for="projectName">Address Line 2</label></small
@@ -3183,6 +3193,7 @@
                           class="form-control form-control-sm py-3"
                           v-model="address.line2"
                         />
+                        <small class="text-danger p-0 m-0" v-if="this.missingAddressLine2 && attemptAddressModal">Address Line 2 is required</small>
                       </div>
                     </div>
                   </div>
@@ -3198,6 +3209,7 @@
                           class="form-control form-control-sm py-3"
                           v-model="address.city"
                         />
+                        <small class="text-danger p-0 m-0" v-if="this.missingAddressCity && attemptAddressModal">City is required</small>
                       </div>
                     </div>
   
@@ -3211,6 +3223,7 @@
                           class="form-control form-control-sm py-3"
                           v-model="address.province"
                         />
+                        <small class="text-danger p-0 m-0" v-if="this.missingAddressProvince && attemptAddressModal">Region/Province is required</small>
                       </div>
                     </div>
                   </div>
@@ -3226,6 +3239,7 @@
                           class="form-control form-control-sm py-3"
                           v-model="address.zipcode"
                         />
+                        <small class="text-danger p-0 m-0" v-if="this.missingAddressZipCode && attemptAddressModal">Zip Code is required</small>
                       </div>
                     </div>
                     <div class="col-md-6">
@@ -3242,77 +3256,7 @@
                           style="padding: 9px"
                         >
                         </model-list-select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <!-- <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Status</label></small
-                        >
-                        <model-list-select
-                          :list="addressStatusList"
-                          v-model="addressStatusSelected"
-                          option-value="code"
-                          option-text="name"
-                          placeholder="select item"
-                          style="padding: 9px"
-                        >
-                        </model-list-select>
-                      </div>
-                    </div> -->
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Phone No.</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                          v-model="address.phoneNumber"
-                        />
-                      </div>
-                    </div>
-
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Business Hours</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                          v-model="address.businessHours"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Email</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                          v-model="address.email"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Fax</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                          v-model="address.fax"
-                        />
+                        <small class="text-danger p-0 m-0" v-if="this.missingAddressCountry && attemptAddressModal">Please select a country</small>
                       </div>
                     </div>
                   </div>
@@ -3347,29 +3291,30 @@
                           v-model.trim="address.notes"
                           rows="5"
                         ></textarea>
+                        <small class="text-danger p-0 m-0" v-if="this.missingAddressNotes && attemptAddressModal">Notes is required</small>
                       </div>
                     </div>
                   </div>
 
                 </div>
                 <div class="modal-footer justify-content-end">
-                  <button
-                    v-if="isButton"
-                    type="button"
-                    class="btn btn-success btn-sm"
-                    @click="insertAddress()"
-                  >
-                    insert
-                  </button>
-  
-                  <button
-                    v-else
-                    type="button"
-                    class="btn btn-success btn-sm"
-                    @click="updateAddress()"
-                  >
-                    Update
-                  </button>
+                  <div v-if="isButton">
+                    <button v-if="addressModalSpinner" class="btn-sm btn-success" type="button" disabled>
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      <span class="sr-only"></span> Inserting...
+                    </button>
+
+                    <button v-else type="button" class="btn btn-success btn-sm" @click="insertAddress()">Insert</button>
+                  </div>
+
+                  <div v-else>
+                    <button v-if="addressModalSpinner" class="btn-sm btn-success" type="button" disabled>
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      <span class="sr-only"></span> Updating...
+                    </button>
+
+                    <button v-else type="button" class="btn btn-success btn-sm" @click="updateAddress()">Update</button>
+                  </div>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -3414,17 +3359,16 @@
                     <div class="col-md-6">
                       <div class="form-group">
                         <small><label for="reference">Prefix</label></small>
-  
                         <model-list-select
                           :list="prefixesList"
                           v-model="contactPrefixesSelected"
-                          option-value="code"
+                          option-value="name"
                           option-text="name"
                           placeholder="select item"
                           style="padding: 9px"
                         >
                         </model-list-select>
-                       
+                        <small class="text-danger p-0 m-0" v-if="this.missingContactPrefix && attemptContactModal">Please select a prefix</small>
                       </div>
                     </div>
                     <div class="col-md-6">
@@ -3437,6 +3381,7 @@
                           class="form-control form-control-sm py-3"
                           v-model="contact.firstName"
                         />
+                        <small class="text-danger p-0 m-0" v-if="this.missingContactFirstName && attemptContactModal">First name is required.</small>
                       </div>
                     </div>
                   </div>
@@ -3452,6 +3397,7 @@
                           class="form-control form-control-sm py-3"
                           v-model="contact.lastName"
                         />
+                        <small class="text-danger p-0 m-0" v-if="this.missingContactLastName && attemptContactModal">Last name is required.</small>
                       </div>
                     </div>
   
@@ -3493,6 +3439,7 @@
                           class="form-control form-control-sm py-3"
                           v-model="contact.designation"
                         />
+                        <small class="text-danger p-0 m-0" v-if="this.missingContactDesignation && attemptContactModal">Designation is required.</small>
                       </div>
                     </div>
                   </div>
@@ -3508,27 +3455,9 @@
                           class="form-control form-control-sm py-3"
                           v-model="contact.department"
                         />
+                        <small class="text-danger p-0 m-0" v-if="this.missingContactDepartment && attemptContactModal">Department is required.</small>
                       </div>
                     </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Work From</label></small
-                        >
-                        <model-list-select
-                          :list="addressWorkFromList"
-                          v-model="addressWorkFromSelected"
-                          option-value="name"
-                          option-text="name"
-                          placeholder="select item"
-                          style="padding: 9px"
-                        >
-                        </model-list-select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
                         <small
@@ -3543,22 +3472,27 @@
                           style="padding: 9px"
                         >
                         </model-list-select>
+                        <small class="text-danger p-0 m-0" v-if="this.missingContactLinkTo && attemptContactModal">Please select a list.</small>
                       </div>
                     </div>
-                    <div class="col-md-6">
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-12">
                       <div class="form-group">
                         <small
-                          ><label for="projectName">Status</label></small
+                          ><label for="projectName">Work From</label></small
                         >
                         <model-list-select
-                          :list="contactStatusList"
-                          v-model="contactStatusSelected"
+                          :list="addressWorkFromList"
+                          v-model="addressWorkFromSelected"
                           option-value="code"
                           option-text="name"
                           placeholder="select item"
                           style="padding: 9px"
                         >
                         </model-list-select>
+                        <small class="text-danger p-0 m-0" v-if="this.missingContactWorkFrom && attemptContactModal">Please select a list.</small>
                       </div>
                     </div>
                   </div>
@@ -3574,6 +3508,7 @@
                           class="form-control form-control-sm py-3"
                           v-model="contact.mobileNumber"
                         />
+                        <small class="text-danger p-0 m-0" v-if="this.missingContactMobileNumber && attemptContactModal">Mobile Number is required.</small>
                       </div>
                     </div>
                     <div class="col-md-6">
@@ -3626,23 +3561,24 @@
 
                 </div>
                 <div class="modal-footer justify-content-end">
-                  <button
-                    v-if="isButton"
-                    type="button"
-                    class="btn btn-success btn-sm"
-                    @click="insertContact()"
-                  >
-                    insert
-                  </button>
+                  <div v-if="isButton">
+                    <button v-if="contactModalSpinner" class="btn-sm btn-success" type="button" disabled>
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      <span class="sr-only"></span> Inserting...
+                    </button>
+
+                    <button v-else type="button" class="btn btn-success btn-sm" @click="insertContact()">insert</button>
+                  </div>
+
+                  <div v-else>
+                    <button v-if="contactModalSpinner" class="btn-sm btn-success" type="button" disabled>
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      <span class="sr-only"></span> Updating...
+                    </button>
+
+                    <button v-else type="button" class="btn btn-success btn-sm" @click="updateContact()">Update</button>
+                  </div>
   
-                  <button
-                    v-else
-                    type="button"
-                    class="btn btn-success btn-sm"
-                    @click="updateContact()"
-                  >
-                    Update
-                  </button>
                 </div>
               </div>
               <!-- /.modal-content -->
@@ -3684,19 +3620,7 @@
                   ></the-alert>
   
                   <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small><label for="reference">Bank Name</label></small>
-  
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                          v-model="accounting.bankName"
-                        />
-                       
-                      </div>
-                    </div>
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                       <div class="form-group">
                         <small
                           ><label for="projectName">Bank Account Number</label></small
@@ -3713,6 +3637,17 @@
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
+                        <small><label for="reference">Bank Name</label></small>
+                        <input
+                          type="text"
+                          class="form-control form-control-sm py-3"
+                          v-model="accounting.bankName"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <div class="form-group">
                         <small
                           ><label for="projectName">Bank Branch</label></small
                         >
@@ -3723,7 +3658,9 @@
                         />
                       </div>
                     </div>
-  
+                  </div>
+
+                  <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
                         <small
@@ -3740,9 +3677,7 @@
                         </model-list-select>
                       </div>
                     </div>
-                  </div>
 
-                  <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
                         <small
@@ -3755,17 +3690,15 @@
                         />
                       </div>
                     </div>
-  
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <small
-                          ><label for="projectName">Preferred Bank Account</label></small
-                        >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm py-3"
-                          v-model="accounting.bankPreferred"
-                        />
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="bankPreferredCheckbox" v-model="accounting.bankPreferred">
+                        <label class="form-check-label" for="bankPreferredCheckbox">
+                          Preferred Bank Account
+                        </label>
                       </div>
                     </div>
                   </div>
@@ -3873,6 +3806,7 @@
                           v-model="relatedSupplierNameSelected"
                           readonly
                         />
+                        <input type="hidden" v-model="relatedSupplierIDSelected">
                       </div>
                     </div>
                   </div>
@@ -3980,6 +3914,7 @@
                           v-model="relatedCustomerNameSelected"
                           readonly
                         />
+                        <input type="hidden" v-model="relatedCustomerIDSelected">
                       </div>
                     </div>
                   </div>
@@ -4156,23 +4091,10 @@
       ModelListSelect,
     },
     async created() {
-      // Request Details
       this.isLoading = true
-      await this.getPaymentTerms()
-      await this.getCurrencies()
-      await this.getBusinessTaxStatus()
-      await this.getBusinessType()
-      await this.getBusinessNature()
-      await this.getPrefixes()
-      await this.getCountries()
-      await this.getATC()
-      await this.getRelationship()
-      await this.getRelatedSupplier()
-      await this.getRelatedCustomer()
-      await this.getDraftVendorByUserID(this.loggedUserId)
 
       await this.todaysDate();
-      // await this.reInitiate();
+      await this.veInitiate();
       this.isLoading = false
   
     },
@@ -4182,67 +4104,15 @@
         this.AccountRateSelected = newValue.rate
       },
       relatedSupplierCodeSelected(newValue) {
+        this.relatedSupplierIDSelected = newValue.id
         this.relatedSupplierNameSelected = newValue.name
       },
       relatedCustomerCodeSelected(newValue) {
+        this.relatedCustomerIDSelected = newValue.id
         this.relatedCustomerNameSelected = newValue.name
       },
       vendorSelected(newValue) {
-          //Step1
-          this.general.vendorTypeSelected = newValue.name
-          console.log(newValue.name);
-          console.log(this.general.website);
-          console.log(this.general.inBusinessSince);
-          console.log(this.paymentTermsSelected.name);
-          console.log(this.general.creditLimit);
-          console.log(this.currenciesSelected.name);
-          console.log(this.businessTaxStatusSelected.name);
-          console.log(this.requestDate); //last update date
-          console.log(this.general.lastUpdateBy);
-          console.log(this.general.tinNumber);
-          console.log(this.general.twentyThreeZeroThree);
-          console.log(this.general.secNumber);
-          console.log(this.general.notes);
-
-          //Step2
-          console.log(this.businessTypeSelected.name);
-          console.log(this.businessNatureSelected.name);
-          console.log(this.business.authorizedCapitalStock);
-          console.log(this.business.paidUpCapitalStock);
-          console.log(this.business.notes);
-
-          //Step 4
-          console.log(this.purchasing.brand);
-          console.log(this.purchasing.productLine);
-          console.log(this.purchasing.services);
-          console.log(this.purchasing.contactDetails);
-          console.log(this.purchasing.ordering);
-          console.log(this.purchasing.shipping);
-          console.log(this.purchasing.documentation);
-          console.log(this.purchasing.payment);
-          console.log(this.purchasing.notes);
-          console.log(this.poToBeSentSelected.code);
-          console.log(this.poToBeSentSelected.name);
-
-          // Step5
-          console.log(this.AccountATCSelected.code);
-          console.log(this.AccountATCSelected.atc);
-          console.log(this.AccountDescSelected);
-          console.log(this.AccountRateSelected);
-          console.log(this.accounting.bank);
-          console.log(this.accounting.branch);
-          console.log(this.accounting.contactPerson);
-          console.log(this.accounting.telephoneNumber);
-          console.log(this.accounting.bankName);
-          console.log(this.accounting.bankAcctNumber);
-          console.log(this.accounting.bankBranch);
-          console.log(this.accounting.bankSwiftCode);
-          console.log(this.accounting.bankPreferred);
-
-          //Step 6
-          console.log(this.technical.warrantyNote);
-          console.log(this.technical.policyNote);
-          console.log(this.technical.attachmentNote);
+        this.general.vendorTypeSelected = newValue.name
       },
 
       counter() {
@@ -4283,8 +4153,118 @@
         return { active: this.counter >= 9 };
       },
   
-      // Validation
-     
+      // Validation of General
+      missingBusinessName() {
+        if (this.general.businessName.length === 0) return true
+        return false
+      },
+      missingGeneralVendorType() {
+        if (this.vendorSelected.code === undefined) return true
+        return false
+      },
+      missingGeneralPaymentTerms() {
+        if (this.paymentTermsSelected.code === undefined) return true
+        return false
+      },
+      missingGeneralCurrency() {
+        if (this.currenciesSelected.code === undefined) return true
+        return false
+      },
+      missingGeneralVATStatus() {
+        if (this.businessTaxStatusSelected.code === undefined) return true
+        return false
+      },
+      missingGeneralTinNumber() {
+        if (this.general.tinNumber.length === 0) return true
+        return false
+      },
+
+      //Validation of Address
+      missingAddress() {
+        if (this.addressData.length > 0) return true
+        return false
+      },
+      missingContact() {
+        if (this.contactData.length > 0) return true
+        return false
+      },
+      missingAddressType() {
+        if (this.addressTypeSelected.name === undefined) return true
+        return false
+      },
+      missingAddressLine1() {
+        if (this.address.line1.length === 0) return true
+        return false
+      },
+      missingAddressLine2() {
+        if (this.address.line2.length === 0) return true
+        return false
+      },
+      missingAddressCity() {
+        if (this.address.city.length === 0) return true
+        return false
+      },
+      missingAddressProvince() {
+        if (this.address.province.length === 0) return true
+        return false
+      },
+      missingAddressZipCode() {
+        if (this.address.zipcode.length === 0) return true
+        return false
+      },
+      missingAddressCountry() {
+        if (this.countriesSelected.name === undefined) return true
+        return false
+      },
+      missingAddressBusinessHours() {
+        if (this.address.businessHours.length === 0) return true
+        return false
+      },
+      missingAddressNotes() {
+        if (this.address.notes.length === 0) return true
+        return false
+      },
+
+      //Validation of Contact
+      missingContactPrefix() {
+        if (this.contactPrefixesSelected.name === undefined) return true
+        return false
+      },
+      missingContactFirstName() {
+        if (this.contact.firstName.length === 0) return true
+        return false
+      },
+      missingContactLastName() {
+        if (this.contact.lastName.length === 0) return true
+        return false
+      },
+      missingContactDesignation() {
+        if (this.contact.designation.length === 0) return true
+        return false
+      },
+      missingContactDepartment() {
+        if (this.contact.department.length === 0) return true
+        return false
+      },
+      missingContactLinkTo() {
+        if (this.contactLinkToSelected.code === undefined) return true
+        return false
+      },
+      missingContactWorkFrom() {
+        if (this.addressWorkFromSelected.code === undefined) return true
+        return false
+      },
+      missingContactMobileNumber() {
+        if (this.contact.mobileNumber.length === 0) return true
+        return false
+      },
+      
+      //Validation of Accounting
+      missingAccountingATC() {
+        if (this.AccountATCSelected.code === undefined) return true
+        return false
+      },
+      
     },
     data() {
       return {
@@ -4302,6 +4282,23 @@
         attemptNextOne: false,
         attemptNextTwo: false,
         attemptNextThree: false,
+        attemptNextFour: false,
+        attemptNextFive: false,
+        attemptNextSix: false,
+        attemptNextSeven: false,
+        attemptNextEight: false,
+        
+        attemptBusinessModal: false,
+        attemptAddressModal: false,
+        attemptContactModal: false,
+        attemptAccountingModal: false,
+        attemptRelatedVendorModal: false,
+        attemptRelatedCustomerModal: false,
+        attemptDistributionModal: false,
+
+        addressModalSpinner: false,
+        contactModalSpinner: false,
+        
   
         // The Alert
         isAlert: false,
@@ -4331,6 +4328,7 @@
         businessTaxStatusList : [],
         businessTaxStatusSelected : {},
         general: {
+          businessName: '',
           website: '',
           inBusinessSince: '',
           creditLimit: '',
@@ -4394,9 +4392,6 @@
           province : '',
           zipcode : '',
           country : '',
-          phoneNumber : '',
-          email : '',
-          fax : '',
           businessHours : '',
           preferredBilling : '',
           preferredShipping : '',
@@ -4463,6 +4458,9 @@
         purchasingSelectedFile: [],
         purchasingFilespreview: [],
 
+        contactPersonData : [],
+        contactPersonSelected : {},
+
         // accounting
         AccountATCList : [],
         AccountATCSelected : {},
@@ -4480,7 +4478,7 @@
           bankAcctNumber : '',
           bankBranch : '',
           bankSwiftCode : '',
-          bankPreferred : '',
+          bankPreferred : false,
         },
 
         //Technical and Support
@@ -4505,10 +4503,12 @@
 
         relatedSupplierList : [],
         relatedSupplierCodeSelected : {},
+        relatedSupplierIDSelected : '',
         relatedSupplierNameSelected : '',
 
         relatedCustomerList : [],
         relatedCustomerCodeSelected : {},
+        relatedCustomerIDSelected : '',
         relatedCustomerNameSelected : '',
 
         // Attachments
@@ -4529,8 +4529,8 @@
 
         // Distribution and Agreement
         distribution: {
-          monthStart : '',
-          monthEnd : '',
+          monthStart : null,
+          monthEnd : null,
           annualTarget : '',
           totalOrder : '',
           notes : '',
@@ -4552,6 +4552,187 @@
     },
   
     methods: {
+      getPaymentTerms(){
+        return axios.get(`http://127.0.0.1:8000/api/getBusinessTerms`);
+      },
+      getCurrencies(){
+        return axios.get(`http://127.0.0.1:8000/api/getCurrencies`);
+      },
+      getBusinessTaxStatus(){
+        return axios.get(`http://127.0.0.1:8000/api/getBusinessTaxStatus`);
+      },
+      getBusinessType(){
+        return axios.get(`http://127.0.0.1:8000/api/getBusinessType`);
+      },
+      getBusinessNature(){
+        return axios.get(`http://127.0.0.1:8000/api/getBusinessNature`);
+      },
+      getPrefixes(){
+        return axios.get(`http://127.0.0.1:8000/api/getPrefixes`);
+      },
+      getCountries(){
+        return axios.get(`http://127.0.0.1:8000/api/getCountries`);
+      },
+      getATC(){
+        return axios.get(`http://127.0.0.1:8000/api/getATC`);
+      },
+      getRelationship(){
+        return axios.get(`http://127.0.0.1:8000/api/getRelationship`);
+      },
+      getRelatedSupplier(){
+        return axios.get(`http://127.0.0.1:8000/api/getRelatedSupplier`);
+      },
+      getRelatedCustomer(){
+        return axios.get(`http://127.0.0.1:8000/api/getRelatedCustomer`);
+      },
+      getDraftVendorByUserID(){
+        return axios.get(`http://127.0.0.1:8000/api/getDraftVendorByUserID/${this.loggedUserId}`);
+      },
+
+      async veInitiate() {
+        await Promise.all([
+          this.getPaymentTerms(), this.getCurrencies(), this.getBusinessTaxStatus(), this.getBusinessType(), this.getBusinessNature(), this.getPrefixes(), this.getCountries(), this.getATC(), this.getRelationship(), this.getRelatedSupplier(), this.getRelatedCustomer(), this.getDraftVendorByUserID()
+        ])
+        .then((results) => {
+          const paymentTerms = results[0]
+          const currencies = results[1]
+          const businessTax = results[2]
+          const businessType = results[3]
+          const businessNature = results[4]
+          const prefixes = results[5]
+          const countries = results[6]
+          const atc = results[7]
+          const relationship = results[8]
+          const relatedSupplier = results[9]
+          const relatedCustomer = results[10]
+          const draftVendor = results[11]
+
+          let paymentTermsData = []
+          for (const key in paymentTerms.data) {
+            const request = {
+              code: paymentTerms.data[key].id,
+              name: paymentTerms.data[key].description,
+            };
+            paymentTermsData.push(request)
+          }
+          this.paymentTermsList = paymentTermsData
+
+          let currenciesData = [];
+          for (const key in currencies.data) {
+            const request = {
+              code: currencies.data[key].id,
+              name: currencies.data[key].item,
+            };
+            currenciesData.push(request);
+          }
+          this.currenciesList = currenciesData
+
+          let businessTaxStatusData = [];
+          for (const key in businessTax.data) {
+            const request = {
+              code: businessTax.data[key].id,
+              name: businessTax.data[key].vatcode,
+            };
+            businessTaxStatusData.push(request);
+          }
+          this.businessTaxStatusList = businessTaxStatusData
+
+          let businessTypeData = [];
+          for (const key in businessType.data) {
+            const request = {
+              code: businessType.data[key].ID,
+              name: businessType.data[key].BusinessType,
+            };
+            businessTypeData.push(request);
+          }
+          this.businessTypeList = businessTypeData
+
+          let businessNatureData = [];
+          for (const key in businessNature.data) {
+            const request = {
+              code: businessNature.data[key].ID,
+              name: businessNature.data[key].Nature,
+            };
+            businessNatureData.push(request);
+          }
+          this.businessNatureList = businessNatureData
+
+          let prefixesData = [];
+          for (const key in prefixes.data) {
+            const request = {
+              code: prefixes.data[key].item,
+              name: prefixes.data[key].item,
+            };
+            prefixesData.push(request);
+          }
+          this.prefixesList = prefixesData
+
+          let countriesData = [];
+          for (const key in countries.data) {
+            const request = {
+              code: countries.data[key].id,
+              name: countries.data[key].Description,
+            };
+            countriesData.push(request);
+          }
+          this.countriesList = countriesData
+
+          let atcData = [];
+          for (const key in atc.data) {
+            const request = {
+              code: atc.data[key].ID,
+              description: atc.data[key].DESCRIPTION,
+              atc: atc.data[key].ATC,
+              rate: atc.data[key].RATE,
+            };
+            atcData.push(request);
+          }
+          this.AccountATCList = atcData
+
+          let relationshipData = [];
+          for (const key in relationship.data) {
+            const request = {
+              code: relationship.data[key].type,
+              name: relationship.data[key].type
+            };
+            relationshipData.push(request);
+          }
+          this.relationshipList = relationshipData
+
+          let relatedSupplierData = [];
+          for (const key in relatedSupplier.data) {
+            const request = {
+              id: relatedSupplier.data[key].Business_Number,
+              code: relatedSupplier.data[key].ACCOUNTNUMBER,
+              name: relatedSupplier.data[key].business_fullname
+            };
+            relatedSupplierData.push(request);
+          }
+          this.relatedSupplierList = relatedSupplierData
+
+          let relatedCustomerData = [];
+          for (const key in relatedCustomer.data) {
+            const request = {
+              id: relatedCustomer.data[key].Business_Number,
+              code: relatedCustomer.data[key].ACCOUNTNUMBER,
+              name: relatedCustomer.data[key].business_fullname
+            };
+            relatedCustomerData.push(request);
+          }
+          this.relatedCustomerList = relatedCustomerData
+
+          this.draftID = draftVendor.data.draftID
+
+        })
+        .catch(error => {
+          console.error(error);
+          this.openToast(
+              "top-right",
+              "error",
+              "Please Contact the administrator! and try again later"
+          );
+        });
+      },
 
       // Step 2
       editCorporateOfficers(index) {
@@ -4574,44 +4755,41 @@
           this.businessData.splice(index, 1);
       },
       updateCorporateOfficers() {
-          this.resetAlert();
+        this.resetAlert();
 
-          const updateData = {
-              id: this.businessEditData.id,
-              prefix_name: this.prefixesSelected.name,
-              prefix_id: this.prefixesSelected.code,
-              firstName: this.business.firstName,
-              lastName: this.business.lastName,
-              suffix: this.business.suffix,
-              designation: this.business.designation
-          };
+        const updateData = {
+            id: this.businessEditData.id,
+            prefix_name: this.prefixesSelected.name,
+            prefix_id: this.prefixesSelected.code,
+            firstName: this.business.firstName,
+            lastName: this.business.lastName,
+            suffix: this.business.suffix,
+            designation: this.business.designation
+        };
 
-          this.businessData.push(updateData);
-          this.businessEditData = "";
-          this.businessData.splice(this.setIndex, 1);
+        this.businessData.push(updateData);
+        this.businessEditData = "";
+        this.businessData.splice(this.setIndex, 1);
 
-          this.businessData.sort(function (a, b) {
-              return a.id - b.id;
-          });
-          this.clearCorporateOfficers()
+        this.businessData.sort(function (a, b) {
+            return a.id - b.id;
+        });
+        this.openToast("top-right", "success", "Corporate Officer has been updated!");
       },
       insertCorporateOfficers() {
-          this.resetAlert();
-  
-          const addData = {
-              id: this.i++,
-              prefix_name: this.prefixesSelected.name,
-              prefix_id: this.prefixesSelected.code,
-              firstName: this.business.firstName,
-              lastName: this.business.lastName,
-              suffix: this.business.suffix,
-              designation: this.business.designation
-          };
-          this.businessData.push(addData);
-          this.clearCorporateOfficers()
-
-          // this.addAlert("Success", "Expense details added successfully!", "true");
-          // this.addAlert("Failed", "Please complete required fields!", "false");
+        this.resetAlert();
+        const addData = {
+          id: this.i++,
+          prefix_name: this.prefixesSelected.name,
+          prefix_id: this.prefixesSelected.code,
+          firstName: this.business.firstName,
+          lastName: this.business.lastName,
+          suffix: this.business.suffix,
+          designation: this.business.designation
+        };
+        this.businessData.push(addData);
+        this.clearCorporateOfficers()
+        this.openToast("top-right", "success", "Corporate Officer has been added!");
       },
       clearCorporateOfficers() {
         this.prefixesSelected = {};
@@ -4622,46 +4800,55 @@
       },
       //EO Step 2
 
-      //Step3
+      //Step3 
       async insertAddress() {
+        this.attemptAddressModal = true
+        this.addressModalSpinner = true
         this.resetAlert();
-  
-        const addData = {
-          shortName: this.address.shortName,
-          line1: this.address.line1,
-          line2: this.address.line2,
-          city: this.address.city,
-          province: this.address.province,
-          zipcode: this.address.zipcode,
-          phoneNumber: this.address.phoneNumber,
-          email: this.address.email,
-          fax: this.address.fax,
-          businessHours: this.address.businessHours,
-          preferredBilling: this.address.preferredBilling == '' ? 'False' : 'True',
-          preferredShipping: this.address.preferredShipping == '' ? 'False' : 'True',
-          notes: this.address.notes,
 
-          addressType_id: this.addressTypeSelected.code,
-          addressType_name: this.addressTypeSelected.name,
-          // addressStatus_id: this.addressStatusSelected.code,
-          // addressStatus_name: this.addressStatusSelected.name,
-          countries_id: this.countriesSelected.code,
-          countries_name: this.countriesSelected.name,
-          draftID: this.draftID,
-        };
-        this.clearAddress()
+        const validated = this.validate_addressModal()
+        if(validated) {
+          this.attemptAddressModal = false
+          const addData = {
+            line1: this.address.line1,
+            line2: this.address.line2,
+            city: this.address.city,
+            province: this.address.province,
+            zipcode: this.address.zipcode,
+            businessHours: this.address.businessHours,
+            preferredBilling: this.address.preferredBilling == '' ? 'False' : 'True',
+            preferredShipping: this.address.preferredShipping == '' ? 'False' : 'True',
+            notes: this.address.notes,
 
-        try {
-          const resp = await axios.post("http://127.0.0.1:8000/api/saveBusinessListDetail", addData);
-          console.log(resp.data);
-          // this.openToast("top-right", "success", resp.data.message);
-          
-        } catch (err) {
-          console.error(err);
-          this.openToast("top-right","error","Please Contact the administrator! and try again later");
+            addressType_id: this.addressTypeSelected.code,
+            addressType_name: this.addressTypeSelected.name,
+            // addressStatus_id: this.addressStatusSelected.code,
+            // addressStatus_name: this.addressStatusSelected.name,
+            countries_id: this.countriesSelected.code,
+            countries_name: this.countriesSelected.name,
+            draftID: this.draftID,
+            businessName: this.general.businessName,
+          };
+
+          try {
+            const resp = await axios.post("http://127.0.0.1:8000/api/saveBusinessListDetail", addData);
+            console.log(resp.data);
+            this.getAddressByBusinessNumber(this.draftID)
+            this.getAddressWorkFromByBusinessNumber(this.draftID)
+            this.openToast("top-right", "success", "Address has been added!");
+            this.addressModalSpinner = false
+            this.clearAddress()
+          } 
+          catch (err) {
+            console.error(err);
+            this.openToast("top-right","error","Please Contact the administrator! and try again later");
+            this.clearAddress()
+          }
         }
-        this.getAddressByBusinessNumber(this.draftID)
-        this.getAddressWorkFromByBusinessNumber(this.draftID)
+        else {
+          this.addAlert("Failed", "Please complete required fields!", "false");
+          this.addressModalSpinner = false
+        }
       },
       async trashAddress(index, id) {
         this.addressData.splice(index, 1);
@@ -4681,16 +4868,12 @@
           this.addressEditData = addressEditData;
           this.setIndex = index;
 
-          this.address.shortName = addressEditData.short_name
           this.address.line1 = addressEditData.address_line
           this.address.line2 = addressEditData.address_line2
           this.address.city = addressEditData.city
           this.address.province = addressEditData.province
           this.address.zipcode = addressEditData.zip
           this.address.country = addressEditData.country
-          this.address.phoneNumber = addressEditData.PhoneNum
-          this.address.email = addressEditData.EmailAdd
-          this.address.fax = addressEditData.Fax
           this.address.businessHours = addressEditData.business_hours
           this.address.preferredBilling = addressEditData.Preferred_Billing
           this.address.preferredShipping = addressEditData.Preferred_Shippping
@@ -4702,12 +4885,6 @@
           this.countriesSelected = {
               name: addressEditData.country,
           };
-
-          // this.addressStatusSelected = {
-          //     code: addressEditData.addressStatus_id,
-          //     name: addressEditData.addressStatus_name,
-          // };
-         
       },
       clearAddress() {
         this.address.shortName = '',
@@ -4729,19 +4906,20 @@
         this.countriesSelected = {}
       },
       async updateAddress() {
-          this.resetAlert();
+        this.resetAlert();
+        this.attemptAddressModal = true
+        this.addressModalSpinner = true
 
+        const validated = this.validate_addressModal()
+        if(validated) {
+          this.attemptAddressModal = false
           const updateData = {
             id: this.addressEditData.ID,
-            shortName: this.address.shortName,
             line1: this.address.line1,
             line2: this.address.line2,
             city: this.address.city,
             province: this.address.province,
             zipcode: this.address.zipcode,
-            phoneNumber: this.address.phoneNumber,
-            email: this.address.email,
-            fax: this.address.fax,
             businessHours: this.address.businessHours,
             preferredBilling: this.address.preferredBilling == '' ? 'False' : 'True',
             preferredShipping: this.address.preferredShipping == '' ? 'False' : 'True',
@@ -4749,55 +4927,191 @@
 
             addressType_id: this.addressTypeSelected.code,
             addressType_name: this.addressTypeSelected.name,
-            // addressStatus_id: this.addressStatusSelected.code,
-            // addressStatus_name: this.addressStatusSelected.name,
             countries_id: this.countriesSelected.code,
             countries_name: this.countriesSelected.name,
             draftID: this.draftID,
           };
-          this.clearAddress()
-
-          // console.log(updateData);
 
           try {
             const resp = await axios.post("http://127.0.0.1:8000/api/updateBusinessListDetail", updateData);
             console.log(resp.data);
-            // this.openToast("top-right", "success", resp.data.message);
-            
+            this.addressModalSpinner = false
+            this.getAddressByBusinessNumber(this.draftID)
+            this.openToast("top-right", "success", "Address has been updated!");
           } catch (err) {
             console.error(err);
             this.openToast("top-right","error","Please Contact the administrator! and try again later");
           }
-          this.getAddressByBusinessNumber(this.draftID)
+        }
+        else {
+          this.addAlert("Failed", "Please complete required fields!", "false");
+          this.addressModalSpinner = false
+        }
+      },  
+      validate_addressModal() {
+        if (!this.missingAddressType && !this.missingAddressLine1 && !this.missingAddressLine2 &&
+          !this.missingAddressCity && !this.missingAddressProvince && !this.missingAddressZipCode && !this.missingAddressCountry &&
+          !this.missingAddressBusinessHours && !this.missingAddressNotes
+        ) { 
+          return true
+        }
+        return false
       },
 
-
-
-
-      insertContact() {
+      async insertContact() {
+        this.attemptContactModal = true
+        this.contactModalSpinner = true
         this.resetAlert();
-  
-        const addData = {
-          id: this.i++,
-          firstName: this.contact.firstName,
-          lastName: this.contact.lastName,
-          suffix: this.contact.suffix,
-          nickName: this.contact.nickName,
-          designation: this.contact.designation,
-          department: this.contact.department,
-          mobileNumber: this.contact.mobileNumber,
-          email: this.contact.email,
-          mobileNumberCheckbox: this.contact.mobileNumberCheckbox,
-          emailCheckbox: this.contact.emailCheckbox,
-          notes: this.contact.notes,
-          prefix_id: this.contactPrefixesSelected.code,
-          prefix_name: this.contactPrefixesSelected.name,
-          linkTo_id: this.contactLinkToSelected.code,
-          linkTo_name: this.contactLinkToSelected.name,
-          status_id: this.contactStatusSelected.code,
-          status_name: this.contactStatusSelected.name,
-        };
-        console.log(addData);
+
+        const validated = this.validate_contactModal()
+        if(validated) {
+          this.attemptContactModal = false
+          const addData = {
+            firstName: this.contact.firstName,
+            lastName: this.contact.lastName,
+            suffix: this.contact.suffix,
+            nickName: this.contact.nickName,
+            designation: this.contact.designation,
+            department: this.contact.department,
+            mobileNumber: this.contact.mobileNumber,
+            email: this.contact.email,
+            mobileNumberCheckbox: this.contact.mobileNumberCheckbox == '' ? 'False' : 'True',
+            emailCheckbox: this.contact.emailCheckbox == '' ? 'False' : 'True',
+            notes: this.contact.notes,
+            prefix_name: this.contactPrefixesSelected.name,
+            linkTo_id: this.contactLinkToSelected.code,
+            linkTo_name: this.contactLinkToSelected.name,
+            worksFromID: this.addressWorkFromSelected.code,
+            worksFromName: this.addressWorkFromSelected.name,
+            draftID: this.draftID,
+          };
+          // console.log(addData);
+          try {
+            const resp = await axios.post("http://127.0.0.1:8000/api/saveBusinessContacts", addData);
+            console.log(resp.data);
+            this.getContactsByBusinessNumber(this.draftID)
+            this.clearContact()
+            this.contactModalSpinner = false
+            this.openToast("top-right", "success", "Contact has been added!");
+          } 
+          catch (err) {
+            console.error(err);
+            this.openToast("top-right","error","Please Contact the administrator! and try again later");
+          }
+        }
+        else {
+          this.addAlert("Failed", "Please complete required fields!", "false");
+          this.contactModalSpinner = false
+        }
+      },
+      clearContact() {
+        this.contact.firstName = ''
+        this.contact.lastName = ''
+        this.contact.suffix = ''
+        this.contact.nickName = ''
+        this.contact.designation = ''
+        this.contact.department = ''
+        this.contact.mobileNumber = ''
+        this.contact.email = ''
+        this.contact.mobileNumberCheckbox = ''
+        this.contact.emailCheckbox = ''
+        this.contact.notes = ''
+        this.contactPrefixesSelected = {}
+        this.contactStatusSelected = {}
+        this.contactLinkToSelected = {}
+      },
+      async trashContact(index, id) {
+        this.contactData.splice(index, 1);
+        console.log(id);
+        try {
+          const resp = await axios.post("http://127.0.0.1:8000/api/deleteContactByID", {id : id});
+          console.log(resp.data);
+          // this.openToast("top-right", "success", resp.data.message);
+          
+        } catch (err) {
+          console.error(err);
+          this.openToast("top-right","error","Please Contact the administrator! and try again later");
+        }
+      },
+      editContact(index) {
+          this.isButton = false
+          const contactEditData = this.contactData[index]
+          this.contactEditData = contactEditData
+          this.setIndex = index
+
+          console.log(this.contactEditData)
+
+          this.contact.firstName = this.contactEditData.FirstName
+          this.contact.lastName = this.contactEditData.LastName
+          this.contact.suffix = this.contactEditData.Suffix
+          this.contact.nickName = this.contactEditData.nickname
+          this.contact.designation = this.contactEditData.Position
+          this.contact.department = this.contactEditData.Department
+          this.contact.mobileNumber = this.contactEditData.Number
+          this.contact.email = this.contactEditData.EmailAdd
+          this.contact.mobileNumberCheckbox = this.contactEditData.MobileNoSubs
+          this.contact.emailCheckbox = this.contactEditData.EmailAddsSubs
+          this.contact.notes = this.contactEditData.Remarks
+
+          this.contactPrefixesSelected = {
+            name: this.contactEditData.Prefix
+          };
+      },
+      async updateContact() {
+        this.attemptContactModal = true
+        this.contactModalSpinner = true
+        this.resetAlert();
+
+        const validated = this.validate_contactModal()
+        if(validated) {
+          this.attemptContactModal = false
+          const updateData = {
+            id: this.contactEditData.ID,
+            firstName: this.contact.firstName,
+            lastName: this.contact.lastName,
+            suffix: this.contact.suffix,
+            nickName: this.contact.nickName,
+            designation: this.contact.designation,
+            department: this.contact.department,
+            mobileNumber: this.contact.mobileNumber,
+            email: this.contact.email,
+            mobileNumberCheckbox: this.contact.mobileNumberCheckbox == '' ? 'False' : 'True',
+            emailCheckbox: this.contact.emailCheckbox == '' ? 'False' : 'True',
+            notes: this.contact.notes,
+            // prefix_id: this.contactPrefixesSelected.code,
+            prefix_name: this.contactPrefixesSelected.name,
+            linkTo_id: this.contactLinkToSelected.code,
+            linkTo_name: this.contactLinkToSelected.name,
+            // status_id: this.contactStatusSelected.code,
+            // status_name: this.contactStatusSelected.name,
+            worksFromID: this.addressWorkFromSelected.code,
+            worksFromName: this.addressWorkFromSelected.name,
+            draftID: this.draftID,
+          };
+
+          try {
+            const resp = await axios.post("http://127.0.0.1:8000/api/updateContact", updateData);
+            console.log(resp.data);
+            this.getContactsByBusinessNumber(this.draftID)
+            this.contactModalSpinner = false
+            this.openToast("top-right", "success", "Contact has been updated.");
+          } catch (err) {
+            console.error(err);
+            this.openToast("top-right","error","Please Contact the administrator! and try again later");
+          }
+        }
+        else {
+          this.addAlert("Failed", "Please complete required fields!", "false");
+          this.contactModalSpinner = false
+        }
+      },
+      validate_contactModal() {
+        if (!this.missingContactPrefix && !this.missingContactFirstName && !this.missingContactLastName && !this.missingContactDesignation &&
+         !this.missingContactDepartment && !this.missingContactLinkTo && !this.missingContactWorkFrom && !this.missingContactMobileNumber
+        ) { 
+          return true
+        }
+        return false
       },
       //EO Step3
 
@@ -4846,25 +5160,22 @@
       },
       //EO Step 4
 
-      //Step 5 
-      insertBankInfo() {
-          this.resetAlert();
-  
-          const addData = {
-              id: this.i++,
-              bankName: this.accounting.bankName,
-              bankAcctNumber: this.accounting.bankAcctNumber,
-              bankBranch: this.accounting.bankBranch,
-              bankSwiftCode: this.accounting.bankSwiftCode,
-              bankPreferred: this.accounting.bankPreferred,
-              bank_currency_code: this.AccountCurrenciesSelected.code,
-              bank_currency_name: this.AccountCurrenciesSelected.name,
-          };
-          this.accountingData.push(addData);
-          this.clearBankInfo()
-
-          // this.addAlert("Success", "Expense details added successfully!", "true");
-          // this.addAlert("Failed", "Please complete required fields!", "false");
+      //Step 5
+      insertBankInfo() { 
+        this.resetAlert();
+        const addData = {
+          id: this.i++,
+          bankName: this.accounting.bankName,
+          bankAcctNumber: this.accounting.bankAcctNumber,
+          bankBranch: this.accounting.bankBranch,
+          bankSwiftCode: this.accounting.bankSwiftCode,
+          bankPreferred: this.accounting.bankPreferred,
+          bank_currency_code: this.AccountCurrenciesSelected.code,
+          bank_currency_name: this.AccountCurrenciesSelected.name,
+        };
+        this.accountingData.push(addData);
+        this.openToast("top-right", "success", "bank has been added!");
+        this.clearBankInfo()
       },
       editBankInfo(index) {
           this.isButton = false;
@@ -4889,33 +5200,33 @@
         this.accounting.bankAcctNumber = "";
         this.accounting.bankBranch = "";
         this.accounting.bankSwiftCode = "";
-        this.accounting.bankPreferred = "";
+        this.accounting.bankPreferred = false;
       },
       trashBankInfo(index) {
           this.accountingData.splice(index, 1);
       },
       updateBankInfo() {
-          this.resetAlert();
+        this.resetAlert();
 
-          const updateData = {
-              id: this.accountingEditData.id,
-              bankName: this.accounting.bankName,
-              bankAcctNumber: this.accounting.bankAcctNumber,
-              bankBranch: this.accounting.bankBranch,
-              bankSwiftCode: this.accounting.bankSwiftCode,
-              bankPreferred: this.accounting.bankPreferred,
-              bank_currency_code: this.AccountCurrenciesSelected.code,
-              bank_currency_name: this.AccountCurrenciesSelected.name,
-          };
+        const updateData = {
+          id: this.accountingEditData.id,
+          bankName: this.accounting.bankName,
+          bankAcctNumber: this.accounting.bankAcctNumber,
+          bankBranch: this.accounting.bankBranch,
+          bankSwiftCode: this.accounting.bankSwiftCode,
+          bankPreferred: this.accounting.bankPreferred,
+          bank_currency_code: this.AccountCurrenciesSelected.code,
+          bank_currency_name: this.AccountCurrenciesSelected.name,
+        };
 
-          this.accountingData.push(updateData);
-          this.accountingEditData = "";
-          this.accountingData.splice(this.setIndex, 1);
+        this.accountingData.push(updateData);
+        this.accountingEditData = "";
+        this.accountingData.splice(this.setIndex, 1);
 
-          this.accountingData.sort(function (a, b) {
-              return a.id - b.id;
-          });
-          this.clearBankInfo()
+        this.accountingData.sort(function (a, b) {
+            return a.id - b.id;
+        });
+        this.openToast("top-right", "success", "bank has been updated!");
       },
       // EO Step 5
 
@@ -4966,20 +5277,18 @@
 
       //Step 7
       insertRelatedVendor() {
-          this.resetAlert();
-  
-          const addData = {
-              id: this.i++,
-              vendor_relationship_code: this.vendorRelationshipSelected.code,
-              vendor_relationship_name: this.vendorRelationshipSelected.name,
-              vendor_code: this.relatedSupplierCodeSelected.code,
-              vendor_name: this.relatedSupplierCodeSelected.name,
-          };
-          this.relatedVendorData.push(addData);
-          this.clearRelatedVendor()
-
-          // this.addAlert("Success", "Expense details added successfully!", "true");
-          // this.addAlert("Failed", "Please complete required fields!", "false");
+        this.resetAlert();
+        const addData = {
+            id: this.i++,
+            vendor_relationship_code: this.vendorRelationshipSelected.code,
+            vendor_relationship_name: this.vendorRelationshipSelected.name,
+            vendor_code: this.relatedSupplierCodeSelected.code,
+            vendor_id: this.relatedSupplierCodeSelected.id, //id is came from the vendor_code
+            vendor_name: this.relatedSupplierCodeSelected.name,
+        };
+        this.openToast("top-right", "success", "Vendor has been added!");
+        this.relatedVendorData.push(addData);
+        this.clearRelatedVendor()
       },
       editRelatedVendor(index) {
           this.isButton = false;
@@ -5014,7 +5323,7 @@
           this.relatedVendorData.sort(function (a, b) {
               return a.id - b.id;
           });
-          this.clearRelatedVendor()
+          this.openToast("top-right", "success", "Vendor has been updated!");
       },
       clearRelatedVendor() {
         this.vendorRelationshipSelected = {};
@@ -5025,24 +5334,21 @@
       },
 
       insertRelatedCustomer() {
-          this.resetAlert();
-  
-          const addData = {
-              id: this.i++,
-              customer_relationship_code: this.customerRelationshipSelected.code,
-              customer_relationship_name: this.customerRelationshipSelected.name,
-              customer_code: this.relatedCustomerCodeSelected.code,
-              customer_name: this.relatedCustomerCodeSelected.name,
-          };
-          this.relatedCustomerData.push(addData);
-          this.clearRelatedCustomer()
-
-          // this.addAlert("Success", "Expense details added successfully!", "true");
-          // this.addAlert("Failed", "Please complete required fields!", "false");
+        this.resetAlert();
+        const addData = {
+            id: this.i++,
+            customer_relationship_code: this.customerRelationshipSelected.code,
+            customer_relationship_name: this.customerRelationshipSelected.name,
+            customer_code: this.relatedCustomerCodeSelected.code,
+            customer_id: this.relatedCustomerCodeSelected.id,
+            customer_name: this.relatedCustomerCodeSelected.name,
+        };
+        this.openToast("top-right", "success", "Customer has been added!");
+        this.relatedCustomerData.push(addData);
+        this.clearRelatedCustomer()
       },
       updateRelatedCustomer() {
           this.resetAlert();
-
           const updateData = {
               id: this.relatedCustomerEditData.id,
               customer_relationship_code: this.customerRelationshipSelected.code,
@@ -5059,6 +5365,7 @@
               return a.id - b.id;
           });
           this.clearRelatedVendor()
+          this.openToast("top-right", "success", "Customer has been updated!");
       },
       clearRelatedCustomer() {
         this.customerRelationshipSelected = {};
@@ -5396,44 +5703,48 @@
 
       // Step 9
       insertDistributionAgreement() {
-          this.resetAlert();
-  
-          const addData = {
-              id: this.i++,
-              monthStart: this.distribution.monthStart,
-              monthEnd: this.distribution.monthEnd,
-              annualTarget: this.distribution.annualTarget,
-              totalOrder: this.distribution.totalOrder,
-              currency_code: this.distributionCurrenciesSelected.code,
-              currency_name: this.distributionCurrenciesSelected.name,
-          };
-          this.distributionAgreementData.push(addData);
-          this.clearDistributionAgreement()
+        this.resetAlert();
+        this.attemptDistributionModal = true
 
-          // this.addAlert("Success", "Expense details added successfully!", "true");
-          // this.addAlert("Failed", "Please complete required fields!", "false");
+        this.attemptDistributionModal = false
+        const addData = {
+            id: this.i++,
+            monthStart: this.distribution.monthStart,
+            monthEnd: this.distribution.monthEnd,
+            annualTarget: this.distribution.annualTarget,
+            totalOrder: this.distribution.totalOrder,
+            currency_code: this.distributionCurrenciesSelected.code,
+            currency_name: this.distributionCurrenciesSelected.name,
+        };
+        this.openToast("top-right", "success", "Data has been added!");
+        this.distributionAgreementData.push(addData);
+        this.clearDistributionAgreement()
       },
       updateDistributionAgreement() {
-          this.resetAlert();
+        this.resetAlert();
 
-          const updateData = {
-              id: this.distributionAgreementEditData.id,
-              monthStart: this.distribution.monthStart,
-              monthEnd: this.distribution.monthEnd,
-              annualTarget: this.distribution.annualTarget,
-              totalOrder: this.distribution.totalOrder,
-              currency_code: this.distributionCurrenciesSelected.code,
-              currency_name: this.distributionCurrenciesSelected.name,
-          };
+        this.attemptDistributionModal = true
 
-          this.distributionAgreementData.push(updateData);
-          this.distributionAgreementEditData = "";
-          this.distributionAgreementData.splice(this.setIndex, 1);
+        this.attemptDistributionModal = false
 
-          this.distributionAgreementData.sort(function (a, b) {
-              return a.id - b.id;
-          });
-          this.clearDistributionAgreement()
+        const updateData = {
+            id: this.distributionAgreementEditData.id,
+            monthStart: this.distribution.monthStart,
+            monthEnd: this.distribution.monthEnd,
+            annualTarget: this.distribution.annualTarget,
+            totalOrder: this.distribution.totalOrder,
+            currency_code: this.distributionCurrenciesSelected.code,
+            currency_name: this.distributionCurrenciesSelected.name,
+        };
+
+        this.distributionAgreementData.push(updateData);
+        this.distributionAgreementEditData = "";
+        this.distributionAgreementData.splice(this.setIndex, 1);
+
+        this.distributionAgreementData.sort(function (a, b) {
+            return a.id - b.id;
+        });
+        this.openToast("top-right", "success", "Data has been added!");
       },
       editDistributionAgreement(index) {
           this.isButton = false;
@@ -5638,308 +5949,9 @@
       },
       // EO Step 9 
 
-      async getPaymentTerms() {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/getBusinessTerms`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        
-        if(responseData.length >= 1) {
-          let paymentTermsData = [];
-          for (const key in responseData) {
-            const request = {
-              code: responseData[key].id,
-              name: responseData[key].description,
-            };
-            paymentTermsData.push(request);
-          }
-          this.paymentTermsList = paymentTermsData
-        }
-      },
-      async getCurrencies() {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/getCurrencies`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        
-        if(responseData.length >= 1) {
-          let data = [];
-          for (const key in responseData) {
-            const request = {
-              code: responseData[key].id,
-              name: responseData[key].item,
-            };
-            data.push(request);
-          }
-          this.currenciesList = data
-        }
-      },
-      async getBusinessTaxStatus() {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/getBusinessTaxStatus`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        
-        if(responseData.length >= 1) {
-          let data = [];
-          for (const key in responseData) {
-            const request = {
-              code: responseData[key].id,
-              name: responseData[key].vatcode,
-            };
-            data.push(request);
-          }
-          this.businessTaxStatusList = data
-        }
-      },  
-      async getBusinessType() {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/getBusinessType`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        
-        if(responseData.length >= 1) {
-          let data = [];
-          for (const key in responseData) {
-            const request = {
-              code: responseData[key].ID,
-              name: responseData[key].BusinessType,
-            };
-            data.push(request);
-          }
-          this.businessTypeList = data
-        }
-      },  
-      async getBusinessNature() {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/getBusinessNature`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        
-        if(responseData.length >= 1) {
-          let data = [];
-          for (const key in responseData) {
-            const request = {
-              code: responseData[key].ID,
-              name: responseData[key].Nature,
-            };
-            data.push(request);
-          }
-          this.businessNatureList = data
-        }
-      }, 
-      async getPrefixes() {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/getPrefixes`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        
-        if(responseData.length >= 1) {
-          let data = [];
-          for (const key in responseData) {
-            const request = {
-              code: responseData[key].id,
-              name: responseData[key].item,
-            };
-            data.push(request);
-          }
-          this.prefixesList = data
-        }
-      }, 
-      async getCountries() {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/getCountries`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        
-        if(responseData.length >= 1) {
-          let data = [];
-          for (const key in responseData) {
-            const request = {
-              code: responseData[key].id,
-              name: responseData[key].Description,
-            };
-            data.push(request);
-          }
-          this.countriesList = data
-        }
-      }, 
-      async getATC() {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/getATC`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        
-        if(responseData.length >= 1) {
-          let data = [];
-          for (const key in responseData) {
-            const request = {
-              code: responseData[key].ID,
-              description: responseData[key].DESCRIPTION,
-              atc: responseData[key].ATC,
-              rate: responseData[key].RATE,
-            };
-            data.push(request);
-          }
-          this.AccountATCList = data
-        }
-      }, 
-      async getRelationship() {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/getRelationship`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        
-        if(responseData.length >= 1) {
-          let data = [];
-          for (const key in responseData) {
-            const request = {
-              code: responseData[key].type,
-              name: responseData[key].type
-            };
-            data.push(request);
-          }
-          this.relationshipList = data
-        }
-      }, 
-      async getRelatedSupplier() {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/getRelatedSupplier`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        
-        if(responseData.length >= 1) {
-          let data = [];
-          for (const key in responseData) {
-            const request = {
-              code: responseData[key].ACCOUNTNUMBER,
-              name: responseData[key].business_fullname
-            };
-            data.push(request);
-          }
-          this.relatedSupplierList = data
-        }
-      }, 
-      async getRelatedCustomer() {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/getRelatedCustomer`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-  
-        const responseData = await response.json();
-        
-        if(responseData.length >= 1) {
-          let data = [];
-          for (const key in responseData) {
-            const request = {
-              code: responseData[key].ACCOUNTNUMBER,
-              name: responseData[key].business_fullname
-            };
-            data.push(request);
-          }
-          this.relatedCustomerList = data
-        }
-      }, 
-      async getDraftVendorByUserID(userid) {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/getDraftVendorByUserID/${userid}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-        const responseData = await response.json();
-        this.draftID = responseData.draftID
-      }, 
+    
+
+
       async getAddressByBusinessNumber(draftID) {
         const response = await fetch(
           `http://127.0.0.1:8000/api/getAddressByBusinessNumber/${draftID}`,
@@ -5971,12 +5983,38 @@
           let workFromData = [];
           for (const key in responseData) {
             const request = {
+              code: responseData[key].ID,
               name: responseData[key].workfrom
             };
             workFromData.push(request);
           }
           this.addressWorkFromList = workFromData
         }
+      }, 
+      async getContactsByBusinessNumber(draftID) {
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/getContactsByBusinessNumber/${draftID}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          }
+        );
+        const responseData = await response.json();
+        this.contactData = responseData
+        this.purchasing.contactDetails = this.contactData[0].Number
+
+        let contactName = [];
+        for (const key in responseData) {
+          const request = {
+            code: responseData[key].ID,
+            name: responseData[key].ContactName
+          };
+          contactName.push(request);
+        }
+        this.contactPersonData = contactName
       }, 
 
       // The Attachments 
@@ -5993,20 +6031,244 @@
         event.currentTarget.classList.add("bg-light");
         event.currentTarget.classList.remove("bg-white");
       },
-      submit() {
-        console.log('submitted');
+
+      async submit() {
+        this.isSpinner = true
+        const businessListData = {
+          draftID: this.draftID, //business number
+          loggedUserId: this.loggedUserId, //user id
+          companyId: this.companyId, //company id
+
+          //table general.business_list
+          //step 1
+          businessName: this.general.businessName,
+          website: this.general.website,
+          vendorType: this.general.vendorTypeSelected,
+          inBusinessSince: this.general.inBusinessSince,
+          paymentTerms: this.paymentTermsSelected.name,
+          creditLimit: this.general.creditLimit,
+          currency: this.currenciesSelected.name,
+          vatStatus: this.businessTaxStatusSelected.name,
+          tinNumber: this.general.tinNumber,
+          twentyThreeZeroThree: this.general.twentyThreeZeroThree,
+          secNumber: this.general.secNumber,
+          notes: this.general.notes,
+          //step 2
+          businessType: this.businessTypeSelected.name,
+          businessNature: this.businessNatureSelected.name,
+          authorizedCapitalStock: this.business.authorizedCapitalStock,
+          paidCapitalStock: this.business.paidUpCapitalStock,
+          descriptionLineOfBusiness: this.business.notes,
+          //step 4
+          contactPersonID: this.contactPersonSelected.code,
+          contactPersonName: this.contactPersonSelected.name,
+          poSentVia: this.poToBeSentSelected.name,
+          orderingPreferences: this.purchasing.ordering,
+          shippingPreferences: this.purchasing.shipping,
+          documentationPreferences: this.purchasing.documentation,
+          paymentPreferences: this.purchasing.payment,
+          //step 5
+          atc: this.AccountATCSelected.atc,
+          //step 6
+          warrantyInformation: this.technical.warrantyNote,
+          rmaPolicy: this.technical.policyNote,
+
+          //table general.business_officer - step 2
+          businessOfficer: JSON.stringify(this.businessData),
+
+          //table general.business_product_offered- step 4
+          brand: this.purchasing.brand,
+          productLine: this.purchasing.productLine,
+          services: this.purchasing.services,
+
+          // table general.business_bankinfo - step 5
+          businessBankInfo: JSON.stringify(this.accountingData),
+          
+          //table general.business_ralated_vendor - step 7
+          relatedVendor: JSON.stringify(this.relatedVendorData),
+
+          //table general.business_ralated_customer - step 7
+          relatedCustomer: JSON.stringify(this.relatedCustomerData),
+
+          //table general.business_sales_target - step 9
+          salesTarget: JSON.stringify(this.distributionAgreementData),
+
+        };
+        // console.log(businessListData);
+
+        try {
+          const resp = await axios.post("http://127.0.0.1:8000/api/saveBusinessList", businessListData);
+          // console.log(resp.data);
+          
+          if(resp.data.status == "success") {
+            this.insertVendorAttachments()
+          }
+          else {
+            this.openToast("top-right","error","Please Contact the administrator! and try again later");
+            this.isSpinner = false
+          }
+        } 
+        catch (err) {
+          console.error(err);
+          this.openToast("top-right","error","Please Contact the administrator! and try again later");
+          this.isSpinner = false
+        }
       },
 
-  
+      // next() {
+      //   this.counter++
+      // },
+      async insertVendorAttachments() {
+        //save Purchasing attachment
+        await this.saveVendorAttachments(this.purchasingSelectedFile, "purchasing")
+
+        //save Technical and Support attachment
+        await this.saveVendorAttachments(this.technicalSelectedFile, "technical_and_support")
+        
+        //save Accomplished Vendor Information Sheet attachment
+        await this.saveVendorAttachments(this.attachmentOneSelectedFile, "accomplished_vendor_information_sheet")
+
+        // save Business Registration attachment
+        await this.saveVendorAttachments(this.attachmentTwoSelectedFile, "business_registration")
+        
+        //save Updated Business Permit attachment
+        await this.saveVendorAttachments(this.attachmentThreeSelectedFile, "updated_business_permit")
+
+        //save BIR Certificate of Registration: BIR 2303 form attachment
+        await this.saveVendorAttachments(this.attachmentFourSelectedFile, "bir_certificate_of_registration")
+        
+        //save Sample of Delivery Receipt, Sales Invoice, Official Receipt attachment
+        await this.saveVendorAttachments(this.attachmentFiveSelectedFile, "sample_of_delivery_receipt_sales_invoice_official_receipt")
+        
+        //save Company/Business Profile attachment
+        await this.saveVendorAttachments(this.attachmentSixSelectedFile, "company_business_profile")
+        
+        //save Latest Audited Financial Statements attachment
+        await this.saveVendorAttachments(this.attachmentSevenSelectedFile, "latest_audited_financial_statements")
+        
+        // save Agreement attachment
+        await this.saveVendorAttachments(this.distributionOneSelectedFile, "agreement")
+        
+        // save NDA attachment
+        await this.saveVendorAttachments(this.distributionTwoSelectedFile, "nda")
+        
+        // save Distributor Certificate attachment
+        await this.saveVendorAttachments(this.distributionThreeSelectedFile, "distributor_certificate")
+        
+        // save Other Attachments attachment
+        await this.saveVendorAttachments(this.distributionFourSelectedFile, "other_attachment")
+
+        this.isSpinner = false
+        this.openToast("top-right", "success", "Data has been saved");
+        this.$router.push('/inprogress')
+      },
+
+      // saveAttachments
+      async saveVendorAttachments(selectedFiles, category) {
+        const fd = new FormData();
+
+        for (let i = 0; i < selectedFiles.length; i++) {
+          fd.append("file[]", selectedFiles[i]);
+        }
+        fd.append("draftID", this.draftID);
+        fd.append("loggedUserId", this.loggedUserId);
+        fd.append("companyId", this.companyId);
+        fd.append("category", category);
+        fd.append("formName", 'Vendor Master');
+
+        try {
+          const res = await axios.post("http://127.0.0.1:8000/api/saveVendorAttachment", fd);
+          console.log(res.data);
+        } catch (err) {
+          console.log(err);
+        }
+      },
       
       next() {
-        this.counter++;
+        if (this.counter === 0) {
+          this.attemptNext = true;
+        } else if (this.counter === 1) {
+          // Step 2 is not required
+        } else if (this.counter === 2) {
+          // step 3
+        } else if (this.counter === 3) {
+          // step 4 is not required
+        } else if (this.counter === 4) {
+          this.attemptNext = false;
+          this.attemptNextFour = true;
+        } else if (this.counter === 5) {
+          this.attemptNextFour = false
+          // step 6 is not required
+        } else if (this.counter === 6) {
+          // step 7
+        } else if (this.counter === 7) {
+          // step 8 is not required
+        } else if (this.counter === 8) {
+          //Step 9 is not required
+        }  else if (this.counter === 9) {
+          //Step 10 form review
+        }
+        this.validateCurrentTab(this.counter);
+      },
+      validateCurrentTab(counter) {
+        // General
+        if (counter === 0) {
+          if (
+            !this.missingBusinessName && !this.missingGeneralVendorType && !this.missingGeneralPaymentTerms && !this.missingGeneralCurrency && !this.missingGeneralVATStatus && !this.missingGeneralTinNumber
+          ) {
+            this.counter++;
+          }
+        } 
+        else if (counter === 1) {
+          this.counter++;
+          // Step 2 Business is Not Required
+        } 
+        else if (counter === 2) {
+          if(!this.missingAddress || !this.missingContact) {
+            this.openToast(
+              "top-right",
+              "warning",
+              "Please add an address and contact"
+            );
+          }
+          else {
+            this.counter++
+          }
+        } 
+        else if (counter === 3) { 
+          this.counter++;
+          // Step 4 Purchasing is Not Required
+        }
+        else if (counter === 4) {
+          if ( !this.missingAccountingATC) {
+              this.counter++
+          }
+        }
+        else if (counter === 5) {
+          this.counter++
+          // Step 6 Technical and Support is not required
+        }
+        else if (counter === 6) {
+          this.counter++
+          // Step 7 Related To is not required
+        }
+        else if (counter === 7) {
+          this.counter++
+          // Step 8 Attachments is not required
+        }
+        else if (counter === 8) {
+          this.counter++
+          // Step 9 Distribution and Agreement is not required
+        }
       },
       setButton() {
         this.isButton = true;
       },
       closeModal() {
         this.resetAlert();
+        this.clearCorporateOfficers()
+        this.clearAddress()
+        this.clearContact()
       },
       addAlert(header, message, type) {
         this.isAlert = true;
@@ -6051,7 +6313,111 @@
       // format number 1000000 to 1,234,567
         return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       },
+      formatCurrencyCreditLimit(input, blur) {
+        let input_val = this.general.creditLimit;
+        if (input_val === "") return
+        let original_len = input_val.length;
+        let caret_pos = input.target.selectionStart;
+
+        if (input_val.indexOf(".") >= 0) {
+          let decimal_pos = input_val.indexOf(".");
+          let left_side = input_val.substring(0, decimal_pos);
+          let right_side = input_val.substring(decimal_pos);
+          left_side = this.formatNumber(left_side);
+          right_side = this.formatNumber(right_side);
+          if (blur === "blur") right_side += "00"
+          right_side = right_side.substring(0, 2);
+          input_val = left_side + "." + right_side;
+        } 
+        else {
+          input_val = this.formatNumber(input_val);
+          if (blur === "blur") input_val += ".00"
+        }
+
+        this.general.creditLimit = input_val;
+        input.target.value = input_val;
+        let realAmount = input_val;
+        if (realAmount.indexOf(",") !== -1) {
+          realAmount = realAmount.replace(/,/g, "");
+        }
+        console.log(realAmount);
+
+        let updated_len = input_val.length;
+        caret_pos = updated_len - original_len + caret_pos;
+        input.target.setSelectionRange(caret_pos, caret_pos);
+      },
+      formatCurrencyACS(input, blur) {
+        let input_val = this.business.authorizedCapitalStock;
+        if (input_val === "") return
+        let original_len = input_val.length;
+        let caret_pos = input.target.selectionStart;
+
+        if (input_val.indexOf(".") >= 0) {
+          let decimal_pos = input_val.indexOf(".");
+          let left_side = input_val.substring(0, decimal_pos);
+          let right_side = input_val.substring(decimal_pos);
+          left_side = this.formatNumber(left_side);
+          right_side = this.formatNumber(right_side);
+          if (blur === "blur") right_side += "00"
+          right_side = right_side.substring(0, 2);
+          input_val = left_side + "." + right_side;
+        } 
+        else {
+          input_val = this.formatNumber(input_val);
+          if (blur === "blur") input_val += ".00"
+        }
+
+        this.business.authorizedCapitalStock = input_val;
+        input.target.value = input_val;
+        let realAmount = input_val;
+        if (realAmount.indexOf(",") !== -1) {
+          realAmount = realAmount.replace(/,/g, "");
+        }
+        console.log(realAmount);
+
+        let updated_len = input_val.length;
+        caret_pos = updated_len - original_len + caret_pos;
+        input.target.setSelectionRange(caret_pos, caret_pos);
+      },
+      formatCurrencyPCS(input, blur) {
+        let input_val = this.business.paidUpCapitalStock;
+        if (input_val === "") return
+        let original_len = input_val.length;
+        let caret_pos = input.target.selectionStart;
+
+        if (input_val.indexOf(".") >= 0) {
+          let decimal_pos = input_val.indexOf(".");
+          let left_side = input_val.substring(0, decimal_pos);
+          let right_side = input_val.substring(decimal_pos);
+          left_side = this.formatNumber(left_side);
+          right_side = this.formatNumber(right_side);
+          if (blur === "blur") right_side += "00"
+          right_side = right_side.substring(0, 2);
+          input_val = left_side + "." + right_side;
+        } 
+        else {
+          input_val = this.formatNumber(input_val);
+          if (blur === "blur") input_val += ".00"
+        }
+
+        this.business.paidUpCapitalStock = input_val;
+        input.target.value = input_val;
+        let realAmount = input_val;
+        if (realAmount.indexOf(",") !== -1) {
+          realAmount = realAmount.replace(/,/g, "");
+        }
+        console.log(realAmount);
+
+        let updated_len = input_val.length;
+        caret_pos = updated_len - original_len + caret_pos;
+        input.target.setSelectionRange(caret_pos, caret_pos);
+      },
     },
+
+
+
+
+
   };
   </script>
   
@@ -6127,6 +6493,24 @@
   .px-13 {
     padding-left: 13px;
     padding-right: 13px;
+  }
+  .custom-modal {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+  }
+  .custom-modal-content {
+    margin: 20% auto;
+    padding-left: 15px;
+    padding-right: 15px;
+    width: 25%;
+    width: 100px;
+    height: 100px;
   }
   </style>
   
