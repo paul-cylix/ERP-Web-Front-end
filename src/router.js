@@ -85,6 +85,7 @@ import OtClarification from "./pages/workflow/clarification/OtClarification.vue"
 import OtApproved from "./pages/workflow/approved/OtApproved.vue";
 import OtRejected from "./pages/workflow/rejected/OtRejected.vue";
 import OtWithdrawn from "./pages/workflow/withdrawn/OtWithdrawn.vue";
+import OtDraft from "./pages/workflow/draft/OtDraft.vue";
 
 
 
@@ -804,6 +805,13 @@ const routes = [
             path: ":id",
             name: "Reimbursement Request-draft",
             component: ReDraft,
+            props: true,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id",
+            name: "Overtime Request-draft",
+            component: OtDraft,
             props: true,
             meta: { requiresAuth: true },
           },

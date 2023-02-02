@@ -13,7 +13,61 @@
       <div class="card-header">
         <h3 class="card-title">Reimbursement Request</h3>
       </div>
-      <div class="card-body">
+
+      <!-- Buttons -->
+      <div
+        class="
+          row
+          d-flex
+          justify-content-between
+          align-items-center
+          flex-nowrap
+          m-3
+        "
+      >
+        <div>
+          <button
+            type="button"
+            class="btn btn-warning btn-sm"
+            data-toggle="modal"
+            data-target="#modal-save-as-draft"
+          >
+            Save as draft
+          </button>
+        </div>
+
+        <div>
+          <button
+            v-show="counter"
+            type="button"
+            @click="counter--"
+            class="btn btn-secondary btn-sm"
+          >
+            Previous
+          </button>
+
+          <button
+            v-if="this.counter <= 4"
+            type="button"
+            @click="next()"
+            class="btn ml-1 btn-primary btn-sm"
+          >
+            Next
+          </button>
+
+          <button
+            v-else
+            type="button"
+            class="btn ml-1 btn-success btn-sm"
+            @click="submit()"
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+      <!-- / Buttons -->
+
+      <div class="card-body pt-0">
         <!-- Step Numbers -->
         <div class="d-flex progressBarWrapper text-center">
           <div class="progressbar" :class="classA">
@@ -458,7 +512,8 @@
           "
           id="app"
         >
-        `  <div
+          `
+          <div
             class="pt-2 col-md-12 rounded uploadContainer"
             @dragover="dragover"
             @dragleave="dragleave"
@@ -483,76 +538,97 @@
               <span class="text-secondary">Click here or drop file(s)</span>
             </label>
 
-              <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                <li
-                  class="text-sm mt-2"
-                  v-for="file in selectedDBFile"
-                  :key="file.newFilename"
-                >
-                  <div class="row d-flex justify-content-center">
-                    <div class="col-md-4 d-flex">
-                      <div class="col text-left">
-                        <span
-                          ><label>{{ file.originalFilename ? file.originalFilename : file.filename }}</label></span
-                        >
-                      </div>
+            <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
+              <li
+                class="text-sm mt-2"
+                v-for="file in selectedDBFile"
+                :key="file.newFilename"
+              >
+                <div class="row d-flex justify-content-center">
+                  <div class="col-md-4 d-flex">
+                    <div class="col text-left">
+                      <span
+                        ><label>{{
+                          file.originalFilename
+                            ? file.originalFilename
+                            : file.filename
+                        }}</label></span
+                      >
+                    </div>
 
-                      <div>
-                        <button
-                          class="btn btn-danger btn-sm px-13"
-                          type="button"
-                          @click="removeReAttachments(file.id, selectedDBFile.indexOf(file))"
-                          title="Remove file"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      <div class="ml-1">
-                        <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                      </div>
-                      <div class="ml-1">
-                        <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                      </div>
-
+                    <div>
+                      <button
+                        class="btn btn-danger btn-sm px-13"
+                        type="button"
+                        @click="
+                          removeReAttachments(
+                            file.id,
+                            selectedDBFile.indexOf(file)
+                          )
+                        "
+                        title="Remove file"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div class="ml-1">
+                      <a
+                        class="btn btn-info btn-sm"
+                        :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`"
+                        target="_blank"
+                        >Download</a
+                      >
+                    </div>
+                    <div class="ml-1">
+                      <a
+                        class="btn btn-secondary btn-sm"
+                        :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`"
+                        target="_blank"
+                        >Preview</a
+                      >
                     </div>
                   </div>
-                </li>
-              </ul>
+                </div>
+              </li>
+            </ul>
 
-              <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
-                <li
-                  class="text-sm mt-2"
-                  v-for="file in selectedFile"
-                  :key="file.name"
-                >
-                  <div class="row d-flex justify-content-center">
-                    <div class="col-md-4 d-flex">
-                      <div class="col text-left">
-                        <span><label>{{ file.name }}</label></span>
-                      </div>
-                      <div>
-                        <button
-                          class="btn btn-danger btn-sm px-13"
-                          type="button"
-                          @click="remove(selectedFile.indexOf(file))"
-                          title="Remove file"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      <div class="ml-1">
-                        <button
-                          @click="preview(selectedFile.indexOf(file))"
-                          class="btn btn-secondary btn-sm"
-                        >
-                          Preview
-                        </button>
-                      </div>
+            <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
+              <li
+                class="text-sm mt-2"
+                v-for="file in selectedFile"
+                :key="file.name"
+              >
+                <div class="row d-flex justify-content-center">
+                  <div class="col-md-4 d-flex">
+                    <div class="col text-left">
+                      <span
+                        ><label>{{ file.name }}</label></span
+                      >
+                    </div>
+                    <div>
+                      <button
+                        class="btn btn-danger btn-sm px-13"
+                        type="button"
+                        @click="remove(selectedFile.indexOf(file))"
+                        title="Remove file"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div class="ml-1">
+                      <button
+                        @click="preview(selectedFile.indexOf(file))"
+                        class="btn btn-secondary btn-sm"
+                      >
+                        Preview
+                      </button>
                     </div>
                   </div>
-                </li>
-              </ul>
-          </div>`
+                </div>
+              </li>
+            </ul>
+          </div>
+          `
         </div>
         <!-- / The Attachments -->
 
@@ -800,16 +876,52 @@
                 <tbody>
                   <tr v-for="file in selectedDBFile" :key="file.id">
                     <td>{{ file.filename }}</td>
-                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
-                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                      <a class="btn btn-secondary btn-sm ml-1" :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                    <td
+                      class="
+                        pl-2
+                        pr-2
+                        text-center
+                        d-flex
+                        justify-content-center
+                        align-items-center
+                      "
+                    >
+                      <a
+                        class="btn btn-info btn-sm"
+                        :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`"
+                        target="_blank"
+                        >Download</a
+                      >
+                      <a
+                        class="btn btn-secondary btn-sm ml-1"
+                        :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`"
+                        target="_blank"
+                        >Preview</a
+                      >
                     </td>
                   </tr>
                   <tr v-for="file in selectedFile" :key="file.filename">
                     <td>{{ file.name }}</td>
-                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
-                      <a class="btn btn-danger btn-sm px-13" @click="remove(selectedFile.indexOf(file))">Remove</a>
-                      <a class="btn btn-secondary btn-sm ml-1"  @click="preview(selectedFile.indexOf(file))">Preview</a>
+                    <td
+                      class="
+                        pl-2
+                        pr-2
+                        text-center
+                        d-flex
+                        justify-content-center
+                        align-items-center
+                      "
+                    >
+                      <a
+                        class="btn btn-danger btn-sm px-13"
+                        @click="remove(selectedFile.indexOf(file))"
+                        >Remove</a
+                      >
+                      <a
+                        class="btn btn-secondary btn-sm ml-1"
+                        @click="preview(selectedFile.indexOf(file))"
+                        >Preview</a
+                      >
                     </td>
                   </tr>
                 </tbody>
@@ -1201,8 +1313,10 @@
         >
           <div class="modal-dialog">
             <div class="modal-content">
-
               <div class="modal-header">
+                <h6 class="modal-title">
+                  <b>Confirm</b>
+                </h6>
                 <button
                   type="button"
                   id="modalCloseButton"
@@ -1216,28 +1330,40 @@
               </div>
 
               <div class="modal-body">
-                <h5 class="text-center"> Are you sure you want to draft the request?</h5>
+                <h6 class="text-center">
+                  Are you sure you want to draft the request?
+                </h6>
               </div>
               <div class="modal-footer justify-content-end">
                 <button
+                  v-if="!isSpinner"
                   type="button"
-                  class="btn btn-secondary btn-sm"
-                  data-dismiss="modal"
-                  aria-label="Close"
+                  class="btn btn-success btn-sm"
+                  @click="saveDraft()"
                 >
-                  Close
+                <i class="fas fa-check mr-1"></i>
+                  Yes
                 </button>
 
-                <button v-if="!isSpinner" type="button" class="btn btn-success btn-sm" @click="saveDraft()">Save</button>
-
                 <div v-else>
-                  <button disabled type="button" class="btn btn-success btn-sm" >
+                  <button disabled type="button" class="btn btn-success btn-sm">
                     <div class="spinner-border spinner-border-sm" role="status">
                       <span class="sr-only">Loading...</span>
                     </div>
                     Saving...
                   </button>
                 </div>
+
+                <button
+                  type="button"
+                  class="btn btn-danger btn-sm"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                <i class="fas fa-times mr-1"></i>
+                  No
+                </button>
+
               </div>
             </div>
             <!-- /.modal-content -->
@@ -1246,50 +1372,7 @@
         </div>
         <!-- end of Modal Confirmation of saving as draft  -->
 
-        <!-- Buttons -->
-        <div class="row d-flex justify-content-between mt-3 align-items-center flex-nowrap m-1">
-            <div>
-              <button
-                type="button"
-                class="btn btn-warning btn-sm"
-                data-toggle="modal"
-                data-target="#modal-save-as-draft"
-              >
-                Save as draft
-              </button>
-            </div>
-
-            <div>
-              <button
-                v-show="counter"
-                type="button"
-                @click="counter--"
-                class="btn btn-secondary btn-sm"
-              >
-                Previous
-              </button>
-          
-              <button
-                v-if="this.counter <= 4"
-                type="button"
-                @click="next()"
-                class="btn ml-1 btn-primary btn-sm"
-              >
-                Next
-              </button>
-          
-              <button
-                v-else
-                type="button"
-                class="btn ml-1 btn-success btn-sm"
-                @click="submit()"
-              >
-                Submit
-              </button>
-            </div>
-         
-        </div>
-        <!-- / Buttons -->
+        
       </div>
     </div>
     <!-- /.card -->
@@ -1306,7 +1389,7 @@ export default {
   },
   async created() {
     // Request Details
-    this.isLoading = true
+    this.isLoading = true;
     // await this.getProjects();
     // await this.getReportingManager();
     await this.todaysDate();
@@ -1315,8 +1398,7 @@ export default {
     // await this.gettranspoSetup();
 
     await this.reInitiate();
-    this.isLoading = false
-
+    this.isLoading = false;
   },
   watch: {
     // Request Details
@@ -1400,7 +1482,6 @@ export default {
     },
 
     missingPayeeName() {
-      
       if (this.payeeName?.length === 0) {
         return true;
       } else {
@@ -1601,7 +1682,7 @@ export default {
         { code: "Check", name: "Check" },
         { code: "Credit to Account", name: "Credit to Account" },
       ],
-      modeOfPaymentItem: {code: "Cash", name: "Cash"},
+      modeOfPaymentItem: { code: "Cash", name: "Cash" },
       currency: [
         { code: "PHP", name: "PHP" },
         { code: "AUD", name: "AUD" },
@@ -1653,8 +1734,8 @@ export default {
 
       transpoSetup_Data: [],
       transpoSetup_EditData: [],
-      selectedDBFile : [],
-      idOfAttachmentsToDelete : [],
+      selectedDBFile: [],
+      idOfAttachmentsToDelete: [],
 
       // Logged User Data
       loggedUserId: localStorage.getItem("id"),
@@ -1667,119 +1748,116 @@ export default {
 
       isLoading: false,
       isSpinner: false,
-
-      
-
     };
   },
 
   methods: {
-
-    getProjects2(){
-      return axios.get(`http://127.0.0.1:8000/api/general-getprojects/${localStorage.getItem("companyId")}`);
+    getProjects2() {
+      return axios.get(
+        `http://127.0.0.1:8000/api/general-getprojects/${localStorage.getItem(
+          "companyId"
+        )}`
+      );
     },
 
-    getReportingManager2(){
-      return axios.get(`http://127.0.0.1:8000/api/reporting-manager/${localStorage.getItem("id")}`);
+    getReportingManager2() {
+      return axios.get(
+        `http://127.0.0.1:8000/api/reporting-manager/${localStorage.getItem(
+          "id"
+        )}`
+      );
     },
 
-    getBusinesses2(){
-      return axios.get(`http://127.0.0.1:8000/api/general-businesses/${localStorage.getItem("companyId")}`);
+    getBusinesses2() {
+      return axios.get(
+        `http://127.0.0.1:8000/api/general-businesses/${localStorage.getItem(
+          "companyId"
+        )}`
+      );
     },
 
-    getexpenseType2(){
+    getexpenseType2() {
       return axios.get(`http://127.0.0.1:8000/api/get-expenseType`);
     },
-    gettranspoSetup2(){
+    gettranspoSetup2() {
       return axios.get(`http://127.0.0.1:8000/api/get-transpoSetup`);
     },
 
     async reInitiate() {
-      await Promise.all([this.getProjects2(), this.getReportingManager2(), this.getBusinesses2(), this.getexpenseType2(), this.gettranspoSetup2()])
-      .then((results) => {
-        const projects = results[0];
-        const managers = results[1];
-        const businesses = results[2];
-        const expenses = results[3];
-        const transpo = results[4];
+      await Promise.all([
+        this.getProjects2(),
+        this.getReportingManager2(),
+        this.getBusinesses2(),
+        this.getexpenseType2(),
+        this.gettranspoSetup2(),
+      ])
+        .then((results) => {
+          const projects = results[0];
+          const managers = results[1];
+          const businesses = results[2];
+          const expenses = results[3];
+          const transpo = results[4];
 
+          let project = [];
+          for (const key in projects.data) {
+            const request = {
+              code: projects.data[key].project_id,
+              name: projects.data[key].project_name,
+            };
+            project.push(request);
+          }
+          this.project = project;
 
-      let project = [];
-      for (const key in projects.data) {
-        const request = {
-          code: projects.data[key].project_id,
-          name: projects.data[key].project_name,
-        };
-        project.push(request);
-      }
-      this.project = project;
+          const reportingManager = [];
+          for (const key in managers.data) {
+            const request = {
+              code: managers.data[key].RMID,
+              name: managers.data[key].RMName,
+            };
+            reportingManager.push(request);
+          }
+          this.reportingManager = reportingManager;
 
-      const reportingManager = [];
-      for (const key in managers.data) {
-        const request = {
-          code: managers.data[key].RMID,
-          name: managers.data[key].RMName,
-        };
-        reportingManager.push(request);
-      }
-      this.reportingManager = reportingManager;
+          const client = [];
+          for (const key in businesses.data) {
+            const request = {
+              code: businesses.data[key].businessNumber,
+              name: businesses.data[key].businessName,
+            };
+            client.push(request);
+          }
+          this.modalclient = client;
 
+          const modalExpenseType = [];
+          for (const key in expenses.data[0]) {
+            const request = {
+              code: expenses.data[0][key].type,
+              name: expenses.data[0][key].type,
+            };
+            modalExpenseType.push(request);
+          }
+          this.modalExpenseType = modalExpenseType;
 
-      const client = [];
-      for (const key in businesses.data) {
-        const request = {
-          code: businesses.data[key].businessNumber,
-          name: businesses.data[key].businessName,
-        };
-        client.push(request);
-      }
-      this.modalclient = client;
+          const transpoSetup = [];
+          for (const key in transpo.data[0]) {
+            const request = {
+              code: transpo.data[0][key].MODE,
+              name: transpo.data[0][key].MODE,
+            };
+            transpoSetup.push(request);
+          }
+          this.transpoSetup = transpoSetup;
+        })
 
-      const modalExpenseType = [];
-      for (const key in expenses.data[0]) {
-        const request = {
-          code: expenses.data[0][key].type,
-          name: expenses.data[0][key].type,
-        };
-        modalExpenseType.push(request);
-      }
-      this.modalExpenseType = modalExpenseType;
-
-      const transpoSetup = [];
-      for (const key in transpo.data[0]) {
-        const request = {
-          code: transpo.data[0][key].MODE,
-          name: transpo.data[0][key].MODE,
-        };
-        transpoSetup.push(request);
-      }
-      this.transpoSetup = transpoSetup;
-      
-
-
-
-      })
-      
-      .catch(error => {
-        console.error(error);
-        this.openToast(
+        .catch((error) => {
+          console.error(error);
+          this.openToast(
             "top-right",
             "error",
             "Please Contact the administrator! and try again later"
-        );
-      });
+          );
+        });
     },
-
-
-
-
-
-
-
-
-
-
-
 
     re_totalAmount() {
       let xp_totalAmt = 0;
@@ -1788,13 +1866,17 @@ export default {
       if (this.expenseType_totalAmount === 0) {
         xp_totalAmt = 0;
       } else {
-        xp_totalAmt = parseFloat(this.expenseType_totalAmount.replace(/,/g, ""))
+        xp_totalAmt = parseFloat(
+          this.expenseType_totalAmount.replace(/,/g, "")
+        );
       }
 
       if (this.transpoSetup_totalAmount === 0) {
         td_totalAmt = 0;
       } else {
-        td_totalAmt = parseFloat(this.transpoSetup_totalAmount.replace(/,/g, ""))
+        td_totalAmt = parseFloat(
+          this.transpoSetup_totalAmount.replace(/,/g, "")
+        );
       }
 
       const float_total = xp_totalAmt + td_totalAmt;
@@ -1928,8 +2010,6 @@ export default {
     //     }
     //   );
 
-      
-
     //   const responseData = await response.json();
 
     //   console.warn(responseData);
@@ -1970,9 +2050,9 @@ export default {
       );
 
       const responseData = await response.json();
-      if(responseData.length >= 1) {
+      if (responseData.length >= 1) {
         // console.log(responseData);
-        this.expenseType_Data = responseData
+        this.expenseType_Data = responseData;
       }
     },
 
@@ -1989,23 +2069,22 @@ export default {
       );
 
       const responseData = await response.json();
-      if(responseData.length >= 1) {
+      if (responseData.length >= 1) {
         // console.log(responseData);
-        this.transpoSetup_Data = responseData
+        this.transpoSetup_Data = responseData;
       }
     },
 
     removeReAttachments(id, i) {
       console.log(id);
       this.selectedDBFile.splice(i, 1);
-      this.idOfAttachmentsToDelete.push(id)
+      this.idOfAttachmentsToDelete.push(id);
       // console.log(this.idOfAttachmentsToDelete);
     },
 
     async saveDraft() {
       this.isLoading = true;
       this.isSpinner = true;
-      this.$refs.refSaveDraftCloseBtn.click()
 
       const fd = new FormData();
       for (let i = 0; i < this.selectedFile.length; i++) {
@@ -2045,6 +2124,7 @@ export default {
           "http://127.0.0.1:8000/api/saveNewREDrafts",
           fd
         );
+        this.$refs.refSaveDraftCloseBtn.click();
 
         if (resp.status >= 200) {
           this.isLoading = false;
@@ -2056,13 +2136,15 @@ export default {
         this.isSpinner = false;
       } catch (err) {
         this.isSpinner = false;
+        this.$refs.refSaveDraftCloseBtn.click();
+
         console.error(err);
-          this.isLoading = false;
-          this.openToast(
-            "top-right",
-            "error",
-            "Please Contact the administrator! and try again later"
-          );
+        this.isLoading = false;
+        this.openToast(
+          "top-right",
+          "error",
+          "Please Contact the administrator! and try again later"
+        );
       }
     },
 
@@ -2073,7 +2155,6 @@ export default {
       for (let i = 0; i < this.selectedFile.length; i++) {
         fd.append("file[]", this.selectedFile[i]);
       }
-
 
       fd.append("reportingManagerId", this.reportingManagerItem.code);
       fd.append("reportingManagerName", this.reportingManagerItem.name);
@@ -2101,10 +2182,7 @@ export default {
       fd.append("transpoSetup_Data", JSON.stringify(this.transpoSetup_Data));
 
       try {
-        const resp = await axios.post(
-          "http://127.0.0.1:8000/api/saveRef",
-          fd
-        );
+        const resp = await axios.post("http://127.0.0.1:8000/api/saveRef", fd);
 
         if (resp.status >= 200 && resp.status <= 399) {
           this.isLoading = false;
@@ -2116,14 +2194,13 @@ export default {
       } catch (err) {
         // Handle Error Here
         console.error(err);
-          this.isLoading = false;
-          this.openToast(
-            "top-right",
-            "error",
-            "Please Contact the administrator! and try again later"
-          );
+        this.isLoading = false;
+        this.openToast(
+          "top-right",
+          "error",
+          "Please Contact the administrator! and try again later"
+        );
       }
-
     },
 
     insert_transpoSetup() {
@@ -2474,8 +2551,6 @@ export default {
         client.push(request);
       }
       this.modalclient = client;
-
-
     },
 
     async getProjects() {
