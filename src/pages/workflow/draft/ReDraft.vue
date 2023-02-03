@@ -2258,7 +2258,7 @@ export default {
         if (resp.status >= 200 && resp.status <= 399) {
           this.isLoading = false;
           this.openToast("top-right", "success", resp.data.message);
-          // this.$router.replace("/inprogress");
+          this.$router.replace("/inprogress");
         }
 
         console.log(resp.data);
