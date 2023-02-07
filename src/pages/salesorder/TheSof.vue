@@ -5,7 +5,48 @@
       <div class="card-header">
         <h3 class="card-title">Sales Order</h3>
       </div>
-      <div class="card-body">
+
+      <!-- Buttons -->
+      <div
+        class="
+          row
+          d-flex
+          justify-content-end
+          align-items-center
+          flex-nowrap
+          m-3
+        "
+      >
+        <button
+          v-show="counter"
+          type="button"
+          @click="counter--"
+          class="btn btn-secondary btn-sm"
+        >
+          Previous
+        </button>
+
+        <button
+          v-if="this.counter > -1 && this.counter < 6"
+          type="button"
+          @click="next()"
+          class="btn ml-1 btn-primary btn-sm"
+        >
+          Next
+        </button>
+
+        <button
+          v-else
+          type="button"
+          @click="submit()"
+          class="btn ml-1 btn-success btn-sm"
+        >
+          Submit
+        </button>
+      </div>
+      <!-- / Buttons -->
+
+      <div class="card-body pt-0">
         <card-spinner :show="isLoadingSpinner"></card-spinner>
 
         <!-- Step Numbers -->
@@ -398,7 +439,6 @@
                   option-text="name"
                   placeholder="select item"
                   style="padding: 9px; background-color: #e9ecef"
-              
                   :isDisabled="true"
                 >
                 </model-list-select>
@@ -878,7 +918,9 @@
                 <div class="row d-flex justify-content-center">
                   <div class="col-md-4 d-flex">
                     <div class="col text-left">
-                      <span><label>{{ file.name }}</label></span>
+                      <span
+                        ><label>{{ file.name }}</label></span
+                      >
                     </div>
                     <div>
                       <button
@@ -1296,39 +1338,6 @@
           <!-- /.modal-dialog -->
         </div>
         <!-- /.modal default -->
-
-        <!-- Buttons -->
-        <div class="row d-flex justify-content-end mt-3 align-items-center flex-nowrap m-1">
-       
-            <button
-              v-show="counter"
-              type="button"
-              @click="counter--"
-              class="btn  btn-secondary btn-sm"
-            >
-              Previous
-            </button>
-
-            <button
-              v-if="this.counter > -1 && this.counter < 6"
-              type="button"
-              @click="next()"
-              class="btn ml-1 btn-primary btn-sm"
-            >
-              Next
-            </button>
-  
-            <button
-              v-else
-              type="button"
-              @click="submit()"
-              class="btn ml-1 btn-success btn-sm"
-            >
-              Submit
-            </button>
-         
-        </div>
-        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->
@@ -1346,13 +1355,12 @@ export default {
     ModelListSelect,
   },
   async created() {
-    this.isLoadingSpinner = true
-      await this.queryCompany();
-      await this.queryCompanySystemDetails();
-      await this.queryCompanyDocumentDetails();
-      await this.queryCurrency();
-    this.isLoadingSpinner = false
-
+    this.isLoadingSpinner = true;
+    await this.queryCompany();
+    await this.queryCompanySystemDetails();
+    await this.queryCompanyDocumentDetails();
+    await this.queryCurrency();
+    this.isLoadingSpinner = false;
   },
   watch: {
     counter() {
@@ -1681,7 +1689,7 @@ export default {
       billingAddress: [],
       billingAddressItem: {},
       accountManager: null,
-      delegates: '',
+      delegates: "",
 
       // Project Details
       poNumber: "",
@@ -1799,30 +1807,32 @@ export default {
           selectedFile: this.selectedFile,
         };
 
-
-
         const response = await this.$store.dispatch("sof/createSOF", payload);
 
-
         if (response.status === 201) {
-          this.openToast("top-right", "success", "Your Sales Order Request was successfully submitted.");
+          this.openToast(
+            "top-right",
+            "success",
+            "Your Sales Order Request was successfully submitted."
+          );
         }
 
         this.isLoadingSpinner = false;
         this.$router.replace("/inprogress");
-  
       } catch (error) {
         this.isLoadingSpinner = false;
 
         if (error.response.status === 422) {
           this.openToast("top-right", "error", error.response.data);
         } else {
-          this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+          this.openToast(
+            "top-right",
+            "error",
+            "Internal Server Error! Please inform the administrator!"
+          );
         }
 
-
-        console.info(error)
-
+        console.info(error);
       }
     },
 
@@ -1946,8 +1956,6 @@ export default {
       );
       this.deliveryAddress = responseData;
       this.billingAddress = responseData;
-
-      
     },
 
     async queryCompanyContacts(customerId) {
@@ -1973,10 +1981,10 @@ export default {
         customerId
       );
       // this.delegates = responseData;
-      if(responseData.length > 0){
-        this.delegates = responseData[0]['DelegatesName']
+      if (responseData.length > 0) {
+        this.delegates = responseData[0]["DelegatesName"];
       } else {
-        this.delegates = '';
+        this.delegates = "";
       }
     },
 
