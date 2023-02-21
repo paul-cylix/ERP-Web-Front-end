@@ -115,7 +115,7 @@
                   class="form-control form-control-sm py-3"
                   id="reference"
                   disabled
-                  :value="'OTR-' + todaysYear"
+                  v-model="referenceNumber"
                 />
               </div>
             </div>
@@ -865,15 +865,28 @@ export default {
     this.isLoading = true;
     await this.todaysDate();
     await this.otInitiate();
+    await this.getOtMain(this.$route.params.id);
     this.isLoading = false;
 
     // this.getEmployees(this.companyId);
   },
   watch: {
+    counter() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    },
+
     itemModalProjectName(newValue) {
       if (newValue.code > 0) {
         this.getClient(newValue.code);
       }
+    },
+
+    async $route(newRoute) {
+      this.isLoading = true;
+      this.counter = 0;
+      await this.getOtMain(newRoute.params.id);
+      this.isLoading = false;
     },
   },
   computed: {
@@ -975,12 +988,14 @@ export default {
       attemptNext: false,
       attemptNextOne: false,
       attemptInsert: false,
+
       // Request Details
       referenceNumber: "",
       requestedDate: "",
       reportingManager: [],
       reportingManagerItem: {},
       // purpose: "",
+      guid: '',
 
       // Logged User Data
       loggedUserId: localStorage.getItem("id"),
@@ -1021,7 +1036,6 @@ export default {
       overtime: [],
       editOvertime: [],
       i: 0,
-      
 
       // The Attachments
       selectedFile: [],
@@ -1031,9 +1045,6 @@ export default {
 
   methods: {
     validateSaveDraft(){
-      console.log(this.missingReportingManager)
-      console.log(this.missingOTData)
-
       if(this.missingOTData && this.missingReportingManager){
           this.openToast(
             "top-right",
@@ -1060,10 +1071,43 @@ export default {
       }
     },
 
-    async saveDraft(){
+    async getOtMain(id) {
+      // this.isLoading = true;
+      try {
+        const resp = await axios.get(`http://127.0.0.1:8000/api/ot-main/${id}`);
+        // console.log(resp.data);
+        if (resp.status === 200) {
+          // this.isLoading = false;
+          this.referenceNumber = resp.data[0].draft_reference;
+          this.requestedDate = resp.data[0].request_date;
+
+          const reportingManagerItem = {
+            code: resp.data[0].IDOFRM,
+            name: resp.data[0].reporting_manager,
+          };
+          this.reportingManagerItem = reportingManagerItem;
+
+          this.overtime = resp.data;
+          this.guid = resp.data[0].GUID;
+
+        }
+      } catch (error) {
+        if (error.response.status === 422) {
+          this.openToast("top-right", "error", error.response.data);
+        } else {
+          this.openToast(
+            "top-right",
+            "error",
+            "Internal Server Error! Please inform the administrator!"
+          );
+        }
+      }
+    },
+
+    async saveDraft() {
       this.isLoading = true;
       this.isSpinner = true;
-      
+
       const fd = new FormData();
 
       fd.append("requestedDate", this.requestedDate);
@@ -1081,11 +1125,19 @@ export default {
       fd.append("companyName", this.companyName);
       fd.append("form", "Overtime Request");
       fd.append("class", "OT");
+      fd.append("processId", this.$route.params.id);
+      fd.append("guid", this.guid);
+      fd.append("referenceNumber", this.referenceNumber);
+
+
 
       fd.append("overtimeData", JSON.stringify(this.overtime));
 
       try {
-        const resp = await axios.post("http://127.0.0.1:8000/api/saveNewOTDrafts", fd);
+        const resp = await axios.post(
+          "http://127.0.0.1:8000/api/saveOTDrafts",
+          fd
+        );
 
         if (resp.status === 200) {
           this.isLoading = false;
@@ -1095,13 +1147,12 @@ export default {
           this.$router.replace("/drafts");
         }
 
-        console.log(resp.data);
-      } catch (error) {
-          this.isLoading = false;
-          this.isSpinner = false;
-          this.$refs.refSaveDraftCloseBtn.click();
+      } catch (err) {
+        this.isLoading = false;
+        this.isSpinner = false;
+        this.$refs.refSaveDraftCloseBtn.click();
         // Handle Error Here
-        console.error(error);
+        console.error(err);
         if (error.response.status === 422) {
           this.openToast("top-right", "error", error.response.data);
         } else {
@@ -1262,12 +1313,10 @@ export default {
       let f = Math.floor(time_total);
       if (time_total - f < 0.5) {
         time_total = Math.floor(time_total);
-        console.log(time_total);
         this.authOThrs = time_total;
         // $('#authtime_totalHrs').val(time_total);
       } else {
         time_total = f + 0.5;
-        console.log(time_total);
         this.authOThrs = time_total;
         // $('#authtime_totalHrs').val(time_total);
       }
@@ -1301,11 +1350,14 @@ export default {
       fd.append("companyName", this.companyName);
       fd.append("form", "Overtime Request");
       fd.append("class", "OT");
-
+      fd.append("processId", this.$route.params.id);
+      fd.append("guid", this.guid);
+      fd.append("referenceNumber", this.referenceNumber);
+      
       fd.append("overtimeData", JSON.stringify(this.overtime));
 
       try {
-        const resp = await axios.post("http://127.0.0.1:8000/api/save-ot", fd);
+        const resp = await axios.post("http://127.0.0.1:8000/api/saveOTF", fd);
 
         if (resp.status === 200) {
           this.isLoading = false;
@@ -1313,7 +1365,6 @@ export default {
           this.$router.replace("/inprogress");
         }
 
-        console.log(resp.data);
       } catch (err) {
         this.isLoading = false;
         // Handle Error Here
@@ -1548,7 +1599,6 @@ export default {
             this.addAlert("Failed", resp.data.message, "false");
           }
 
-          console.log(resp.data);
         } catch (err) {
           // Handle Error Here
           this.isLoadingModal = false;
@@ -1581,9 +1631,7 @@ export default {
       this.editOvertime = selectedOvertime;
       this.setIndex = index;
 
-      console.log(selectedOvertime);
 
-      console.log(this.editOvertime);
 
       this.itemEmployeeName = {
         code: selectedOvertime.employee_id,
@@ -1594,10 +1642,35 @@ export default {
         name: selectedOvertime.PRJNAME,
       };
       this.overtimeDate = selectedOvertime.overtime_date;
-      this.authTimeStart = selectedOvertime.ot_in;
-      this.authTimeEnd = selectedOvertime.ot_out;
+      this.authTimeStart = this.convertTimeAndDate(selectedOvertime.ot_in);
+      this.authTimeEnd = this.convertTimeAndDate(selectedOvertime.ot_out);
       this.authOThrs = selectedOvertime.ot_totalhrs;
       this.modalPurpose = selectedOvertime.purpose;
+    },
+
+    convertTimeAndDate(datetime) {
+      const date = new Date(datetime);
+
+      let month = date.getMonth() + 1;
+      let day = date.getDate();
+      const year = date.getFullYear();
+
+      if (month < 10) {
+        month = `0${month}`;
+      }
+
+      let hours = date.getHours();
+      let minutes = date.getMinutes();
+      const ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      hours = hours < 10 ? "0" + hours : hours;
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      day = day < 10 ? "0" + day : day;
+      const time = hours + ":" + minutes + " " + ampm;
+      const dit = `${month}/${day}/${year}`;
+      const dateTimeReal = `${dit} ${time}`;
+      return dateTimeReal;
     },
 
     setButton() {
@@ -1674,7 +1747,6 @@ export default {
         };
         // this.overtime.push(addData);
         otData.push(addData);
-        console.log(addData);
 
         const fd = new FormData();
         fd.append("overtimeData", JSON.stringify(otData));

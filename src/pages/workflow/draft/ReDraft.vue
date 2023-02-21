@@ -63,6 +63,14 @@
           >
             Submit
           </button>
+
+          <button
+            type="button"
+            class="btn ml-1 btn-danger btn-sm"
+            @click="close()"
+          >
+            Close
+          </button>
         </div>
       </div>
       <!-- / Buttons -->
@@ -149,7 +157,7 @@
                   class="form-control form-control-sm py-3"
                   id="reference"
                   disabled
-                  :value="'RE-' + todaysYear"
+                  v-model="referenceNumber"
                 />
               </div>
             </div>
@@ -1314,7 +1322,7 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h6 class="modal-title">
+                                <h6 class="modal-title">
                   <b>Confirm</b>
                 </h6>
                 <button
@@ -1363,7 +1371,6 @@
                 <i class="fas fa-times mr-1"></i>
                   No
                 </button>
-
               </div>
             </div>
             <!-- /.modal-content -->
@@ -1371,8 +1378,6 @@
           <!-- /.modal-dialog -->
         </div>
         <!-- end of Modal Confirmation of saving as draft  -->
-
-        
       </div>
     </div>
     <!-- /.card -->
@@ -1390,13 +1395,13 @@ export default {
   async created() {
     // Request Details
     this.isLoading = true;
-    // await this.getProjects();
-    // await this.getReportingManager();
-    await this.todaysDate();
-    // await this.getBusinesses();
-    // await this.getexpenseType();
-    // await this.gettranspoSetup();
-
+    this.todaysDate();
+    await this.getReDrafts(
+      this.$route.params.id,
+      this.$route.params.frmName,
+      this.companyId,
+      this.loggedUserId
+    );
     await this.reInitiate();
     this.isLoading = false;
   },
@@ -1409,6 +1414,21 @@ export default {
     counter() {
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
+    },
+
+    async $route(newRoute) {
+      this.isLoading = true;
+      this.counter = 0;
+      this.withdrawRemarks = "";
+      this.todaysDate();
+      await this.getReDrafts(
+        newRoute.params.id,
+        newRoute.params.frmName,
+        this.companyId,
+        this.loggedUserId
+      );
+      await this.reInitiate();
+      this.isLoading = false;
     },
 
     expenseType_totalAmount() {
@@ -1748,10 +1768,16 @@ export default {
 
       isLoading: false,
       isSpinner: false,
+
+      guid: "",
     };
   },
 
   methods: {
+    close() {
+      this.$router.replace("/drafts");
+    },
+
     getProjects2() {
       return axios.get(
         `http://127.0.0.1:8000/api/general-getprojects/${localStorage.getItem(
@@ -1998,44 +2024,56 @@ export default {
       });
     },
 
-    // async getREbyUserID() {
-    //   const response = await fetch(
-    //     `http://127.0.0.1:8000/api/getREbyUserID/${this.loggedUserId}`,
-    //     {
-    //       method: "GET",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         Accept: "application/json",
-    //       },
-    //     }
-    //   );
+    async getReDrafts(id, frmName, companyId, loggedUserId) {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/getReDrafts/${id}/${frmName}/${companyId}/${loggedUserId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
 
-    //   const responseData = await response.json();
+      const responseData = await response.json();
+      const { draftAttachments, draftDetails } = responseData;
+      // console.warn(draftDetails);
+      // console.warn(draftAttachments);
 
-    //   console.warn(responseData);
+      this.referenceNumber = draftDetails.DRAFT_NUM;
+      this.dateNeeded = draftDetails.DEADLINE;
 
-    //   if(responseData.length >= 1) {
-    //     this.dateNeeded = responseData[0].TRANS_DATE
-    //     this.purpose = responseData[0].DESCRIPTION
-    //     this.payeeName = responseData[0].PAYEE
+      if (draftDetails.reportingManagerID) {
+        this.reportingManagerItem = {
+          code: draftDetails.reportingManagerID,
+          name: draftDetails.REPORTING_MANAGER,
+        };
+      }
 
-    //     const reportingManager = {
-    //       code: responseData[0].reportingManagerID,
-    //       name: responseData[0].REPORTING_MANAGER
-    //     };
-    //     const project = {
-    //       code: responseData[0].PRJID,
-    //       name: responseData[0].PROJECT
-    //     };
+      if (draftDetails.PRJID) {
+        this.projectItem = {
+          code: draftDetails.PRJID,
+          name: draftDetails.PROJECT,
+        };
+      }
 
-    //     this.reportingManagerItem = reportingManager
-    //     this.projectItem = project
+      this.guid = draftDetails.GUID;
 
-    //     this.getReExpenseByREID(responseData[0]['id'])
-    //     this.getReTranspoByREID(responseData[0]['id'])
-    //     this.getREAttachmentsByREQID(responseData[0]['id'])
-    //   }
-    // },
+      this.purpose =
+        Boolean(draftDetails.DESCRIPTION) === true
+          ? draftDetails.DESCRIPTION
+          : "";
+      this.payeeName =
+        Boolean(draftDetails.PAYEE) === true ? draftDetails.PAYEE : "";
+
+      this.getReExpenseByREID(id);
+      this.getReTranspoByREID(id);
+
+      if (draftAttachments.length >= 1) {
+        this.selectedDBFile = draftAttachments;
+      }
+    },
 
     async getReExpenseByREID(reid) {
       const response = await fetch(
@@ -2075,6 +2113,26 @@ export default {
       }
     },
 
+    async getREAttachmentsByREQID(reqid) {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/getReGeneralAttachmentsByReqid/${reqid}/${this.loggedUserId}`,
+
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      if (responseData.length >= 1) {
+        // console.log(responseData);
+        this.selectedDBFile = responseData;
+      }
+    },
+
     removeReAttachments(id, i) {
       console.log(id);
       this.selectedDBFile.splice(i, 1);
@@ -2085,12 +2143,14 @@ export default {
     async saveDraft() {
       this.isLoading = true;
       this.isSpinner = true;
+      this.$refs.refSaveDraftCloseBtn.click();
 
       const fd = new FormData();
       for (let i = 0; i < this.selectedFile.length; i++) {
         fd.append("file[]", this.selectedFile[i]);
       }
 
+      fd.append("processId", this.$route.params.id);
       fd.append("reportingManagerId", this.reportingManagerItem.code);
       fd.append("reportingManagerName", this.reportingManagerItem.name);
       fd.append("projectName", this.projectItem.name);
@@ -2100,14 +2160,13 @@ export default {
       fd.append("clientId", this.clientId);
       fd.append("mainId", this.mainId);
       fd.append("purpose", this.purpose);
-
       fd.append("payeeName", this.payeeName);
       fd.append("amount", this.amount);
       fd.append("MOP", this.modeOfPaymentItem.name);
       fd.append("currency", this.currencyItem.name);
       fd.append("class", "RE");
       fd.append("form", "Reimbursement Request");
-
+      fd.append("referenceNumber", this.referenceNumber);
       fd.append("loggedUserId", this.loggedUserId);
       fd.append("loggedUserFirstName", this.loggedUserFirstName);
       fd.append("loggedUserLastName", this.loggedUserLastName);
@@ -2115,29 +2174,31 @@ export default {
       fd.append("loggedUserPosition", this.loggedUserPosition);
       fd.append("companyId", this.companyId);
       fd.append("companyName", this.companyName);
+      fd.append("guid", this.guid);
 
       fd.append("expenseType_Data", JSON.stringify(this.expenseType_Data));
       fd.append("transpoSetup_Data", JSON.stringify(this.transpoSetup_Data));
+      fd.append(
+        "idOfAttachmentsToDelete",
+        JSON.stringify(this.idOfAttachmentsToDelete)
+      );
 
       try {
         const resp = await axios.post(
-          "http://127.0.0.1:8000/api/saveNewREDrafts",
+          "http://127.0.0.1:8000/api/saveREDrafts",
           fd
         );
-        this.$refs.refSaveDraftCloseBtn.click();
 
         if (resp.status >= 200) {
           this.isLoading = false;
           this.openToast("top-right", "success", resp.data.message);
-          this.$router.replace("/drafts");
+          this.$router.replace("/dashboard");
         }
 
         // console.log(resp.data);
         this.isSpinner = false;
       } catch (err) {
         this.isSpinner = false;
-        this.$refs.refSaveDraftCloseBtn.click();
-
         console.error(err);
         this.isLoading = false;
         this.openToast(
@@ -2156,6 +2217,7 @@ export default {
         fd.append("file[]", this.selectedFile[i]);
       }
 
+      fd.append("processId", this.$route.params.id);
       fd.append("reportingManagerId", this.reportingManagerItem.code);
       fd.append("reportingManagerName", this.reportingManagerItem.name);
       fd.append("projectName", this.projectItem.name);
@@ -2171,6 +2233,9 @@ export default {
       fd.append("currency", this.currencyItem.name);
       fd.append("class", "RE");
       fd.append("form", "Reimbursement Request");
+      fd.append("referenceNumber", this.referenceNumber);
+      fd.append("referenceNumberDR", this.referenceNumber);
+
       fd.append("loggedUserId", this.loggedUserId);
       fd.append("loggedUserFirstName", this.loggedUserFirstName);
       fd.append("loggedUserLastName", this.loggedUserLastName);
@@ -2178,11 +2243,17 @@ export default {
       fd.append("loggedUserPosition", this.loggedUserPosition);
       fd.append("companyId", this.companyId);
       fd.append("companyName", this.companyName);
+      fd.append("guid", this.guid);
+
       fd.append("expenseType_Data", JSON.stringify(this.expenseType_Data));
       fd.append("transpoSetup_Data", JSON.stringify(this.transpoSetup_Data));
+      fd.append(
+        "idOfAttachmentsToDelete",
+        JSON.stringify(this.idOfAttachmentsToDelete)
+      );
 
       try {
-        const resp = await axios.post("http://127.0.0.1:8000/api/saveRef", fd);
+        const resp = await axios.post("http://127.0.0.1:8000/api/saveRe", fd);
 
         if (resp.status >= 200 && resp.status <= 399) {
           this.isLoading = false;
@@ -2228,6 +2299,8 @@ export default {
       } else {
         this.addAlert("Failed", "Please complete required fields!", "false");
       }
+
+      // console.log(this.transpoSetup_Data);
     },
 
     update_transpoSetup() {

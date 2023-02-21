@@ -79,6 +79,12 @@
               <p>Rejected</p>
             </router-link>
           </li>
+          <li class="nav-item">
+            <router-link to="/drafts" class="nav-link">
+              <i class="nav-icon far fa-circle text-danger" style="color: #8A2BE2 !important;"></i>
+              <p>Drafts</p>
+            </router-link>
+          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
