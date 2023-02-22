@@ -13,7 +13,49 @@
       <div class="card-header">
         <h3 class="card-title">Materials Request</h3>
       </div>
-      <div class="card-body">
+
+          <!-- Buttons -->
+        <div class="
+          row
+          d-flex
+          justify-content-between
+          align-items-center
+          flex-nowrap
+          m-3
+        ">
+          <div class="col-md-6">
+            <button
+              class="btn mr-1 btn-secondary btn-sm"
+              v-show="counter"
+              @click="counter--"
+              disabled
+            >
+              Previous
+            </button>
+            <button
+              class="btn mr-1 btn-primary btn-sm"
+              v-show="counter <= 2"
+              @click="counter++"
+            >
+              Next
+            </button>
+          </div>
+
+          <div class="col-md-6 text-right">
+            <button
+              class="btn ml-1 btn-warning btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              :disabled="!isMRFWithdrawable"
+            >
+              Withdraw
+            </button>
+            <button class="btn ml-1 btn-danger btn-sm" @click="close()" >Close</button>
+          </div>
+        </div>
+        <!-- /. Buttons -->
+
+      <div class="card-body pt-0">
         <!-- Progress Bar -->
         <div class="d-flex progressBarWrapper text-center">
           <div class="progressbar" :class="classA">
@@ -408,7 +450,10 @@
 
                             <!-- NEW DESIGN -->
           <div class="col-12 ">
+      
+
             <div class="card card-secondary card-outline card-outline-tabs" v-for="(item) in requested_items" :key="item.req_dtls_id">
+
               <div class="card-header p-0 border-bottom-0">
                 <ul class="nav nav-tabs" :id="`tab-${item.req_dtls_id}`" role="tablist">
                   <li class="nav-item">
@@ -417,8 +462,24 @@
                   <li class="nav-item">
                     <a class="nav-link" :id="`profile-tab-${item.req_dtls_id}`" data-toggle="pill" :href="`#profile-${item.req_dtls_id}`" role="tab" :aria-controls="`profile-${item.req_dtls_id}`" aria-selected="false">Delivery Notes</a>
                   </li>
+
+                  <li class="nav-link d-flex align-items-center">
+                    <button class="btn btn-warning btn-sm"
+                      data-toggle="modal"
+                      data-target="#modal-in-progress-withdraw"
+                      :disabled="!isMRFWithdrawable"
+                      @click="setReqDtlsId(item.req_dtls_id)"
+                    > Withdraw Item</button>
+                  </li>
                 </ul>
+  
+
+            
+                
               </div>
+
+              
+
               <div class="card-body">
                 <div class="tab-content" :id="`tabContent-${item.req_dtls_id}`">
                   <div class="tab-pane fade show active" :id="`home-${item.req_dtls_id}`" role="tabpanel" :aria-labelledby="`home-tab-${item.req_dtls_id}`">
@@ -536,38 +597,7 @@
           <!-- /.card-body -->
         </section>
 
-        <!-- Buttons -->
-        <div class="row">
-          <div class="col-md-6">
-            <button
-              class="btn mr-1 btn-secondary btn-sm"
-              v-show="counter"
-              @click="counter--"
-              disabled
-            >
-              Previous
-            </button>
-            <button
-              class="btn mr-1 btn-primary btn-sm"
-              v-show="counter <= 2"
-              @click="counter++"
-            >
-              Next
-            </button>
-          </div>
 
-          <div class="col-md-6 text-right">
-            <button
-              class="btn ml-1 btn-warning btn-sm"
-              data-toggle="modal"
-              data-target="#modal-default"
-            >
-              Withdraw
-            </button>
-            <button class="btn ml-1 btn-danger btn-sm" @click="close()" >Close</button>
-          </div>
-          <!-- /. Buttons -->
-        </div>
       </div>
     </div>
 
@@ -624,6 +654,81 @@
       <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
+
+  <!-- Modal Confirmation for withdraw item-->
+
+    <div
+      class="modal fade"
+      id="modal-in-progress-withdraw"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title">
+              <b>Confirm</b>
+            </h6>
+            <button
+              type="button"
+              id="modalCloseButton"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+              ref="refSaveDraftCloseBtn"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <h6 class="text-center">
+              Are you sure you want to withdraw this item?
+            </h6>
+          </div>
+          <div class="modal-footer justify-content-end">
+            <button
+              v-if="!isSpinner"
+              type="button"
+              class="btn btn-success btn-sm"
+              @click="test()"
+            >
+              <i class="fas fa-check mr-1"></i>
+              Yes
+            </button>
+
+            <div v-else>
+              <button disabled type="button" class="btn btn-success btn-sm">
+                <div class="spinner-border spinner-border-sm" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+                Saving...
+              </button>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-danger btn-sm"
+              data-dismiss="modal"
+              aria-label="Close"
+              ref="refModalCloseBtn"
+            >
+              <i class="fas fa-times mr-1"></i>
+              No
+            </button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+    <!-- /.Modal Confirmation for withdraw item-->
+
+
+
+
+
   </div>
   <!-- /. Container -->
 </template>
@@ -651,6 +756,7 @@ export default {
       isLoading: false,
       isLoadingModal: false,
       done_approving: false,
+      isSpinner: false,
 
 
       withdrawRemarks: '',
@@ -688,12 +794,51 @@ export default {
       companyId: localStorage.getItem("companyId"),
       companyName: localStorage.getItem("companyName"),
 
+      // with item id
+      req_dtls_id: 0,
+      isMRFWithdrawable: 0,
+
 
       
    };
   },
 
   methods: {
+    setReqDtlsId(id){
+      this.req_dtls_id = id;
+    },
+
+    async test() {
+      this.isSpinner = true;
+      const req_dtls_id = this.req_dtls_id;
+
+      const fd = new FormData();
+      fd.append("req_dtls_id", req_dtls_id)
+      try {
+        const resp = await axios.post(
+          "http://127.0.0.1:8000/api/post-withdraw-item",
+          fd
+        );
+
+
+          this.$refs.refModalCloseBtn.click();
+          this.openToast("top-right", "success", resp.data.message);
+
+          this.getMrf(this.$route.params.id, localStorage.getItem("companyId"), this.$route.params.frmName);
+
+
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+        this.isLoadingModal = false;
+        this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+      }
+
+
+      
+      this.isSpinner = false;
+    },
+
     async getMrf(id, companyId, frmname) {
       this.isLoading = true;
       try {
@@ -726,6 +871,8 @@ export default {
 
         // Requested Items Card
         this.requested_items = resp.data.request.requisition_details
+        this.isMRFWithdrawable = resp.data.isMRFWithdrawable;
+        console.log(resp.data);
 
       } catch (err) {
         // Handle Error Here
@@ -981,4 +1128,7 @@ export default {
 .card--img{
   align-self: center;
 }
+
+
+
 </style>
