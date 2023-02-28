@@ -140,6 +140,11 @@ export default {
             key: "out",
             title: "Out",
           },
+          {
+            key: "status",
+            title: "Status",
+          },
+          
         ],
       };
     },
