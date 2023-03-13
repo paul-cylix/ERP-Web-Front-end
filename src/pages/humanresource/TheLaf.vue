@@ -252,7 +252,7 @@
               <!-- /.info-box -->
             </div>
 
-            <div class="">
+            <div class="ml-2 mr-4">
               <div class="info-box">
                 <span class="info-box-icon bg-info elevation-1"
                   ><i class="fas fa-hand-holding-medical"></i
@@ -266,6 +266,35 @@
               </div>
               <!-- /.info-box -->
             </div>
+
+            <div class="ml-2 mr-4">
+              <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"
+                  ><i class="fas fa-user-plus"></i></span>
+
+                <div class="info-box-content">
+                  <span class="info-box-text font-italic">Solo Parent Leave</span>
+                  <span class="info-box-number h3 m-0 p-0">Allowed</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+
+            <div class="">
+              <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"
+                  ><i class="fas fa-pray"></i></span>
+
+                <div class="info-box-content">
+                  <span class="info-box-text font-italic">Bereavement Leave</span>
+                  <span class="info-box-number h3 m-0 p-0">Allowed</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+
 
           <table class="table table-sm table-bordered table-striped mx-2">
             <thead>
@@ -816,6 +845,8 @@ export default {
           `http://127.0.0.1:8000/api/get-getLeaveBalance/${employeeId}`
         );
         if (resp.status === 200) {
+          console.log(resp.data.data)
+
           this.isLoading = false;
           this.sl = resp.data.data[0]['SL'] ? resp.data.data[0]['SL'] : 0;
           this.vl = resp.data.data[0]['VL'] ? resp.data.data[0]['VL'] : 0;
