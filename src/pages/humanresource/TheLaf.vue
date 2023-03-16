@@ -233,11 +233,12 @@
 
         <!-- Leave Details -->
         <div class="row mt-4" v-else-if="this.counter === 1">
+        
             <div class="col-md-12">
-              <h6 class="font-weight-bold">Leave Balance</h6>
+              <h6 class="font-weight-bold">Leave Balance</h6>         
             </div>
 
-            <div class="ml-2 mr-4">
+            <div class="ml-2">
               <div class="info-box">
                 <span class="info-box-icon bg-info elevation-1"
                   ><i class="fas fa-umbrella-beach"></i
@@ -245,14 +246,14 @@
 
                 <div class="info-box-content">
                   <span class="info-box-text font-italic">Vacation Leave</span>
-                  <span class="info-box-number h3 m-0 p-0">{{ vl }}</span>
+                  <span class="info-box-number h3 m-0 p-0">{{ isSelectedAndLogged ? vl : "-" }}</span>
                 </div>
                 <!-- /.info-box-content -->
               </div>
               <!-- /.info-box -->
             </div>
 
-            <div class="ml-2 mr-4">
+            <div class="ml-3">
               <div class="info-box">
                 <span class="info-box-icon bg-info elevation-1"
                   ><i class="fas fa-hand-holding-medical"></i
@@ -260,35 +261,35 @@
 
                 <div class="info-box-content">
                   <span class="info-box-text font-italic">Sick Leave</span>
-                  <span class="info-box-number h3 m-0 p-0">{{ sl }}</span>
+                  <span class="info-box-number h3 m-0 p-0">{{ isSelectedAndLogged ? sl : "-" }}</span>
                 </div>
                 <!-- /.info-box-content -->
               </div>
               <!-- /.info-box -->
             </div>
 
-            <div class="ml-2 mr-4">
+            <div class="ml-3">
               <div class="info-box">
                 <span class="info-box-icon bg-info elevation-1"
                   ><i class="fas fa-user-plus"></i></span>
 
                 <div class="info-box-content">
                   <span class="info-box-text font-italic">Solo Parent Leave</span>
-                  <span class="info-box-number h3 m-0 p-0">Allowed</span>
+                  <span class="info-box-number h3 m-0 p-0">-</span>
                 </div>
                 <!-- /.info-box-content -->
               </div>
               <!-- /.info-box -->
             </div>
 
-            <div class="">
+            <div class="ml-3">
               <div class="info-box">
                 <span class="info-box-icon bg-info elevation-1"
                   ><i class="fas fa-pray"></i></span>
 
                 <div class="info-box-content">
                   <span class="info-box-text font-italic">Bereavement Leave</span>
-                  <span class="info-box-number h3 m-0 p-0">Allowed</span>
+                  <span class="info-box-number h3 m-0 p-0">-</span>
                 </div>
                 <!-- /.info-box-content -->
               </div>
@@ -662,7 +663,13 @@ export default {
     await this.lafInitiate();
     this.isLoading = false;
   },
-  watch: {},
+  watch: {
+    async employeeItem(newValue){
+        await this.getLeaveBalance(newValue.code)
+    },
+
+
+  },
   computed: {
     classA() {
       return { active: this.counter >= 0 };
@@ -754,6 +761,7 @@ export default {
       // const todaysDate = yyyy + "-" + mm + "-" + dd;
       return yyyy;
     },
+
   },
   data() {
     return {
@@ -794,8 +802,12 @@ export default {
       loggedUserFullName: localStorage.getItem("fullName"),
       loggedUserDepartment: localStorage.getItem("department"),
       loggedUserPosition: localStorage.getItem("positionName"),
+      loggedEmployeeId: localStorage.getItem("employee_id"),
       companyId: localStorage.getItem("companyId"),
       companyName: localStorage.getItem("companyName"),
+
+
+      
 
       // The Alert
       isAlert: false,
@@ -812,6 +824,8 @@ export default {
       tempVL: 0,
       sl: 0,
       tempSL: 0,
+
+      isSelectedAndLogged: false,
       
       
     };
@@ -853,8 +867,15 @@ export default {
           this.tempSL = this.sl;
           this.tempvL = this.vl;
 
-          console.log(this.tempSL, this.tempvL);
-          this.counter++;
+          // console.log(+this.loggedEmployeeId)
+          // console.log(employeeId)
+          // console.log(this.tempSL, this.tempvL);
+
+          this.isSelectedAndLogged = +this.loggedEmployeeId === employeeId ? true : false;
+
+          this.leaveData = [];
+          this.id = 0;
+
         }
       } catch (err) {
         this.isLoading = false;
@@ -863,6 +884,8 @@ export default {
         console.error(err);
       }
     },
+
+
 
     getReportingManager2() {
       return axios.get(
@@ -986,24 +1009,34 @@ export default {
           !this.missingReportTime &&
           !this.missingPurpose
         ) {
-          this.getLeaveBalance(this.employeeItem.code)
-          // this.counter++;
+          
+
+          this.counter++;
+
+          // if(this.leaveData.length > 0){
+          // }
         }
         // Payment Details
       } else if (counter === 1) {
         if (this.leaveData.length > 0) {
-          if (this.sl < 0 && this.vl < 0) {
-          this.openToast("top-right", "warning", "Insufficient remaining leave balance.");
-            
-          } else if (this.sl < 0) {
-          this.openToast("top-right", "warning", `You've exceeded ${Math.abs(this.sl)} paid sick leave.`);
-            
-          } else if (this.vl < 0) {
-          this.openToast("top-right", "warning", `You've exceeded ${Math.abs(this.vl)} paid vacation leave.`);
+          this.counter++;
 
-          } else {
-            this.counter++;
-          }
+
+          // Commented Validation in step 2
+          // if (this.sl < 0 && this.vl < 0) {
+          // this.openToast("top-right", "warning", "Insufficient remaining leave balance.");
+            
+          // } else if (this.sl < 0) {
+          // this.openToast("top-right", "warning", `You've exceeded ${Math.abs(this.sl)} paid sick leave.`);
+            
+          // } else if (this.vl < 0) {
+          // this.openToast("top-right", "warning", `You've exceeded ${Math.abs(this.vl)} paid vacation leave.`);
+
+          // } else {
+          //   this.counter++;
+          // }
+
+
 
         } else {
           this.openToast("top-right", "warning", "Please add your Leave data!");
@@ -1225,7 +1258,9 @@ export default {
         if (removedLAF[0]['leave_paytype'] === "wp") {
           this.vl += removedLAF[0]['num_days'];
         }
-      } else {
+      } 
+      
+      if(removedLAF[0]['leave_type'] === "Sick Leave") {
         if (removedLAF[0]['leave_paytype'] === "wp") {
           this.sl += removedLAF[0]['num_days'];
         }

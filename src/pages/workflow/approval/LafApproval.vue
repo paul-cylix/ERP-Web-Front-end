@@ -13,8 +13,106 @@
         <h3 class="card-title">Leave Request</h3>
       </div>
       <div class="card-body">
+
+        <!-- Buttons -->
+        <div class="            
+            row
+            d-flex
+            justify-content-end
+            align-items-center
+            m-0
+            ">
+          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap p-0">
+           
+              <button
+               v-show="counter"
+                type="button"
+                @click="counter--"
+                class="btn mr-1 btn-secondary btn-sm"
+              >
+                Previous
+              </button>
+     
+
+      
+              <button
+                v-if="this.counter <= 1"
+                type="button"
+                @click="counter++"
+                class="btn mr-1 btn-primary btn-sm"
+              >
+                Next
+              </button>
+      
+          </aside>
+
+          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap p-0">
+            
+            <button
+          
+                type="button"
+                class="btn  btn-success ml-1 btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+                @click="setTitle('Approve')"
+              >
+                Approve
+            </button>
+
+              <!-- <button
+                v-else
+                type="button"
+                class="btn  btn-secondary ml-1 btn-sm"
+                data-toggle="modal"
+                data-target="#modal-confirm"
+                @click="setTitle('Approve')"
+                ref="refModalConfirmApprove"
+              >
+                Approve
+              </button> -->
+
+
+            
+
+            
+              <button
+                type="button"
+                class="btn  btn-danger ml-1 btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+                @click="setTitle('Reject')"
+              >
+                Reject
+              </button>
+            
+
+            
+              <button
+                type="button"
+                class="btn  btn-warning ml-1 btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+                @click="setTitle('Clarify')"
+              >
+                Clarify
+              </button>
+            
+
+            
+              <button
+                type="button"
+                class="btn ml-1 btn-danger btn-sm"
+                @click="close()"
+              >
+                Close
+              </button>
+            
+          </aside>
+        </div>
+        <!-- / Buttons -->
+
         <!-- Step Numbers -->
-        <div class="d-flex progressBarWrapper text-center">
+        <div class="d-flex progressBarWrapper text-center mt-5">
           <div class="progressbar" :class="classA">
             <span :class="classA">1</span>
           </div>
@@ -109,7 +207,7 @@
                   id="reportingManager"
                   disabled
                   class="form-control py-3 form-control-sm"
-                  v-model="reportingManagerName"
+                  v-model="employeeName"
                 />
               </div>
             </div>
@@ -160,12 +258,81 @@
 
         <!-- Leave Details -->
         <div class="row mt-4" v-else-if="this.counter === 1">
+
+            <div class="col-md-12">
+              <h6 class="font-weight-bold">Leave Balance</h6>         
+     
+            </div>
+
+
+
+
+
+            <div class="ml-2">
+              <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"
+                  ><i class="fas fa-umbrella-beach"></i
+                ></span>
+
+                <div class="info-box-content">
+                  <span class="info-box-text font-italic">Vacation Leave</span>
+                  <span class="info-box-number h3 m-0 p-0">{{vl}}</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+
+            <div class="ml-3">
+              <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"
+                  ><i class="fas fa-hand-holding-medical"></i
+                ></span>
+
+                <div class="info-box-content">
+                  <span class="info-box-text font-italic">Sick Leave</span>
+                  <span class="info-box-number h3 m-0 p-0">{{sl}}</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+
+            <div class="ml-3">
+              <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"
+                  ><i class="fas fa-user-plus"></i></span>
+
+                <div class="info-box-content">
+                  <span class="info-box-text font-italic">Solo Parent Leave</span>
+                  <span class="info-box-number h3 m-0 p-0">-</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+
+            <div class="ml-3">
+              <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"
+                  ><i class="fas fa-pray"></i></span>
+
+                <div class="info-box-content">
+                  <span class="info-box-text font-italic">Bereavement Leave</span>
+                  <span class="info-box-number h3 m-0 p-0">-</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+
+
           <table class="table table-sm table-bordered table-striped mx-2">
             <thead>
               <tr>
                 <th colspan="7" scope="col">
                   <aside class="d-flex align-items-center">
-                    <span class="mb-1 ml-1"> Expense Detals</span>
+                    <span class="mb-1 ml-1"> Leave Details</span>
                   </aside>
                 </th>
               </tr>
@@ -349,12 +516,21 @@
                 </button>
               </div>
               <div class="modal-body">
+
+                <div v-show="title === 'Approve' && isSlVlAvailable === false && yes === false" class="alert alert-warning alert-dismissible">
+                  <h6><b>Insufficient Leave Balance</b> <br>
+                    Do you want to continue approving the request?
+                  </h6>
+                </div>
+
                 <the-alert
                   v-show="isAlert"
                   v-bind:header="this.header"
                   v-bind:message="this.message"
                   v-bind:type="this.type"
                 ></the-alert>
+
+
                 <div class="row" v-if="isForClarity">
                   <div class="col-md-12">
                     <div class="form-group">
@@ -376,7 +552,7 @@
                   </div>
                 </div>
 
-                <div class="row">
+                <div class="row" v-show="!(title === 'Approve' && isSlVlAvailable === false && yes === false)">
                   <div class="col-md-12">
                     <div class="form-group">
                       <textarea
@@ -390,16 +566,48 @@
                   </div>
                 </div>
               </div>
+
+
               <div class="modal-footer justify-content-end">
                 <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+                
+                  <button
+                  v-if="title === 'Approve' && isSlVlAvailable === false && yes === false"
+                  type="button"
+                  class="btn btn-success btn-sm"
+                  @click="proceed()"
+                >
+                  <i class="fas fa-check mr-1"></i>
+                  Yes
+                </button>
+                
                 <button
+                v-else
                   type="button"
                   class="btn btn-primary btn-sm"
                   @click="submit(title)"
                 >
                   Submit
                 </button>
+
+
+                <button
+                v-show="title === 'Approve' && isSlVlAvailable === false && yes === false"
+                  type="button"
+                  id="modalCloseButton"
+                  class="btn btn-danger btn-sm"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                  @click="closeModalDefault()"
+                >
+                <i class="fas fa-times mr-1"></i>
+                  No
+                </button>
+
+
               </div>
+
+
             </div>
             <!-- /.modal-content -->
           </div>
@@ -407,81 +615,81 @@
         </div>
         <!-- /.modal -->
 
-        <!-- Buttons -->
-        <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
-           
-              <button
-               v-show="counter"
-                type="button"
-                @click="counter--"
-                class="btn mr-2 btn-secondary btn-sm"
-              >
-                Previous
-              </button>
-     
 
-      
-              <button
-                v-if="this.counter <= 1"
-                type="button"
-                @click="counter++"
-                class="btn mr-2 btn-primary btn-sm"
-              >
-                Next
-              </button>
-      
-          </aside>
 
-          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
-            
-              <button
-                type="button"
-                class="btn ml-2 btn-success ml-2 btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Approve')"
-              >
-                Approve
-              </button>
-            
 
-            
-              <button
-                type="button"
-                class="btn ml-2 btn-danger ml-2 btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Reject')"
-              >
-                Reject
-              </button>
-            
 
-            
-              <button
-                type="button"
-                class="btn ml-2 btn-warning ml-2 btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Clarify')"
-              >
-                Clarify
-              </button>
-            
 
-            
-              <button
-                type="button"
-                class="btn ml-2 btn-danger ml-2 btn-sm"
-                @click="close()"
-              >
-                Close
-              </button>
-            
-          </aside>
+
+
+
+
+
+
+
+    <!-- Modal Confirmation of saving as draft  -->
+    <div
+      class="modal fade"
+      id="modal-confirm"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title">
+              <b>Confirm</b>
+            </h6>
+            <button
+              type="button"
+              id="modalCloseButton"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+              ref="refModalConfirm"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+
+            <h6 class="text-center">
+            Insufficient remaining leave balance. <br>
+              Are you sure you want approve the request?
+            </h6>
+          </div>
+          <div class="modal-footer justify-content-end">
+            <button
+              v-show="title === 'Approve' && isSlVlAvailable === false && yes === false"
+              type="button"
+              class="btn btn-success btn-sm"
+              @click="proceed()"
+            >
+              <i class="fas fa-check mr-1"></i>
+              Yes
+            </button>
+
+
+
+            <button
+              type="button"
+              class="btn btn-danger btn-sm"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <i class="fas fa-times mr-1"></i>
+              No
+            </button>
+          </div>
         </div>
-        <!-- / Buttons -->
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- end of Modal Confirmation of saving as draft  -->
+
+
       </div>
     </div>
     <!-- /.card -->
@@ -555,10 +763,18 @@ export default {
         return false;
       }
     },
+
+    isSlVlAvailable(){
+      if(this.sumSl > this.sl || this.sumVl > this.vl){
+        return false;
+      } else {
+        return true;
+      }
+    }
   },
   data() {
     return {
-      counter: 2,
+      counter: 1,
       attemptClarify: false,
       // Request Details
       referenceNumber: "",
@@ -635,10 +851,52 @@ export default {
       header: "", // Syccess or Failed
       message: "", // added successfully
       type: "", // true or false
+
+
+      sl: 0,
+      vl: 0,
+
+      sumSl: 0,
+      sumVl: 0,
+      sumSp: 0,
+      sumBe: 0,
+
+      yes: false,
+
     };
   },
 
   methods: {
+    proceed(){
+      this.yes = true;
+    },
+
+
+    async getLeaveBalance(employeeId) {
+      this.isLoading = true;
+
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-getLeaveBalance/${employeeId}`
+        );
+        if (resp.status === 200) {
+          console.log(resp.data.data)
+
+          this.isLoading = false;
+          this.sl = resp.data.data[0]['SL'] ? resp.data.data[0]['SL'] : 0;
+          this.vl = resp.data.data[0]['VL'] ? resp.data.data[0]['VL'] : 0;
+
+
+        }
+      } catch (err) {
+        this.isLoading = false;
+        // Handle Error Here
+        this.openToast("top-right", "error", "Please contact the Administrator!");
+        console.error(err);
+      }
+    },
+
+
     async getInprogressId(id, companyId, form) {
       try {
         const resp = await axios.get(
@@ -805,6 +1063,39 @@ export default {
           this.reportName = resp.data[0].medium_of_report;
           this.reportDateTime = resp.data[0].report_time;
           this.reason = resp.data[0].reason;
+
+          console.log(resp.data);
+
+          resp.data.forEach(obj => {
+            if(obj.leave_type === 'Sick Leave' && obj.leave_paytype === 'wp') {
+              this.sumSl += obj.num_days;
+            }
+
+            if(obj.leave_type === 'Vacation Leave' && obj.leave_paytype === 'wp') {
+              this.sumVl += obj.num_days;
+            }
+
+            if(obj.leave_type === 'Solo Parent Leave' && obj.leave_paytype === 'wp') {
+              this.sumSp += obj.num_days;
+            }
+
+            if(obj.leave_type === 'Bereavement Leave' && obj.leave_paytype === 'wp') {
+              this.sumBe += obj.num_days;
+            }
+
+          });
+
+// leave_halfday
+// : 
+// "Wholeday"
+// leave_paytype
+// : 
+// "wp"
+// num_days
+// : 
+// 1
+
+          await this.getLeaveBalance(resp.data[0].employee_id);
         }
       } catch (err) {
         // Handle Error Here
@@ -831,7 +1122,7 @@ export default {
     },
 
     closeModalDefault() {
-      this.attemptClarify = false;
+      this.yes = this.attemptClarify = false;
       this.itemrecipient = {};
       this.remarks = "";
     },
