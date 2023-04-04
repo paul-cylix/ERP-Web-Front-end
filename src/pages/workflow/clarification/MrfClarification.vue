@@ -14,8 +14,45 @@
         <h3 class="card-title">Materials Request</h3>
       </div>
       <div class="card-body">
+        <!-- Buttons -->
+        <div class="row">
+          <div class="col-md-6">
+            <button
+              class="btn mr-1 btn-secondary btn-sm"
+              v-show="counter"
+              disabled
+              @click="previous()"
+            >
+              Previous
+            </button>
+            <button
+            disabled
+              class="btn mr-1 btn-primary btn-sm"
+              v-show="counter <= 2"
+              @click="next()"
+            >
+              Next
+            </button>
+          </div>
+
+          <div class="col-md-6 text-right">
+            <!-- <button
+              class="btn ml-1 btn-warning btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+            >
+              Withdraw
+            </button> -->
+            <button class="btn ml-1 btn-danger btn-sm" @click="close()">
+              Close
+            </button>
+          </div>
+          <!-- /. Buttons -->
+        </div>
+        <!-- /.Buttons -->
+
         <!-- Progress Bar -->
-        <div class="d-flex progressBarWrapper text-center">
+        <div class="d-flex progressBarWrapper text-center mt-5">
           <div class="progressbar" :class="classA">
             <span :class="classA">1</span>
           </div>
@@ -67,26 +104,58 @@
             <div class="col-md-6">
               <div class="form-group">
                 <small><label for="class-name">Class</label></small>
-                <input
+                <!-- <input
                   type="text"
                   class="form-control form-control-sm py-3"
                   disabled
-                />
+                /> -->
+
+                <model-list-select
+                  :list="classList"
+                  v-model="classListItem"
+                  option-value="code"
+                  option-text="name"
+                  placeholder="select item"
+                  :style="isItDisabled(true)"
+                  :isDisabled="true"
+                >
+                </model-list-select>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingClass && attemptNext"
+                  >Class is required!</small
+                >
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <small><label for="type-name">Type</label></small>
-                <input
+                <!-- <input
                   type="text"
                   class="form-control form-control-sm py-3"
                   disabled
-                />
+                /> -->
+
+                <model-list-select
+                  :list="typeList"
+                  v-model="typeListItem"
+                  option-value="code"
+                  option-text="name"
+                  placeholder="select item"
+                  :style="isItDisabled(true)"
+                  :isDisabled="true"
+                >
+                </model-list-select>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingType && attemptNext"
+                  >Type is required!</small
+                >
               </div>
             </div>
           </div>
 
-          <div class="row">
+          <div class="row" v-show="isProcessTypeList">
             <div class="col">
               <div class="form-group">
                 <small
@@ -94,11 +163,21 @@
                     >Type of Supplies Request Internal</label
                   ></small
                 >
-                <input
-                  type="text"
-                  class="form-control form-control-sm py-3"
-                  disabled
-                />
+                <model-list-select
+                  :list="processTypeList"
+                  v-model="processTypeListItem"
+                  option-value="code"
+                  option-text="name"
+                  placeholder="select item"
+                  :style="isItDisabled(true)"
+                  :isDisabled="true"
+                >
+                </model-list-select>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingProcessType && attemptNext"
+                  >This field is required!</small
+                >
               </div>
             </div>
           </div>
@@ -106,11 +185,14 @@
           <div class="row">
             <div class="col-md-3">
               <div class="form-group">
-                <small><label for="surf-number">SURF Number</label></small>
+                <small
+                  ><label for="reference-number">Reference Number</label></small
+                >
                 <input
                   type="text"
                   class="form-control form-control-sm py-3"
                   disabled
+                  v-model="mrf_number"
                 />
               </div>
             </div>
@@ -119,11 +201,12 @@
                 <small
                   ><label for="requested-date">Requested Date</label></small
                 >
-                <input
-                  type="text"
-                  class="form-control form-control-sm py-3"
+                <date-picker
                   disabled
-                />
+                  valueType="format"
+                  style="display: block; width: 100%; line-height: 20px"
+                  v-model="requestedDate"
+                ></date-picker>
               </div>
             </div>
             <div class="col-md-3">
@@ -133,11 +216,16 @@
                     >Actual Delivery Date</label
                   ></small
                 >
-                <input
-                  type="text"
-                  class="form-control form-control-sm py-3"
-                  disabled
-                />
+                <date-picker
+                  v-model="actualDeliveryDate"
+                  value-type="format"
+                  style="display: block; width: 100%; line-height: 20px"
+                ></date-picker>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingActualDeliveryDate && attemptNext"
+                  >Actual Delivery Date is required!</small
+                >
               </div>
             </div>
             <div class="col-md-3">
@@ -147,11 +235,16 @@
                     >Planned Delivery Date</label
                   ></small
                 >
-                <input
-                  type="text"
-                  class="form-control form-control-sm py-3"
-                  disabled
-                />
+                <date-picker
+                  v-model="plannedDeliveryDate"
+                  value-type="format"
+                  style="display: block; width: 100%; line-height: 20px"
+                ></date-picker>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingPlannedDeliveryDate && attemptNext"
+                  >Planned Delivery Date is required!</small
+                >
               </div>
             </div>
           </div>
@@ -164,8 +257,13 @@
                 <input
                   type="text"
                   class="form-control form-control-sm py-3"
-                  disabled
+                  v-model="mrfShortText"
                 />
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingMrfShortText && attemptNext"
+                  >MRF Short Text is required!</small
+                >
               </div>
             </div>
             <div class="col-md-6">
@@ -175,11 +273,20 @@
                     >Reporting Manager</label
                   ></small
                 >
-                <input
-                  type="text"
-                  class="form-control form-control-sm py-3"
-                  disabled
-                />
+                <model-list-select
+                  :list="reportingManager"
+                  v-model="reportingManagerItem"
+                  option-value="code"
+                  option-text="name"
+                  placeholder="select item"
+                  style="padding: 9px"
+                >
+                </model-list-select>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingReportingManager && attemptNext"
+                  >Reporting Manager is required!</small
+                >
               </div>
             </div>
           </div>
@@ -188,11 +295,20 @@
             <div class="col-md-6">
               <div class="form-group">
                 <small><label for="cost-center">Cost Center</label></small>
-                <input
-                  type="text"
-                  class="form-control form-control-sm py-3"
-                  disabled
-                />
+                <model-list-select
+                  :list="costCenter"
+                  v-model="costCenterItem"
+                  option-value="code"
+                  option-text="name"
+                  placeholder="select item"
+                  style="padding: 9px"
+                >
+                </model-list-select>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingCostCenterItem && attemptNext"
+                  >Cost Center is required!</small
+                >
               </div>
             </div>
             <div class="col-md-6">
@@ -200,8 +316,10 @@
                 <small><label for="client-name">Client Name</label></small>
                 <input
                   type="text"
-                  class="form-control form-control-sm py-3"
                   disabled
+                  class="form-control py-3 form-control-sm"
+                  id="clientName"
+                  v-model="clientName"
                 />
               </div>
             </div>
@@ -210,9 +328,20 @@
           <div class="row">
             <div class="col">
               <div class="form-group">
-                <small><label for="purpose">Purpose</label></small>
+                <small><label for="purpose">Remarks</label></small>
                 <!-- <textarea class="form-control" name="purpose" id="purpose" :value="message" @input="updateMessage"  rows="5"></textarea> -->
-                <textarea class="form-control" disabled rows="5"></textarea>
+                <textarea
+                  class="form-control"
+                  name="purpose"
+                  id="purpose"
+                  v-model="remarks"
+                  rows="5"
+                ></textarea>
+                <small
+                  class="text-danger p-0 m-0"
+                  v-if="missingRemarks && attemptNext"
+                  >Remarks is required!</small
+                >
               </div>
             </div>
           </div>
@@ -221,14 +350,159 @@
         <!-- #3 attach-->
         <section class="mb-4" v-show="counter === 2">
           <div class="row mt-4">
-            <div class="pt-2 col-md-12 rounded" id="uploadContainer">
+            <div
+              class="pt-2 col-md-12 rounded"
+              @dragover="dragover"
+              @dragleave="dragleave"
+              @drop="drop"
+              id="uploadContainer"
+            >
+              <input
+                type="file"
+                multiple
+                name="fields[assetsFieldHandle][]"
+                id="assetsFieldHandle"
+                class="w-25 h-25 overflow-hidden"
+                @change="onFileSelected"
+                ref="file"
+                accept=".pdf,.jpg,.jpeg,.png"
+              />
+
               <label
                 for="assetsFieldHandle"
                 style="width: 100%; text-align: center; cursor: pointer"
                 class="block pt-3 cursor-pointer"
               >
-                <span class="text-secondary">List of Attached File</span>
+                <span class="text-secondary">Click here or drop file(s)</span>
               </label>
+
+              <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
+                <!-- SOF ATTACHMENTS -->
+                <li
+                  class="text-sm mt-2"
+                  v-for="file in selectedFileSOF"
+                  :key="file.id"
+                >
+                  <div class="row d-flex justify-content-center">
+                    <div class="col-md-4 d-flex">
+                      <div class="col text-left">
+                        <span
+                          ><label>{{ file.filename }}</label></span
+                        >
+                      </div>
+
+                      <div>
+                        <a
+                          class="btn btn-info btn-sm"
+                          :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`"
+                          target="_blank"
+                          >Download</a
+                        >
+                      </div>
+
+                      <div class="ml-1">
+                        <a
+                          class="btn btn-secondary btn-sm"
+                          :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`"
+                          target="_blank"
+                          >Preview</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <!-- ./ SOF ATTACHMENTS -->
+
+                <!-- MRF ATTACHMENTS -->
+                <li
+                  class="text-sm mt-2"
+                  v-for="(file, index) in selectedFileMRF"
+                  :key="file.id"
+                >
+                  <div class="row d-flex justify-content-center">
+                    <div class="col-md-4 d-flex">
+                      <div class="col text-left">
+                        <span
+                          ><label>{{ file.filename }}</label></span
+                        >
+                      </div>
+
+                      <div>
+                        <a
+                          class="btn btn-info btn-sm"
+                          :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`"
+                          target="_blank"
+                          >Download</a
+                        >
+                      </div>
+
+                      <div class="ml-1">
+                        <button
+                          class="btn btn-danger btn-sm"
+                          type="button"
+                          @click="
+                            removeAttachedFile(
+                              index,
+                              file.id,
+                              file.filename,
+                              file.filepath
+                            )
+                          "
+                          title="Remove file"
+                        >
+                          Remove
+                        </button>
+                      </div>
+
+                      <div class="ml-1">
+                        <a
+                          class="btn btn-secondary btn-sm"
+                          :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`"
+                          target="_blank"
+                          >Preview</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <!-- ./ MRF ATTACHMENTS -->
+
+                <!-- NEWLY ADDED ATTACHMENTS -->
+                <li
+                  class="text-sm mt-2"
+                  v-for="file in selectedFileNew"
+                  :key="file.index"
+                >
+                  <div class="row d-flex justify-content-center">
+                    <div class="col-md-4 d-flex">
+                      <div class="col text-left">
+                        <span
+                          ><label>{{ file.name }}</label></span
+                        >
+                      </div>
+                      <div>
+                        <button
+                          class="btn btn-danger btn-sm"
+                          type="button"
+                          @click="removeFileNew(selectedFileNew.indexOf(file))"
+                          title="Remove file"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <div class="ml-1">
+                        <button
+                          class="btn btn-secondary btn-sm"
+                          @click="filePreviewNew(selectedFileNew.indexOf(file))"
+                        >
+                          Preview
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <!-- ./NEWLY ADDED ATTACHMENTS -->
+              </ul>
             </div>
           </div>
         </section>
@@ -256,55 +530,55 @@
               <tbody>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">MRF Number</td>
-                  <td class="col-md-9 px-3">{{mrf_number}}</td>
+                  <td class="col-md-9 px-3">{{ mrf_number }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Department</td>
-                  <td class="col-md-9 px-3">{{department}}</td>
+                  <td class="col-md-9 px-3">{{ department }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Full Name</td>
-                  <td class="col-md-9 px-3">{{full_name}}</td>
+                  <td class="col-md-9 px-3">{{ full_name }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Reporting Manager</td>
-                  <td class="col-md-9 px-3">{{reporting_manager}}</td>
+                  <td class="col-md-9 px-3">{{ reportingManagerItem.name }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">MRF Short Text</td>
-                  <td class="col-md-9 px-3">{{mrf_short_text}}</td>
+                  <td class="col-md-9 px-3">{{ mrfShortText }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Date Requested</td>
-                  <td class="col-md-9 px-3">{{date_requested}}</td>
+                  <td class="col-md-9 px-3">{{ date_requested }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Planned Delivery Date</td>
-                  <td class="col-md-9 px-3">{{planned_delivery_date}}</td>
+                  <td class="col-md-9 px-3">{{ planned_delivery_date }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Actual Delivery Date</td>
-                  <td class="col-md-9 px-3">{{actual_delivery_date}}</td>
+                  <td class="col-md-9 px-3">{{ actual_delivery_date }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Cost Center</td>
-                  <td class="col-md-9 px-3">{{cost_center}}</td>
+                  <td class="col-md-9 px-3">{{ cost_center }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Client Name</td>
-                  <td class="col-md-9 px-3">{{client_name}}</td>
+                  <td class="col-md-9 px-3">{{ clientName }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Materials Request Class</td>
-                  <td class="col-md-9 px-3">{{materials_request_class}}</td>
+                  <td class="col-md-9 px-3">{{ materials_request_class }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Materials Request Type</td>
-                  <td class="col-md-9 px-3">{{materials_request_type}}</td>
+                  <td class="col-md-9 px-3">{{ materials_request_type }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Remarks</td>
-                  <td class="col-md-9 px-3">{{remarks}}</td>
+                  <td class="col-md-9 px-3">{{ remarks }}</td>
                 </tr>
               </tbody>
             </table>
@@ -339,43 +613,53 @@
                 </tr>
               </thead>
               <tbody>
-                <tr class="row p-0 m-0" v-for="(file) in selectedFileSOF" :key="file.id">
-                  <td class="col-md-9 px-3">{{file.filename}}</td>
+                <tr
+                  class="row p-0 m-0"
+                  v-for="file in selectedFileSOF"
+                  :key="file.id"
+                >
+                  <td class="col-md-9 px-3">{{ file.filename }}</td>
                   <td
-                    class="
-                      col-md-3
-                      pl-2
-                      pr-2
-                      text-center
-                      d-flex
-                      justify-content-center
-                      align-items-center
-                    "
+                    class="col-md-3 pl-2 pr-2 text-center d-flex justify-content-center align-items-center"
                   >
-                    <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                    <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
-                  </td>
-                </tr>
-                <tr class="row p-0 m-0" v-for="(file) in selectedFileMRF" :key="file.id">
-                  <td class="col-md-9 px-3">{{file.filename}}</td>
-                  <td
-                    class="
-                      col-md-3
-                      pl-2
-                      pr-2
-                      text-center
-                      d-flex
-                      justify-content-center
-                      align-items-center
-                    "
-                  >
-                    <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                    <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                    <a
+                      class="btn btn-info btn-sm"
+                      :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`"
+                      target="_blank"
+                      >Download</a
+                    >
+                    <a
+                      class="btn btn-secondary btn-sm ml-1"
+                      :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`"
+                      target="_blank"
+                      >Preview</a
+                    >
                   </td>
                 </tr>
 
-
-
+                <tr
+                  class="row p-0 m-0"
+                  v-for="file in selectedFileMRF"
+                  :key="file.id"
+                >
+                  <td class="col-md-9 px-3">{{ file.filename }}</td>
+                  <td
+                    class="col-md-3 pl-2 pr-2 text-center d-flex justify-content-center align-items-center"
+                  >
+                    <a
+                      class="btn btn-info btn-sm"
+                      :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`"
+                      target="_blank"
+                      >Download</a
+                    >
+                    <a
+                      class="btn btn-secondary btn-sm ml-1"
+                      :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`"
+                      target="_blank"
+                      >Preview</a
+                    >
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -392,6 +676,14 @@
 
             <div class="card-tools">
               <button
+                class="btn btn-success btn-sm"
+                data-toggle="modal"
+                data-target="#modal-add"
+              >
+                Add Item
+              </button>
+
+              <button
                 type="button"
                 class="btn btn-tool"
                 data-card-widget="collapse"
@@ -401,12 +693,168 @@
             </div>
           </div>
           <!-- /.card-header -->
-          <div class="card-body anyClass scroll-bar" >
+          <div class="card-body anyClass scroll-bar">
             <!-- Checkout list -->
             <!-- Request Details -->
             <!-- Checkout loop -->
 
-            <div class="card py-0" v-for="(item) in requested_items" :key="item.req_dtls_id">
+            <!-- NEW DESIGN -->
+            <div class="col-12">
+              <div
+                class="card card-secondary card-outline card-outline-tabs"
+                v-for="item in requested_items"
+                :key="item.req_dtls_id"
+              >
+                <div class="card-header p-0 border-bottom-0">
+                  <ul
+                    class="nav nav-tabs"
+                    :id="`tab-${item.req_dtls_id}`"
+                    role="tablist"
+                  >
+                    <li class="nav-item">
+                      <a
+                        class="nav-link active"
+                        :id="`home-tab-${item.req_dtls_id}`"
+                        data-toggle="pill"
+                        :href="`#home-${item.req_dtls_id}`"
+                        role="tab"
+                        :aria-controls="`home-${item.req_dtls_id}`"
+                        aria-selected="true"
+                        >Item Details</a
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        class="nav-link"
+                        :id="`profile-tab-${item.req_dtls_id}`"
+                        data-toggle="pill"
+                        :href="`#profile-${item.req_dtls_id}`"
+                        role="tab"
+                        :aria-controls="`profile-${item.req_dtls_id}`"
+                        aria-selected="false"
+                        >Delivery Notes</a
+                      >
+                    </li>
+
+                    <li class="nav-link d-flex align-items-center">
+                      <button
+                        class="btn btn-danger btn-sm"
+                        data-toggle="modal"
+                        data-target="#modal-confirm"
+                        @click="setToDeleteItem(item.req_dtls_id)"
+                      >
+                        Delete Item
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="card-body">
+                  <div
+                    class="tab-content"
+                    :id="`tabContent-${item.req_dtls_id}`"
+                  >
+                    <div
+                      class="tab-pane fade show active"
+                      :id="`home-${item.req_dtls_id}`"
+                      role="tabpanel"
+                      :aria-labelledby="`home-tab-${item.req_dtls_id}`"
+                    >
+                      <div class="d-flex gap-2">
+                        <img
+                          src="https://www.mouti.net/wp-content/plugins/tutor/assets/images/placeholder.svg"
+                          style="
+                            height: 8rem;
+                            display: block;
+                            width: auto;
+                            object-fit: contain;
+                          "
+                          alt=""
+                          srcset=""
+                          class="card--img"
+                        />
+                        <div class="flex-fill">
+                          <strong class="ellipsis">{{
+                            item.description
+                          }}</strong>
+                          <p class="card--description ellipsis-2">
+                            {{ item.specification }}
+                          </p>
+                          <ul class="card--details">
+                            <li>
+                              <span class="light">Item Code:</span
+                              ><span class="dark">{{ item.item_code }}</span>
+                            </li>
+                            <li>
+                              <span class="light">UoM:</span
+                              ><span class="dark"></span>{{ item.uom }}
+                            </li>
+                            <li>
+                              <span class="light">Category:</span
+                              ><span class="dark">{{
+                                item.category_name
+                              }}</span>
+                            </li>
+                            <li>
+                              <span class="light">SKU:</span
+                              ><span class="dark">{{ item.sku }}</span>
+                            </li>
+                            <li>
+                              <span class="light">Sub Category:</span
+                              ><span class="dark">{{
+                                item.sub_category_name
+                              }}</span>
+                            </li>
+                            <li>
+                              <span class="light">PR Qty:</span
+                              ><span class="dark">{{ item.order_qty }}</span>
+                            </li>
+                            <li>
+                              <span class="light">Brand:</span
+                              ><span class="dark">{{ item.brand_name }}</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="tab-pane fade"
+                      :id="`profile-${item.req_dtls_id}`"
+                      role="tabpanel"
+                      :aria-labelledby="`profile-tab-${item.req_dtls_id}`"
+                    >
+                      <div class="form-group">
+                        <small
+                          ><label for="reference">Date Delivered</label></small
+                        >
+                        <date-picker
+                          disabled
+                          v-model="item.date_delivered"
+                          valueType="format"
+                          style="display: block; width: 100%; line-height: 20px border:red;"
+                        ></date-picker>
+                      </div>
+
+                      <div class="form-group">
+                        <small><label for="purpose">Purpose</label></small>
+                        <textarea
+                          disabled
+                          v-model="item.notes"
+                          class="form-control"
+                          name="purpose"
+                          rows="2"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- /.card -->
+              </div>
+            </div>
+            <!-- /. NEW DESIGN -->
+
+            <!-- <div class="card py-0" v-for="(item) in requested_items" :key="item.req_dtls_id">
               <div class="row py-2">
                 <div
                   class="
@@ -446,48 +894,14 @@
                   </ul>
                 </div>
               </div>
-            </div>
+            </div> -->
 
-          
             <!-- /.Checkout loop -->
             <!-- /.Request Details -->
             <!-- /.Checkout list -->
           </div>
           <!-- /.card-body -->
         </section>
-
-        <!-- Buttons -->
-        <div class="row">
-          <div class="col-md-6">
-            <button
-              class="btn mr-1 btn-secondary btn-sm"
-              v-show="counter"
-              @click="counter--"
-              disabled
-            >
-              Previous
-            </button>
-            <button
-              class="btn mr-1 btn-primary btn-sm"
-              v-show="counter <= 2"
-              @click="counter++"
-            >
-              Next
-            </button>
-          </div>
-
-          <div class="col-md-6 text-right">
-            <!-- <button
-              class="btn ml-1 btn-warning btn-sm"
-              data-toggle="modal"
-              data-target="#modal-default"
-            >
-              Withdraw
-            </button> -->
-            <button class="btn ml-1 btn-danger btn-sm" @click="close()" >Close</button>
-          </div>
-          <!-- /. Buttons -->
-        </div>
       </div>
     </div>
 
@@ -534,7 +948,11 @@
           </div>
           <div class="modal-footer justify-content-end">
             <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-            <button type="button" @click="withdrawn()" class="btn btn-primary btn-sm">
+            <button
+              type="button"
+              @click="withdrawn()"
+              class="btn btn-primary btn-sm"
+            >
               Withdrawn
             </button>
           </div>
@@ -544,6 +962,120 @@
       <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
+
+    <!-- Modal Confirm -->
+    <div
+      class="modal fade"
+      id="modal-confirm"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title">
+              <b>Confirm</b>
+            </h6>
+            <button
+              type="button"
+              id="modalCloseButton"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+              ref="refSaveDraftCloseBtn"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <h6 class="text-center">
+              Are you sure you want to delete this item?
+            </h6>
+          </div>
+          <div class="modal-footer justify-content-end">
+            <button
+              type="button"
+              class="btn btn-success btn-sm"
+              @click="deleteItem()"
+            >
+              <i class="fas fa-check mr-1"></i>
+              Yes
+            </button>
+
+            <!-- <div v-else>
+              <button disabled type="button" class="btn btn-success btn-sm">
+                <div class="spinner-border spinner-border-sm" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+                Saving...
+              </button>
+            </div> -->
+
+            <button
+              type="button"
+              class="btn btn-danger btn-sm"
+              data-dismiss="modal"
+              aria-label="Close"
+              ref="refModalCloseBtn"
+            >
+              <i class="fas fa-times mr-1"></i>
+              No
+            </button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.Modal Confirm-->
+
+    <!-- Modal Add -->
+    <div
+      class="modal fade"
+      id="modal-add"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title">
+              <b>Add Items</b>
+            </h6>
+            <button
+              type="button"
+              id="modalCloseButton"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+              ref="refModalAdd"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <ul>
+              <li>Item Code</li>
+              <li>Brand</li>
+              <li>SKU</li>
+              <li>Model</li>
+              <li>Item Description</li>
+              <li>Qty On Hand</li>
+              <li>UOM</li>
+              <li>Category</li>
+              <li>Sub Category</li>
+              <li>Replacement</li>
+            </ul>
+          </div>
+          <div class="modal-footer justify-content-end"></div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.Modal Add-->
   </div>
   <!-- /. Container -->
 </template>
@@ -551,9 +1083,25 @@
 <script>
 import axios from "axios";
 import VsToast from "@vuesimple/vs-toast";
+import { ModelListSelect } from "vue-search-select";
 export default {
-  created() {
-    this.getMrf(this.$route.params.id, localStorage.getItem("companyId"), this.$route.params.frmName);
+  components: {
+    ModelListSelect,
+  },
+
+  async created() {
+    this.isLoading = true;
+
+    await this.getMrf(
+      this.$route.params.id,
+      localStorage.getItem("companyId"),
+      this.$route.params.frmName
+    );
+
+    await this.getReportingManager(localStorage.getItem("id"));
+    await this.getProjects();
+
+    this.isLoading = false;
   },
   watch: {
     counter() {
@@ -562,39 +1110,189 @@ export default {
     },
 
     async $route(newRoute) {
-      this.getMrf(newRoute.params.id, localStorage.getItem("companyId"), newRoute.params.id);
-    }
+      this.isLoading = true;
+
+      await this.getMrf(
+        newRoute.params.id,
+        localStorage.getItem("companyId"),
+        newRoute.params.id
+      );
+
+      await this.getReportingManager(localStorage.getItem("id"));
+      await this.getProjects();
+      this.isLoading = false;
+    },
+
+    typeListItem(newValue) {
+      if (newValue.code !== this.typeListItemTemp.code) {
+        this.processTypeListItem = {};
+      }
+      if (newValue.name === "Supplies Request - Internal") {
+        this.isProcessTypeList = true;
+      } else {
+        this.isProcessTypeList = false;
+      }
+    },
+
+    classListItem(newValue) {
+      if (newValue?.code) {
+        if (newValue.code >= 0 && newValue.code <= 3) {
+          this.isTypeListDisabled = false;
+
+          if (newValue.code !== this.classListItemTemp.code) {
+            this.typeListItem = {};
+            this.processTypeListItem = {};
+          }
+
+          if (newValue.code === 1) {
+            this.typeList = [
+              {
+                code: 1,
+                name: "Material Request - Project",
+                type: "Project",
+                process_type: "Sales Order",
+              },
+              {
+                code: 2,
+                name: "Material Request - Delivery",
+                type: "Delivery",
+                process_type: "Sales Order",
+              },
+              {
+                code: 3,
+                name: "Material Request - Demo",
+                type: "Demo",
+                process_type: "Sales Order",
+              },
+              {
+                code: 4,
+                name: "Material Request - POC",
+                type: "POC",
+                process_type: "Sales Order",
+              },
+            ];
+            this.referenceNumber = "MRF";
+          } else if (newValue.code === 2) {
+            this.typeList = [
+              {
+                code: 5,
+                name: "Asset Request - Project",
+                type: "Project",
+                process_type: "Sales Order",
+              },
+              {
+                code: 6,
+                name: "Asset Request - Delivery",
+                type: "Deliver",
+                process_type: "Sales Order",
+              },
+              {
+                code: 7,
+                name: "Asset Request - Demo",
+                type: "Demo",
+                process_type: "Sales Order",
+              },
+              {
+                code: 8,
+                name: "Asset Request - POC",
+                type: "POC",
+                process_type: "Sales Order",
+              },
+              {
+                code: 9,
+                name: "Asset Request - Internal",
+                type: "Stocking",
+                process_type: "Internal Process",
+              },
+            ];
+            this.referenceNumber = "ARF";
+          } else if (newValue.code === 3) {
+            this.typeList = [
+              {
+                code: 10,
+                name: "Supplies Request - Project",
+                type: "Project",
+                process_type: "Sales Order",
+              },
+              {
+                code: 11,
+                name: "Supplies Request - Internal",
+                type: "Stocking",
+                process_type: "",
+              },
+            ];
+            this.referenceNumber = "SURF";
+          }
+        } else {
+          this.typeListItem = {};
+          this.processTypeListItem = {};
+          this.isTypeListDisabled = true;
+          this.referenceNumber = "RMA";
+        }
+      } else {
+        this.typeListItem = {};
+        this.processTypeListItem = {};
+        this.isTypeListDisabled = true;
+      }
+    },
+
+    costCenterItem(newValue) {
+      if (newValue?.code) {
+        if (newValue?.code === this.costCenterItemTemp.code) {
+          this.getClient(newValue.code);
+        } else {
+          this.getClient(newValue.code);
+          this.getAttachments(newValue.soid);
+        }
+      } else {
+        this.mainId = this.clientId = this.clientName = "";
+      }
+    },
   },
   data() {
     return {
-      counter: 3,
+      counter: 0,
       isLoading: false,
       isLoadingModal: false,
+      attemptNext: false,
 
-      withdrawRemarks: '',
+      withdrawRemarks: "",
 
       // Request Details Card
-      mrf_number: '',
-      department: '',
-      full_name: '',
-      reporting_manager: '',
-      mrf_short_text: '',
-      date_requested: '',
-      planned_delivery_date: '',
-      actual_delivery_date: '',
-      cost_center: '',
-      client_name: '',
-      materials_request_class: '',
-      materials_request_type: '',
-      remarks: '',
+      mrf_number: "",
+      requestedDate: "",
+      actualDeliveryDate: "",
+      plannedDeliveryDate: "",
+      mrfShortText: "",
+      reportingManager: [],
+      reportingManagerItem: {},
+      costCenter: [],
+      costCenterItem: {},
+      costCenterItemTemp: {},
+      clientName: "",
+      clientId: "",
+      mainId: "",
+      remarks: "",
+
+      department: "",
+      full_name: "",
+      date_requested: "",
+      planned_delivery_date: "",
+      actual_delivery_date: "",
+      cost_center: "",
+      materials_request_class: "",
+      materials_request_type: "",
 
       // Attachments Card
       selectedFileSOF: [],
       selectedFileMRF: [],
+      removedAttachedMRFFilesId: [],
+
+      selectedFileNew: [],
+      filespreviewNew: [],
 
       // Requested Items Card
       requested_items: [],
-
 
       // Logged User Data
       loggedUserId: localStorage.getItem("id"),
@@ -606,48 +1304,352 @@ export default {
       companyId: localStorage.getItem("companyId"),
       companyName: localStorage.getItem("companyName"),
 
+      // To Delete Object
+      toDeleteItem: null,
 
-      
-   };
+      // Step 2
+      classList: [
+        { code: 1, name: "Material Request" },
+        { code: 2, name: "Asset Request" },
+        { code: 3, name: "Supplies Request" },
+        // { code: 4, name: "RMA Request" },
+      ],
+      classListItem: {},
+      classListItemTemp: {},
+
+      isProcessTypeList: false,
+      processTypeList: [
+        { code: 1, name: "Warehouse Supplies" },
+        { code: 2, name: "Office Supplies" },
+      ],
+      processTypeListItem: {},
+
+      isTypeListDisabled: true,
+      typeList: [],
+      typeListItem: {},
+      typeListItemTemp: {},
+    };
   },
 
   methods: {
+    previous() {
+      this.counter--;
+      this.attemptNext = false;
+    },
+
+    next() {
+      this.attemptNext = true;
+
+      if (this.counter === 0) {
+        this.counter++;
+      } else if (this.counter === 1) {
+        if (
+          !this.missingActualDeliveryDate &&
+          !this.missingPlannedDeliveryDate &&
+          !this.missingMrfShortText &&
+          !this.missingReportingManager &&
+          !this.missingCostCenterItem &&
+          !this.missingRemarks
+        ) {
+          this.counter++;
+        }
+      }
+    },
+
+    isItDisabled(boolean) {
+      if (boolean) return "padding: 9px; background-color: #e9ecef";
+      else return "padding: 9px";
+    },
+
+    getClassListItem(name) {
+      const obj = this.classList.find((current) => current.name === name);
+      return obj;
+    },
+
+    getTypeListItem(name) {
+      const typeList = [
+        {
+          code: 1,
+          name: "Material Request - Project",
+          type: "Project",
+          process_type: "Sales Order",
+        },
+        {
+          code: 2,
+          name: "Material Request - Delivery",
+          type: "Delivery",
+          process_type: "Sales Order",
+        },
+        {
+          code: 3,
+          name: "Material Request - Demo",
+          type: "Demo",
+          process_type: "Sales Order",
+        },
+        {
+          code: 4,
+          name: "Material Request - POC",
+          type: "POC",
+          process_type: "Sales Order",
+        },
+        {
+          code: 5,
+          name: "Asset Request - Project",
+          type: "Project",
+          process_type: "Sales Order",
+        },
+        {
+          code: 6,
+          name: "Asset Request - Delivery",
+          type: "Deliver",
+          process_type: "Sales Order",
+        },
+        {
+          code: 7,
+          name: "Asset Request - Demo",
+          type: "Demo",
+          process_type: "Sales Order",
+        },
+        {
+          code: 8,
+          name: "Asset Request - POC",
+          type: "POC",
+          process_type: "Sales Order",
+        },
+        {
+          code: 9,
+          name: "Asset Request - Internal",
+          type: "Stocking",
+          process_type: "Internal Process",
+        },
+        {
+          code: 10,
+          name: "Supplies Request - Project",
+          type: "Project",
+          process_type: "Sales Order",
+        },
+        {
+          code: 11,
+          name: "Supplies Request - Internal",
+          type: "Stocking",
+          process_type: "",
+        },
+      ];
+
+      const obj = typeList.find((current) => current.name === name);
+      return obj;
+    },
+
+    getProcessTypeItem(name = "Office Supplies") {
+      const obj = this.processTypeList.find((cur) => cur.name === name);
+      return obj;
+    },
+
+    async getAttachments(soid) {
+      console.log("haha");
+
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/get-attachments-by-soid/${soid}`,
+
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        const error = new Error(
+          responseData.message || "Failed to fetch Projects."
+        );
+        throw error;
+      }
+
+      this.selectedFileSOF = responseData;
+    },
+
+    async getClient(id) {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/business-client/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        const error = new Error(
+          responseData.message || "Failed to fetch Reporting Manager."
+        );
+        throw error;
+      }
+      const client = [];
+      for (const key in responseData) {
+        const request = {
+          clientId: responseData[key].clientID,
+          clientName: responseData[key].clientName,
+          mainId: responseData[key].mainID,
+        };
+        client.push(request);
+      }
+      this.clientName = client[0].clientName;
+      this.clientId = client[0].clientId;
+      this.mainId = client[0].mainId;
+    },
+
+    async getProjects() {
+      // const compid = this.companyId;
+
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/general-getprojects/${localStorage.getItem(
+          "companyId"
+        )}`,
+
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        const error = new Error(
+          responseData.message || "Failed to fetch Projects."
+        );
+        throw error;
+      }
+
+      // console.warn(responseData)
+
+      const project = [];
+      for (const key in responseData) {
+        const request = {
+          code: responseData[key].project_id,
+          name: responseData[key].project_name,
+          soid: responseData[key].SOID,
+        };
+        project.push(request);
+      }
+      this.costCenter = project;
+    },
+
+    // Query
+    async getReportingManager(userid) {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/reporting-manager/${userid}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        const error = new Error(
+          responseData.message || "Failed to fetch Reporting Manager."
+        );
+        throw error;
+      }
+
+      const reportingManager = [];
+      for (const key in responseData) {
+        const request = {
+          code: responseData[key].RMID,
+          name: responseData[key].RMName,
+        };
+        reportingManager.push(request);
+      }
+      this.reportingManager = reportingManager;
+    },
+
+    // Set because of confirm modal
+    setToDeleteItem(id) {
+      this.toDeleteItem = this.requested_items.findIndex((obj) => {
+        return obj.req_dtls_id === id;
+      });
+    },
+
+    deleteItem() {
+      if (this.toDeleteItem >= 0 && this.toDeleteItem !== null) {
+        this.requested_items.splice(this.toDeleteItem, 1);
+        this.$refs.refModalCloseBtn.click();
+        this.openToast("top-right", "success", "Item deleted successfully!");
+      }
+    },
+
     async getMrf(id, companyId, frmname) {
-      this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/get-mrf/${id}/${companyId}/${frmname}`
         );
-        
-        this.isLoading = false;
+
+        console.warn(resp.data);
+
+        const { materials_request_class, materials_request_type } =
+          resp.data.request;
+
+        const classListItem = this.getClassListItem(materials_request_class);
+        this.classListItem = this.classListItemTemp = classListItem;
+
+        const typeListItem = this.getTypeListItem(materials_request_type);
+
+        this.typeListItem = this.typeListItemTemp = typeListItem;
+
+        const [{ procss_type }] = resp.data.req_main;
+
+        this.processTypeListItem = this.getProcessTypeItem(procss_type);
 
         // Request Details Card
         this.mrf_number = resp.data.request.mrf_number;
+        this.requestedDate = resp.data.request.date_requested;
+        this.actualDeliveryDate = resp.data.request.planned_delivery_date;
+        this.plannedDeliveryDate = resp.data.request.planned_delivery_date;
+        this.mrfShortText = resp.data.request.mrf_short_text;
+        const { rm_id, rm_name } = resp.data.user;
+
+        this.reportingManagerItem = {
+          code: rm_id,
+          name: rm_name,
+        };
+
         this.department = resp.data.user.department;
         this.full_name = resp.data.user.fullname;
         this.reporting_manager = resp.data.user.rm_name;
-        this.mrf_short_text = resp.data.request.mrf_short_text;
-        this.date_requested = resp.data.request.date_requested;
-        this.planned_delivery_date = resp.data.request.planned_delivery_date;
-        this.actual_delivery_date = resp.data.request.planned_delivery_date;
-        this.cost_center = resp.data.request.project_name;
-        this.client_name = resp.data.request.client_name
-        this.materials_request_class = resp.data.request.materials_request_class;
+        const { project_id, project_name } = resp.data.request;
+
+        this.costCenterItemTemp = this.costCenterItem = {
+          code: project_id,
+          name: project_name,
+        };
+
+        this.client_name = resp.data.request.client_name;
+        this.materials_request_class =
+          resp.data.request.materials_request_class;
         this.materials_request_type = resp.data.request.materials_request_type;
         this.remarks = resp.data.request.remarks;
 
         // Attachments Card
-        this.selectedFileSOF = resp.data.attachmentsSOF
-        this.selectedFileMRF = resp.data.attachmentsMRF
-
+        this.selectedFileSOF = resp.data.attachmentsSOF;
+        this.selectedFileMRF = resp.data.attachmentsMRF;
 
         // Requested Items Card
-        this.requested_items = resp.data.request.requisition_details
-
+        this.requested_items = resp.data.request.requisition_details;
       } catch (err) {
         // Handle Error Here
         console.error(err);
-        this.isLoading = false;
       }
     },
 
@@ -655,43 +1657,43 @@ export default {
       this.$router.replace("/clarifications");
     },
 
-    async withdrawn(){
-      this.isLoadingModal = true;
+    async withdrawn() {
       const fd = new FormData();
       const frmClass = this.$route.params.frmClass;
       const reqId = this.$route.params.id;
       const form = this.$route.params.frmName;
 
-      fd.append("loggedUserId", localStorage.getItem("id"))
-      fd.append("loggedUserFirstName", localStorage.getItem("fname"))
-      fd.append("loggedUserLastName", localStorage.getItem("lname"))
-      fd.append("loggedUserDepartment", localStorage.getItem("department"))
-      fd.append("loggedUserPosition", localStorage.getItem("positionName"))
-      fd.append("companyId", localStorage.getItem("companyId"))
-      fd.append("companyName", localStorage.getItem("companyName"))
+      fd.append("loggedUserId", localStorage.getItem("id"));
+      fd.append("loggedUserFirstName", localStorage.getItem("fname"));
+      fd.append("loggedUserLastName", localStorage.getItem("lname"));
+      fd.append("loggedUserDepartment", localStorage.getItem("department"));
+      fd.append("loggedUserPosition", localStorage.getItem("positionName"));
+      fd.append("companyId", localStorage.getItem("companyId"));
+      fd.append("companyName", localStorage.getItem("companyName"));
 
-      fd.append("frmClass",frmClass)
-      fd.append("processId",reqId)
-      fd.append("frmClass",form)
-      fd.append("withdrawRemarks",this.withdrawRemarks)
+      fd.append("frmClass", frmClass);
+      fd.append("processId", reqId);
+      fd.append("frmClass", form);
+      fd.append("withdrawRemarks", this.withdrawRemarks);
 
-        try {
+      try {
         const resp = await axios.post(
           "http://127.0.0.1:8000/api/mrf-withdraw",
           fd
         );
 
-          this.isLoadingModal = false;
-          this.openToast("top-right", "success", resp.data.message);
-          document.getElementById("modalCloseButton").click();
-          this.$router.replace("/inprogress");
-    
-
+        this.openToast("top-right", "success", resp.data.message);
+        document.getElementById("modalCloseButton").click();
+        this.$router.replace("/inprogress");
       } catch (err) {
         // Handle Error Here
         console.error(err);
-        this.isLoadingModal = false;
-        this.openToast("top-right", "error", "Internal Server Error! Please inform the administrator!");
+
+        this.openToast(
+          "top-right",
+          "error",
+          "Internal Server Error! Please inform the administrator!"
+        );
       }
     },
 
@@ -704,9 +1706,92 @@ export default {
         position,
       });
     },
+
+    // ATTACHMENTS
+
+    // remove existing attached files
+    removeAttachedFile(index, id, filename, filepath) {
+      const attachmentId = { id: id, filename: filename, filepath: filepath };
+      this.removedAttachedMRFFilesId.push(attachmentId);
+      this.selectedFileMRF.splice(index, 1);
+    },
+
+    // Add new files scripts
+    onFileSelected(event) {
+      let selectedFiles = event.target.files;
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.selectedFileNew.push(selectedFiles[i]);
+      }
+      this.setFilePreviewNew();
+    },
+
+    onInputChange(event) {
+      let selectedFiles = event.dataTransfer.files;
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.selectedFileNew.push(selectedFiles[i]);
+      }
+      this.setFilePreviewNew();
+    },
+
+    // preview function of newly added files
+    filePreviewNew(i) {
+      // console.log(i)
+      const url = this.filespreviewNew[i].link;
+      window.open(url, "_blank", "resizable=yes");
+    },
+
+    // set a preview function for newly added files
+    setFilePreviewNew() {
+      let files = this.selectedFileNew;
+      const fileContainer = [];
+      for (let i = 0; i < files.length; i++) {
+        let tmppath = URL.createObjectURL(files[i]);
+        const thisFiles = {
+          link: tmppath,
+        };
+        fileContainer.push(thisFiles);
+      }
+      this.filespreviewNew = fileContainer;
+    },
+
+    // remove newly added files
+    removeFileNew(i) {
+      this.selectedFileNew.splice(i, 1);
+      this.setFilePreviewNew();
+    },
+
+    dragover(event) {
+      event.preventDefault();
+      // Add some visual fluff to show the user can drop its files
+      if (!event.currentTarget.classList.contains("bg-white")) {
+        event.currentTarget.classList.remove("bg-light");
+        event.currentTarget.classList.add("bg-white");
+      }
+    },
+    dragleave(event) {
+      // Clean up
+      event.currentTarget.classList.add("bg-light");
+      event.currentTarget.classList.remove("bg-white");
+    },
+    drop(event) {
+      event.preventDefault();
+      this.onInputChange(event); // Trigger the onChange event manually
+
+      // Clean up
+      event.currentTarget.classList.add("bg-light");
+      event.currentTarget.classList.remove("bg-white");
+    },
   },
 
   computed: {
+    isTypeDisabled() {
+      if (!(this.classListItem?.code === undefined)) {
+        return "padding: 9px";
+      } else {
+        return "padding: 9px; background-color: #e9ecef";
+      }
+    },
+
     classA() {
       return { active: this.counter >= 0 };
     },
@@ -718,6 +1803,71 @@ export default {
     },
     classD() {
       return { active: this.counter >= 3 };
+    },
+
+    missingClass() {
+      if (this.classListItem?.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingType() {
+      if (this.typeListItem?.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingProcessType() {
+      if (this.processTypeListItem?.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingActualDeliveryDate() {
+      if (this.actualDeliveryDate === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingPlannedDeliveryDate() {
+      if (this.plannedDeliveryDate === null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingMrfShortText() {
+      return this.mrfShortText.length === 0 ? true : false;
+    },
+
+    missingReportingManager() {
+      if (this.reportingManagerItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingCostCenterItem() {
+      if (this.costCenterItem.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    missingRemarks() {
+      if (this.remarks === undefined || this.remarks == "") return true;
+      return false;
     },
   },
 };
@@ -838,6 +1988,14 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.ellipsis-2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
@@ -879,5 +2037,13 @@ export default {
 
 .overlay__card-body-con {
   position: relative;
+}
+
+.gap-2 {
+  gap: 20px;
+}
+
+.card--img {
+  align-self: center;
 }
 </style>

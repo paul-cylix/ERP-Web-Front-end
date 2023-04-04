@@ -438,10 +438,12 @@ export default {
           window.innerHeight ===
         document.documentElement.offsetHeight;
 
-      if (bottomOfWindow) {
+      if (bottomOfWindow === true && this.$route.path === '/the-mrf') {
+        console.log(bottomOfWindow);
         this.isLastPage = false;
         this.isShow = true;
-        console.log('on scroll')
+        console.log('on scroll');
+        console.log(this.$route.path);
         await this.fetchSupplies(this.page++,false, {is_SearchSubmitted: this.isSearchSubmitted, actual_search: this.actualSearch, is_filtered: this.isFiltered, filtered_data: this.filteredData});
         this.isShow = false;
       }

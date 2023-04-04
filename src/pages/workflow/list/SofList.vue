@@ -13,9 +13,50 @@
         <h3 class="card-title">Sales Order</h3>
       </div>
       <div class="card-body">
+
+        <!-- Buttons -->
+        <div class="row d-flex justify-content-between">
+          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
+            
+              <button
+                v-show="counter"
+                type="button"
+                @click="counter--"
+                class="btn mr-1 btn-secondary btn-sm"
+              >
+                Previous
+              </button>
+            
+
+       
+              <button
+                v-show="this.counter > -1 && this.counter < 6"
+                type="button"
+                @click="counter++"
+                class="btn mr-1 btn-primary btn-sm"
+              >
+                Next
+              </button>
+            
+          </aside>
+
+          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
+            
+              <button
+                type="button"
+                class="btn ml-1 btn-danger btn-sm"
+                @click="close()"
+              >
+                Close
+              </button>
+        
+          </aside>
+        </div>
+        <!-- / Buttons -->
+
         <!-- <card-spinner :show="isLoadingSpinner"></card-spinner> -->
         <!-- Step Numbers -->
-        <div class="d-flex progressBarWrapper text-center">
+        <div class="d-flex progressBarWrapper text-center mt-5">
           <div class="progressbar" :class="classA">
             <span :class="classA">1</span>
           </div>
@@ -699,7 +740,7 @@
               <span class="text-secondary">List of Attached File</span>
             </label>
 
-            <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
+            <!-- <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
               <li
                 class="text-sm mt-2"
                 v-for="file in selectedFile"
@@ -736,6 +777,32 @@
                         Preview
                       </button>
                     </div>
+                  </div>
+                </div>
+              </li>
+            </ul> -->
+
+            <ul class="pb-3 text-decoration-none ulUpload" v-cloak>
+              <li
+                class="text-sm mt-2"
+                v-for="file in selectedFile"
+                :key="file.id"
+              >
+                <div class="row d-flex justify-content-center">
+                  <div class="col-md-4 d-flex">
+                    <div class="col text-left">
+                      <span
+                        ><label>{{ file.filename }}</label></span
+                      >
+                    </div>
+                    <!-- New Preview and Download using laravel filepath -->
+                    <div>
+                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                    </div>
+                    <div class="ml-1">
+                      <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                    </div>
+   
                   </div>
                 </div>
               </li>
@@ -1165,45 +1232,6 @@
         </div>
         <!-- /.modal -->
 
-        <!-- Buttons -->
-        <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
-            
-              <button
-                v-show="counter"
-                type="button"
-                @click="counter--"
-                class="btn mr-1 btn-secondary btn-sm"
-              >
-                Previous
-              </button>
-            
-
-       
-              <button
-                v-show="this.counter > -1 && this.counter < 6"
-                type="button"
-                @click="counter++"
-                class="btn mr-1 btn-primary btn-sm"
-              >
-                Next
-              </button>
-            
-          </aside>
-
-          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
-            
-              <button
-                type="button"
-                class="btn ml-1 btn-danger btn-sm"
-                @click="close()"
-              >
-                Close
-              </button>
-        
-          </aside>
-        </div>
-        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->

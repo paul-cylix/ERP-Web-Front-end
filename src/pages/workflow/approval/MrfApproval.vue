@@ -14,8 +14,69 @@
         <h3 class="card-title">Materials Request</h3>
       </div>
       <div class="card-body">
+      <!-- Buttons -->
+        <div class="row">
+          <div class="col-md-6">
+            <button
+              class="btn mr-1 btn-secondary btn-sm"
+              v-show="counter"
+              @click="counter--"
+              disabled
+            >
+              Previous
+            </button>
+            <button
+              class="btn mr-1 btn-primary btn-sm"
+              v-show="counter <= 2"
+              @click="counter++"
+            >
+              Next
+            </button>
+          </div>
+
+          <div class="col-md-6 text-right">
+            <button
+              type="button"
+              class="btn btn-success ml-1 btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Approve')"
+            >
+              Approve
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-danger ml-1 btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              @click="setTitle('Reject')"
+            >
+              Reject
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-warning ml-1 btn-sm"
+              data-toggle="modal"
+              data-target="#modal-default"
+              
+              @click="setTitle('Clarify')"
+            >
+              Clarify
+            </button>
+
+            <button class="btn ml-1 btn-danger btn-sm" @click="close()">
+              Close
+            </button>
+          </div>
+          <!-- /. Buttons -->
+        </div>
+        <!-- /.Buttons -->
+
+
         <!-- Progress Bar -->
-        <div class="d-flex progressBarWrapper text-center">
+        <div class="d-flex progressBarWrapper text-center mt-5">
           <div class="progressbar" :class="classA">
             <span :class="classA">1</span>
           </div>
@@ -431,7 +492,7 @@
             <!-- Request Details -->
             <!-- Checkout loop -->
 
-                <!-- NEW DESIGN -->
+          <!-- NEW DESIGN -->
           <div class="col-12 ">
             <div class="card card-secondary card-outline card-outline-tabs" v-for="(item) in requested_items" :key="item.req_dtls_id">
               <div class="card-header p-0 border-bottom-0">
@@ -508,7 +569,6 @@
               <!-- /.card -->
             </div>
           </div>
-
           <!-- /. NEW DESIGN -->
 
             <!-- <div
@@ -587,64 +647,7 @@
           <!-- /.card-body -->
         </section>
 
-        <!-- Buttons -->
-        <div class="row">
-          <div class="col-md-6">
-            <button
-              class="btn mr-1 btn-secondary btn-sm"
-              v-show="counter"
-              @click="counter--"
-              disabled
-            >
-              Previous
-            </button>
-            <button
-              class="btn mr-1 btn-primary btn-sm"
-              v-show="counter <= 2"
-              @click="counter++"
-            >
-              Next
-            </button>
-          </div>
 
-          <div class="col-md-6 text-right">
-            <button
-              type="button"
-              class="btn btn-success ml-1 btn-sm"
-              data-toggle="modal"
-              data-target="#modal-default"
-              @click="setTitle('Approve')"
-            >
-              Approve
-            </button>
-
-            <button
-              type="button"
-              class="btn btn-danger ml-1 btn-sm"
-              data-toggle="modal"
-              data-target="#modal-default"
-              @click="setTitle('Reject')"
-            >
-              Reject
-            </button>
-
-            <button
-              type="button"
-              class="btn btn-warning ml-1 btn-sm"
-              data-toggle="modal"
-              data-target="#modal-default"
-              disabled
-              @click="setTitle('Clarify')"
-            >
-              Clarify
-            </button>
-
-            <button class="btn ml-1 btn-danger btn-sm" @click="close()">
-              Close
-            </button>
-          </div>
-          <!-- /. Buttons -->
-        </div>
       </div>
     </div>
 
@@ -670,11 +673,42 @@
               class="close"
               data-dismiss="modal"
               aria-label="Close"
+              @click="closeDefaultModal()"
             >
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
+
+            <the-alert
+              v-show="isAlert"
+              v-bind:header="this.header"
+              v-bind:message="this.message"
+              v-bind:type="this.type"
+            ></the-alert>
+
+            <div class="row" v-if="isForClarity">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <model-list-select
+                    :list="recipent"
+                    v-model="itemrecipient"
+                    option-value="code"
+                    option-text="name"
+                    placeholder="Select Recipient"
+                    style="padding: 9px"
+                  >
+                  </model-list-select>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingModalRecipient && attemptClarify"
+                    >Recipient is required!</small
+                  >
+                </div>
+              </div>
+            </div>
+
+
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group">
@@ -712,9 +746,22 @@
 <script>
 import axios from "axios";
 import VsToast from "@vuesimple/vs-toast";
+import { ModelListSelect } from "vue-search-select";
 export default {
-  created() {
-    this.getMrf(this.$route.params.id, localStorage.getItem("companyId"), this.$route.params.frmName);
+  components: {
+    ModelListSelect,
+  },
+
+  async created() {
+    this.isLoading = true;
+    await this.getMrf(this.$route.params.id, localStorage.getItem("companyId"), this.$route.params.frmName);
+    await this.getRecipient(
+        this.$route.params.id,
+        this.loggedUserId,
+        this.companyId,
+        this.$route.params.frmName
+      );
+    this.isLoading = false;
   },
   watch: {
     counter() {
@@ -722,8 +769,14 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
+    itemrecipient(){
+      this.resetAlert();
+    },
+
     async $route(newRoute) {
-      this.getMrf(newRoute.params.id, localStorage.getItem("companyId"), newRoute.params.id);
+      this.isLoading = true;
+      await this.getMrf(newRoute.params.id, localStorage.getItem("companyId"), newRoute.params.id);
+      this.isLoading = false;
     },
   },
   data() {
@@ -768,12 +821,68 @@ export default {
       loggedUserPosition: localStorage.getItem("positionName"),
       companyId: localStorage.getItem("companyId"),
       companyName: localStorage.getItem("companyName"),
+
+
+      // dropdown for recipient of clarity
+      recipent: [],
+      itemrecipient: {},
+
+      attemptClarify: false,
+
+      // The Alert
+      isAlert: false,
+      header: "", // Syccess or Failed
+      message: "", // added successfully
+      type: "", // true or false
+
+      inprogressId: 0,
     };
   },
 
   methods: {
+    validateModalDefault() {
+      if (!this.missingModalRecipient === true) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    closeDefaultModal() {
+      
+      this.attemptClarify = false;
+      this.withdrawRemarks = "";
+      this.itemrecipient = {};
+      this.resetAlert();
+    },
+
+    async getRecipient(id, loggedUserId, companyId, form) {
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/getRecipient/${id}/${loggedUserId}/${companyId}/${form}`
+        );
+        // console.log(resp.data);
+        // this.liquidation = resp.data;
+        const recipient = [];
+        for (const key in resp.data) {
+          const request = {
+            code: resp.data[key].uid,
+            name: resp.data[key].name,
+          };
+          recipient.push(request);
+        }
+        this.recipent = recipient;
+
+        console.warn(recipient);
+      } catch (err) {
+        // Handle Error Here
+        console.error(err);
+        this.openToast("top-right", "success", "Server Error! Please contact the administrator");
+      }
+    },
+
     async getMrf(id, companyId, frmname) {
-      this.isLoading = true;
+      // this.isLoading = true;
       try {
         const resp = await axios.get(
           `http://127.0.0.1:8000/api/get-mrf/${id}/${companyId}/${frmname}`
@@ -781,7 +890,7 @@ export default {
         
         console.log(resp.data)
 
-        this.isLoading = false;
+        // this.isLoading = false;
 
         // Request Details Card
         this.mrf_number = resp.data.request.mrf_number;
@@ -808,6 +917,20 @@ export default {
 
         // Requested Items Card
         this.requested_items = resp.data.request.requisition_details;
+
+
+
+
+
+
+        const {gen_actualsign} = resp.data;
+        this.inprogressId = gen_actualsign.find((currElement) => {
+          return currElement.STATUS.includes('In Progress');
+        }).ID;
+
+     
+
+
       } catch (err) {
         // Handle Error Here
         console.error(err);
@@ -833,7 +956,10 @@ export default {
       fd.append("loggedUserPosition", localStorage.getItem("positionName"));
       fd.append("companyId", localStorage.getItem("companyId"));
       fd.append("companyName", localStorage.getItem("companyName"));
+      fd.append("loggedUserFullname", this.loggedUserFullName);
 
+
+      
       let frmstatus = null;
       if (this.title === 'Approve') {
         frmstatus = 'approved'
@@ -841,13 +967,19 @@ export default {
         frmstatus = 'rejected'
       } else if(this.title === 'Clarify') {
         frmstatus = 'clarify'
+        fd.append("recipientId", this.itemrecipient.code);
+        fd.append("inprogressId", this.inprogressId);
       }
+
+      
 
       fd.append("frmstatus",frmstatus)
       fd.append("frmClass", frmClass);
       fd.append("processId", reqId);
       fd.append("frmName", form);
+      fd.append("form", form);
       fd.append("withdrawRemarks", this.withdrawRemarks);
+      fd.append("remarks", this.withdrawRemarks);
       fd.append("done_approving", this.done_approving);
       fd.append("isAcknowledgeByMM", this.isAcknowledgeByMM);
       fd.append("input",false)
@@ -855,6 +987,11 @@ export default {
 
 
       try {
+        if(frmstatus === 'clarify' && this.missingModalRecipient) {
+          this.attemptClarify = true;
+          throw new Error("Please select recipent!");
+        }
+
         const resp = await axios.post(
           "http://127.0.0.1:8000/api/mrf-change-status",
           fd
@@ -866,14 +1003,40 @@ export default {
         this.$router.replace("/approvals");
       } catch (err) {
         // Handle Error Here
-        console.error(err);
         this.isLoadingModal = false;
-        this.openToast(
-          "top-right",
-          "error",
-          "Internal Server Error! Please inform the administrator!"
-        );
+
+        if (err.message === 'Please select recipent!') {
+          this.openToast(
+            "top-right",
+            "warning",
+            err.message
+          );
+
+          this.addAlert("Failed", "Please select recipent!", "false");
+        } else {
+          this.openToast(
+            "top-right",
+            "error",
+            "Internal Server Error! Please inform the administrator!"
+          );
+        }
+
+        console.error(err);
+
       }
+    },
+
+    resetAlert() {
+      this.isAlert = false;
+      this.header = "";
+      this.message = "";
+      this.type = "";
+    },
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
     },
 
     openToast(position, variant, message) {
@@ -903,6 +1066,22 @@ export default {
     },
     classD() {
       return { active: this.counter >= 3 };
+    },
+
+    missingModalRecipient() {
+      if (this.itemrecipient.code === undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    isForClarity() {
+      if (this.title === "Clarify") {
+        return true;
+      } else {
+        return false;
+      }
     },
   },
 };

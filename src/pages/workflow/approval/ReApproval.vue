@@ -1370,7 +1370,7 @@ export default {
       let showRecipient = `http://127.0.0.1:8000/api/getRecipient/${id}/${loggedUserId}/${companyId}/${form}`;
       let showInprogressId = `http://127.0.0.1:8000/api/get-Inprogress/${id}/${companyId}/${form}`;
 
-      // let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`;
+      let showActualSign = `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`;
 
       const requestOne = axios.get(showMain);
       const requestTwo = axios.get(showExpense);
@@ -1378,6 +1378,8 @@ export default {
       const requestFour = axios.get(showAttachments);
       const requestFive = axios.get(showRecipient);
       const requestSix = axios.get(showInprogressId);
+      const requestSeven = axios.get(showActualSign);
+
 
       // const requestSix = axios.get(showActualSign);
 
@@ -1391,6 +1393,7 @@ export default {
           requestFour.catch(() => null),
           requestFive.catch(() => null),
           requestSix.catch(() => null),
+          requestSeven.catch(() => null),
         ])
         .then(
           axios.spread((...responses) => {
@@ -1400,6 +1403,7 @@ export default {
             const responesFour = responses[3];
             const responesFive = responses[4];
             const responesSix = responses[5];
+            const responesSeven = responses[6];
 
             // showMain - responseOne
             this.referenceNumber = responseOne.data.data.REQREF;
@@ -1421,15 +1425,25 @@ export default {
             ).toLocaleString(undefined, { minimumFractionDigits: 2 });
 
             this.uid = responseOne.data.data.UID;
-
             
+            
+            // console.warn(responesSeven.data);
+            
+            const initObj = responesSeven.data.find((cur) => cur.USER_GRP_IND === "Initiator");
+            console.warn(initObj);
+            const {STATUS: initStatus} = initObj
+            console.warn(initStatus);
 
-            if (responseOne.data.data.UID == this.loggedUserId) {
+
+
+            if (initStatus === 'In Progress') {
               this.isInitiator = true;
               // this.counter = 0;
+              console.log('if')
+
             } else {
               this.isInitiator = false;
-              
+              console.log('else')
               // approver go directly to form review
               this.counter = 5
             }
