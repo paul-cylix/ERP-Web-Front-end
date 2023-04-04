@@ -1056,7 +1056,7 @@
           </div>
 
           <div class="modal-body">
-            <ul>
+            <!-- <ul>
               <li>Item Code</li>
               <li>Brand</li>
               <li>SKU</li>
@@ -1067,7 +1067,9 @@
               <li>Category</li>
               <li>Sub Category</li>
               <li>Replacement</li>
-            </ul>
+            </ul> -->
+
+            <data-table v-bind="mrfTable" />
           </div>
           <div class="modal-footer justify-content-end"></div>
         </div>
@@ -1100,6 +1102,8 @@ export default {
 
     await this.getReportingManager(localStorage.getItem("id"));
     await this.getProjects();
+    await this.getAllMaterials(localStorage.getItem("companyId"));
+
 
     this.isLoading = false;
   },
@@ -1120,6 +1124,7 @@ export default {
 
       await this.getReportingManager(localStorage.getItem("id"));
       await this.getProjects();
+      await this.getAllMaterials(localStorage.getItem("companyId"));
       this.isLoading = false;
     },
 
@@ -1294,6 +1299,8 @@ export default {
       // Requested Items Card
       requested_items: [],
 
+      all_items: [],
+
       // Logged User Data
       loggedUserId: localStorage.getItem("id"),
       loggedUserFirstName: localStorage.getItem("fname"),
@@ -1332,6 +1339,25 @@ export default {
   },
 
   methods: {
+
+    async getAllMaterials(companyId = 1) {
+      try {
+          const resp = await axios.get(`http://127.0.0.1:8000/api/get-all-materials/${companyId}`);
+          console.log(resp.data.data);
+
+          // set all items
+          this.all_items = resp.data.data;
+
+      } catch (error) {
+        console.error(error);
+        this.openToast(
+          "top-right",
+          "error",
+          "Internal Server Error! Please inform the administrator!"
+        );
+      }
+    },
+
     previous() {
       this.counter--;
       this.attemptNext = false;
@@ -1784,6 +1810,70 @@ export default {
   },
 
   computed: {
+      mrfTable() {
+      return {
+        data: this.all_items,
+        perPageSizes: [
+          10,
+          25,
+          50,
+          100,
+          100 * Math.ceil(this.all_items.length / 100),
+        ],
+
+        tableClass:
+          "table table-sm table-striped table-bordered small table-hover",
+        columns: [
+          {
+            key: "item_code",
+            title: "Item Code",
+          },
+          {
+            key: "brand",
+            title: "Brand",
+          },
+          {
+            key: "sku",
+            title: "SKU",
+          },
+          {
+            key: "specification",
+            title: "Model",
+          },
+          {
+            key: "description",
+            title: "Item Description",
+          },
+          {
+            key: "onhand",
+            title: "Qty On Hand",
+          },
+          {
+            key: "uom_name",
+            title: "UOM",
+          },
+          {
+            key: "category",
+            title: "Category",
+          },
+          {
+            key: "sub_category",
+            title: "Sub Category",
+          },
+          {
+            key: "replacement",
+            title: "Replacement",
+          },
+
+
+        ],
+      };
+    },
+
+
+
+
+
     isTypeDisabled() {
       if (!(this.classListItem?.code === undefined)) {
         return "padding: 9px";
