@@ -20,13 +20,13 @@
             <button
               class="btn mr-1 btn-secondary btn-sm"
               v-show="counter"
-              disabled
+              
               @click="previous()"
             >
               Previous
             </button>
             <button
-            disabled
+              
               class="btn mr-1 btn-primary btn-sm"
               v-show="counter <= 2"
               @click="next()"
@@ -700,6 +700,7 @@
 
             <!-- NEW DESIGN -->
             <div class="col-12">
+            
               <div
                 class="card card-secondary card-outline card-outline-tabs"
                 v-for="item in requested_items"
@@ -851,6 +852,18 @@
                 </div>
                 <!-- /.card -->
               </div>
+
+
+
+
+
+
+
+
+
+
+
+
             </div>
             <!-- /. NEW DESIGN -->
 
@@ -1050,28 +1063,215 @@
               data-dismiss="modal"
               aria-label="Close"
               ref="refModalAdd"
+              @click="closeModalAdd()"
             >
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
 
           <div class="modal-body">
-            <!-- <ul>
-              <li>Item Code</li>
-              <li>Brand</li>
-              <li>SKU</li>
-              <li>Model</li>
-              <li>Item Description</li>
-              <li>Qty On Hand</li>
-              <li>UOM</li>
-              <li>Category</li>
-              <li>Sub Category</li>
-              <li>Replacement</li>
-            </ul> -->
+            <data-table v-show="isModalTblVsbl" v-bind="mrfTable" />
 
-            <data-table v-bind="mrfTable" />
+            <div v-show="isModalCartVsbl" class="card-body">
+              <div class="row">
+                <div class="col-12 col-sm-6">
+                  <div class="col-12">
+                    <img
+                      src="../../../../public/dist/img/default-image.png"
+                      class="product-image"
+                      alt="Product Image"
+                      style="height: 360px !important"
+                    />
+                  </div>
+                  <div class="col-12 product-image-thumbs">
+                    <div class="product-image-thumb">
+                      <img
+                        src="../../../../public/dist/img/default-image.png"
+                        alt="Product Image"
+                      />
+                    </div>
+                    <div class="product-image-thumb">
+                      <img
+                        src="../../../../public/dist/img/default-image.png"
+                        alt="Product Image"
+                      />
+                    </div>
+                    <div class="product-image-thumb">
+                      <img
+                        src="../../../../public/dist/img/default-image.png"
+                        alt="Product Image"
+                      />
+                    </div>
+                    <div class="product-image-thumb">
+                      <img
+                        src="../../../../public/dist/img/default-image.png"
+                        alt="Product Image"
+                      />
+                    </div>
+                    <div class="product-image-thumb">
+                      <img
+                        src="../../../../public/dist/img/default-image.png"
+                        alt="Product Image"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <h3 class="my-3">{{ selectedItem.description }}</h3>
+                  <hr />
+                  <h6><b>Product Details</b></h6>
+
+                  <div class="product-details">
+                    <ul>
+                      <li>
+                        Item Code:
+                        <span class="ml-2">
+                          {{ selectedItem.item_code }}
+                        </span>
+                      </li>
+
+                      <li>
+                        Has Serial:
+                        <span class="ml-2">
+                          {{ selectedItem.has_serial }}
+                        </span>
+                      </li>
+                      <li>
+                        Category
+                        <span class="ml-2">
+                          {{ selectedItem.category }}
+                        </span>
+                      </li>
+                      <li>
+                        Sub Category:
+                        <span class="ml-2">
+                          {{ selectedItem.sub_category }}
+                        </span>
+                      </li>
+                      <li>
+                        Brand:
+                        <span class="ml-2">
+                          {{ selectedItem.brand }}
+                        </span>
+                      </li>
+                      <li>
+                        Qty on Hand:
+                        <span class="ml-2">
+                          {{ selectedItem.onhand }}
+                        </span>
+                      </li>
+                      <li>
+                        Sku:
+                        <span class="ml-2">
+                          {{ selectedItem.sku }}
+                        </span>
+                      </li>
+
+                      <li class="mt-2">
+                        <div class="row">
+                          <div class="col-md-2 d-flex align-items-center">
+                            UOM:
+                          </div>
+
+                          <div class="col-md-5">
+                          <select
+                            class="form-control form-control-sm"
+                            v-model="selectedUom"
+                          >
+                            <option
+                              :value="item"
+                              v-for="item in uom"
+                              :key="item.uom_id"
+                            >
+                              {{ item.uom_name }}
+                            </option>
+                          </select>
+                          </div>
+                        </div>
+                      </li>
+
+                      <li class="mt-2">
+                        <div class="row">
+                          <div class="col-md-2 d-flex align-items-center">
+                            Quantity:
+                          </div>
+                          <div class="col-md-1"></div>
+                          <div class="col-md-6">
+                            <div
+                              class="qty-wrapper d-flex flex-nowrap justify-content-start align-items-center"
+                            >
+                              <button
+                                class="btn btn-sm btn-light"
+                                style="width: 40px"
+                                @click="qtyDecrease()"
+                              >
+                                -
+                              </button>
+                              <input
+                                class="form-control form-control-sm p-0 text-center"
+                                type="text"
+                                style="max-width: 70px; background-color: white"
+                                v-model="qty"
+                                @input="validateQty($event)"
+                              />
+
+                              <button
+                                class="btn btn-sm btn-light"
+                                style="width: 40px"
+                                @click="qtyIncrease"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-4">
+                <nav class="w-100">
+                  <div class="nav nav-tabs" id="product-tab" role="tablist">
+                    <a
+                      class="nav-item nav-link active"
+                      id="product-desc-tab"
+                      data-toggle="tab"
+                      href="#product-desc"
+                      role="tab"
+                      aria-controls="product-desc"
+                      aria-selected="true"
+                      >Description</a
+                    >
+                  </div>
+                </nav>
+                <div class="tab-content p-3" id="nav-tabContent">
+                  <div
+                    class="tab-pane fade show active"
+                    id="product-desc"
+                    role="tabpanel"
+                    aria-labelledby="product-desc-tab"
+                  >
+                    {{ selectedItem.specification }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /.card-body -->
           </div>
-          <div class="modal-footer justify-content-end"></div>
+          <!-- /. modal-body -->
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-success btn-sm"
+              v-show="isModalCartVsbl"
+              @click="addSelectedItem()"
+            >
+              <i class="fas fa-cart-plus mr-2"></i>Add Item
+            </button>
+          </div>
+          <!-- ./ modal-footer -->
         </div>
         <!-- /.modal-content -->
       </div>
@@ -1086,6 +1286,7 @@
 import axios from "axios";
 import VsToast from "@vuesimple/vs-toast";
 import { ModelListSelect } from "vue-search-select";
+import MrfCLarficationBtn from "../clarification/MrfClarificationBtn.vue";
 export default {
   components: {
     ModelListSelect,
@@ -1094,16 +1295,21 @@ export default {
   async created() {
     this.isLoading = true;
 
-    await this.getMrf(
-      this.$route.params.id,
-      localStorage.getItem("companyId"),
-      this.$route.params.frmName
-    );
-
+    await this.getMrf( this.$route.params.id, localStorage.getItem("companyId"), this.$route.params.frmName);
     await this.getReportingManager(localStorage.getItem("id"));
     await this.getProjects();
-    await this.getAllMaterials(localStorage.getItem("companyId"));
-
+    await this. fetchUom();
+    try {
+      await this.$store.dispatch("sc/fetchAllSupplies",localStorage.getItem("companyId"));
+      await this.setAllItems();
+    } catch (error) {
+      console.error(error);
+      this.openToast(
+        "top-right",
+        "error",
+        "Internal Server Error! Please inform the administrator!"
+      );
+    }
 
     this.isLoading = false;
   },
@@ -1113,18 +1319,40 @@ export default {
       document.documentElement.scrollTop = 0;
     },
 
+    getSelectedSupply(newValue) {
+      this.isModalTblVsbl = false,
+      this.isModalCartVsbl = true,
+      this.selectedItem = newValue;
+
+      const uom = {
+        uom_id: newValue.uom_id,
+        uom_name: newValue.uom_name,
+      };
+
+      this.selectedUom = uom;
+    },
+
     async $route(newRoute) {
       this.isLoading = true;
 
-      await this.getMrf(
-        newRoute.params.id,
-        localStorage.getItem("companyId"),
-        newRoute.params.id
-      );
-
+      await this.getMrf(newRoute.params.id,localStorage.getItem("companyId"),newRoute.params.id);
       await this.getReportingManager(localStorage.getItem("id"));
       await this.getProjects();
-      await this.getAllMaterials(localStorage.getItem("companyId"));
+      await this. fetchUom();
+
+
+      try {
+        await this.$store.dispatch("sc/fetchAllSupplies",localStorage.getItem("companyId"));
+        await this.setAllItems();
+      } catch (error) {
+        console.error(error);
+        this.openToast(
+          "top-right",
+          "error",
+          "Internal Server Error! Please inform the administrator!"
+        );
+      }
+
       this.isLoading = false;
     },
 
@@ -1335,19 +1563,167 @@ export default {
       typeList: [],
       typeListItem: {},
       typeListItemTemp: {},
+
+
+      isModalTblVsbl: true,
+      isModalCartVsbl: false,
+      selectedItem: {
+        abbrev: '',
+        brand: '',
+        brand_id: 0,
+        category: '',
+        category_id: 0,
+        description: '',
+        eol: '',
+        has_serial: '',
+        id: 0,
+        item_code: '',
+        onhand: '',
+        replacement: '',
+        sku: '',
+        specification: '',
+        sub_category: '',
+        sub_category_id: 0,
+        uom_id: 0,
+        uom_name: '',
+      },
+      
+      // Ito yung qty that can be increase and decrease
+      qty: 1,
+      previousQty: 1,
+
+
+      // For modal uom options / dropdown
+      uom: [],
+      selectedUom: {},
     };
   },
 
   methods: {
+    validateQty(event){
+      const value = event.target.value;
+      if (value === '') {
+        this.qty = '';
+
+      } else if (value.match(/^\d+(\.\d{0,2})?$/)) {
+
+        
+        this.qty = value; // Update the input value
+        this.previousQty = value; // Update the previous valid value
+      } else {
+        // If the input value doesn't match the pattern, set it to the previous valid value
+        this.qty = this.previousQty;
+      }
+
+    },
+
+    qtyDecrease(){
+      if (+this.qty > 0 && +this.qty >= 1.01) {
+          this.qty = Math.max((this.qty - 1).toFixed(2), 0);
+      } else {
+        this.openToast(
+          "top-right",
+          "warning",
+          "Quantity cannot be less than 1"
+        );
+      }
+      
+    },
+
+    qtyIncrease(){
+      this.qty++;
+    },
+
+    async fetchUom(){
+      await this.$store.dispatch("sc/fetchUom");
+      const uom = await this.$store.getters["sc/getUom"];
+      this.uom = uom;
+
+    },
+
+    addSelectedItem(){
+      this.openToast("top-right", "success", "Item added successfully!");
+      const temporaryID = new Date().getTime();
+
+
+      const selectedItem = {
+        brand_id         : this.selectedItem.brand_id,
+        brand_name       : this.selectedItem.brand,
+        category_id      : this.selectedItem.category_id,
+        category_name    : this.selectedItem.category,
+        date_delivered   : null, // null
+        description      : this.selectedItem.description,
+        id               : this.selectedItem.id, // pk of material || setup_group_detail PK || here you can see duplicate of this
+        item_code        : this.selectedItem.item_code,
+        item_status      : "ACTIVE",
+        notes            : "",
+        order_qty        : +this.qty,
+        req_dtls_id      : temporaryID, // PK ng requested_items under details|| requisition_details PK 
+        sku              : this.selectedItem.sku,
+        specification    : this.selectedItem.specification,
+        sub_category_id  : this.selectedItem.sub_category_id,
+        sub_category_name: this.selectedItem.sub_category,
+        uom              : this.selectedUom.uom_name,
+        uom_id           : this.selectedUom.uom_id,
+      };
+      
+
+
+      this.requested_items.push(selectedItem);
+
+
+      this.closeModalAdd();
+
+// requested_items                              selectedItem
+
+// brand_id: 43                                 brand_id
+// brand_name: "Generic"                        brand
+// category_id: 1                               category_id
+// category_name: "Products"                    category
+// date_delivered: null
+// description: "G1028273"                      description
+// id: 6408                                     id
+// item_code: "G1028273"                        item_code
+// item_status: "ACTIVE"
+// notes: ""
+// order_qty: 1                                 qty
+// req_dtls_id: 28407
+// sku: "G1028273"                              sku
+// specification: "Lead Curtain, 32W x 29L"     specification
+// sub_category_id: 4                           sub_category_id
+// sub_category_name: "X-Ray Accessories"       sub_category
+// uom: "pair(s)"                               uom_name
+// uom_id: 5                                    uom_id
+
+
+    },
+
+
+    clearSCSelectedItems(){
+
+    },
+
+    closeModalAdd(){
+      this.isModalTblVsbl  = true;
+      this.isModalCartVsbl = false;
+
+      this.qty = 1;
+      this.previousQty = 1;
+    },
+
+    async setAllItems() {
+      const supplies = await this.$store.getters["sc/getMrfSupplies"];
+      this.all_items = supplies;
+    },
 
     async getAllMaterials(companyId = 1) {
       try {
-          const resp = await axios.get(`http://127.0.0.1:8000/api/get-all-materials/${companyId}`);
-          console.log(resp.data.data);
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-all-materials/${companyId}`
+        );
 
-          // set all items
-          this.all_items = resp.data.data;
-
+        // set all items
+        this.all_items = resp.data.data;
       } catch (error) {
         console.error(error);
         this.openToast(
@@ -1378,7 +1754,15 @@ export default {
           !this.missingRemarks
         ) {
           this.counter++;
+        } else {
+          this.openToast(
+            "top-right",
+            "warning",
+            "Please complete required fields!"
+          );
         }
+      } else if (this.counter === 2) {
+        this.counter++;
       }
     },
 
@@ -1472,7 +1856,6 @@ export default {
     },
 
     async getAttachments(soid) {
-      console.log("haha");
 
       const response = await fetch(
         `http://127.0.0.1:8000/api/get-attachments-by-soid/${soid}`,
@@ -1613,6 +1996,8 @@ export default {
         this.requested_items.splice(this.toDeleteItem, 1);
         this.$refs.refModalCloseBtn.click();
         this.openToast("top-right", "success", "Item deleted successfully!");
+
+        console.warn(this.toDeleteItem);
       }
     },
 
@@ -1622,7 +2007,7 @@ export default {
           `http://127.0.0.1:8000/api/get-mrf/${id}/${companyId}/${frmname}`
         );
 
-        console.warn(resp.data);
+
 
         const { materials_request_class, materials_request_type } =
           resp.data.request;
@@ -1673,9 +2058,15 @@ export default {
 
         // Requested Items Card
         this.requested_items = resp.data.request.requisition_details;
+        console.warn(resp.data.request.requisition_details);
       } catch (err) {
         // Handle Error Here
         console.error(err);
+        this.openToast(
+          "top-right",
+          "error",
+          "Internal Server Error! Please inform the administrator!"
+        );
       }
     },
 
@@ -1810,7 +2201,7 @@ export default {
   },
 
   computed: {
-      mrfTable() {
+    mrfTable() {
       return {
         data: this.all_items,
         perPageSizes: [
@@ -1824,6 +2215,11 @@ export default {
         tableClass:
           "table table-sm table-striped table-bordered small table-hover",
         columns: [
+          {
+            key: "Action Button",
+            sortable: false,
+            component: MrfCLarficationBtn,
+          },
           {
             key: "item_code",
             title: "Item Code",
@@ -1860,19 +2256,13 @@ export default {
             key: "sub_category",
             title: "Sub Category",
           },
-          {
-            key: "replacement",
-            title: "Replacement",
-          },
-
-
         ],
       };
     },
 
-
-
-
+    getSelectedSupply() {
+      return this.$store.getters["sc/getSelectedSupply"];
+    },
 
     isTypeDisabled() {
       if (!(this.classListItem?.code === undefined)) {
@@ -2135,5 +2525,20 @@ export default {
 
 .card--img {
   align-self: center;
+}
+
+/* Modal Cart design */
+
+.product-details ul {
+  padding-left: 0px;
+  color: #a9a399 !important;
+}
+
+.product-details ul li {
+  list-style: none;
+}
+
+.product-details ul li span {
+  color: #212529 !important;
 }
 </style>

@@ -10,10 +10,21 @@ export default {
       uom: [],
       brands: [],
       cart: [],
+
+      mrfSupplies: [],
+      selectedSupply:{},
     };
   },
 
   mutations: {
+    deleteSelectedSupply(state){
+      state.selectedSupply = {};
+    },
+
+    setSelectedSupply(state, payload){
+      state.selectedSupply = payload;
+    },
+
     fetchSupplies(state, payload) {
       state.supplies.push(...payload);
     },
@@ -40,6 +51,12 @@ export default {
 
     fetchBrand(state, payload) {
       state.brands = payload;
+    },
+
+    fetchAllSupplies(state, payload){
+      // console.warn(payload);
+
+      state.mrfSupplies = payload;
     },
 
     fetchCart(state, payload) {
@@ -127,6 +144,10 @@ export default {
   },
 
   actions: {
+    setSelectedSupply(context, payload){
+      context.commit('setSelectedSupply', payload);
+    },
+
     async deleteSupplies(context){
       context.commit("deleteSupplies")
     },
@@ -354,6 +375,22 @@ export default {
         throw err;
       }
     },
+
+    async fetchAllSupplies(context, payload){
+      try {
+        const resp = await axios.get(`http://127.0.0.1:8000/api/get-all-materials/${payload}`);
+        // console.log(resp.data.data);
+        context.commit("fetchAllSupplies", resp.data.data);
+        // this.all_items = resp.data.data;
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
+
+    deleteSelectedSupply(context){
+      context.commit("deleteSelectedSupply");
+    },
   },
 
   getters: {
@@ -377,8 +414,16 @@ export default {
       return state.brands;
     },
 
+    getMrfSupplies(state) {
+      return state.mrfSupplies;
+    },
+
     getCart(state) {
       return state.cart;
+    },
+
+    getSelectedSupply(state) {
+      return state.selectedSupply;
     },
   },
 };
