@@ -20,30 +20,37 @@
             <button
               class="btn mr-1 btn-secondary btn-sm"
               v-show="counter"
-              
               @click="previous()"
             >
               Previous
             </button>
             <button
-              
               class="btn mr-1 btn-primary btn-sm"
               v-show="counter <= 2"
               @click="next()"
             >
               Next
             </button>
+
+
           </div>
 
           <div class="col-md-6 text-right">
-            <!-- <button
-              class="btn ml-1 btn-warning btn-sm"
+            <button
+              v-show="counter === 3"
+              type="button"
+              class="btn btn-warning btn-sm"
               data-toggle="modal"
-              data-target="#modal-default"
+              data-target="#modal-reply"
+              ref="modalReplyCloseBtn"
             >
-              Withdraw
-            </button> -->
-            <button class="btn ml-1 btn-danger btn-sm" @click="close()">
+              Reply
+            </button>
+
+            <button
+              class="btn ml-1 btn-danger btn-sm"
+              @click="close()"
+            >
               Close
             </button>
           </div>
@@ -334,7 +341,7 @@
                   class="form-control"
                   name="purpose"
                   id="purpose"
-                  v-model="remarks"
+                  v-model="mrfRemarks"
                   rows="5"
                 ></textarea>
                 <small
@@ -383,7 +390,7 @@
                   v-for="file in selectedFileSOF"
                   :key="file.id"
                 >
-                  <div class="row d-flex justify-content-center">
+                  <div class="row d-flex justify-content-center" >
                     <div class="col-md-4 d-flex">
                       <div class="col text-left">
                         <span
@@ -550,19 +557,19 @@
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Date Requested</td>
-                  <td class="col-md-9 px-3">{{ date_requested }}</td>
+                  <td class="col-md-9 px-3">{{ requestedDate }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Planned Delivery Date</td>
-                  <td class="col-md-9 px-3">{{ planned_delivery_date }}</td>
+                  <td class="col-md-9 px-3">{{ plannedDeliveryDate }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Actual Delivery Date</td>
-                  <td class="col-md-9 px-3">{{ actual_delivery_date }}</td>
+                  <td class="col-md-9 px-3">{{ actualDeliveryDate }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Cost Center</td>
-                  <td class="col-md-9 px-3">{{ cost_center }}</td>
+                  <td class="col-md-9 px-3">{{ costCenterItem.name }}</td>
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Client Name</td>
@@ -578,7 +585,7 @@
                 </tr>
                 <tr class="row p-0 m-0">
                   <td class="col-md-3 px-3">Remarks</td>
-                  <td class="col-md-9 px-3">{{ remarks }}</td>
+                  <td class="col-md-9 px-3">{{ mrfRemarks }}</td>
                 </tr>
               </tbody>
             </table>
@@ -660,6 +667,33 @@
                     >
                   </td>
                 </tr>
+
+                <!-- Newly Added FIles Preview Only -->
+                <tr
+                  class="row p-0 m-0"
+                  v-for="file in selectedFileNew"
+                  :key="file.index"
+                >
+                  <td class="col-md-9 px-3">{{ file.name }}</td>
+                  <td
+                    class="col-md-3 pl-2 pr-2 text-center d-flex justify-content-center align-items-center"
+                  >
+                    <button
+                      class="btn btn-danger btn-sm"
+                      type="button"
+                      @click="removeFileNew(selectedFileNew.indexOf(file))"
+                      title="Remove file"
+                    >
+                      Remove
+                    </button>
+                    <button
+                      class="btn btn-secondary btn-sm ml-1"
+                      @click="filePreviewNew(selectedFileNew.indexOf(file))"
+                    >
+                      Preview
+                    </button>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -700,7 +734,6 @@
 
             <!-- NEW DESIGN -->
             <div class="col-12">
-            
               <div
                 class="card card-secondary card-outline card-outline-tabs"
                 v-for="item in requested_items"
@@ -852,18 +885,6 @@
                 </div>
                 <!-- /.card -->
               </div>
-
-
-
-
-
-
-
-
-
-
-
-
             </div>
             <!-- /. NEW DESIGN -->
 
@@ -917,64 +938,6 @@
         </section>
       </div>
     </div>
-
-    <!-- Modal -->
-    <div
-      class="modal fade"
-      id="modal-default"
-      data-backdrop="static"
-      data-keyboard="false"
-    >
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <!-- Overlay Loading Spinner -->
-          <div class="overlay" v-show="isLoadingModal">
-            <i class="fas fa-2x fa-sync fa-spin"></i>
-          </div>
-
-          <div class="modal-header">
-            <h6 class="modal-title"><b>Withdraw Request</b></h6>
-            <button
-              type="button"
-              id="modalCloseButton"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-group">
-                  <small><label for="withdrawRemarks">Remarks</label></small>
-                  <textarea
-                    class="form-control"
-                    id="withdrawRemarks"
-                    rows="5"
-                    v-model="withdrawRemarks"
-                  ></textarea>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer justify-content-end">
-            <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-            <button
-              type="button"
-              @click="withdrawn()"
-              class="btn btn-primary btn-sm"
-            >
-              Withdrawn
-            </button>
-          </div>
-        </div>
-        <!-- /.modal-content -->
-      </div>
-      <!-- /.modal-dialog -->
-    </div>
-    <!-- /.modal -->
 
     <!-- Modal Confirm -->
     <div
@@ -1174,18 +1137,18 @@
                           </div>
 
                           <div class="col-md-5">
-                          <select
-                            class="form-control form-control-sm"
-                            v-model="selectedUom"
-                          >
-                            <option
-                              :value="item"
-                              v-for="item in uom"
-                              :key="item.uom_id"
+                            <select
+                              class="form-control form-control-sm"
+                              v-model="selectedUom"
                             >
-                              {{ item.uom_name }}
-                            </option>
-                          </select>
+                              <option
+                                :value="item"
+                                v-for="item in uom"
+                                :key="item.uom_id"
+                              >
+                                {{ item.uom_name }}
+                              </option>
+                            </select>
                           </div>
                         </div>
                       </li>
@@ -1278,6 +1241,76 @@
       <!-- /.modal-dialog -->
     </div>
     <!-- /.Modal Add-->
+
+    <!-- Modal Reply-->
+    <div
+      class="modal fade"
+      id="modal-reply"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Overlay Loading Spinner -->
+          <div class="overlay" v-show="isLoadingModal">
+            <i class="fas fa-2x fa-sync fa-spin"></i>
+          </div>
+
+          <div class="modal-header">
+            <h6 class="modal-title"><b>Reply Request</b></h6>
+            <button
+              type="button"
+              class="close"
+              id="modalCloseButton"
+              data-dismiss="modal"
+              aria-label="Close"
+              @click="closeModalReply()"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <the-alert
+              v-show="isAlert"
+              v-bind:header="this.header"
+              v-bind:message="this.message"
+              v-bind:type="this.type"
+            ></the-alert>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <small><label for="remarks">Remarks</label></small>
+                  <textarea
+                    class="form-control"
+                    id="remarks"
+                    rows="5"
+                    v-model.trim="replyRemarks"
+                  ></textarea>
+                  <small
+                    class="text-danger p-0 m-0"
+                    v-if="missingReplyRemarks && attemptReply"
+                    >Reply remarks is required!</small
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer justify-content-end">
+            <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              @click="reply()"
+            >
+              Reply
+            </button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal Reply-->
   </div>
   <!-- /. Container -->
 </template>
@@ -1295,12 +1328,19 @@ export default {
   async created() {
     this.isLoading = true;
 
-    await this.getMrf( this.$route.params.id, localStorage.getItem("companyId"), this.$route.params.frmName);
+    await this.getMrf(
+      this.$route.params.id,
+      localStorage.getItem("companyId"),
+      this.$route.params.frmName
+    );
     await this.getReportingManager(localStorage.getItem("id"));
     await this.getProjects();
-    await this. fetchUom();
+    await this.fetchUom();
     try {
-      await this.$store.dispatch("sc/fetchAllSupplies",localStorage.getItem("companyId"));
+      await this.$store.dispatch(
+        "sc/fetchAllSupplies",
+        localStorage.getItem("companyId")
+      );
       await this.setAllItems();
     } catch (error) {
       console.error(error);
@@ -1320,9 +1360,9 @@ export default {
     },
 
     getSelectedSupply(newValue) {
-      this.isModalTblVsbl = false,
-      this.isModalCartVsbl = true,
-      this.selectedItem = newValue;
+      (this.isModalTblVsbl = false),
+        (this.isModalCartVsbl = true),
+        (this.selectedItem = newValue);
 
       const uom = {
         uom_id: newValue.uom_id,
@@ -1335,14 +1375,20 @@ export default {
     async $route(newRoute) {
       this.isLoading = true;
 
-      await this.getMrf(newRoute.params.id,localStorage.getItem("companyId"),newRoute.params.id);
+      await this.getMrf(
+        newRoute.params.id,
+        localStorage.getItem("companyId"),
+        newRoute.params.id
+      );
       await this.getReportingManager(localStorage.getItem("id"));
       await this.getProjects();
-      await this. fetchUom();
-
+      await this.fetchUom();
 
       try {
-        await this.$store.dispatch("sc/fetchAllSupplies",localStorage.getItem("companyId"));
+        await this.$store.dispatch(
+          "sc/fetchAllSupplies",
+          localStorage.getItem("companyId")
+        );
         await this.setAllItems();
       } catch (error) {
         console.error(error);
@@ -1470,6 +1516,7 @@ export default {
     },
 
     costCenterItem(newValue) {
+      console.warn(newValue);
       if (newValue?.code) {
         if (newValue?.code === this.costCenterItemTemp.code) {
           this.getClient(newValue.code);
@@ -1482,16 +1529,19 @@ export default {
       }
     },
   },
+
   data() {
     return {
       counter: 0,
       isLoading: false,
       isLoadingModal: false,
       attemptNext: false,
+      attemptReply: false,
 
-      withdrawRemarks: "",
+      replyRemarks: "",
 
       // Request Details Card
+      processId: this.$route.params.id,
       mrf_number: "",
       requestedDate: "",
       actualDeliveryDate: "",
@@ -1505,7 +1555,7 @@ export default {
       clientName: "",
       clientId: "",
       mainId: "",
-      remarks: "",
+      mrfRemarks: "",
 
       department: "",
       full_name: "",
@@ -1524,6 +1574,8 @@ export default {
       selectedFileNew: [],
       filespreviewNew: [],
 
+      class: '',
+
       // Requested Items Card
       requested_items: [],
 
@@ -1531,6 +1583,7 @@ export default {
 
       // Logged User Data
       loggedUserId: localStorage.getItem("id"),
+      employeeId: localStorage.getItem("employee_id"),
       loggedUserFirstName: localStorage.getItem("fname"),
       loggedUserLastName: localStorage.getItem("lname"),
       loggedUserFullName: localStorage.getItem("fullName"),
@@ -1538,6 +1591,8 @@ export default {
       loggedUserPosition: localStorage.getItem("positionName"),
       companyId: localStorage.getItem("companyId"),
       companyName: localStorage.getItem("companyName"),
+
+      form: '',
 
       // To Delete Object
       toDeleteItem: null,
@@ -1564,147 +1619,262 @@ export default {
       typeListItem: {},
       typeListItemTemp: {},
 
-
       isModalTblVsbl: true,
       isModalCartVsbl: false,
       selectedItem: {
-        abbrev: '',
-        brand: '',
+        abbrev: "",
+        brand: "",
         brand_id: 0,
-        category: '',
+        category: "",
         category_id: 0,
-        description: '',
-        eol: '',
-        has_serial: '',
+        description: "",
+        eol: "",
+        has_serial: "",
         id: 0,
-        item_code: '',
-        onhand: '',
-        replacement: '',
-        sku: '',
-        specification: '',
-        sub_category: '',
+        item_code: "",
+        onhand: "",
+        replacement: "",
+        sku: "",
+        specification: "",
+        sub_category: "",
         sub_category_id: 0,
         uom_id: 0,
-        uom_name: '',
+        uom_name: "",
       },
-      
+
       // Ito yung qty that can be increase and decrease
       qty: 1,
       previousQty: 1,
 
-
       // For modal uom options / dropdown
       uom: [],
       selectedUom: {},
+
+      // The Alert
+      isAlert: false,
+      header: "", // Syccess or Failed
+      message: "", // added successfully
+      type: "", // true or false
     };
   },
 
   methods: {
-    validateQty(event){
-      const value = event.target.value;
-      if (value === '') {
-        this.qty = '';
+    async reply() {
+      this.isLoadingModal = true;
+      this.attemptReply = true;
+      this.resetAlert();
 
-      } else if (value.match(/^\d+(\.\d{0,2})?$/)) {
+      const validated = this.validate_reply();
+
+      if (validated) {
+        console.log("validated");
+
+        const fd = new FormData();
+
+        fd.append("processId", this.processId);
+
+        // Step 0, USER DETAILS
+        fd.append("loggedUserId", this.loggedUserId);
+        fd.append("employeeId", this.employeeId);
+        fd.append("loggedUserFirstName", this.loggedUserFirstName);
+        fd.append("loggedUserLastName", this.loggedUserLastName);
+        fd.append("loggedUserFullName", this.loggedUserFullName);
+        fd.append("loggedUserDepartment", this.loggedUserDepartment);
+        fd.append("loggedUserPosition", this.loggedUserPosition);
+        fd.append("companyId", this.companyId);
+        fd.append("companyName", this.companyName);
+        fd.append("form", this.form);
+        fd.append("referenceNumber", this.mrf_number);
+        fd.append("class", this.class);
 
         
+
+
+        // Step 1, ITEMS
+        fd.append("requestedItems", JSON.stringify(this.requested_items));
+
+        // Step 2, FORMS
+        fd.append("actualDeliveryDate", this.actualDeliveryDate);
+        fd.append("plannedDeliveryDate", this.plannedDeliveryDate);
+        fd.append("mrfShortText", this.mrfShortText);
+        fd.append("mrfShortText", this.mrfShortText);
+        fd.append("reportingManagerId", this.reportingManagerItem.code);
+        fd.append("reportingManagerName", this.reportingManagerItem.name);
+        fd.append("costCenterId", this.costCenterItem.code);
+        fd.append("costCenterName", this.costCenterItem.name);
+        fd.append("soid", this.costCenterItem.soid);
+        fd.append("clientId", this.clientId);
+        fd.append("clientName", this.clientName);
+        fd.append("mainId", this.mainId);
+        fd.append("mrfRemarks", this.mrfRemarks);
+        fd.append("remarks", this.replyRemarks);
+
+        
+
+        // Step 3, ATTACHMENTS
+        fd.append(
+          "attchIdsToDelete",
+          JSON.stringify(this.removedAttachedMRFFilesId)
+        );
+        for (let i = 0; i < this.selectedFileNew.length; i++) {
+          fd.append("file[]", this.selectedFileNew[i]);
+        }
+
+        try {
+          const resp = await axios.post(
+            "http://127.0.0.1:8000/api/post-reply-item",
+            fd
+          );
+
+
+          const {message} = resp.data;
+
+
+        this.isLoadingModal = false;
+        this.$refs.modalReplyCloseBtn.click();
+        this.$router.replace("/clarifications");
+        this.openToast("top-right", "success", message);
+
+        } catch (error) {
+          this.isLoadingModal = false;
+
+          console.error(error.response);
+          console.error(error.response.status);
+          console.error(error.response.data);
+          console.error(error.response.data.message);
+
+          this.openToast(
+            "top-right",
+            "error",
+            "Internal Server Error! Please inform the administrator!"
+          );
+        }
+
+
+      } else {
+        this.isLoadingModal = false;
+        this.addAlert("Failed", "Please complete required fields!", "false");
+      }
+    },
+
+    validate_reply() {
+      if (!this.missingReplyRemarks) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    addAlert(header, message, type) {
+      this.isAlert = true;
+      this.header = header;
+      this.message = message;
+      this.type = type;
+    },
+
+    resetAlert() {
+      this.isAlert = false;
+      this.header = "";
+      this.message = "";
+      this.type = "";
+    },
+
+    closeModalReply() {
+      this.resetAlert();
+      this.replyRemarks = "";
+      this.attemptReply = false;
+    },
+
+    validateQty(event) {
+      const value = event.target.value;
+      if (value === "") {
+        this.qty = "";
+      } else if (value.match(/^\d+(\.\d{0,2})?$/)) {
         this.qty = value; // Update the input value
         this.previousQty = value; // Update the previous valid value
       } else {
         // If the input value doesn't match the pattern, set it to the previous valid value
         this.qty = this.previousQty;
       }
-
     },
 
-    qtyDecrease(){
+    qtyDecrease() {
       if (+this.qty > 0 && +this.qty >= 1.01) {
-          this.qty = Math.max((this.qty - 1).toFixed(2), 0);
+        this.qty = Math.max((this.qty - 1).toFixed(2), 0);
       } else {
         this.openToast(
           "top-right",
           "warning",
-          "Quantity cannot be less than 1"
+          "Input valid quantity"
         );
       }
-      
     },
 
-    qtyIncrease(){
+    qtyIncrease() {
       this.qty++;
     },
 
-    async fetchUom(){
+    async fetchUom() {
       await this.$store.dispatch("sc/fetchUom");
       const uom = await this.$store.getters["sc/getUom"];
       this.uom = uom;
-
     },
 
-    addSelectedItem(){
+    addSelectedItem() {
       this.openToast("top-right", "success", "Item added successfully!");
       const temporaryID = new Date().getTime();
 
-
       const selectedItem = {
-        brand_id         : this.selectedItem.brand_id,
-        brand_name       : this.selectedItem.brand,
-        category_id      : this.selectedItem.category_id,
-        category_name    : this.selectedItem.category,
-        date_delivered   : null, // null
-        description      : this.selectedItem.description,
-        id               : this.selectedItem.id, // pk of material || setup_group_detail PK || here you can see duplicate of this
-        item_code        : this.selectedItem.item_code,
-        item_status      : "ACTIVE",
-        notes            : "",
-        order_qty        : +this.qty,
-        req_dtls_id      : temporaryID, // PK ng requested_items under details|| requisition_details PK 
-        sku              : this.selectedItem.sku,
-        specification    : this.selectedItem.specification,
-        sub_category_id  : this.selectedItem.sub_category_id,
+        brand_id: this.selectedItem.brand_id,
+        brand_name: this.selectedItem.brand,
+        category_id: this.selectedItem.category_id,
+        category_name: this.selectedItem.category,
+        date_delivered: null, // null
+        description: this.selectedItem.description,
+        id: this.selectedItem.id, // pk of material || setup_group_detail PK || here you can see duplicate of this
+        item_code: this.selectedItem.item_code,
+        item_status: "ACTIVE",
+        notes: "",
+        order_qty: +this.qty,
+        req_dtls_id: temporaryID, // PK ng requested_items under details|| requisition_details PK
+        sku: this.selectedItem.sku,
+        specification: this.selectedItem.specification,
+        sub_category_id: this.selectedItem.sub_category_id,
         sub_category_name: this.selectedItem.sub_category,
-        uom              : this.selectedUom.uom_name,
-        uom_id           : this.selectedUom.uom_id,
+        uom: this.selectedUom.uom_name,
+        uom_id: this.selectedUom.uom_id,
       };
-      
-
 
       this.requested_items.push(selectedItem);
 
-
       this.closeModalAdd();
 
-// requested_items                              selectedItem
+      // requested_items                              selectedItem
 
-// brand_id: 43                                 brand_id
-// brand_name: "Generic"                        brand
-// category_id: 1                               category_id
-// category_name: "Products"                    category
-// date_delivered: null
-// description: "G1028273"                      description
-// id: 6408                                     id
-// item_code: "G1028273"                        item_code
-// item_status: "ACTIVE"
-// notes: ""
-// order_qty: 1                                 qty
-// req_dtls_id: 28407
-// sku: "G1028273"                              sku
-// specification: "Lead Curtain, 32W x 29L"     specification
-// sub_category_id: 4                           sub_category_id
-// sub_category_name: "X-Ray Accessories"       sub_category
-// uom: "pair(s)"                               uom_name
-// uom_id: 5                                    uom_id
-
-
+      // brand_id: 43                                 brand_id
+      // brand_name: "Generic"                        brand
+      // category_id: 1                               category_id
+      // category_name: "Products"                    category
+      // date_delivered: null
+      // description: "G1028273"                      description
+      // id: 6408                                     id
+      // item_code: "G1028273"                        item_code
+      // item_status: "ACTIVE"
+      // notes: ""
+      // order_qty: 1                                 qty
+      // req_dtls_id: 28407
+      // sku: "G1028273"                              sku
+      // specification: "Lead Curtain, 32W x 29L"     specification
+      // sub_category_id: 4                           sub_category_id
+      // sub_category_name: "X-Ray Accessories"       sub_category
+      // uom: "pair(s)"                               uom_name
+      // uom_id: 5                                    uom_id
     },
 
+    clearSCSelectedItems() {},
 
-    clearSCSelectedItems(){
-
-    },
-
-    closeModalAdd(){
-      this.isModalTblVsbl  = true;
+    closeModalAdd() {
+      this.isModalTblVsbl = true;
       this.isModalCartVsbl = false;
 
       this.qty = 1;
@@ -1856,7 +2026,6 @@ export default {
     },
 
     async getAttachments(soid) {
-
       const response = await fetch(
         `http://127.0.0.1:8000/api/get-attachments-by-soid/${soid}`,
 
@@ -2007,8 +2176,6 @@ export default {
           `http://127.0.0.1:8000/api/get-mrf/${id}/${companyId}/${frmname}`
         );
 
-
-
         const { materials_request_class, materials_request_type } =
           resp.data.request;
 
@@ -2036,21 +2203,31 @@ export default {
           name: rm_name,
         };
 
+        this.form = materials_request_type;
+
         this.department = resp.data.user.department;
         this.full_name = resp.data.user.fullname;
         this.reporting_manager = resp.data.user.rm_name;
-        const { project_id, project_name } = resp.data.request;
+
+        console.error(resp.data.request);
+
+
+        const { project_id, project_name, soid, trans_type  } = resp.data.request;
 
         this.costCenterItemTemp = this.costCenterItem = {
           code: project_id,
           name: project_name,
+          soid: soid,
         };
 
+        this.class = trans_type;
+
         this.client_name = resp.data.request.client_name;
+
         this.materials_request_class =
           resp.data.request.materials_request_class;
         this.materials_request_type = resp.data.request.materials_request_type;
-        this.remarks = resp.data.request.remarks;
+        this.mrfRemarks = resp.data.request.remarks;
 
         // Attachments Card
         this.selectedFileSOF = resp.data.attachmentsSOF;
@@ -2058,7 +2235,6 @@ export default {
 
         // Requested Items Card
         this.requested_items = resp.data.request.requisition_details;
-        console.warn(resp.data.request.requisition_details);
       } catch (err) {
         // Handle Error Here
         console.error(err);
@@ -2072,46 +2248,6 @@ export default {
 
     close() {
       this.$router.replace("/clarifications");
-    },
-
-    async withdrawn() {
-      const fd = new FormData();
-      const frmClass = this.$route.params.frmClass;
-      const reqId = this.$route.params.id;
-      const form = this.$route.params.frmName;
-
-      fd.append("loggedUserId", localStorage.getItem("id"));
-      fd.append("loggedUserFirstName", localStorage.getItem("fname"));
-      fd.append("loggedUserLastName", localStorage.getItem("lname"));
-      fd.append("loggedUserDepartment", localStorage.getItem("department"));
-      fd.append("loggedUserPosition", localStorage.getItem("positionName"));
-      fd.append("companyId", localStorage.getItem("companyId"));
-      fd.append("companyName", localStorage.getItem("companyName"));
-
-      fd.append("frmClass", frmClass);
-      fd.append("processId", reqId);
-      fd.append("frmClass", form);
-      fd.append("withdrawRemarks", this.withdrawRemarks);
-
-      try {
-        const resp = await axios.post(
-          "http://127.0.0.1:8000/api/mrf-withdraw",
-          fd
-        );
-
-        this.openToast("top-right", "success", resp.data.message);
-        document.getElementById("modalCloseButton").click();
-        this.$router.replace("/inprogress");
-      } catch (err) {
-        // Handle Error Here
-        console.error(err);
-
-        this.openToast(
-          "top-right",
-          "error",
-          "Internal Server Error! Please inform the administrator!"
-        );
-      }
     },
 
     openToast(position, variant, message) {
@@ -2346,8 +2482,16 @@ export default {
     },
 
     missingRemarks() {
-      if (this.remarks === undefined || this.remarks == "") return true;
+      if (this.mrfRemarks === undefined || this.mrfRemarks == "") return true;
       return false;
+    },
+
+    missingReplyRemarks() {
+      if (this.replyRemarks.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
     },
   },
 };

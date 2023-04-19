@@ -691,7 +691,7 @@
               v-if="!isSpinner"
               type="button"
               class="btn btn-success btn-sm"
-              @click="test()"
+              @click="withdraw()"
             >
               <i class="fas fa-check mr-1"></i>
               Yes
@@ -808,7 +808,7 @@ export default {
       this.req_dtls_id = id;
     },
 
-    async test() {
+    async withdraw() {
       this.isSpinner = true;
       const req_dtls_id = this.req_dtls_id;
 

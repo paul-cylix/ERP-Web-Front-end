@@ -173,16 +173,12 @@
                               -
                             </button>
                             <input
-                              class="
-                                form-control form-control-sm
-                                p-0
-                                text-center
-                              "
-                              type="text"
-                              :value="qty"
-                              style="max-width: 70px; background-color: white"
-                              readonly
-                            />
+                                class="form-control form-control-sm p-0 text-center"
+                                type="text"
+                                style="max-width: 70px; background-color: white"
+                                v-model="qty"
+                                @input="validateQty($event)"
+                              />
 
                             <button
                               class="btn btn-sm btn-light"
@@ -276,19 +272,33 @@ export default {
       isModalLoading: false,
       selectedUom: {},
       qty: 1,
+      previousQty: 1,
     };
   },
 
   methods: {
+    validateQty(event) {
+      const value = event.target.value;
+      if (value === "") {
+        this.qty = "";
+      } else if (value.match(/^\d+(\.\d{0,2})?$/)) {
+        this.qty = value; // Update the input value
+        this.previousQty = value; // Update the previous valid value
+      } else {
+        // If the input value doesn't match the pattern, set it to the previous valid value
+        this.qty = this.previousQty;
+      }
+    },
+
     decrement() {
-      if (this.qty <= 1) {
+      if (+this.qty > 0 && +this.qty >= 1.01) {
+        this.qty = Math.max((this.qty - 1).toFixed(2), 0);
+      } else {
         this.openToast(
           "top-right",
-          "error",
-          "Negative quantity is not allowed!"
+          "warning",
+          "Input valid quantity"
         );
-      } else {
-        this.qty--;
       }
     },
     increment() {
