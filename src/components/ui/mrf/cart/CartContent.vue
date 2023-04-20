@@ -72,6 +72,7 @@
           @decrease-product-qty="productQtyChange"
           @increase-product-qty="productQtyChange"
           @change-uom="changeUom"
+          @validate-product-qty="validateProductQty"
         >
         </cart-card>
       </aside>
@@ -202,10 +203,60 @@ export default {
       this.$store.dispatch("sc/productQtyChange", object);
     },
 
+    validateProductQty(object){
+
+      const {cart_id, qty:value} = object;
+
+      let qty = value;
+
+      const myObj = {
+        cart_id
+      };
+
+      
+      if (value === "") {
+        qty = "";
+        console.log(`IF QTY: = ${qty}`)
+        // ibato mo yung qty na wala laman
+        myObj['qty'] = '';
+
+      } else if (value.match(/^\d+(\.\d{0,2})?$/)) {
+        qty = value; // Update the input value
+
+
+        console.log(`ELSE IF: QTY = ${qty}`)
+
+
+        // ibato mo yung qty
+        myObj['qty'] = qty;
+      } else {
+        qty = "";
+
+
+        console.log(`ELSE: QTY = ${qty}`)
+
+        // ibato mo yung previous qty
+        myObj['qty'] = qty;
+      }
+
+
+
+      
+
+      this.$store.dispatch("sc/updateProductQty", myObj);
+
+
+    },
+
     async next() {
-      if (this.selectedCount) {
+      const updatedCart = this.$store.getters["sc/getCart"];
+      // console.log(updatedCart);
+
+      const isCartQtyValid = updatedCart.every(item => item.cart_quantity > 0)
+      console.log(isCartQtyValid);
+      if (this.selectedCount && isCartQtyValid) {
         try {
-          const updatedCart = this.$store.getters["sc/getCart"];
+
 
           const response = await this.$store.dispatch(
             "sc/updateCart",
@@ -218,8 +269,10 @@ export default {
         } catch (err) {
           this.catchError(err);
         }
-      } else {
+      } else if (!this.selectedCount) {
           this.openToast("top-right", "error", "Select product to checkout!");
+      } else if (!isCartQtyValid) {
+          this.openToast("top-right", "error", "Product quantity cannot be 0!");
 
       }
     },

@@ -134,16 +134,30 @@ export default {
           if (payload.quanityTo) {
             cartState.cart_quantity++;
           } else {
-            cartState.cart_quantity--;
+            cartState.cart_quantity = Math.max((cartState.cart_quantity - 1).toFixed(2), 0);
           }
         }
 
         return cartState;
       });
     },
+
+
+    updateProductQty(state, payload){
+      const {cart_id, qty} = payload;
+      const cart = state.cart;
+      const index = cart.findIndex(obj => obj.cart_id === cart_id)
+
+      console.log(cart[index].cart_quantity = +qty);
+    },
+
   },
 
   actions: {
+    updateProductQty(context, payload){
+      context.commit('updateProductQty', payload);
+    },
+
     setSelectedSupply(context, payload){
       context.commit('setSelectedSupply', payload);
     },

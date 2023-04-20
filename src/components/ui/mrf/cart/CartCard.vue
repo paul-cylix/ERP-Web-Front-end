@@ -85,12 +85,23 @@
           >
             -
           </button>
-          <input
+
+          <!-- Old input qty -->
+          <!-- <input
             class="form-control form-control-sm p-0 text-center"
             type="text"
             :value="cart_quantity"
             style="max-width: 70px; background-color: white"
             readonly
+          /> -->
+
+          <!-- new input qty -->
+          <input
+            class="form-control form-control-sm p-0 text-center"
+            type="text"
+            style="max-width: 70px; background-color: white"
+            :value="cart_quantity"
+            @input="validateQty($event)"
           />
 
           <button
@@ -210,16 +221,41 @@ export default {
         quanityTo: false,
       };
 
-      if (this.cart_quantity <= 1) {
+
+
+      if (+this.cart_quantity > 0 && +this.cart_quantity >= 1.01) {
+        
+        this.$emit("decrease-product-qty", productQtyTo);
+
+        console.log(productQtyTo);
+
+
+      } else {
         this.openToast(
           "top-right",
           "error",
           "Negative quantity is not allowed!"
         );
-      } else {
-        this.$emit("decrease-product-qty", productQtyTo);
       }
+
+
+
+
+
+      // console.warn(this.cart_quantity);
+
+
+
+      // if (this.cart_quantity <= 1) {
+      //   this.openToast(
+      //     "top-right",
+      //     "error",
+      //     "Negative quantity is not allowed!"
+      //   );
+      // } else {
+      // }
     },
+
     increment() {
       const productQtyTo = {
         cart_id: this.cart_id,
@@ -227,6 +263,18 @@ export default {
       };
 
       this.$emit("increase-product-qty", productQtyTo);
+    },
+
+    validateQty(event) {
+      const value = event.target.value;
+      const productQtyTo = {
+        cart_id: this.cart_id,
+        qty: value,
+      }
+
+      this.$emit("validate-product-qty", productQtyTo);
+
+      
     },
 
     openToast(position, variant, message) {
