@@ -13,8 +13,106 @@
         <h3 class="card-title">Request for Payment</h3>
       </div>
       <div class="card-body">
+
+        <!-- Buttons -->
+        <div class="row d-flex justify-content-between">
+          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap ">
+
+        
+              <button
+              v-show="counter"
+                type="button"
+                @click="counter--"
+                class="btn mr-2 btn-secondary btn-sm"
+              >
+                Previous
+              </button>
+
+            <!-- liquidation is false -->
+  
+              <button
+              v-show="!isLiquidation"
+              v-if="this.counter <= 2"
+                type="button"
+                @click="counter++"
+                class="btn mr-2 btn-primary btn-sm"
+              >
+                Next
+              </button>
+        
+
+            <!-- liquidation is true -->
+   
+              <button
+                v-show="isLiquidation"
+                v-if="this.counter <= 3"
+                type="button"
+                @click="next()"
+                class="btn mr-2 btn-primary btn-sm"
+              >
+                Next
+              </button>
+
+
+
+          </aside>
+
+          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
+         
+              <button
+                type="button"
+                class="btn btn-success ml-2 btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+                @click="setTitle('Approve')"
+              >
+                Approve
+              </button>
+    
+
+      
+              <button
+              v-if="!isInitiator"
+                type="button"
+                class="btn  btn-danger ml-2 btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+                @click="setTitle('Reject')"
+              >
+                Reject
+              </button>
+  
+
+         
+              <button
+              v-if="!isInitiator"
+                type="button"
+                class="btn  btn-warning ml-2 btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+                @click="setTitle('Clarify')"
+              >
+                Clarify
+              </button>
+       
+
+
+              <button
+                type="button"
+                class="btn  btn-danger ml-2 btn-sm"
+                @click="close()"
+              >
+                Close
+              </button>
+     
+
+            <!-- <button @click="test()">test</button> -->
+          </aside>
+        </div>
+        <!-- / Buttons -->
+
         <!-- Step Numbers -->
-        <div class="d-flex progressBarWrapper text-center">
+        <div class="d-flex progressBarWrapper text-center mt-5">
           <div class="progressbar" :class="classA">
             <span :class="classA">1</span>
           </div>
@@ -774,102 +872,7 @@
 
         <!-- / Main Form -->
 
-        <!-- Buttons -->
-        <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap ">
 
-        
-              <button
-              v-show="counter"
-                type="button"
-                @click="counter--"
-                class="btn mr-2 btn-secondary btn-sm"
-              >
-                Previous
-              </button>
-
-            <!-- liquidation is false -->
-  
-              <button
-              v-show="!isLiquidation"
-              v-if="this.counter <= 2"
-                type="button"
-                @click="counter++"
-                class="btn mr-2 btn-primary btn-sm"
-              >
-                Next
-              </button>
-        
-
-            <!-- liquidation is true -->
-   
-              <button
-                v-show="isLiquidation"
-                v-if="this.counter <= 3"
-                type="button"
-                @click="next()"
-                class="btn mr-2 btn-primary btn-sm"
-              >
-                Next
-              </button>
-
-
-
-          </aside>
-
-          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
-         
-              <button
-                type="button"
-                class="btn btn-success ml-2 btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Approve')"
-              >
-                Approve
-              </button>
-    
-
-      
-              <button
-              v-if="!isInitiator"
-                type="button"
-                class="btn  btn-danger ml-2 btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Reject')"
-              >
-                Reject
-              </button>
-  
-
-         
-              <button
-              v-if="!isInitiator"
-                type="button"
-                class="btn  btn-warning ml-2 btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-                @click="setTitle('Clarify')"
-              >
-                Clarify
-              </button>
-       
-
-
-              <button
-                type="button"
-                class="btn  btn-danger ml-2 btn-sm"
-                @click="close()"
-              >
-                Close
-              </button>
-     
-
-            <!-- <button @click="test()">test</button> -->
-          </aside>
-        </div>
-        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->
@@ -1423,20 +1426,29 @@ export default {
 
   async created() {
     this.isLoading = true
-    await this.getActualSign(this.processId, this.form, this.companyId);
-    await this.getRfpMain(this.processId);
-    await this.getRfpDetails(this.processId);
-    await this.getAttachments(this.processId, this.form);
-    await this.getRecipient(
-      this.processId,
-      this.loggedUserId,
-      this.companyId,
-      this.form
-    );
-    await this.getInprogressId(this.processId, this.companyId, this.form);
-    await this.getBusinesses(this.companyId);
-    await this.getcurrencyName();
-    await this.getexpenseType();
+
+    
+    // // ommit
+    // await this.getActualSign(this.processId, this.form, this.companyId);
+    // // join
+    // // await this.getRfpMain(this.processId);
+    // await this.getRfpDetails(this.processId);
+    
+    // await this.getAttachments(this.processId, this.form);
+    // await this.getRecipient(
+    //   this.processId,
+    //   this.loggedUserId,
+    //   this.companyId,
+    //   this.form
+    // );
+    
+    // // await this.getInprogressId(this.processId, this.companyId, this.form);
+    // await this.getBusinesses(this.companyId);
+    // await this.getcurrencyName();
+    // await this.getexpenseType();
+
+    await this.getRfp(this.processId, this.form, this.companyId, this.loggedUserId);
+
     this.isLoading = false
 
   },
@@ -1466,38 +1478,165 @@ export default {
       // this.getRfpApproval(this.$route.params.id, this.form);
       this.isLoading = true
 
-      this.counter = 0;
-      this.withdrawRemarks = "";
-      console.warn(newRoute);
+      // this.counter = 0;
+      // this.withdrawRemarks = "";
+      // console.warn(newRoute.params.id);
 
-      // this.$route.params.id
-      // this.$route.params.frmName
-      // this.$route.params.frmClass
-      // this.$route.params.workflow
+      // // this.$route.params.id
+      // // this.$route.params.frmName
+      // // this.$route.params.frmClass
+      // // this.$route.params.workflow
 
 
-      await this.getActualSign(this.$route.params.id, this.$route.params.frmName, this.companyId);
-      await this.getRfpMain(this.$route.params.id);
-      await this.getRfpDetails(this.$route.params.id);
-      await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
-      await this.getRecipient(
-        this.$route.params.id,
-        this.loggedUserId,
-        this.companyId,
-        this.$route.params.frmName
-      );
-      await this.getInprogressId(this.$route.params.id, this.companyId, this.$route.params.frmName);
-      await this.getBusinesses(this.companyId);
-      await this.getcurrencyName();
-      await this.getexpenseType();
-            this.isLoading = false
+      // await this.getActualSign(this.$route.params.id, this.$route.params.frmName, this.companyId);
+      // // await this.getRfpMain(this.$route.params.id);
+      // await this.getRfpDetails(this.$route.params.id);
+      // await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+      // await this.getRecipient(
+      //   this.$route.params.id,
+      //   this.loggedUserId,
+      //   this.companyId,
+      //   this.$route.params.frmName
+      // );
+      // // await this.getInprogressId(this.$route.params.id, this.companyId, this.$route.params.frmName);
+      // await this.getBusinesses(this.companyId);
+      // await this.getcurrencyName();
+      // await this.getexpenseType();
+
+      await this.getRfp(newRoute.params.id, newRoute.params.frmName, this.companyId, this.loggedUserId);
+      this.isLoading = false
     },
   },
 
   methods: {
-    // test(){
-    //   console.log(this.liquidation)
-    // },
+
+    async getRfp(id, form, companyId, loggedUserId){
+      try {
+        const promises = [
+          axios.get(`http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`),
+          axios.get(`http://127.0.0.1:8000/api/getRfpWithDetails/${id}`),
+          axios.get(`http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`),
+          axios.get(`http://127.0.0.1:8000/api/getRecipient/${id}/${loggedUserId}/${companyId}/${form}`),
+          axios.get(`http://127.0.0.1:8000/api/general-businesses/${companyId}`),
+          axios.get(`http://127.0.0.1:8000/api/get-currencyType`),
+          axios.get(`http://127.0.0.1:8000/api/get-expenseType`),
+        ];
+
+        const responses = await Promise.all(promises);
+
+        const [actualSign, rfp, attachments, recipent, businesses, currency, expenses] = responses;
+        // ACTUAL SIGN
+        // get inprogress id 
+        const [{ID}] = actualSign.data.filter(cur => cur.STATUS === 'In Progress');
+        // set in progress id
+        this.inprogressId = ID;
+
+        // get repaorting manager item
+        const reportingManagerItem = {
+            code: actualSign.data[2].RM_ID,
+            name: actualSign.data[2].REPORTING_MANAGER,
+          };
+        
+        // set reporting manager item
+        this.reportingManagerItem = reportingManagerItem;
+
+
+        // getRfpMain
+        const {REPORTING_MANAGER, REFERENCE, DATE, DUEDATE, Amount, INITID} = actualSign.data[1];
+
+        this.reportingManager = REPORTING_MANAGER;
+        this.referenceNumber = REFERENCE;
+        this.requestDate = DATE;
+        this.dateNeeded = DUEDATE;
+        this.amount = parseFloat(Amount).toLocaleString(
+        undefined,
+          { minimumFractionDigits: 2 }
+        );
+        this.uid = INITID;
+        
+        if (INITID === parseInt(localStorage.getItem("id"))) {
+          this.isInitiator = true;
+          this.counter = 2;
+        }
+
+        // check if releasing of cash status is completed
+        const isLiquidation = actualSign.data.filter(cur => cur.USER_GRP_IND === 'Releasing of Cash').some(cur => cur.STATUS === 'Completed');
+
+        if (isLiquidation) {
+          console.log("liquidation is true");
+          this.isLiquidation = true;
+          this.getLiquidation(id);
+        } else {
+          // alert('false')
+          console.log("liquidation is false");
+          this.isLiquidation = false;
+
+          // when not yet liquidated form review will show
+          this.counter = 3
+        }
+
+        // RFP
+        const [{CLIENTNAME,PURPOSED,PAYEE,CURRENCY,MOP,PROJECT}] = rfp.data;
+
+        this.clientName = CLIENTNAME;
+        this.purpose = PURPOSED;
+        this.payeeName = PAYEE;
+        this.currency = CURRENCY;
+        this.modeOfPayment = MOP;
+        this.projectName = PROJECT;
+
+        // ATTACHMENTS
+        this.selectedFile = attachments.data.data
+
+        // RECIPIENT
+        const recipientItem = [];
+        for (const key in recipent.data) {
+          const request = {
+            code: recipent.data[key].uid,
+            name: recipent.data[key].name,
+          };
+          recipientItem.push(request);
+        }
+        this.recipent = recipientItem;
+
+        // BUSINESSES
+        const clientItem = [];
+        for (const key in businesses.data) {
+          const request = {
+            code: businesses.data[key].businessNumber,
+            name: businesses.data[key].businessName,
+          };
+          clientItem.push(request);
+        }
+        this.modalclient = clientItem;
+
+        // CURRENCY
+        const modalCurrency = [];
+        for (const key in currency.data[0]) {
+          const request = {
+            code: currency.data[0][key].currencyName,
+            name: currency.data[0][key].currencyName,
+          };
+          modalCurrency.push(request);
+        }
+        this.modalCurrency = modalCurrency;
+
+        // EXPENSES
+        const modalExpenseType = [];
+        for (const key in expenses.data[0]) {
+          const request = {
+            code: expenses.data[0][key].type,
+            name: expenses.data[0][key].type,
+          };
+          modalExpenseType.push(request);
+        }
+        this.modalExpenseType = modalExpenseType;
+
+      } catch (error) {
+        console.error(error);
+        this.openToast("top-right", "error", 'Server Error! Please report to administrator');
+      }
+    },
 
     closeDefaultModal() {
       this.attemptClarify = false;
@@ -1991,15 +2130,48 @@ export default {
           `http://127.0.0.1:8000/api/general-actual-sign/${id}/${form}/${companyId}`
         );
 
-        console.log(resp.status);
+        // console.log(resp.data);
+        // this.inprogressId
+
+
+
         if (resp.status === 200) {
           // this.isLoading = false;
+
+          // Destructure
+          const [{ID}] = resp.data.filter(cur => cur.STATUS === 'In Progress');
+
+          // set in progress id
+          this.inprogressId = ID;
 
           const reportingManagerItem = {
             code: resp.data[2].RM_ID,
             name: resp.data[2].REPORTING_MANAGER,
           };
           this.reportingManagerItem = reportingManagerItem;
+
+          // console.log('ak',resp.data[1])
+
+            // getRfpMain
+            const {REPORTING_MANAGER, REFERENCE, DATE, DUEDATE, Amount, INITID} = resp.data[1];
+
+            this.reportingManager = REPORTING_MANAGER;
+            this.referenceNumber = REFERENCE;
+            this.requestDate = DATE;
+            this.dateNeeded = DUEDATE;
+            this.amount = parseFloat(Amount).toLocaleString(
+            undefined,
+              { minimumFractionDigits: 2 }
+            );
+            this.uid = INITID;
+            
+            if (INITID === parseInt(localStorage.getItem("id"))) {
+              this.isInitiator = true;
+              this.counter = 2;
+            }
+
+
+
 
           if (resp.data[2].STATUS === "Completed") {
             console.log("liquidation is true");
