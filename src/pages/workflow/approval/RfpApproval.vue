@@ -1447,7 +1447,9 @@ export default {
     // await this.getcurrencyName();
     // await this.getexpenseType();
 
-    await this.getRfp(this.processId, this.form, this.companyId, this.loggedUserId);
+    await this.getrfp2(this.processId, this.companyId, this.loggedUserId);
+
+    // await this.getRfp(this.processId, this.form, this.companyId, this.loggedUserId);
 
     this.isLoading = false
 
@@ -1503,12 +1505,82 @@ export default {
       // await this.getcurrencyName();
       // await this.getexpenseType();
 
-      await this.getRfp(newRoute.params.id, newRoute.params.frmName, this.companyId, this.loggedUserId);
+      // await this.getRfp(newRoute.params.id, newRoute.params.frmName, this.companyId, this.loggedUserId);
+      await this.getrfp2(newRoute.params.id, this.companyId, this.loggedUserId);
       this.isLoading = false
     },
   },
 
   methods: {
+
+    async getrfp2(processId, companyId, loggedUserId) {
+      // this.isLoading = true;
+      try {
+        const resp = await axios.get(
+          `http://127.0.0.1:8000/api/get-rfp/${processId}/${companyId}/${loggedUserId}`
+        );
+
+        // console.log(resp.data);
+
+        const {inprogressId, isLiquidation, dateRequested, dateNeeded, amount, initId, reportingManager, rfpDetails, attachments, recipients, businesses, currency, expenseType} = resp.data;
+ 
+ 
+        this.inprogressId = inprogressId;
+        this.reportingManagerItem = reportingManager;
+
+        const [{CLIENTNAME, PURPOSED, PAYEE, CURRENCY, MOP, PROJECT, REQREF}] = rfpDetails;
+        // RFP DETAILS
+         
+        this.reportingManager = reportingManager.name;
+        this.referenceNumber = REQREF;
+        this.requestDate = dateRequested;
+        this.dateNeeded = dateNeeded;
+        this.amount = parseFloat(amount).toLocaleString(
+        undefined,
+          { minimumFractionDigits: 2 }
+        );
+        this.uid = initId;
+        
+        if (initId === parseInt(localStorage.getItem("id"))) {
+          this.isInitiator = true;
+          this.counter = 2;
+        }
+
+        if (isLiquidation) {
+          console.log("liquidation is true");
+          this.isLiquidation = true;
+          this.getLiquidation(processId);
+        } else {
+          // alert('false')
+          console.log("liquidation is false");
+          this.isLiquidation = false;
+
+          // when not yet liquidated form review will show
+          this.counter = 3
+        }
+
+        this.clientName = CLIENTNAME;
+        this.purpose = PURPOSED;
+        this.payeeName = PAYEE;
+        this.currency = CURRENCY;
+        this.modeOfPayment = MOP;
+        this.projectName = PROJECT;
+
+        this.selectedFile = attachments;
+
+        this.recipent = recipients;
+        this.modalclient = businesses;
+        this.modalCurrency = currency;
+        this.modalExpenseType = expenseType;
+
+
+
+      } catch (err) {
+        // this.isLoading = false;
+        // Handle Error Here
+        console.error(err);
+      }
+    },
 
     async getRfp(id, form, companyId, loggedUserId){
       try {
