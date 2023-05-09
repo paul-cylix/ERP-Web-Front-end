@@ -109,7 +109,7 @@
                   id="reportingManager"
                   disabled
                   class="form-control py-3 form-control-sm"
-                  v-model="reportingManagerName"
+                  v-model="employeeName"
                 />
               </div>
             </div>
