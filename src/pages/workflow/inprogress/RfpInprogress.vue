@@ -12,9 +12,76 @@
       <div class="card-header">
         <h3 class="card-title">Request for Payment</h3>
       </div>
+
+
+
       <div class="card-body">
+        <!-- Buttons -->
+        <div class="row d-flex justify-content-between ">
+          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
+            
+              <button
+                v-show="counter"
+                type="button"
+                @click="counter--"
+                class="btn mr-1 btn-secondary btn-sm"
+              >
+                Previous
+              </button>
+            
+
+    
+              <button
+                v-show="!isLiquidation"
+                v-if="this.counter <= 2"
+                type="button"
+                @click="counter++"
+                class="btn mr-1 btn-primary btn-sm"
+              >
+                Next
+              </button>
+          
+
+     
+              <button
+                v-show="isLiquidation"
+                v-if="this.counter <= 3"
+                type="button"
+                @click="counter++"
+                class="btn mr-1 btn-primary btn-sm"
+              >
+                Next
+              </button>
+         
+          </aside>
+
+          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
+            
+              <button
+                type="button"
+                class="btn ml-1 btn-warning btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+              >
+                Withdrawn
+              </button>
+            
+
+            
+              <button
+                type="button"
+                class="btn ml-1 btn-danger btn-sm"
+                @click="close()"
+              >
+                Close
+              </button>
+            
+          </aside>
+        </div>
+        <!-- / Buttons -->
+
         <!-- Step Numbers -->
-        <div class="d-flex progressBarWrapper text-center">
+        <div class="d-flex progressBarWrapper text-center mt-5">
           <div class="progressbar" :class="classA">
             <span :class="classA">1</span>
           </div>
@@ -581,69 +648,9 @@
 
         <!-- / Main Form -->
 
-        <!-- Buttons -->
-        <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
-            
-              <button
-                v-show="counter"
-                type="button"
-                @click="counter--"
-                class="btn mr-1 btn-secondary btn-sm"
-              >
-                Previous
-              </button>
-            
 
-    
-              <button
-                v-show="!isLiquidation"
-                v-if="this.counter <= 2"
-                type="button"
-                @click="counter++"
-                class="btn mr-1 btn-primary btn-sm"
-              >
-                Next
-              </button>
-          
 
-     
-              <button
-                v-show="isLiquidation"
-                v-if="this.counter <= 3"
-                type="button"
-                @click="counter++"
-                class="btn mr-1 btn-primary btn-sm"
-              >
-                Next
-              </button>
-         
-          </aside>
 
-          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
-            
-              <button
-                type="button"
-                class="btn ml-1 btn-warning btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-              >
-                Withdrawn
-              </button>
-            
-
-            
-              <button
-                type="button"
-                class="btn ml-1 btn-danger btn-sm"
-                @click="close()"
-              >
-                Close
-              </button>
-            
-          </aside>
-        </div>
-        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->
@@ -714,10 +721,6 @@ import VsToast from "@vuesimple/vs-toast";
 export default {
   watch: {
     // Request Details
-    projectItem(newValue) {
-      this.getClient(newValue.code);
-    },
-
     counter() {
       document.body.scrollTop = 0;
       document.documentElement.scrollTop = 0;
@@ -726,19 +729,24 @@ export default {
     //Navigate
     async $route(newRoute) {
       this.isLoading = true;
-      // await this.showRfpMain(this.$route.params.id);
-      // await this.showRfpDetail(this.$route.params.id);
-      // await this.showRfpAttachments(this.$route.params.id, this.$route.params.frmName);
-      
-    await this.getRfpApproval(
-      this.$route.params.id,
-      this.$route.params.frmName,
+
+    // await this.getRfpApproval(
+    //   this.$route.params.id,
+    //   this.$route.params.frmName,
+    //   this.companyId,
+    //   this.loggedUserId
+    // );
+
+      await this.getRfpInprogress(
+      newRoute.params.id,
+      this.loggedUserId,
       this.companyId,
-      this.loggedUserId
+      newRoute.params.frmName
     );
+
       this.counter = 0;
       this.withdrawRemarks = "";
-      console.log(newRoute);
+
       this.isLoading = false;
     },
   },
@@ -876,16 +884,60 @@ export default {
     // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
     this.isLoading = true;
 
-    await this.getRfpApproval(
+    // await this.getRfpApproval(
+    //   this.$route.params.id,
+    //   this.$route.params.frmName,
+    //   this.companyId,
+    //   this.loggedUserId
+    // );
+
+    await this.getRfpInprogress(
       this.$route.params.id,
-      this.$route.params.frmName,
+      this.loggedUserId,
       this.companyId,
-      this.loggedUserId
+      this.$route.params.frmName
     );
+
     this.isLoading = false;
   },
 
   methods: {
+    async getRfpInprogress(id, loggedUserId, companyId, form){
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/v2/get-rfp-inprogress/${id}/${loggedUserId}/${companyId}/${form}`);
+
+        const {inprogressId, isLiquidation, reportingManager, dateRequested, dateNeeded, amount, rfpMainDetail, attachments, liquidation} = response.data;
+        const [{CLIENTNAME,CURRENCY,MOP,PAYEE,PROJECT,PURPOSED,REQREF}] = rfpMainDetail;
+
+        this.referenceNumber = REQREF;
+        this.requestDate = dateRequested;
+        this.dateNeeded = dateNeeded;
+        this.reportingManager = reportingManager.name;
+        this.amount = parseFloat(
+          amount
+        ).toLocaleString(undefined, { minimumFractionDigits: 2 });
+
+        //     // showRfpDetail - responseTwo
+        this.projectName = PROJECT;
+        this.clientName = CLIENTNAME;
+        this.purpose = PURPOSED;
+        this.payeeName = PAYEE;
+        this.currency = CURRENCY;
+        this.modeOfPayment = MOP;
+
+        // showRfpAttachments - responesThree
+        this.selectedFile = attachments;
+
+        this.isLiquidation = isLiquidation;
+        this.liquidation = liquidation;
+
+        this.inprogressId = inprogressId;
+
+      } catch (error) {
+        console.error(error.message);
+      }
+    },
+
     async getRfpApproval(id, form, companyId, loggedUserId) {
       // this.isLoading = true;
       let showRfpMain = `http://127.0.0.1:8000/api/rfp-main/${id}`;

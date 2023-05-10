@@ -91,7 +91,7 @@
                 >
                 <input
                   type="text"
-                  id="reportingManager"
+      
                   disabled
                   class="form-control py-3 form-control-sm"
                   v-model="reportingManagerName"
@@ -106,7 +106,7 @@
                 <small><label for="employeeName">Employee Name</label></small>
                 <input
                   type="text"
-                  id="reportingManager"
+           
                   disabled
                   class="form-control py-3 form-control-sm"
                   v-model="employeeName"
@@ -120,7 +120,7 @@
                 >
                 <input
                   type="text"
-                  id="reportingManager"
+           
                   disabled
                   class="form-control py-3 form-control-sm"
                   v-model="reportName"
@@ -132,7 +132,7 @@
                 <small><label for="reportDateTime">Report Time</label></small>
                 <input
                   type="text"
-                  id="reportingManager"
+         
                   disabled
                   class="form-control py-3 form-control-sm"
                   v-model="reportDateTime"
