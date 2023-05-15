@@ -737,7 +737,7 @@ export default {
     //   this.loggedUserId
     // );
 
-      await this.getRfpInprogress(
+    await this.getRfpInprogress(
       newRoute.params.id,
       this.loggedUserId,
       this.companyId,

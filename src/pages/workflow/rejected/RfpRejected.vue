@@ -13,8 +13,56 @@
         <h3 class="card-title">Request for Payment</h3>
       </div>
       <div class="card-body">
+        <!-- Buttons -->
+        <div class="row d-flex justify-content-between">
+          <aside
+            class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap"
+          >
+            <button
+              v-show="counter"
+              type="button"
+              @click="counter--"
+              class="btn mr-1 btn-secondary btn-sm"
+            >
+              Previous
+            </button>
+
+            <button
+              v-show="!isLiquidation"
+              v-if="this.counter <= 2"
+              type="button"
+              @click="counter++"
+              class="btn mr-1 btn-primary btn-sm"
+            >
+              Next
+            </button>
+
+            <button
+              v-show="isLiquidation"
+              v-if="this.counter <= 3"
+              type="button"
+              @click="counter++"
+              class="btn mr-1 btn-primary btn-sm"
+            >
+              Next
+            </button>
+          </aside>
+
+          <aside
+            class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap"
+          >
+            <button
+              type="button"
+              class="btn ml-1 btn-danger btn-sm"
+              @click="close()"
+            >
+              Close
+            </button>
+          </aside>
+        </div>
+        <!-- / Buttons -->
         <!-- Step Numbers -->
-        <div class="d-flex progressBarWrapper text-center">
+        <div class="d-flex progressBarWrapper text-center mt-5">
           <div class="progressbar" :class="classA">
             <span :class="classA">1</span>
           </div>
@@ -301,14 +349,7 @@
         <!-- The Attachments -->
         <div
           v-if="this.counter === setAttach"
-          class="
-            d-flex
-            align-items-center
-            justify-content-center
-            text-center
-            position-relative
-            mt-4
-          "
+          class="d-flex align-items-center justify-content-center text-center position-relative mt-4"
           id="app"
         >
           <div class="pt-2 col-md-12 rounded" id="uploadContainer">
@@ -335,10 +376,20 @@
                     </div>
                     <!-- New Preview and Download using laravel filepath -->
                     <div>
-                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
+                      <a
+                        class="btn btn-info btn-sm"
+                        :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`"
+                        target="_blank"
+                        >Download</a
+                      >
                     </div>
                     <div class="col-2">
-                      <a class="btn btn-secondary btn-sm"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                      <a
+                        class="btn btn-secondary btn-sm"
+                        :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`"
+                        target="_blank"
+                        >Preview</a
+                      >
                     </div>
 
                     <!-- Old Preview and Download using image bytes -->
@@ -366,8 +417,6 @@
                         Preview
                       </button>
                     </div> -->
-
-
                   </div>
                 </div>
               </li>
@@ -569,9 +618,21 @@
                 <tbody>
                   <tr v-for="file in selectedFile" :key="file.filename">
                     <td>{{ file.filename }}</td>
-                    <td class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center">
-                      <a class="btn btn-info btn-sm" :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`" target="_blank">Download</a>
-                      <a class="btn btn-secondary btn-sm ml-1"  :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`" target="_blank">Preview</a>
+                    <td
+                      class="pl-2 pr-2 text-center d-flex justify-content-center align-items-center"
+                    >
+                      <a
+                        class="btn btn-info btn-sm"
+                        :href="`http://127.0.0.1:8000/api/downloadFile?filepath=${file.fileDestination}&filename=${file.filename}`"
+                        target="_blank"
+                        >Download</a
+                      >
+                      <a
+                        class="btn btn-secondary btn-sm ml-1"
+                        :href="`http://127.0.0.1:8000/${file.filepath}/${file.filename}`"
+                        target="_blank"
+                        >Preview</a
+                      >
 
                       <!-- <a
                         class="btn btn-info btn-sm "
@@ -603,57 +664,6 @@
         <!-- / Form Review -->
 
         <!-- / Main Form -->
-
-        <!-- Buttons -->
-        <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
-            
-              <button
-                v-show="counter"
-                type="button"
-                @click="counter--"
-                class="btn mr-1 btn-secondary btn-sm"
-              >
-                Previous
-              </button>
-
-              <button
-                v-show="!isLiquidation"
-                v-if="this.counter <= 2"
-                type="button"
-                @click="counter++"
-                class="btn mr-1 btn-primary btn-sm"
-              >
-                Next
-              </button>
-    
-
-
-              <button
-                v-show="isLiquidation"
-                v-if="this.counter <= 3"
-                type="button"
-                @click="counter++"
-                class="btn mr-1 btn-primary btn-sm"
-              >
-                Next
-              </button>
-            
-          </aside>
-
-          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
-
-              <button
-                type="button"
-                class="btn ml-1 btn-danger btn-sm"
-                @click="close()"
-              >
-                Close
-              </button>
-            
-          </aside>
-        </div>
-        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->
@@ -729,12 +739,20 @@ export default {
     // this.showRfpAttachments(this.$route.params.id, "Request for Payment");
     this.isLoading = true;
 
-    await this.getRfpApproval(
+    // await this.getRfpApproval(
+    //   this.$route.params.id,
+    //   this.$route.params.frmName,
+    //   this.companyId,
+    //   this.loggedUserId
+    // );
+
+    await this.getRfpInprogress(
       this.$route.params.id,
-      this.$route.params.frmName,
+      this.loggedUserId,
       this.companyId,
-      this.loggedUserId
+      this.$route.params.frmName
     );
+
     this.isLoading = false;
   },
 
@@ -755,16 +773,23 @@ export default {
       // await this.showRfpMain(this.$route.params.id);
       // await this.showRfpDetail(this.$route.params.id);
       // await this.showRfpAttachments(this.$route.params.id, this.$route.params.frmName);
-      
-    await this.getRfpApproval(
-      this.$route.params.id,
-      this.$route.params.frmName,
-      this.companyId,
-      this.loggedUserId
-    );
+
+      // await this.getRfpApproval(
+      //   this.$route.params.id,
+      //   this.$route.params.frmName,
+      //   this.companyId,
+      //   this.loggedUserId
+      // );
+
+      await this.getRfpInprogress(
+        newRoute.params.id,
+        this.loggedUserId,
+        this.companyId,
+        newRoute.params.frmName
+      );
+
       this.counter = 0;
       this.withdrawRemarks = "";
-      console.log(newRoute);
       this.isLoading = false;
     },
   },
@@ -895,11 +920,57 @@ export default {
     };
   },
 
-
-
   methods: {
+    async getRfpInprogress(id, loggedUserId, companyId, form) {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/v2/get-rfp-inprogress/${id}/${loggedUserId}/${companyId}/${form}`
+        );
+
+        const {
+          inprogressId,
+          isLiquidation,
+          reportingManager,
+          dateRequested,
+          dateNeeded,
+          amount,
+          rfpMainDetail,
+          attachments,
+          liquidation,
+        } = response.data;
+        const [
+          { CLIENTNAME, CURRENCY, MOP, PAYEE, PROJECT, PURPOSED, REQREF },
+        ] = rfpMainDetail;
+
+        this.referenceNumber = REQREF;
+        this.requestDate = dateRequested;
+        this.dateNeeded = dateNeeded;
+        this.reportingManager = reportingManager.name;
+        this.amount = parseFloat(amount).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+        });
+
+        //     // showRfpDetail - responseTwo
+        this.projectName = PROJECT;
+        this.clientName = CLIENTNAME;
+        this.purpose = PURPOSED;
+        this.payeeName = PAYEE;
+        this.currency = CURRENCY;
+        this.modeOfPayment = MOP;
+
+        // showRfpAttachments - responesThree
+        this.selectedFile = attachments;
+
+        this.isLiquidation = isLiquidation;
+        this.liquidation = liquidation;
+
+        this.inprogressId = inprogressId;
+      } catch (error) {
+        console.error(error.message);
+      }
+    },
+
     async getRfpApproval(id, form, companyId, loggedUserId) {
-      
       let showRfpMain = `http://127.0.0.1:8000/api/rfp-main/${id}`;
       let showRfpDetail = `http://127.0.0.1:8000/api/rfp-main-detail/${id}`;
       let showRfpAttachments = `http://127.0.0.1:8000/api/getRfpAttachments/${id}/${form}`;
@@ -1004,9 +1075,7 @@ export default {
           // react on errors.
           console.log(errors);
         })
-        .then(() => {
-          
-        });
+        .then(() => {});
     },
 
     openToast(position, variant, message) {
@@ -1071,20 +1140,20 @@ export default {
     close() {
       this.$router.replace("/rejected");
     },
-  //   preview(mimeType, imageBytes) {
-  //     if (mimeType === 'image/jpeg' || mimeType === 'image/png') 
-  //     {
-  //       var newTab = window.open();
-  //       newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
-  //     }
+    //   preview(mimeType, imageBytes) {
+    //     if (mimeType === 'image/jpeg' || mimeType === 'image/png')
+    //     {
+    //       var newTab = window.open();
+    //       newTab.document.body.innerHTML = `<img src="data:${mimeType};base64,${imageBytes}" resizable=yes, style="max-width: 100%; height: auto; ">`;
+    //     }
 
-  //     else if (mimeType === 'application/pdf')
-  //     {
-  //       let pdfWindow = window.open('#')
-  //       pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
-  //     }
-    
-  //  },
+    //     else if (mimeType === 'application/pdf')
+    //     {
+    //       let pdfWindow = window.open('#')
+    //       pdfWindow.document.write(`<iframe width='100%' height='100%' src='data:${mimeType};base64, ` +encodeURI(imageBytes) + "'></iframe>")
+    //     }
+
+    //  },
 
     // showRfpMain(id) {
     //   axios

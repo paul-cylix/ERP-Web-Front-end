@@ -1447,10 +1447,16 @@ export default {
     // await this.getcurrencyName();
     // await this.getexpenseType();
 
-    await this.getrfp2(this.processId, this.companyId, this.loggedUserId);
+    // await this.getrfp2(this.processId, this.companyId, this.loggedUserId);
 
     // await this.getRfp(this.processId, this.form, this.companyId, this.loggedUserId);
 
+    await this.getRfpApprovals(
+      this.$route.params.id,
+      this.loggedUserId,
+      this.companyId,
+      this.$route.params.frmName
+    );
     this.isLoading = false
 
   },
@@ -1506,12 +1512,69 @@ export default {
       // await this.getexpenseType();
 
       // await this.getRfp(newRoute.params.id, newRoute.params.frmName, this.companyId, this.loggedUserId);
-      await this.getrfp2(newRoute.params.id, this.companyId, this.loggedUserId);
+      // await this.getrfp2(newRoute.params.id, this.companyId, this.loggedUserId);
+
+      await this.getRfpApprovals(
+        newRoute.params.id,
+        this.loggedUserId,
+        this.companyId,
+        newRoute.params.frmName
+      );
       this.isLoading = false
     },
   },
 
   methods: {
+    async getRfpApprovals(id, loggedUserId, companyId, form){
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/v2/get-rfp-approvals/${id}/${loggedUserId}/${companyId}/${form}`);
+
+        const {inprogressId, isLiquidation, reportingManager, dateRequested, dateNeeded, amount, initId, rfpMainDetail, attachments, liquidation, recipients, currency, expenseType, businesses} = response.data;
+        const [{CLIENTNAME,CURRENCY,MOP,PAYEE,PROJECT,PURPOSED,REQREF}] = rfpMainDetail;
+
+
+
+        this.referenceNumber = REQREF; // ok
+        this.requestDate = dateRequested; // ok
+        this.dateNeeded = dateNeeded; // ok
+        this.reportingManager = reportingManager.name; // ok
+        this.amount = parseFloat(
+          amount
+        ).toLocaleString(undefined, { minimumFractionDigits: 2 }); // ok
+
+
+        if (initId === parseInt(localStorage.getItem("id"))) {
+          this.isInitiator = true;
+          this.counter = 2;
+        }
+
+        if (!isLiquidation) this.counter = 3
+        
+        //     // showRfpDetail - responseTwo
+        this.projectName = PROJECT; // ok
+        this.clientName = CLIENTNAME; // ok
+        this.purpose = PURPOSED; // ok
+        this.payeeName = PAYEE; // ok
+        this.currency = CURRENCY; // ok
+        this.modeOfPayment = MOP; // ok
+
+        // showRfpAttachments - responesThree
+        this.selectedFile = attachments; // ok
+
+        this.isLiquidation = isLiquidation;
+        this.liquidation = liquidation;
+
+        this.inprogressId = inprogressId; // ok
+
+        this.recipent = recipients;
+        this.modalclient = businesses;
+        this.modalCurrency = currency;
+        this.modalExpenseType = expenseType;
+
+      } catch (error) {
+        console.error(error.message);
+      }
+    },
 
     async getrfp2(processId, companyId, loggedUserId) {
       // this.isLoading = true;
@@ -1520,26 +1583,24 @@ export default {
           `http://127.0.0.1:8000/api/get-rfp/${processId}/${companyId}/${loggedUserId}`
         );
 
-        // console.log(resp.data);
-
         const {inprogressId, isLiquidation, dateRequested, dateNeeded, amount, initId, reportingManager, rfpDetails, attachments, recipients, businesses, currency, expenseType} = resp.data;
  
  
-        this.inprogressId = inprogressId;
-        this.reportingManagerItem = reportingManager;
+        this.inprogressId = inprogressId; // ok
+        this.reportingManagerItem = reportingManager; // not used
 
         const [{CLIENTNAME, PURPOSED, PAYEE, CURRENCY, MOP, PROJECT, REQREF}] = rfpDetails;
         // RFP DETAILS
          
-        this.reportingManager = reportingManager.name;
-        this.referenceNumber = REQREF;
-        this.requestDate = dateRequested;
-        this.dateNeeded = dateNeeded;
+        this.reportingManager = reportingManager.name; // ok
+        this.referenceNumber = REQREF; // ok
+        this.requestDate = dateRequested; // ok
+        this.dateNeeded = dateNeeded; // ok
         this.amount = parseFloat(amount).toLocaleString(
         undefined,
           { minimumFractionDigits: 2 }
-        );
-        this.uid = initId;
+        ); // ok
+        this.uid = initId; // not used
         
         if (initId === parseInt(localStorage.getItem("id"))) {
           this.isInitiator = true;
@@ -1559,12 +1620,12 @@ export default {
           this.counter = 3
         }
 
-        this.clientName = CLIENTNAME;
-        this.purpose = PURPOSED;
-        this.payeeName = PAYEE;
-        this.currency = CURRENCY;
-        this.modeOfPayment = MOP;
-        this.projectName = PROJECT;
+        this.clientName = CLIENTNAME; // ok
+        this.purpose = PURPOSED; // ok
+        this.payeeName = PAYEE; // ok
+        this.currency = CURRENCY; // ok
+        this.modeOfPayment = MOP; // ok
+        this.projectName = PROJECT; // ok
 
         this.selectedFile = attachments;
 
