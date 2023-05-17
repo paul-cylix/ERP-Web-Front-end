@@ -817,23 +817,31 @@ export default {
   },
   async created() {
     this.isLoading = true;
-    await this.getOtMain(this.$route.params.id);
-    await this.getAttachments(
-      this.$route.params.id,
-      this.$route.params.frmName
-    );
-    await this.getInprogressId(
-      this.$route.params.id,
-      this.$route.params.frmName
-    );
-    await this.getRecipients(
+    // await this.getOtMain(this.$route.params.id);
+    // await this.getAttachments(
+    //   this.$route.params.id,
+    //   this.$route.params.frmName
+    // );
+    // await this.getInprogressId(
+    //   this.$route.params.id,
+    //   this.$route.params.frmName
+    // );
+    // await this.getRecipients(
+    //   this.$route.params.id,
+    //   this.loggedUserId,
+    //   this.companyId,
+    //   this.form
+    // );
+    // await this.isRmApproval(this.$route.params.id, this.companyId);
+    // await this.getProjects();
+
+    await this.getOtApprovals(
       this.$route.params.id,
       this.loggedUserId,
       this.companyId,
-      this.form
+      this.$route.params.frmName
     );
-    await this.isRmApproval(this.$route.params.id, this.companyId);
-    await this.getProjects();
+
     this.isLoading = false;
   },
   watch: {
@@ -843,26 +851,34 @@ export default {
     },
 
     async $route(newRoute) {
-      console.warn(newRoute);
+
       this.isLoading = true;
       this.counter = 0;
       this.withdrawRemarks = "";
       this.remarks = "";
-      await this.getOtMain(newRoute.params.id);
-      await this.getAttachments(newRoute.params.id, newRoute.params.frmName);
-      await this.getInprogressId(
-        newRoute.params.id,
-        this.companyId,
-        newRoute.params.frmName
-      );
-      await this.getRecipients(
+
+      await this.getOtApprovals(
         newRoute.params.id,
         this.loggedUserId,
         this.companyId,
         newRoute.params.frmName
       );
-      await this.isRmApproval(newRoute.params.id, this.companyId);
-      await this.getProjects();
+      
+      // await this.getOtMain(newRoute.params.id);
+      // await this.getAttachments(newRoute.params.id, newRoute.params.frmName);
+      // await this.getInprogressId(
+      //   newRoute.params.id,
+      //   this.companyId,
+      //   newRoute.params.frmName
+      // );
+      // await this.getRecipients(
+      //   newRoute.params.id,
+      //   this.loggedUserId,
+      //   this.companyId,
+      //   newRoute.params.frmName
+      // );
+      // await this.isRmApproval(newRoute.params.id, this.companyId);
+      // await this.getProjects();
       this.isLoading = false;
     },
 
@@ -1099,6 +1115,49 @@ export default {
   },
 
   methods: {
+
+    async getOtApprovals(id, loggedUserId, companyId, form) {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/v2/get-ot-approvals/${id}/${loggedUserId}/${companyId}/${form}`);
+        const {otMain, attachments, recipients, projects, inprogressId, isRmApprovalBool} = response.data;
+
+
+        const [{reference,request_date,reporting_manager,ot_totalhrs_actual}] = otMain;
+
+        // getOtMain
+        this.referenceNumber = reference;
+        this.requestedDate = request_date;
+        this.reportingManagerName = reporting_manager;
+
+        // OT data
+        this.overtime = otMain;
+
+        if(ot_totalhrs_actual === null ) this.isActual = false;
+        else this.isActual = true;
+
+        // getAttachments
+        this.selectedFile = attachments;
+
+        // getInprogressId
+        this.inprogressId = inprogressId;
+
+        // getRecipients
+        this.recipent = recipients;
+
+        // isRmApproval
+        this.isRmApprovalBool = isRmApprovalBool;
+
+        // getProjects
+        this.projectName = projects;
+
+      } catch (error) {
+        console.error(error.message);
+        this.openToast("top-right", "error", "Server Error, Please report to administrator!");
+      }
+
+    },
+
+
     validateNext() {
       if (this.counter === 0) {
         this.counter++;
