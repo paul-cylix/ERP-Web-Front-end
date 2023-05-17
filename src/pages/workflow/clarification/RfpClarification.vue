@@ -13,8 +13,111 @@
         <h3 class="card-title">Request for Payment</h3>
       </div>
       <div class="card-body">
+        <!-- Buttons -->
+        <div class="row d-flex justify-content-between ">
+          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
+            
+              <button
+                v-show="counter"
+                type="button"
+                @click="counter--"
+                class="btn mr-1 btn-secondary btn-sm"
+              >
+                Previous
+              </button>
+            
+            <aside
+           
+
+              v-show="this.counter <= 2"
+              v-if="!isLiquidation"
+            >
+              <!-- validation button initiator for next page if you are the initiator -->
+              <button
+                v-if="isInitiator"
+                type="button"
+                @click="next()"
+                class="btn mr-1 btn-primary btn-sm"
+              >
+                Next
+              </button>
+              <!-- validation button for approver -->
+              <button
+                v-else
+                type="button"
+                @click="counter++"
+                class="btn mr-1 btn-primary btn-sm"
+              >
+                Next
+              </button>
+            </aside>
+
+            <aside v-else>
+              
+                <button
+                v-show="this.counter <= 3"
+                v-if="isInitiator"
+                type="button"
+                @click="next()"
+                class="btn mr-1 btn-primary btn-sm"
+              >
+                Next
+              </button>
+
+              <button
+              v-show="this.counter <= 3"
+              v-else
+                type="button"
+                @click="counter++"
+                class="btn mr-1 btn-primary btn-sm"
+              >
+                Next
+              </button>
+            </aside>
+
+          
+          </aside>
+
+          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
+            
+              <button 
+                v-if="isLiquidation"
+                v-show="this.counter === 4"
+                type="button"
+                class="btn ml-1 btn-warning btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+              >
+                Reply
+              </button>
+
+              <button
+                v-else
+                v-show="this.counter === 3"
+                type="button"
+                class="btn ml-1 btn-warning btn-sm"
+                data-toggle="modal"
+                data-target="#modal-default"
+              >
+                Reply
+              </button>
+            
+
+            
+              <button
+                type="button"
+                class="btn ml-1 btn-danger btn-sm"
+                @click="close()"
+              >
+                Close
+              </button>
+            
+          </aside>
+        </div>
+        <!-- / Buttons -->
+
         <!-- Step Numbers -->
-        <div class="d-flex progressBarWrapper text-center">
+        <div class="d-flex progressBarWrapper text-center mt-5">
           <div class="progressbar" :class="classA">
             <span :class="classA">1</span>
           </div>
@@ -830,108 +933,7 @@
 
         <!-- / Main Form -->
 
-        <!-- Buttons -->
-        <div class="row d-flex justify-content-between mt-3">
-          <aside class="col-lg-6 d-flex justify-content-start align-items-center flex-nowrap">
-            
-              <button
-                v-show="counter"
-                type="button"
-                @click="counter--"
-                class="btn mr-1 btn-secondary btn-sm"
-              >
-                Previous
-              </button>
-            
-            <aside
-           
 
-              v-show="this.counter <= 2"
-              v-if="!isLiquidation"
-            >
-              <!-- validation button initiator for next page if you are the initiator -->
-              <button
-                v-if="isInitiator"
-                type="button"
-                @click="next()"
-                class="btn mr-1 btn-primary btn-sm"
-              >
-                Next
-              </button>
-              <!-- validation button for approver -->
-              <button
-                v-else
-                type="button"
-                @click="counter++"
-                class="btn mr-1 btn-primary btn-sm"
-              >
-                Next
-              </button>
-            </aside>
-
-            <aside v-else>
-              
-                <button
-                v-show="this.counter <= 3"
-                v-if="isInitiator"
-                type="button"
-                @click="next()"
-                class="btn mr-1 btn-primary btn-sm"
-              >
-                Next
-              </button>
-
-              <button
-              v-show="this.counter <= 3"
-              v-else
-                type="button"
-                @click="counter++"
-                class="btn mr-1 btn-primary btn-sm"
-              >
-                Next
-              </button>
-            </aside>
-
-          
-          </aside>
-
-          <aside class="col-lg-6 d-flex justify-content-end align-items-center flex-nowrap">
-            
-              <button 
-                v-if="isLiquidation"
-                v-show="this.counter === 4"
-                type="button"
-                class="btn ml-1 btn-warning btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-              >
-                Reply
-              </button>
-
-              <button
-                v-else
-                v-show="this.counter === 3"
-                type="button"
-                class="btn ml-1 btn-warning btn-sm"
-                data-toggle="modal"
-                data-target="#modal-default"
-              >
-                Reply
-              </button>
-            
-
-            
-              <button
-                type="button"
-                class="btn ml-1 btn-danger btn-sm"
-                @click="close()"
-              >
-                Close
-              </button>
-            
-          </aside>
-        </div>
-        <!-- / Buttons -->
       </div>
     </div>
     <!-- /.card -->
@@ -1423,13 +1425,7 @@ export default {
       modeOfPaymentItem: {},
       payeeName: "",
       // modeOfPayment: "",
-      currency: [
-        { code: "PHP", name: "PHP" },
-        { code: "AUD", name: "AUD" },
-        { code: "CAD", name: "CAD" },
-        { code: "EUR", name: "EUR" },
-        { code: "USD", name: "USD" },
-      ],
+      currency: [],
       currencyItem: {},
       amount: "",
       realAmount: "",
@@ -1527,16 +1523,24 @@ export default {
   async created() {
     this.isLoading = true;
     // use for liquidation
-    await this.getRfpMain(this.$route.params.id);
-    await this.getRfpDetails(this.$route.params.id);
-    await this.getBusinesses(this.companyId);
-    await this.getActualSign(this.$route.params.id, this.$route.params.frmName, this.companyId);
-    await this.getcurrencyName();
-    await this.getexpenseType();
-    // this.getLiquidation(this.$route.params.id);
-    await this.getReportingManager(this.loggedUserId);
-    await this.getProjects();
-    await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+    // await this.getRfpMain(this.$route.params.id);
+    // await this.getRfpDetails(this.$route.params.id);
+    // await this.getBusinesses(this.companyId);
+    // await this.getActualSign(this.$route.params.id, this.$route.params.frmName, this.companyId);
+    // await this.getcurrencyName();
+    // await this.getexpenseType();
+    // // this.getLiquidation(this.$route.params.id);
+    // await this.getReportingManager(this.loggedUserId);
+    // await this.getProjects();
+    // await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+
+    await this.getRfpClarifications(
+      this.$route.params.id,
+      this.loggedUserId,
+      this.companyId,
+      this.$route.params.frmName
+    );
+
     this.isLoading = false;
   },
   watch: {
@@ -1556,24 +1560,108 @@ export default {
     this.isLoading = true;
     this.counter = 0;
     // use for liquidation
-    await this.getRfpMain(this.$route.params.id);
-    await this.getRfpDetails(this.$route.params.id);
-    await this.getBusinesses(this.companyId);
-    await this.getActualSign(this.$route.params.id, this.$route.params.frmName, this.companyId);
-    await this.getcurrencyName();
-    await this.getexpenseType();
-    // this.getLiquidation(this.$route.params.id);
-    await this.getReportingManager(this.loggedUserId);
-    await this.getProjects();
-    await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+    // await this.getRfpMain(this.$route.params.id);
+    // await this.getRfpDetails(this.$route.params.id);
+    // await this.getBusinesses(this.companyId);
+    // await this.getActualSign(this.$route.params.id, this.$route.params.frmName, this.companyId);
+    // await this.getcurrencyName();
+    // await this.getexpenseType();
+    // // this.getLiquidation(this.$route.params.id);
+    // await this.getReportingManager(this.loggedUserId);
+    // await this.getProjects();
+    // await this.getAttachments(this.$route.params.id, this.$route.params.frmName);
+
+      await this.getRfpClarifications(
+        newRoute.params.id,
+        this.loggedUserId,
+        this.companyId,
+        newRoute.params.frmName
+      );
     this.isLoading = false;
-    console.log(newRoute)
+
     },
 
 
   },
 
   methods: {
+    async getRfpClarifications(id, loggedUserId, companyId, form){
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/v2/get-rfp-clarifications/${id}/${loggedUserId}/${companyId}/${form}`);
+
+        const { isLiquidation, reportingManager,reportingManagers, dateRequested, dateNeeded, amount, initId, rfpMainDetail, attachments, liquidation, currency, expenseType, businesses, projects} = response.data;
+        const [{ CLIENTNAME,CURRENCY,MOP,PAYEE,PROJECTID,PROJECT,PURPOSED,REQREF}] = rfpMainDetail;
+
+        this.referenceNumber = REQREF; // ok
+        this.requestDate = dateRequested; // ok
+        this.dateNeeded = dateNeeded; // ok
+        this.reportingManager = reportingManager.name; // ok
+        this.amount = parseFloat(
+          amount
+        ).toLocaleString(undefined, { minimumFractionDigits: 2 }); // ok
+
+
+        if (initId === parseInt(localStorage.getItem("id"))) {
+          this.isInitiator = true;
+        }
+
+
+        
+        //     // showRfpDetail - responseTwo
+        // this.projectName = PROJECT; // ok
+        this.clientName = CLIENTNAME; // ok
+        this.purpose = PURPOSED; // ok
+        this.payeeName = PAYEE; // ok
+        // this.currency = CURRENCY; // ok
+        // this.modeOfPayment = MOP; // ok
+
+        this.currencyItem = {
+          code: CURRENCY,
+          name: CURRENCY,
+        }
+
+        this.modeOfPaymentItem = {
+          code: MOP,
+          name: MOP,
+        }
+
+        this.projectItem = {
+          code: PROJECTID,
+          name: PROJECT,
+        }
+
+        // BUSINESSES
+        this.modalclient = businesses;
+
+        // ACTUAL SIGN
+        this.reportingManagerItem = reportingManager;
+        this.isLiquidation = isLiquidation;
+        this.liquidation = liquidation;
+
+        // CURRENCY
+        this.modalCurrency = currency;
+        this.currency = currency;
+
+        // EXPENSE
+        this.modalExpenseType = expenseType;
+
+        // REPORTING MANAGER
+        this.reportingManager = reportingManagers;
+
+        // PROJECTS
+        this.project = projects;
+
+
+        // // ATTACHMENTS 
+        this.selectedFile = attachments; // ok
+
+      } catch (error) {
+        console.error(error.message);
+        this.openToast("top-right", "error", "Server Error, Please report to administrator!");
+      }
+    },
+
+
     closeModalLiq() {
       this.resetAlert();
       this.resetModal();
@@ -1687,7 +1775,7 @@ export default {
             undefined,
             { minimumFractionDigits: 2 }
           );
-          this.uid = resp.data.data.UID;
+          // this.uid = resp.data.data.UID;
 
           if (resp.data.data.UID === parseInt(this.loggedUserId)) {
             this.isInitiator = true;

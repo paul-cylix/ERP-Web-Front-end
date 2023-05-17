@@ -1573,6 +1573,7 @@ export default {
 
       } catch (error) {
         console.error(error.message);
+        this.openToast("top-right", "error", "Server Error, Please report to administrator!");
       }
     },
 
