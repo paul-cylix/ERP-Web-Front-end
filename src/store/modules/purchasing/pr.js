@@ -18,7 +18,7 @@ export default {
       const newArr = state.listRequest.map(obj => {
         // set all list to not selected
         obj.selected = 0;
-        // if matched mark as selected
+        // if selected request id is matched mark as selected
         if (obj.id === payload.id) {
           return {...obj, selected: !payload.selected};
         }
@@ -50,13 +50,13 @@ export default {
     },
 
     selectRequest(context, payload) {
+      console.log(payload)
       context.commit("selectRequest", payload);
     },
   },
 
   getters: {
     listRequest(state) {
-      console.log(state)
       return state.listRequest;
     },
 

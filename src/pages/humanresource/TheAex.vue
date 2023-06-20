@@ -133,6 +133,10 @@ export default {
             title: "Date Entry",
           },
           {
+            key: "day",
+            title: "Day",
+          },
+          {
             key: "in",
             title: "In",
           },

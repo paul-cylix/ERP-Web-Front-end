@@ -15,8 +15,54 @@
         <h3 class="card-title">Purchase Request</h3>
       </div>
       <div class="card-body">
+
+        <!-- Buttons -->
+        <div class="row d-flex justify-content-between">
+          <aside
+            class="
+              col-lg-6
+              d-flex
+              justify-content-start
+              align-items-center
+              flex-nowrap
+            "
+          >
+            <button
+              v-show="counter"
+              type="button"
+              class="btn mr-1 btn-secondary btn-sm"
+              @click="counter--"
+            >
+              Previous
+            </button>
+
+            <button
+              type="button"
+              class="btn mr-1 btn-primary btn-sm"
+              @click="next()"
+            >
+              Next
+            </button>
+          </aside>
+
+          <aside
+            class="
+              col-lg-6
+              d-flex
+              justify-content-end
+              align-items-center
+              flex-nowrap
+            "
+          >
+            <button type="button" class="btn ml-1 btn-danger btn-sm">
+              Close
+            </button>
+          </aside>
+        </div>
+        <!-- / Buttons -->
+
         <!-- Step Numbers -->
-        <div class="d-flex progressBarWrapper text-center">
+        <div class="d-flex progressBarWrapper text-center mt-5">
           <div class="progressbar" :class="classA">
             <span :class="classA">1</span>
           </div>
@@ -65,51 +111,6 @@
 
         <!-- Main Form -->
 
-        <!-- Buttons -->
-        <div class="row d-flex justify-content-between mb-0 mt-3">
-          <aside
-            class="
-              col-lg-6
-              d-flex
-              justify-content-start
-              align-items-center
-              flex-nowrap
-            "
-          >
-            <button
-              v-show="counter"
-              type="button"
-              class="btn mr-1 btn-secondary btn-sm"
-              @click="counter--"
-            >
-              Previous
-            </button>
-
-            <button
-              type="button"
-              class="btn mr-1 btn-primary btn-sm"
-              @click="next()"
-            >
-              Next
-            </button>
-          </aside>
-
-          <aside
-            class="
-              col-lg-6
-              d-flex
-              justify-content-end
-              align-items-center
-              flex-nowrap
-            "
-          >
-            <button type="button" class="btn ml-1 btn-danger btn-sm">
-              Close
-            </button>
-          </aside>
-        </div>
-        <!-- / Buttons -->
-
         <!-- Select Request -->
         <aside class="container-fluid mt-0 px-0" v-if="this.counter === 0">
           <data-table v-bind="parametersTable1" />
@@ -117,7 +118,7 @@
         <!-- /.Select Request -->
 
         <!-- Item Details -->
-        <aside class="container-fluid mt-3 px-0" v-if="this.counter === 1">
+        <aside class="container mt-3 px-0" v-if="this.counter === 1">
           <div class="card card-secondary">
             <div class="card-header">
               <h3 class="card-title">Items Table</h3>
@@ -694,6 +695,19 @@ export default {
     next() {
       const selectedPrRequest = this.$store.getters["pr/getSelectedPr"];
       console.log(selectedPrRequest);
+
+      if(this.counter === 0 ) {
+        if(selectedPrRequest) {
+          this.counter++;
+          return
+        } else {
+          console.log('please select a request');
+        }
+      }
+
+      if(this.counter === 1) {
+        console.log('test')
+      }
 
     },
 
