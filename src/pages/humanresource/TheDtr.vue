@@ -260,6 +260,14 @@ export default {
             key: "out_pm",
             title: "Out",
           },
+          {
+            key: "in_location",
+            title: "In Location",
+          },
+          {
+            key: "out_location",
+            title: "Out Location",
+          },
 
           {
             key: "Action Button",
@@ -332,7 +340,8 @@ export default {
 
     isItLoadingVuex(newValue) {
       this.isItLoading = newValue;
-      this.getDtr();
+      console.warn(newValue);
+      if(newValue === false) this.getDtr();
     },
 
     editableData(newValue) {
