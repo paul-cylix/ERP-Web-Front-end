@@ -120,29 +120,35 @@ export default {
           100,
           100 * Math.ceil(this.requestArray.length / 100),
         ],
-        allowedExports: ["csv", "json", "txt"],
+        // allowedExports: ["csv", "json", "txt"],
+        allowedExports: ["csv"],
         tableClass:
           "table table-sm table-striped table-bordered small table-hover",
         columns: [
           {
-            key: "employee_name",
-            title: "Employee Name",
+            key: "id_no",
+            title: "ID No.",
           },
           {
-            key: "dtr_date",
-            title: "Date Entry",
+            key: "name",
+            title: "Name",
           },
           {
-            key: "day",
-            title: "Day",
+            key: "week",
+            title: "Week",
           },
           {
-            key: "in",
-            title: "In",
+            key: "date",
+            title: "Date",
+          },
+
+          {
+            key: "time_in",
+            title: "Time-In",
           },
           {
-            key: "out",
-            title: "Out",
+            key: "time_out",
+            title: "Time-Out",
           },
           {
             key: "status",

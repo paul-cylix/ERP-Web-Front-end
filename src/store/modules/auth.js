@@ -17,6 +17,7 @@ export default {
         token: null,
         expiresAt: null,
         isManager: null,
+        isHR: null,
         // didAutoLogout: false
         company: [],
       },
@@ -128,6 +129,7 @@ export default {
       localStorage.setItem("token", responseData.Personal_Access_Token);
       localStorage.setItem("expiresAt", responseData.expires_at);
       localStorage.setItem("isManager", responseData.isManager);
+      localStorage.setItem("isHR", responseData.isHR);
       localStorage.setItem("company", JSON.stringify(responseData.company));
 
 
@@ -155,6 +157,7 @@ export default {
         token: responseData.Personal_Access_Token,
         expiresAt: responseData.expires_at,
         isManager: responseData.isManager,
+        isHR: responseData.isHR,
         company: responseData.company,
         
       });
@@ -178,6 +181,7 @@ export default {
       const token = localStorage.getItem("token");
       const expiresAt = localStorage.getItem("expiresAt");
       const isManager = localStorage.getItem("isManager");
+      const isHR = localStorage.getItem("isHR");
       let company = localStorage.getItem("company");
 
       company = JSON.parse(company);
@@ -211,6 +215,7 @@ export default {
           token: token,
           expiresAt: expiresAt,
           isManager: isManager,
+          isHR: isHR,
           company: company,
         });
       }
@@ -231,6 +236,7 @@ export default {
       localStorage.removeItem('token')
       localStorage.removeItem('expiresAt')
       localStorage.removeItem('isManager')
+      localStorage.removeItem('isHR')
       localStorage.removeItem('company')
 
 
@@ -253,6 +259,7 @@ export default {
         token: null,
         expiresAt: null,
         isManager: null,
+        isHR: null,
         company: null,
 
         
