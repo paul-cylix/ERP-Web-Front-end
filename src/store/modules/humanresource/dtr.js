@@ -104,6 +104,8 @@ export default {
       context.commit("clearSelectedData");
     },
     addSelectedDtr(context, payload) {
+      console.warn(payload);
+
       context.commit("addSelectedDtr", {
         DepartmentName: payload.DepartmentName,
         EmployeeName: payload.EmployeeName,
@@ -112,6 +114,8 @@ export default {
         id: payload.id,
         in_am: payload.in_am,
         out_pm: payload.out_pm,
+        in_am1: payload.in_am1,
+        out_pm1: payload.out_pm1,
         positionName: payload.positionName,
         selected: !payload.selected,
       });
@@ -223,6 +227,8 @@ export default {
 
   getters: {
     getSelectedDtr(state) {
+      console.warn(state);
+      console.warn(state.selectedDtr);
       return state.selectedDtr;
     },
 
