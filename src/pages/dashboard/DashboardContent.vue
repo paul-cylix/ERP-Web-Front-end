@@ -1,5 +1,16 @@
 <template>
   <aside>
+    <div class="position-relative p-3 bg-gray m-3" style="width: 200px;">
+      <div class="ribbon-wrapper">
+        <div class="ribbon bg-primary">
+          Link
+        </div>
+      </div>
+      Payroll Concern Form <br />
+      <a href="https://forms.office.com/pages/responsepage.aspx?id=7-vF7nKGdkuCWV-HjM59DH_-BlXk_P5GnD82JGYziQ9URE0xR1FaQUpDNzQ4ODdPTU05UERVSlNKUC4u&web=1&wdLOR=c67BE7722-BD4C-4990-B884-51FE2DC372AC&sid=641cbd41-b244-43fc-9f2a-bba57fe1dc40" target="_blank"><small>Click here</small></a>
+      
+    </div>
+
     <!-- Button Plus Fixed -->
     <button
       class="fixed-button wobble"

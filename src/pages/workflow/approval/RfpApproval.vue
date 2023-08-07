@@ -1027,7 +1027,7 @@
               </div>
               <div class="col-md-8">
                 <div class="form-group">
-                  <small><label for="projectName">Project Name</label></small>
+                  <small><label for="projectName">Client Name</label></small>
                   <!-- <input type="text" class="form-control py-3 form-control-sm" id="projectName"> -->
                   <model-list-select
                     :list="modalclient"
