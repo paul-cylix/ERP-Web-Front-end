@@ -326,6 +326,34 @@
               <!-- /.info-box -->
             </div>
 
+            <div class="ml-3">
+              <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"
+                  ><i class="fas fa-female"></i></span>
+
+                <div class="info-box-content">
+                  <span class="info-box-text font-italic">Maternity Leave</span>
+                  <span class="info-box-number h3 m-0 p-0">-</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+
+            <div class="ml-3">
+              <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"
+                  ><i class="fas fa-male"></i></span>
+
+                <div class="info-box-content">
+                  <span class="info-box-text font-italic">Paternity Leave</span>
+                  <span class="info-box-number h3 m-0 p-0">-</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+
 
           <table class="table table-sm table-bordered table-striped mx-2">
             <thead>
