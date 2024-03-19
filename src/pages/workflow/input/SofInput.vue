@@ -2056,21 +2056,39 @@ export default {
         this.selectedFile = data[5]["attachments"]["data"];
 
         // select Coordinator -> check if its required
-        // console.log(this.$route.params.frmName)
+        console.log(this.$route.params.frmName)
+
         if (frmName === "Sales Order - Project") {
-          if (
-            data[4]["actual_sign"][6]["USER_GRP_IND"] === "SI Confirmation" &&
-            data[4]["actual_sign"][6]["STATUS"] === "In Progress"
-          ) {
-            this.isSiConfirmation = true;
-          }
+          const pAS = data[4]["actual_sign"];
+          const {STATUS:pASStatus = false} = pAS.find((item) => item.USER_GRP_IND === "SI Confirmation") || {};
+          if(pASStatus === "In Progress") this.isSiConfirmation = true;
+
+          //////////////////////////////////////////
+
+            // if (
+            //   data[4]["actual_sign"][6]["USER_GRP_IND"] === "SI Confirmation" &&
+            //   data[4]["actual_sign"][6]["STATUS"] === "In Progress"
+            // ) {
+            //   this.isSiConfirmation = true;
+            // }
+
+          //////////////////////////////////////////
         } else if (frmName === "Sales Order - Delivery") {
-          if (
-            data[4]["actual_sign"][5]["USER_GRP_IND"] === "SI Confirmation" &&
-            data[4]["actual_sign"][5]["STATUS"] === "In Progress"
-          ) {
-            this.isSiConfirmation = true;
-          }
+
+          const pAS = data[4]["actual_sign"];
+          const {STATUS:pASStatus = false} = pAS.find((item) => item.USER_GRP_IND === "SI Confirmation") || {};
+          if(pASStatus === "In Progress") this.isSiConfirmation = true;
+
+          //////////////////////////////////////////
+
+            // if (
+            //   data[4]["actual_sign"][5]["USER_GRP_IND"] === "SI Confirmation" &&
+            //   data[4]["actual_sign"][5]["STATUS"] === "In Progress"
+            // ) {
+            //   this.isSiConfirmation = true;
+            // }
+
+          //////////////////////////////////////////
         }
       } catch (error) {
         this.openToast(

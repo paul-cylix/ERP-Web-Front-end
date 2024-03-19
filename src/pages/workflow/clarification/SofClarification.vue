@@ -2316,13 +2316,21 @@ export default {
 
         // console.log(data[4]["actual_sign"][3])
         if (this.$route.params.frmName === "Sales Order - Project") {
-          if (
-            data[4]["actual_sign"][3]["USER_GRP_IND"] ===
-              "Approval of Project Head" &&
-            data[4]["actual_sign"][3]["STATUS"] === "Completed"
-          ) {
-            this.isCoordinatorRequired = true;
-          }
+
+          const pAS = data[4]["actual_sign"];
+
+          const {STATUS:pASStatus} = pAS.find((item) => item.USER_GRP_IND === 'Approval of Project Head');
+                  
+          if(pASStatus === 'Completed') this.isCoordinatorRequired = true;
+
+
+          // if (
+          //   data[4]["actual_sign"][3]["USER_GRP_IND"] ===
+          //     "Approval of Project Head" &&
+          //   data[4]["actual_sign"][3]["STATUS"] === "Completed"
+          // ) {
+          //   this.isCoordinatorRequired = true;
+          // }
         }
 
         // if(this.$route.params.frmName === 'Sales Order - Project') {

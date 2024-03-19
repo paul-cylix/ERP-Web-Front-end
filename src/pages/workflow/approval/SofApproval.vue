@@ -301,7 +301,7 @@
                 <date-picker
                   v-model="poDate"
                   valueType="format"
-                  style="display: block; width: 100%; line-height: 20px border:red;"
+                  style="display: block; width: 100%; line-height: 20px; border:red;"
                   :disabled="true"
                 ></date-picker>
                 <small
@@ -320,7 +320,7 @@
                   "
                   v-model="projectStart"
                   valueType="format"
-                  style="display: block; width: 100%; line-height: 20px border:red;"
+                  style="display: block; width: 100%; line-height: 20px; border:red;"
                   disabled
                 ></date-picker>
 
@@ -329,7 +329,7 @@
                   v-model="projectStart"
                   :disabled="true"
                   valueType="format"
-                  style="display: block; width: 100%; line-height: 20px border:red;"
+                  style="display: block; width: 100%; line-height: 20px; border:red;"
                 ></date-picker>
                 <small
                   class="text-danger p-0 m-0"
@@ -349,7 +349,7 @@
                   v-model="projectEnd"
                   valueType="format"
                   disabled
-                  style="display: block; width: 100%; line-height: 20px border:red;"
+                  style="display: block; width: 100%; line-height: 20px; border:red;"
                 ></date-picker>
 
                 <date-picker
@@ -357,7 +357,7 @@
                   v-model="projectEnd"
                   valueType="format"
                   disabled
-                  style="display: block; width: 100%; line-height: 20px border:red;"
+                  style="display: block; width: 100%; line-height: 20px; border:red;"
                 ></date-picker>
                 <small
                   class="text-danger p-0 m-0"
@@ -614,7 +614,7 @@
                   v-model="downPaymentDateReceived"
                   valueType="format"
                   :disabled="true"
-                  style="display: block; width: 100%; line-height: 20px border:red;"
+                  style="display: block; width: 100%; line-height: 20px; border:red;"
                 ></date-picker>
                 <!-- <small class="text-danger p-0 m-0" v-show="attemptNextThree && "
                   >Down Payment Date Received is required!</small
@@ -666,7 +666,7 @@
                   v-model="invoiceDateNeeded"
                   :disabled="true"
                   valueType="format"
-                  style="display: block; width: 100%; line-height: 20px border:red;"
+                  style="display: block; width: 100%; line-height: 20px; border:red;"
                 ></date-picker>
                 <small
                   class="text-danger p-0 m-0"
@@ -705,7 +705,7 @@
                   v-model="dateOfInvoice"
                   :disabled="true"
                   valueType="format"
-                  style="display: block; width: 100%; line-height: 20px border:red;"
+                  style="display: block; width: 100%; line-height: 20px; border:red;"
                 ></date-picker>
                 <!-- <small class="text-danger p-0 m-0" v-show="true"
                   >Date of Invoice is required!</small
@@ -1880,6 +1880,9 @@ export default {
 
     async querySof() {
       try {
+
+        // alert(processId, frmName, companyId);
+
         await this.$store.dispatch("sof/querySof", {
           processId: this.$route.params.id,
           frmName: this.$route.params.frmName,
@@ -1908,18 +1911,45 @@ export default {
           this.sofType = { code: "POC", name: "POC" };
         }
 
-        const isAccountingAcknowledgement = data[4]["actual_sign"][2]["STATUS"];
+        /////////////// isAccountingAcknowledgement ///////////////
 
-        if (isAccountingAcknowledgement === "In Progress") {
-          this.isAccountingAcknowledgement = true;
-          console.log(
-            `Accounting Acknowledgement is ${isAccountingAcknowledgement}`
-          );
-        } else {
-          console.log(
-            `Accounting Acknowledgement is ${isAccountingAcknowledgement}`
-          );
-        }
+        const {STATUS:isAA = false} = data[4]["actual_sign"].find((item) => item.USER_GRP_IND === 'Accounting Acknowledgement') || {};
+
+          if(isAA === 'In Progress') {
+            this.isAccountingAcknowledgement = true;
+            console.log(
+              `Accounting Acknowledgement is ${isAA}`
+            );
+          } else {
+            console.log(
+              `Accounting Acknowledgement is ${isAA}`
+            );
+          }
+
+
+          /////////////////////////////////////////////////////////
+
+          // const isAccountingAcknowledgement = data[4]["actual_sign"][2]["STATUS"];
+
+          // if (isAccountingAcknowledgement === "In Progress") {
+          //   this.isAccountingAcknowledgement = true;
+          //   console.log(
+          //     `Accounting Acknowledgement is ${isAccountingAcknowledgement}`
+          //   );
+          // } else {
+          //   console.log(
+          //     `Accounting Acknowledgement is ${isAccountingAcknowledgement}`
+          //   );
+          // }
+
+          /////////////////////////////////////////////////////////
+
+
+        /////////////// isAccountingAcknowledgement ///////////////
+
+
+
+
 
         // console.log(data[0]['setup_project'][0]['Business_Number'])
         // console.log(data[0]['setup_project'][0]['business_fullname'])
@@ -2075,38 +2105,66 @@ export default {
 
         // check if approval of project head is in progress
         if (this.$route.params.frmName === "Sales Order - Project") {
-          if (data[4]["actual_sign"][3]["STATUS"] === "In Progress") {
-            this.isCoordinatorRequired = true;
-          }
+
+          const pAS = data[4]["actual_sign"];
+
+          const {STATUS:pASStatus} = pAS.find((item) => item.USER_GRP_IND === 'Approval of Project Head');
+
+          if(pASStatus === 'In Progress') this.isCoordinatorRequired = true;
+
+          //////////////////////////////////////////////////////////////////
+          // if (data[4]["actual_sign"][3]["STATUS"] === "In Progress") {
+          //   this.isCoordinatorRequired = true;
+          // }
+          //////////////////////////////////////////////////////////////////
+
         }
 
         if (
           frmName === "Sales Order - Demo" ||
           frmName === "Sales Order - POC"
         ) {
+
+
+          // Demo & POC - Actual Sign - Last Row
+          const {STATUS:dpASLastRow} = data[4]["actual_sign"][data[4]["actual_sign"].length - 1];
+
+          if(dpASLastRow === 'In Progress') this.isDmoPocComplete = true;
+
+          ///////////////////////////////////////////////////////////////////////
+
           // check if group ind === initiator
-          if (
-            data[4]["actual_sign"][3]["USER_GRP_IND"] === "Initiator" &&
-            data[4]["actual_sign"][3]["STATUS"] === "In Progress"
-          ) {
-            this.isDmoPocComplete = true;
-          }
+          // if (
+          //   data[4]["actual_sign"][3]["USER_GRP_IND"] === "Initiator" &&
+          //   data[4]["actual_sign"][3]["STATUS"] === "In Progress"
+          // ) {
+          //   this.isDmoPocComplete = true;
+          // }
+
+          ///////////////////////////////////////////////////////////////////////
         }
 
         console.warn(data);
 
+        // check if current user is the initiator
+        // if true go to step 2
+        // else go to step 6
         const queryuserId = data[1]["sales_orders"][0]["UID"];
         const userId = parseInt(this.loggedUserId);
 
         if (queryuserId === userId) {
           this.isInitiator = true;
-        } else {
-          if (data[4]["actual_sign"][3]["STATUS"] === "In Progress") {
-            this.counter = 2;
-          } else {
-            this.counter = 6;
-          }
-        }
+        } 
+
+        // else {
+        //   if (data[4]["actual_sign"][3]["STATUS"] === "In Progress") {
+        //     this.counter = 2;
+        //   } else {
+        //     this.counter = 6;
+        //   }
+        // }
+
+        
       } catch (error) {
         this.openToast(
           "top-right",

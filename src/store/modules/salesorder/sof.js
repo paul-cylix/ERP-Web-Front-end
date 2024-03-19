@@ -598,6 +598,7 @@ export default {
       const frmName = payload.frmName;
       const companyId = payload.companyId;
 
+      console.warn(id, frmName, companyId)
 
 
       let setup_project =
